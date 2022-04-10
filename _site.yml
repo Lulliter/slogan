@@ -24,6 +24,13 @@ new_session: yes
 navbar:
   title: How slogans end up moving billions
   right:
+  - text: Domesticated Lexicon
+    icon: fas fa-pen-fancy
+    menu:
+      - text: "Lexicon: gender"
+        href: 00_lexicon-gender.html
+      - text: "Lexicon: green.Rmd"
+        href: 00_lexicon-green.html
   - text: Process and merge data
     icon: fas fa-table
     href: 01_data-overview.html

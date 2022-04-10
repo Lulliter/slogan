@@ -1,19 +1,19 @@
 # History files
 .Rhistory
 .Rapp.history
-
 # Session Data files
 .RData
-
 # User-specific files
 .Ruserdata
+# .DS_Store is a file that stores custom attributes of its containing folder,
+# such as folder view options, icon positions, and other visual information.
+.DS_Store
 
 
 # --------------  AH STUFF  -------------- #
 # R Environment Variables
 .Renviron
 # _site  I need this
-
 
 # Example code in package build process
 *-Ex.R

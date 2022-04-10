@@ -11,10 +11,10 @@ Rscript -e "rmarkdown::render_site(encoding = 'UTF-8')"
 # check
 git status
 # Stage
-git add -u # --all
+git add -u # git add --all
 # Commit (way 1)
 git commit -m "Deploy updates"
-          # Commit (way 2)
+# Commit (way 2)
           msg="rebuilding site `date`"
           if [ $# -eq 1 ]
             then msg="$1"
