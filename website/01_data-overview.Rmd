@@ -1,10 +1,10 @@
 ---
-title: "Modeling choices"
+title: "Process and merge data"
 author: "Luisa M. Mimmi"
 date: "Last run: `r format(Sys.time(), '%F')`"
 output: 
   html_document:
-    code_folding: show
+    code_folding: hide
 editor_options: 
   chunk_output_type: console
 ---
