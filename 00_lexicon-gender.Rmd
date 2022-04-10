@@ -1,5 +1,5 @@
 ---
-title: "Lexicon gender"
+title: "Lexicon: gender"
 author: "Luisa M. Mimmi"
 date: "Last run: `r format(Sys.time(), '%F')`"
 output: 
@@ -7,7 +7,7 @@ output:
     code_folding: hide
 editor_options: 
   chunk_output_type: console
-#bibliography: buzzwords.bib
+bibliography: buzzwords.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -89,3 +89,21 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 #            plot_level = colnames(pred[x]))
 # }
 ```
+
+
+# MAIN INSPIRATION
+[@garbini_uscire_2003]
+
+
+# Definition
+
+
+# Etimology
+
+
+# Links
+
+
+
+# Reduction
+

@@ -13,7 +13,7 @@ git status
 # Stage
 git add -u # git add --all
 # Commit (way 1)
-git commit -m "Deploy updates"
+git commit -m "Added Lexicon tab"
 # Commit (way 2)
           msg="rebuilding site `date`"
           if [ $# -eq 1 ]

@@ -29,7 +29,7 @@ navbar:
     menu:
       - text: "Lexicon: gender"
         href: 00_lexicon-gender.html
-      - text: "Lexicon: green.Rmd"
+      - text: "Lexicon: green"
         href: 00_lexicon-green.html
   - text: Process and merge data
     icon: fas fa-table
