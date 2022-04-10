@@ -1,5 +1,26 @@
 name: slogan
 author: "Luisa M. Mimmi"
+output_dir: "docs" #_site #
+# exclude: ["*.xls", "*.csv","*.R"]
+output:
+  html_document:
+    theme: flatly #united
+    highlight: tango # pygments
+    css: html/fixes.css
+    include:
+      after_body: html/footer.html
+    code_folding: show
+    code_download: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+    toc_depth: 4
+    fig_height: 4
+    fig_width: 6
+    lib_dir: site_libs
+    self_contained: no
+new_session: yes
 navbar:
   title: How slogans end up moving billions
   right:
@@ -42,23 +63,3 @@ navbar:
         href: "output/appendix-ms.pdf"
       - text: "Appendix (HTML)"
         href: "output/appendix.html"
-output:
-  html_document:
-    theme: united
-    css: html/fixes.css
-    include:
-      after_body: html/footer.html
-    highlight: pygments
-    code_folding: show
-    code_download: yes
-    toc: yes
-    toc_float:
-      collapsed: no
-      smooth_scroll: yes
-    toc_depth: 4
-    fig_height: 4
-    fig_width: 6
-    lib_dir: site_libs
-    self_contained: no
-new_session: yes
-output_dir: "docs" #_site #
