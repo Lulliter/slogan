@@ -8,10 +8,12 @@
 # User-specific files
 .Ruserdata
 
-
+# --------------  AH STUFF  -------------- #
+# R Environment Variables
+.Renviron
 _site
 
-# --------------  AH STUFF  -------------- #
+
 # Example code in package build process
 *-Ex.R
 
@@ -39,6 +41,3 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 
-# R Environment Variables
-.Renviron
-_site
