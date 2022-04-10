@@ -38,6 +38,10 @@ Year <- "2022"
 ## Acknowledgements
  
 **RMarkdown Website Instructions** [here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
+https://gist.github.com/cobyism/4730490 
+
+**Gh pages from subtree 1** [here](https://gist.github.com/cobyism/4730490)
+**Gh pages from subtree 2** [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
 
 
 ## Abstract
