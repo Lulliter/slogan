@@ -3,13 +3,13 @@
 # DEPLOY
 # When you build a static site, generated files are in _site directory.
 
-R -e `rmarkdown::render_site()`
+R -e "rmarkdown::render_site(encoding = 'UTF-8')"
 
-
+git status
 cd _site
 git add --all
 git commit -m "Deploy updates"
-git push origin gh-pages
+git push origin master
 
 
 # PUTTING ALL IN A SCRIPT
