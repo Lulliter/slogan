@@ -1,0 +1,9 @@
+---
+title: "How slogans end up moving billions"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+---
+
+## Abstract
+
+xxxxxx

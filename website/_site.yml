@@ -1,0 +1,64 @@
+name: slogan
+author: "Luisa M. Mimmi"
+navbar:
+  title: How slogans end up moving billions
+  right:
+  - text: Process and merge data
+    icon: fas fa-table
+    href: 01_data-overview.html
+  - text: Descriptive analysis
+    icon: fas fa-chart-bar
+    href: 02_descriptive-analysis.html
+  - text: Models
+    icon: fas fa-chart-line
+    menu:
+      - text: "Modeling choices"
+        href: 03_modeling-choices.html
+      - text: "Model details and diagnostics"
+        href: 03_model-details.html
+      # - text: "E1: Laws predict deteriorating human rights"
+      #   href: 03_laws-repression.html
+      # - text: "E2: Civil society environment predicts deteriorating human rights"
+      #   href: 03_environment-repression.html
+  - text: Predictions
+    icon: fas fa-question-circle
+    href: 04_predictions.html
+  - text: Manuscript
+    icon: far fa-file-alt
+    menu:
+      - text: "PDF"
+        href: "output/manuscript.pdf"
+      - text: "Manuscripty PDF"
+        href: "output/manuscript-ms.pdf"
+      - text: "HTML"
+        href: "output/manuscript.html"
+      - text: "Word"
+        href: "output/manuscript.docx"
+      - text: "Citations"
+        href: "output/extracted-citations.bib"
+      - text: "Appendix (PDF)"
+        href: "output/appendix.pdf"
+      - text: "Appendix (Manuscripty PDF)"
+        href: "output/appendix-ms.pdf"
+      - text: "Appendix (HTML)"
+        href: "output/appendix.html"
+output:
+  html_document:
+    theme: united
+    css: html/fixes.css
+    include:
+      after_body: html/footer.html
+    highlight: pygments
+    code_folding: show
+    code_download: yes
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+    toc_depth: 4
+    fig_height: 4
+    fig_width: 6
+    lib_dir: site_libs
+    self_contained: no
+new_session: yes
+output_dir: _site #"docs"
