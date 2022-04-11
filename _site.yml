@@ -1,7 +1,7 @@
 name: slogan
 author: "Luisa M. Mimmi"
 output_dir: "docs" #_site #
-# exclude: ["*.xls", "*.csv","*.R"]
+exclude: ["*.xls", "*.csv","*.R", "Makefile", "*.bib" ]
 output:
   html_document:
     theme: flatly #united
