@@ -91,8 +91,6 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 ```
 
 
-# MAIN INSPIRATION
-[@garbini_uscire_2003]
 
 
 # Definition
@@ -106,4 +104,7 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 
 
 # Reduction
+
+### MAIN INSPIRATION
+[@garbini_uscire_2003]
 
