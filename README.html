@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>README.knit</title>
+
+<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="html/fixes.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">How slogans end up moving billions</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-pen-fancy"></span>
+     
+    Domesticated Lexicon
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="00_lexicon-gender.html">Lexicon: gender</a>
+    </li>
+    <li>
+      <a href="00_lexicon-green.html">Lexicon: green</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="01_data-overview.html">
+    <span class="fas fa-table"></span>
+     
+    Process and merge data
+  </a>
+</li>
+<li>
+  <a href="02_descriptive-analysis.html">
+    <span class="fas fa-chart-bar"></span>
+     
+    Descriptive analysis
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-chart-line"></span>
+     
+    Models
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03_modeling-choices.html">Modeling choices</a>
+    </li>
+    <li>
+      <a href="03_model-details.html">Model details and diagnostics</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="04_predictions.html">
+    <span class="fas fa-question-circle"></span>
+     
+    Predictions
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="far fa-file-alt"></span>
+     
+    Manuscript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="output/manuscript.pdf">PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript-ms.pdf">Manuscripty PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript.html">HTML</a>
+    </li>
+    <li>
+      <a href="output/manuscript.docx">Word</a>
+    </li>
+    <li>
+      <a href="output/extracted-citations.bib">Citations</a>
+    </li>
+    <li>
+      <a href="output/appendix.pdf">Appendix (PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix-ms.pdf">Appendix (Manuscripty PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix.html">Appendix (HTML)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<div id="follow-the-buzzword" class="section level1">
+<h1>Follow the buzzword</h1>
+<p><a href="https://luisamimmi.com/">Luisa M. Mimmi</a> • Independent Consultant</p>
+<hr />
+<!-- [![OSF DOI](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FMTR6X-blue)](https://dx.doi.org/10.17605/OSF.IO/MTR6X) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5715402.svg)](https://doi.org/10.5281/zenodo.5715402) -->
+<blockquote>
+<p>Luisa M. Mimmi. 2022. <a href="https://doi.org/10.1177/0899764020971045">“Follow the buzzword,”</a> <em>Journal of Human Rights</em> (forthcoming).</p>
+</blockquote>
+<p><strong>All this project’s materials are free and open:</strong></p>
+<ul>
+<li><a href="#data">Download the data</a></li>
+<li><a href="https://stats.andrewheiss.com/cautioning-canary/">See the analysis notebook website</a></li>
+</ul>
+<p><img src="img/data_large_color.png" alt="Open data" />   <img src="img/materials_large_color.png" alt="Open" /></p>
+<div id="how-to-builddeploy-the-site" class="section level2">
+<h2>How to build/deploy the site</h2>
+<p>This project is an <code>Rmarkdown</code> websites hosted on <code>Github Pages</code> and accessible here <a href="https://lulliter.github.io/slogan/">https://lulliter.github.io/slogan/</a>. The folder containing the html files of the website is <code>./docs/</code> (this was also specified in the <code>_site.yml</code>)</p>
+<pre><code>#&gt; .
+#&gt; ├── 00_lexicon-gender.Rmd
+#&gt; ├── 00_lexicon-green.Rmd
+#&gt; ├── 01_data-overview.Rmd
+#&gt; ├── 02_descriptive-analysis.Rmd
+#&gt; ├── 03_model-details.Rmd
+#&gt; ├── 03_modeling-choices.Rmd
+#&gt; ├── 04_predictions.Rmd
+#&gt; ├── Makefile
+#&gt; ├── R
+#&gt; │   ├── funs_data-cleaning.R
+#&gt; │   ├── funs_knitting.R
+#&gt; │   ├── funs_notebook.R
+#&gt; │   ├── models_analysis.R
+#&gt; │   ├── models_details.R
+#&gt; │   ├── models_lhr.R
+#&gt; │   ├── models_pts.R
+#&gt; │   └── psyteachr_setup.R
+#&gt; ├── README.Rmd
+#&gt; ├── README.html
+#&gt; ├── README.md
+#&gt; ├── _build_deploy.sh
+#&gt; ├── _site.yml
+#&gt; ├── buzzwords.bib
+#&gt; ├── data
+#&gt; │   ├── DO-NOT-EDIT-ANY-FILES-IN-HERE-BY-HAND
+#&gt; │   ├── derived_data
+#&gt; │   └── raw_data
+#&gt; ├── docs
+#&gt; │   ├── 00_lexicon-gender.html
+#&gt; │   ├── 00_lexicon-green.html
+#&gt; │   ├── 01_data-overview.html
+#&gt; │   ├── 02_descriptive-analysis.html
+#&gt; │   ├── 03_model-details.html
+#&gt; │   ├── 03_modeling-choices.html
+#&gt; │   ├── 04_predictions.html
+#&gt; │   ├── R
+#&gt; │   ├── data
+#&gt; │   ├── html
+#&gt; │   ├── img
+#&gt; │   ├── index.html
+#&gt; │   └── site_libs
+#&gt; ├── html
+#&gt; │   ├── fixes.css
+#&gt; │   └── footer.html
+#&gt; ├── img
+#&gt; ├── index.Rmd
+#&gt; ├── site_libs
+#&gt; │   ├── bootstrap-3.3.5
+#&gt; │   ├── font-awesome-5.1.0
+#&gt; │   ├── header-attrs-2.13
+#&gt; │   ├── jquery-3.6.0
+#&gt; │   ├── jqueryui-1.11.4
+#&gt; │   ├── navigation-1.1
+#&gt; │   └── tocify-1.9.1
+#&gt; └── slogan.Rproj</code></pre>
+<p>Upon making changes in the local folder, I have 2 ways in which I can commit and push changes to GitHub (as well as update public version of website on GitHub Pages)</p>
+<ol style="list-style-type: decimal">
+<li>Pseudo manual shell commands in <code>_build_deploy.sh</code> file</li>
+</ol>
+<ul>
+<li>Here I can also decide whether to use <code>git add -u</code> (only stuff already tracked) or <code>git add --A</code> (also new stuff)</li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Using automated instructions in <code>Makefile</code><br />
+</li>
+</ol>
+<ul>
+<li>Here I have set it up exclusively with <code>git add -u</code></li>
+</ul>
+<hr />
+</div>
+<div id="acknowledgements" class="section level2">
+<h2>Acknowledgements</h2>
+<p><strong>RMarkdown Website Instructions</strong> <a href="https://psyteachr.github.io/hack-your-data/rmarkdown_2.html">here</a> <a href="https://gist.github.com/cobyism/4730490" class="uri">https://gist.github.com/cobyism/4730490</a></p>
+<p><strong>Gh pages from subtree 1</strong> <a href="https://gist.github.com/cobyism/4730490">here</a> <strong>Gh pages from subtree 2</strong> <a href="https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html">here</a></p>
+</div>
+<div id="abstract" class="section level2">
+<h2>Abstract</h2>
+<p>bla bla bla</p>
+<hr />
+<!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
+<!-- > Luisa M. Mimmi. 2022. "Follow the buzzword"". Accessed April 11, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<div style="color:#FF4136">
+<p>cccccc</p>
+</div>
+</div>
+<div id="licenses" class="section level2">
+<h2>Licenses</h2>
+<p><strong>Text and figures:</strong> All prose and images are licensed under Creative Commons (<a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>)</p>
+<p><strong>Code:</strong> All code is licensed under the <a href="LICENSE.md">MIT License</a>.</p>
+</div>
+<div id="contributions" class="section level2">
+<h2>Contributions</h2>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgYnV6endvcmQiCkF1dGhvcnMgPC0gIkx1aXNhIE0uIE1pbW1pIgpZZWFyIDwtICIyMDIyIgpgYGAKCiMgYHIgVGl0bGVgCgpbTHVpc2EgTS4gTWltbWldKGh0dHBzOi8vbHVpc2FtaW1taS5jb20vKSDigKIgSW5kZXBlbmRlbnQgQ29uc3VsdGFudCAgCgotLS0KCjwhLS0gWyFbT1NGIERPSV0oaHR0cHM6Ly9pbWcuc2hpZWxkcy5pby9iYWRnZS9PU0YtMTAuMTc2MDUlMkZPU0YuSU8lMkZNVFI2WC1ibHVlKV0oaHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WCkgWyFbRE9JXShodHRwczovL3plbm9kby5vcmcvYmFkZ2UvRE9JLzEwLjUyODEvemVub2RvLjU3MTU0MDIuc3ZnKV0oaHR0cHM6Ly9kb2kub3JnLzEwLjUyODEvemVub2RvLjU3MTU0MDIpIC0tPgoKPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuIFsiYHIgVGl0bGVgLCJdKGh0dHBzOi8vZG9pLm9yZy8xMC4xMTc3LzA4OTk3NjQwMjA5NzEwNDUpICpKb3VybmFsIG9mIEh1bWFuIFJpZ2h0cyogKGZvcnRoY29taW5nKS4KCioqQWxsIHRoaXMgcHJvamVjdCdzIG1hdGVyaWFscyBhcmUgZnJlZSBhbmQgb3BlbjoqKgoKLSBbRG93bmxvYWQgdGhlIGRhdGFdKCNkYXRhKQotIFtTZWUgdGhlIGFuYWx5c2lzIG5vdGVib29rIHdlYnNpdGVdKGh0dHBzOi8vc3RhdHMuYW5kcmV3aGVpc3MuY29tL2NhdXRpb25pbmctY2FuYXJ5LykKCiFbT3BlbiBkYXRhXShpbWcvZGF0YV9sYXJnZV9jb2xvci5wbmcpICZlbXNwOyAhW09wZW5dKGltZy9tYXRlcmlhbHNfbGFyZ2VfY29sb3IucG5nKQoKCiMjIEhvdyB0byBidWlsZC9kZXBsb3kgdGhlIHNpdGUgClRoaXMgcHJvamVjdCBpcyBhbiBgUm1hcmtkb3duYCB3ZWJzaXRlcyBob3N0ZWQgb24gYEdpdGh1YiBQYWdlc2AgYW5kIGFjY2Vzc2libGUgaGVyZSBbaHR0cHM6Ly9sdWxsaXRlci5naXRodWIuaW8vc2xvZ2FuL10oaHR0cHM6Ly9sdWxsaXRlci5naXRodWIuaW8vc2xvZ2FuLykuIFRoZSBmb2xkZXIgY29udGFpbmluZyB0aGUgaHRtbCBmaWxlcyBvZiB0aGUgd2Vic2l0ZSBpcyBgLi9kb2NzL2AgKHRoaXMgd2FzIGFsc28gc3BlY2lmaWVkIGluIHRoZSBgX3NpdGUueW1sYCkKIApgYGB7ciwgIGVjaG89RkFMU0UgfQojIGJhc2ggdHJlZSAtQyAtTCAxCgpmczo6ZGlyX3RyZWUocGF0aCA9ICIuIiwgcmVjdXJzZSA9IDEgKQpgYGAKClVwb24gbWFraW5nIGNoYW5nZXMgaW4gdGhlIGxvY2FsIGZvbGRlciwgSSBoYXZlIDIgd2F5cyBpbiB3aGljaCBJIGNhbiBjb21taXQgYW5kIHB1c2ggY2hhbmdlcyB0byBHaXRIdWIgKGFzIHdlbGwgYXMgdXBkYXRlIHB1YmxpYyB2ZXJzaW9uIG9mIHdlYnNpdGUgb24gR2l0SHViIFBhZ2VzKQoKMS4gUHNldWRvIG1hbnVhbCBzaGVsbCBjb21tYW5kcyBpbiBgX2J1aWxkX2RlcGxveS5zaGAgZmlsZSAKICArIEhlcmUgSSBjYW4gYWxzbyBkZWNpZGUgd2hldGhlciB0byB1c2UgYGdpdCBhZGQgLXVgIChvbmx5IHN0dWZmIGFscmVhZHkgdHJhY2tlZCkgb3IgYGdpdCBhZGQgLS1BYCAoYWxzbyBuZXcgc3R1ZmYpCjIuIFVzaW5nIGF1dG9tYXRlZCBpbnN0cnVjdGlvbnMgaW4gYE1ha2VmaWxlYCAgCiAgKyBIZXJlIEkgaGF2ZSBzZXQgaXQgdXAgZXhjbHVzaXZlbHkgd2l0aCBgZ2l0IGFkZCAtdWAKCi0tLSAKCiMjIEFja25vd2xlZGdlbWVudHMKIAoqKlJNYXJrZG93biBXZWJzaXRlIEluc3RydWN0aW9ucyoqIFtoZXJlXShodHRwczovL3BzeXRlYWNoci5naXRodWIuaW8vaGFjay15b3VyLWRhdGEvcm1hcmtkb3duXzIuaHRtbCkKaHR0cHM6Ly9naXN0LmdpdGh1Yi5jb20vY29ieWlzbS80NzMwNDkwIAoKKipHaCBwYWdlcyBmcm9tIHN1YnRyZWUgMSoqIFtoZXJlXShodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTApCioqR2ggcGFnZXMgZnJvbSBzdWJ0cmVlIDIqKiBbaGVyZV0oaHR0cHM6Ly9zYW5nc29vbmFtLmdpdGh1Yi5pby8yMDE5LzAyLzA4L3VzaW5nLWdpdC13b3JrdHJlZS10by1kZXBsb3ktZ2l0aHViLXBhZ2VzLmh0bWwpCgoKIyMgQWJzdHJhY3QKCmJsYSBibGEgYmxhIAoKLS0tCgo8IS0tIFRoaXMgcmVwb3NpdG9yeSBjb250YWlucyB0aGUgZGF0YSBhbmQgY29kZSBmb3Igb3VyIHBhcGVyLiBPdXIgcHJlLXByaW50IGlzIG9ubGluZSBoZXJlOiAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuICJgciBUaXRsZWAiIi4gQWNjZXNzZWQgYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiAlZSwgJVknKWAuIE9ubGluZSBhdCA8aHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WD4gLS0+CgoKIyMgRGF0YQoKPGRpdiBzdHlsZT0iY29sb3I6I0ZGNDEzNiI+CmNjY2NjYwo8L2Rpdj4KCiAKIyMgTGljZW5zZXMKCioqVGV4dCBhbmQgZmlndXJlczoqKiBBbGwgcHJvc2UgYW5kIGltYWdlcyBhcmUgbGljZW5zZWQgdW5kZXIgQ3JlYXRpdmUgQ29tbW9ucyAoW0NDLUJZLTQuMF0oaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnkvNC4wLykpCgoqKkNvZGU6KiogQWxsIGNvZGUgaXMgbGljZW5zZWQgdW5kZXIgdGhlIFtNSVQgTGljZW5zZV0oTElDRU5TRS5tZCkuCgojIyBDb250cmlidXRpb25zCiAK</div>
+<p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("README.Rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
