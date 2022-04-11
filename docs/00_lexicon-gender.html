@@ -411,12 +411,6 @@ div.tocify {
   border-radius: 0px;
 }
 
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
 
 </style>
 
@@ -466,6 +460,10 @@ div.tocify {
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="00_home-lexicon.html">Glossary</a>
+    </li>
+    <li class="divider"></li>
     <li>
       <a href="00_lexicon-gender.html">Lexicon: gender</a>
     </li>
@@ -645,7 +643,7 @@ div.tocify {
 <p><span class="citation">(Garbini 2003)</span></p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-garbini_uscire_2003" class="csl-entry">
-Garbini, Riccardo. 2003. <em>USCIRE DA BABELE - LESSICO PER UNA PEDAGOGIA DELLO STUDIO</em>. Japadre Editore. <span>L’Aquila</span>.
+Garbini, Riccardo. 2003. <em>Uscire da Babele - lessico per una pedagogia dello studio</em>. Japadre Editore. <span>L’Aquila</span>.
 </div>
 </div>
 </div>
@@ -717,7 +715,7 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = false;
+    options.showAndHide = true;
     options.smoothScroll = true;
 
     // tocify

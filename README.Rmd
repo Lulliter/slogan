@@ -45,9 +45,9 @@ fs::dir_tree(path = ".", recurse = 1 )
 
 Upon making changes in the local folder, I have 2 ways in which I can commit and push changes to GitHub (as well as update public version of website on GitHub Pages)
 
-1. Pseudo manual shell commands in `_build_deploy.sh` file 
+1. Pseudo manual **shell** commands in `_build_deploy.sh` file 
   + Here I can also decide whether to use `git add -u` (only stuff already tracked) or `git add --A` (also new stuff)
-2. Using automated instructions in `Makefile`  
+2. Using automated **make** instructions in `Makefile`  
   + Here I have set it up exclusively with `git add -u`
 
 --- 
@@ -57,8 +57,7 @@ Upon making changes in the local folder, I have 2 ways in which I can commit and
 **RMarkdown Website Instructions** [here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
 https://gist.github.com/cobyism/4730490 
 
-**Gh pages from subtree 1** [here](https://gist.github.com/cobyism/4730490)
-**Gh pages from subtree 2** [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
+**Gh pages from subtree 1** [here](https://gist.github.com/cobyism/4730490) **and 2** [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
 
 
 ## Abstract

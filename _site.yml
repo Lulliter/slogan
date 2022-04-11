@@ -13,7 +13,7 @@ output:
     code_download: yes
     toc: yes
     toc_float:
-      collapsed: no
+      collapsed: true
       smooth_scroll: yes
     toc_depth: 4
     fig_height: 4
@@ -27,6 +27,9 @@ navbar:
   - text: Domesticated Lexicon
     icon: fas fa-pen-fancy
     menu:
+      - text: "Glossary"
+        href: 00_home-lexicon.html
+      - text: "---------"
       - text: "Lexicon: gender"
         href: 00_lexicon-gender.html
       - text: "Lexicon: green"
