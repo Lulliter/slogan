@@ -33,7 +33,24 @@ Year <- "2022"
 
 ![Open data](img/data_large_color.png) &emsp; ![Open](img/materials_large_color.png)
 
----
+
+## How to build/deploy the site 
+This project is an `Rmarkdown` websites hosted on `Github Pages` and accessible here [https://lulliter.github.io/slogan/](https://lulliter.github.io/slogan/). The folder containing the html files of the website is `./docs/` (this was also specified in the `_site.yml`)
+ 
+```{r,  echo=FALSE }
+# bash tree -C -L 1
+
+fs::dir_tree(path = ".", recurse = 1 )
+```
+
+Upon making changes in the local folder, I have 2 ways in which I can commit and push changes to GitHub (as well as update public version of website on GitHub Pages)
+
+1. Pseudo manual shell commands in `_build_deploy.sh` file 
+  + Here I can also decide whether to use `git add -u` (only stuff already tracked) or `git add --A` (also new stuff)
+2. Using automated instructions in `Makefile`  
+  + Here I have set it up exclusively with `git add -u`
+
+--- 
 
 ## Acknowledgements
  
@@ -54,9 +71,6 @@ bla bla bla
 
 <!-- > `r Authors`. `r Year`. "`r Title`"". Accessed `r format(Sys.time(), '%B %e, %Y')`. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
 
-## How to download and replicate
-
- 
 
 ## Data
 
