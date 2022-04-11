@@ -17,7 +17,7 @@
 
 -   [Download the data](#data)
 -   [See the analysis notebook
-    website](https://stats.andrewheiss.com/cautioning-canary/)
+    website](https://lulliter.github.io/slogan/)
 
 ![Open data](img/data_large_color.png)  
 ![Open](img/materials_large_color.png)
@@ -30,6 +30,7 @@ containing the html files of the website is `./docs/` (this was also
 specified in the `_site.yml`)
 
     #> .
+    #> ├── 00_home-lexicon.Rmd
     #> ├── 00_lexicon-gender.Rmd
     #> ├── 00_lexicon-green.Rmd
     #> ├── 01_data-overview.Rmd
@@ -52,12 +53,14 @@ specified in the `_site.yml`)
     #> ├── README.md
     #> ├── _build_deploy.sh
     #> ├── _site.yml
+    #> ├── _slogan.bib
     #> ├── buzzwords.bib
     #> ├── data
     #> │   ├── DO-NOT-EDIT-ANY-FILES-IN-HERE-BY-HAND
     #> │   ├── derived_data
     #> │   └── raw_data
     #> ├── docs
+    #> │   ├── 00_home-lexicon.html
     #> │   ├── 00_lexicon-gender.html
     #> │   ├── 00_lexicon-green.html
     #> │   ├── 01_data-overview.html
@@ -66,6 +69,7 @@ specified in the `_site.yml`)
     #> │   ├── 03_modeling-choices.html
     #> │   ├── 04_predictions.html
     #> │   ├── R
+    #> │   ├── README.html
     #> │   ├── data
     #> │   ├── html
     #> │   ├── img
@@ -78,26 +82,18 @@ specified in the `_site.yml`)
     #> │   ├── data_large_color.png
     #> │   └── materials_large_color.png
     #> ├── index.Rmd
-    #> ├── site_libs
-    #> │   ├── bootstrap-3.3.5
-    #> │   ├── font-awesome-5.1.0
-    #> │   ├── header-attrs-2.13
-    #> │   ├── jquery-3.6.0
-    #> │   ├── jqueryui-1.11.4
-    #> │   ├── navigation-1.1
-    #> │   └── tocify-1.9.1
     #> └── slogan.Rproj
 
 Upon making changes in the local folder, I have 2 ways in which I can
 commit and push changes to GitHub (as well as update public version of
 website on GitHub Pages)
 
-1.  Pseudo manual shell commands in `_build_deploy.sh` file
+1.  Pseudo manual **shell** commands in `_build_deploy.sh` file
 
 -   Here I can also decide whether to use `git add -u` (only stuff
     already tracked) or `git add --A` (also new stuff)
 
-2.  Using automated instructions in `Makefile`  
+2.  Using automated **make** instructions in `Makefile`  
 
 -   Here I have set it up exclusively with `git add -u`
 
@@ -110,8 +106,7 @@ website on GitHub Pages)
 <https://gist.github.com/cobyism/4730490>
 
 **Gh pages from subtree 1**
-[here](https://gist.github.com/cobyism/4730490) **Gh pages from subtree
-2**
+[here](https://gist.github.com/cobyism/4730490) **and 2**
 [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
 
 ## Abstract

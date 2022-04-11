@@ -12,6 +12,8 @@ DOCS_DIR = ./docs/*
 #DATE :=  shell date '+%d/%m/%Y %H:%M:%S'
 DATE = $(shell date +%F) #  invokes a shell command with syntax `$(shell date)`.
 MSG = commit_as_of_$(DATE)
+GHDOC = "github_document"
+
 
 # ----- See Makefile Variables (aka print) ----- #
 print-%:
@@ -23,12 +25,16 @@ print-%:
 #	@echo HTML_FILES: $(HTML_FILES)
 
 # ----- Makefile RECIPES ----- #
-all: clean build git
+all: clean build README.md git
 
 git:
 	git add -u
 	git commit -m $(MSG)
 	git push -u origin master
+
+# Fix the weird thing that README.Rmd does not turn into README.md (for Github)
+README.md: README.Rmd
+	Rscript -e "rmarkdown::render("README.Rmd", output_format = "github_document")"  # "github_document"
 
 build:
 	Rscript -e "rmarkdown::render_site(encoding = 'UTF-8')"

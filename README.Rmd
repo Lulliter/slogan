@@ -29,7 +29,7 @@ Year <- "2022"
 **All this project's materials are free and open:**
 
 - [Download the data](#data)
-- [See the analysis notebook website](https://stats.andrewheiss.com/cautioning-canary/)
+- [See the analysis notebook website](https://lulliter.github.io/slogan/)
 
 ![Open data](img/data_large_color.png) &emsp; ![Open](img/materials_large_color.png)
 
