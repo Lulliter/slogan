@@ -1,455 +1,37 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-
-
-
-<title>README.knit</title>
-
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<style>h1 {font-size: 34px;}
-       h1.title {font-size: 38px;}
-       h2 {font-size: 30px;}
-       h3 {font-size: 24px;}
-       h4 {font-size: 18px;}
-       h5 {font-size: 16px;}
-       h6 {font-size: 12px;}
-       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
-       pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
-<script src="site_libs/navigation-1.1/sourceembed.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
-
-
-
-
-
-<style type="text/css">
-#rmd-source-code {
-  display: none;
+<link rel="stylesheet" href="data:text/css,%0A%40font%2Dface%20%7B%0Afont%2Dfamily%3A%20octicons%2Dlink%3B%0Asrc%3A%20url%28data%3Afont%2Fwoff%3Bcharset%3Dutf%2D8%3Bbase64%2Cd09GRgABAAAAAAZwABAAAAAACFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEU0lHAAAGaAAAAAgAAAAIAAAAAUdTVUIAAAZcAAAACgAAAAoAAQAAT1MvMgAAAyQAAABJAAAAYFYEU3RjbWFwAAADcAAAAEUAAACAAJThvmN2dCAAAATkAAAABAAAAAQAAAAAZnBnbQAAA7gAAACyAAABCUM%2B8IhnYXNwAAAGTAAAABAAAAAQABoAI2dseWYAAAFsAAABPAAAAZwcEq9taGVhZAAAAsgAAAA0AAAANgh4a91oaGVhAAADCAAAABoAAAAkCA8DRGhtdHgAAAL8AAAADAAAAAwGAACfbG9jYQAAAsAAAAAIAAAACABiATBtYXhwAAACqAAAABgAAAAgAA8ASm5hbWUAAAToAAABQgAAAlXu73sOcG9zdAAABiwAAAAeAAAAME3QpOBwcmVwAAAEbAAAAHYAAAB%2FaFGpk3jaTY6xa8JAGMW%2FO62BDi0tJLYQincXEypYIiGJjSgHniQ6umTsUEyLm5BV6NDBP8Tpts6F0v%2Bk%2F0an2i%2BitHDw3v2%2B9%2BDBKTzsJNnWJNTgHEy4BgG3EMI9DCEDOGEXzDADU5hBKMIgNPZqoD3SilVaXZCER3%2FI7AtxEJLtzzuZfI%2BVVkprxTlXShWKb3TBecG11rwoNlmmn1P2WYcJczl32etSpKnziC7lQyWe1smVPy%2FLt7Kc%2B0vWY%2FgAgIIEqAN9we0pwKXreiMasxvabDQMM4riO%2BqxM2ogwDGOZTXxwxDiycQIcoYFBLj5K3EIaSctAq2kTYiw%2Bymhce7vwM9jSqO8JyVd5RH9gyTt2%2BJ%2FyUmYlIR0s04n6%2B7Vm1ozezUeLEaUjhaDSuXHwVRgvLJn1tQ7xiuVv%2FocTRF42mNgZGBgYGbwZOBiAAFGJBIMAAizAFoAAABiAGIAznjaY2BkYGAA4in8zwXi%2BW2%2BMjCzMIDApSwvXzC97Z4Ig8N%2FBxYGZgcgl52BCSQKAA3jCV8CAABfAAAAAAQAAEB42mNgZGBg4f3vACQZQABIMjKgAmYAKEgBXgAAeNpjYGY6wTiBgZWBg2kmUxoDA4MPhGZMYzBi1AHygVLYQUCaawqDA4PChxhmh%2F8ODDEsvAwHgMKMIDnGL0x7gJQCAwMAJd4MFwAAAHjaY2BgYGaA4DAGRgYQkAHyGMF8NgYrIM3JIAGVYYDT%2BAEjAwuDFpBmA9KMDEwMCh9i%2Fv8H8sH0%2F4dQc1iAmAkALaUKLgAAAHjaTY9LDsIgEIbtgqHUPpDi3gPoBVyRTmTddOmqTXThEXqrob2gQ1FjwpDvfwCBdmdXC5AVKFu3e5MfNFJ29KTQT48Ob9%2FlqYwOGZxeUelN2U2R6%2BcArgtCJpauW7UQBqnFkUsjAY%2FkOU1cP%2BDAgvxwn1chZDwUbd6CFimGXwzwF6tPbFIcjEl%2BvvmM%2FbyA48e6tWrKArm4ZJlCbdsrxksL1AwWn%2FyBSJKpYbq8AXaaTb8AAHja28jAwOC00ZrBeQNDQOWO%2F%2FsdBBgYGRiYWYAEELEwMTE4uzo5Zzo5b2BxdnFOcALxNjA6b2ByTswC8jYwg0VlNuoCTWAMqNzMzsoK1rEhNqByEyerg5PMJlYuVueETKcd%2F89uBpnpvIEVomeHLoMsAAe1Id4AAAAAAAB42oWQT07CQBTGv0JBhagk7HQzKxca2sJCE1hDt4QF%2B9JOS0nbaaYDCQfwCJ7Au3AHj%2BLO13FMmm6cl7785vven0kBjHCBhfpYuNa5Ph1c0e2Xu3jEvWG7UdPDLZ4N92nOm%2BEBXuAbHmIMSRMs%2B4aUEd4Nd3CHD8NdvOLTsA2GL8M9PODbcL%2BhD7C1xoaHeLJSEao0FEW14ckxC%2BTU8TxvsY6X0eLPmRhry2WVioLpkrbp84LLQPGI7c6sOiUzpWIWS5GzlSgUzzLBSikOPFTOXqly7rqx0Z1Q5BAIoZBSFihQYQOOBEdkCOgXTOHA07HAGjGWiIjaPZNW13%2F%2Blm6S9FT7rLHFJ6fQbkATOG1j2OFMucKJJsxIVfQORl%2B9Jyda6Sl1dUYhSCm1dyClfoeDve4qMYdLEbfqHf3O%2FAdDumsjAAB42mNgYoAAZQYjBmyAGYQZmdhL8zLdDEydARfoAqIAAAABAAMABwAKABMAB%2F%2F%2FAA8AAQAAAAAAAAAAAAAAAAABAAAAAA%3D%3D%29%20format%28%27woff%27%29%3B%0A%7D%0Abody%20%7B%0A%2Dwebkit%2Dtext%2Dsize%2Dadjust%3A%20100%25%3B%0Atext%2Dsize%2Dadjust%3A%20100%25%3B%0Acolor%3A%20%23333%3B%0Afont%2Dfamily%3A%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20%22Segoe%20UI%22%2C%20Arial%2C%20freesans%2C%20sans%2Dserif%2C%20%22Apple%20Color%20Emoji%22%2C%20%22Segoe%20UI%20Emoji%22%2C%20%22Segoe%20UI%20Symbol%22%3B%0Afont%2Dsize%3A%2016px%3B%0Aline%2Dheight%3A%201%2E6%3B%0Aword%2Dwrap%3A%20break%2Dword%3B%0A%7D%0Aa%20%7B%0Abackground%2Dcolor%3A%20transparent%3B%0A%7D%0Aa%3Aactive%2C%0Aa%3Ahover%20%7B%0Aoutline%3A%200%3B%0A%7D%0Astrong%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Ah1%20%7B%0Afont%2Dsize%3A%202em%3B%0Amargin%3A%200%2E67em%200%3B%0A%7D%0Aimg%20%7B%0Aborder%3A%200%3B%0A%7D%0Ahr%20%7B%0Abox%2Dsizing%3A%20content%2Dbox%3B%0Aheight%3A%200%3B%0A%7D%0Apre%20%7B%0Aoverflow%3A%20auto%3B%0A%7D%0Acode%2C%0Akbd%2C%0Apre%20%7B%0Afont%2Dfamily%3A%20monospace%2C%20monospace%3B%0Afont%2Dsize%3A%201em%3B%0A%7D%0Ainput%20%7B%0Acolor%3A%20inherit%3B%0Afont%3A%20inherit%3B%0Amargin%3A%200%3B%0A%7D%0Ahtml%20input%5Bdisabled%5D%20%7B%0Acursor%3A%20default%3B%0A%7D%0Ainput%20%7B%0Aline%2Dheight%3A%20normal%3B%0A%7D%0Ainput%5Btype%3D%22checkbox%22%5D%20%7B%0Abox%2Dsizing%3A%20border%2Dbox%3B%0Apadding%3A%200%3B%0A%7D%0Atable%20%7B%0Aborder%2Dcollapse%3A%20collapse%3B%0Aborder%2Dspacing%3A%200%3B%0A%7D%0Atd%2C%0Ath%20%7B%0Apadding%3A%200%3B%0A%7D%0A%2A%20%7B%0Abox%2Dsizing%3A%20border%2Dbox%3B%0A%7D%0Ainput%20%7B%0Afont%3A%2013px%20%2F%201%2E4%20Helvetica%2C%20arial%2C%20nimbussansl%2C%20liberationsans%2C%20freesans%2C%20clean%2C%20sans%2Dserif%2C%20%22Apple%20Color%20Emoji%22%2C%20%22Segoe%20UI%20Emoji%22%2C%20%22Segoe%20UI%20Symbol%22%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%234078c0%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%2C%0Aa%3Aactive%20%7B%0Atext%2Ddecoration%3A%20underline%3B%0A%7D%0Ahr%20%7B%0Aheight%3A%200%3B%0Amargin%3A%2015px%200%3B%0Aoverflow%3A%20hidden%3B%0Abackground%3A%20transparent%3B%0Aborder%3A%200%3B%0Aborder%2Dbottom%3A%201px%20solid%20%23ddd%3B%0A%7D%0Ahr%3Abefore%20%7B%0Adisplay%3A%20table%3B%0Acontent%3A%20%22%22%3B%0A%7D%0Ahr%3Aafter%20%7B%0Adisplay%3A%20table%3B%0Aclear%3A%20both%3B%0Acontent%3A%20%22%22%3B%0A%7D%0Ah1%2C%0Ah2%2C%0Ah3%2C%0Ah4%2C%0Ah5%2C%0Ah6%20%7B%0Amargin%2Dtop%3A%2015px%3B%0Amargin%2Dbottom%3A%2015px%3B%0Aline%2Dheight%3A%201%2E1%3B%0A%7D%0Ah1%20%7B%0Afont%2Dsize%3A%2030px%3B%0A%7D%0Ah2%20%7B%0Afont%2Dsize%3A%2021px%3B%0A%7D%0Ah3%20%7B%0Afont%2Dsize%3A%2016px%3B%0A%7D%0Ah4%20%7B%0Afont%2Dsize%3A%2014px%3B%0A%7D%0Ah5%20%7B%0Afont%2Dsize%3A%2012px%3B%0A%7D%0Ah6%20%7B%0Afont%2Dsize%3A%2011px%3B%0A%7D%0Ablockquote%20%7B%0Amargin%3A%200%3B%0A%7D%0Aul%2C%0Aol%20%7B%0Apadding%3A%200%3B%0Amargin%2Dtop%3A%200%3B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Aol%20ol%2C%0Aul%20ol%20%7B%0Alist%2Dstyle%2Dtype%3A%20lower%2Droman%3B%0A%7D%0Aul%20ul%20ol%2C%0Aul%20ol%20ol%2C%0Aol%20ul%20ol%2C%0Aol%20ol%20ol%20%7B%0Alist%2Dstyle%2Dtype%3A%20lower%2Dalpha%3B%0A%7D%0Add%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20%22Liberation%20Mono%22%2C%20Menlo%2C%20Courier%2C%20monospace%3B%0Afont%2Dsize%3A%2012px%3B%0A%7D%0Apre%20%7B%0Amargin%2Dtop%3A%200%3B%0Amargin%2Dbottom%3A%200%3B%0Afont%3A%2012px%20Consolas%2C%20%22Liberation%20Mono%22%2C%20Menlo%2C%20Courier%2C%20monospace%3B%0A%7D%0A%2Eselect%3A%3A%2Dms%2Dexpand%20%7B%0Aopacity%3A%200%3B%0A%7D%0A%2Eocticon%20%7B%0Afont%3A%20normal%20normal%20normal%2016px%2F1%20octicons%2Dlink%3B%0Adisplay%3A%20inline%2Dblock%3B%0Atext%2Ddecoration%3A%20none%3B%0Atext%2Drendering%3A%20auto%3B%0A%2Dwebkit%2Dfont%2Dsmoothing%3A%20antialiased%3B%0A%2Dmoz%2Dosx%2Dfont%2Dsmoothing%3A%20grayscale%3B%0A%2Dwebkit%2Duser%2Dselect%3A%20none%3B%0A%2Dmoz%2Duser%2Dselect%3A%20none%3B%0A%2Dms%2Duser%2Dselect%3A%20none%3B%0Auser%2Dselect%3A%20none%3B%0A%7D%0A%2Eocticon%2Dlink%3Abefore%20%7B%0Acontent%3A%20%27%5Cf05c%27%3B%0A%7D%0A%2Emarkdown%2Dbody%3Abefore%20%7B%0Adisplay%3A%20table%3B%0Acontent%3A%20%22%22%3B%0A%7D%0A%2Emarkdown%2Dbody%3Aafter%20%7B%0Adisplay%3A%20table%3B%0Aclear%3A%20both%3B%0Acontent%3A%20%22%22%3B%0A%7D%0A%2Emarkdown%2Dbody%3E%2A%3Afirst%2Dchild%20%7B%0Amargin%2Dtop%3A%200%20%21important%3B%0A%7D%0A%2Emarkdown%2Dbody%3E%2A%3Alast%2Dchild%20%7B%0Amargin%2Dbottom%3A%200%20%21important%3B%0A%7D%0Aa%3Anot%28%5Bhref%5D%29%20%7B%0Acolor%3A%20inherit%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0A%2Eanchor%20%7B%0Adisplay%3A%20inline%2Dblock%3B%0Apadding%2Dright%3A%202px%3B%0Amargin%2Dleft%3A%20%2D18px%3B%0A%7D%0A%2Eanchor%3Afocus%20%7B%0Aoutline%3A%20none%3B%0A%7D%0Ah1%2C%0Ah2%2C%0Ah3%2C%0Ah4%2C%0Ah5%2C%0Ah6%20%7B%0Amargin%2Dtop%3A%201em%3B%0Amargin%2Dbottom%3A%2016px%3B%0Afont%2Dweight%3A%20bold%3B%0Aline%2Dheight%3A%201%2E4%3B%0A%7D%0Ah1%20%2Eocticon%2Dlink%2C%0Ah2%20%2Eocticon%2Dlink%2C%0Ah3%20%2Eocticon%2Dlink%2C%0Ah4%20%2Eocticon%2Dlink%2C%0Ah5%20%2Eocticon%2Dlink%2C%0Ah6%20%2Eocticon%2Dlink%20%7B%0Acolor%3A%20%23000%3B%0Avertical%2Dalign%3A%20middle%3B%0Avisibility%3A%20hidden%3B%0A%7D%0Ah1%3Ahover%20%2Eanchor%2C%0Ah2%3Ahover%20%2Eanchor%2C%0Ah3%3Ahover%20%2Eanchor%2C%0Ah4%3Ahover%20%2Eanchor%2C%0Ah5%3Ahover%20%2Eanchor%2C%0Ah6%3Ahover%20%2Eanchor%20%7B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Ah1%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%2C%0Ah2%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%2C%0Ah3%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%2C%0Ah4%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%2C%0Ah5%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%2C%0Ah6%3Ahover%20%2Eanchor%20%2Eocticon%2Dlink%20%7B%0Avisibility%3A%20visible%3B%0A%7D%0Ah1%20%7B%0Apadding%2Dbottom%3A%200%2E3em%3B%0Afont%2Dsize%3A%202%2E25em%3B%0Aline%2Dheight%3A%201%2E2%3B%0Aborder%2Dbottom%3A%201px%20solid%20%23eee%3B%0A%7D%0Ah1%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%3B%0A%7D%0Ah2%20%7B%0Apadding%2Dbottom%3A%200%2E3em%3B%0Afont%2Dsize%3A%201%2E75em%3B%0Aline%2Dheight%3A%201%2E225%3B%0Aborder%2Dbottom%3A%201px%20solid%20%23eee%3B%0A%7D%0Ah2%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%3B%0A%7D%0Ah3%20%7B%0Afont%2Dsize%3A%201%2E5em%3B%0Aline%2Dheight%3A%201%2E43%3B%0A%7D%0Ah3%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%2E2%3B%0A%7D%0Ah4%20%7B%0Afont%2Dsize%3A%201%2E25em%3B%0A%7D%0Ah4%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%2E2%3B%0A%7D%0Ah5%20%7B%0Afont%2Dsize%3A%201em%3B%0A%7D%0Ah5%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%2E1%3B%0A%7D%0Ah6%20%7B%0Afont%2Dsize%3A%201em%3B%0Acolor%3A%20%23777%3B%0A%7D%0Ah6%20%2Eanchor%20%7B%0Aline%2Dheight%3A%201%2E1%3B%0A%7D%0Ap%2C%0Ablockquote%2C%0Aul%2C%0Aol%2C%0Adl%2C%0Atable%2C%0Apre%20%7B%0Amargin%2Dtop%3A%200%3B%0Amargin%2Dbottom%3A%2016px%3B%0A%7D%0Ahr%20%7B%0Aheight%3A%204px%3B%0Apadding%3A%200%3B%0Amargin%3A%2016px%200%3B%0Abackground%2Dcolor%3A%20%23e7e7e7%3B%0Aborder%3A%200%20none%3B%0A%7D%0Aul%2C%0Aol%20%7B%0Apadding%2Dleft%3A%202em%3B%0A%7D%0Aul%20ul%2C%0Aul%20ol%2C%0Aol%20ol%2C%0Aol%20ul%20%7B%0Amargin%2Dtop%3A%200%3B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Ali%3Ep%20%7B%0Amargin%2Dtop%3A%2016px%3B%0A%7D%0Adl%20%7B%0Apadding%3A%200%3B%0A%7D%0Adl%20dt%20%7B%0Apadding%3A%200%3B%0Amargin%2Dtop%3A%2016px%3B%0Afont%2Dsize%3A%201em%3B%0Afont%2Dstyle%3A%20italic%3B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Adl%20dd%20%7B%0Apadding%3A%200%2016px%3B%0Amargin%2Dbottom%3A%2016px%3B%0A%7D%0Ablockquote%20%7B%0Apadding%3A%200%2015px%3B%0Acolor%3A%20%23777%3B%0Aborder%2Dleft%3A%204px%20solid%20%23ddd%3B%0A%7D%0Ablockquote%3E%3Afirst%2Dchild%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Ablockquote%3E%3Alast%2Dchild%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Atable%20%7B%0Adisplay%3A%20block%3B%0Awidth%3A%20100%25%3B%0Aoverflow%3A%20auto%3B%0Aword%2Dbreak%3A%20normal%3B%0Aword%2Dbreak%3A%20keep%2Dall%3B%0A%7D%0Atable%20th%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Atable%20th%2C%0Atable%20td%20%7B%0Apadding%3A%206px%2013px%3B%0Aborder%3A%201px%20solid%20%23ddd%3B%0A%7D%0Atable%20tr%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Aborder%2Dtop%3A%201px%20solid%20%23ccc%3B%0A%7D%0Atable%20tr%3Anth%2Dchild%282n%29%20%7B%0Abackground%2Dcolor%3A%20%23f8f8f8%3B%0A%7D%0Aimg%20%7B%0Amax%2Dwidth%3A%20100%25%3B%0Abox%2Dsizing%3A%20content%2Dbox%3B%0Abackground%2Dcolor%3A%20%23fff%3B%0A%7D%0Acode%20%7B%0Apadding%3A%200%3B%0Apadding%2Dtop%3A%200%2E2em%3B%0Apadding%2Dbottom%3A%200%2E2em%3B%0Amargin%3A%200%3B%0Afont%2Dsize%3A%2085%25%3B%0Abackground%2Dcolor%3A%20rgba%280%2C0%2C0%2C0%2E04%29%3B%0Aborder%2Dradius%3A%203px%3B%0A%7D%0Acode%3Abefore%2C%0Acode%3Aafter%20%7B%0Aletter%2Dspacing%3A%20%2D0%2E2em%3B%0Acontent%3A%20%22%5C00a0%22%3B%0A%7D%0Apre%3Ecode%20%7B%0Apadding%3A%200%3B%0Amargin%3A%200%3B%0Afont%2Dsize%3A%20100%25%3B%0Aword%2Dbreak%3A%20normal%3B%0Awhite%2Dspace%3A%20pre%3B%0Abackground%3A%20transparent%3B%0Aborder%3A%200%3B%0A%7D%0A%2Ehighlight%20%7B%0Amargin%2Dbottom%3A%2016px%3B%0A%7D%0A%2Ehighlight%20pre%2C%0Apre%20%7B%0Apadding%3A%2016px%3B%0Aoverflow%3A%20auto%3B%0Afont%2Dsize%3A%2085%25%3B%0Aline%2Dheight%3A%201%2E45%3B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0A%7D%0A%2Ehighlight%20pre%20%7B%0Amargin%2Dbottom%3A%200%3B%0Aword%2Dbreak%3A%20normal%3B%0A%7D%0Apre%20%7B%0Aword%2Dwrap%3A%20normal%3B%0A%7D%0Apre%20code%20%7B%0Adisplay%3A%20inline%3B%0Amax%2Dwidth%3A%20initial%3B%0Apadding%3A%200%3B%0Amargin%3A%200%3B%0Aoverflow%3A%20initial%3B%0Aline%2Dheight%3A%20inherit%3B%0Aword%2Dwrap%3A%20normal%3B%0Abackground%2Dcolor%3A%20transparent%3B%0Aborder%3A%200%3B%0A%7D%0Apre%20code%3Abefore%2C%0Apre%20code%3Aafter%20%7B%0Acontent%3A%20normal%3B%0A%7D%0Akbd%20%7B%0Adisplay%3A%20inline%2Dblock%3B%0Apadding%3A%203px%205px%3B%0Afont%2Dsize%3A%2011px%3B%0Aline%2Dheight%3A%2010px%3B%0Acolor%3A%20%23555%3B%0Avertical%2Dalign%3A%20middle%3B%0Abackground%2Dcolor%3A%20%23fcfcfc%3B%0Aborder%3A%20solid%201px%20%23ccc%3B%0Aborder%2Dbottom%2Dcolor%3A%20%23bbb%3B%0Aborder%2Dradius%3A%203px%3B%0Abox%2Dshadow%3A%20inset%200%20%2D1px%200%20%23bbb%3B%0A%7D%0A%2Epl%2Dc%20%7B%0Acolor%3A%20%23969896%3B%0A%7D%0A%2Epl%2Dc1%2C%0A%2Epl%2Ds%20%2Epl%2Dv%20%7B%0Acolor%3A%20%230086b3%3B%0A%7D%0A%2Epl%2De%2C%0A%2Epl%2Den%20%7B%0Acolor%3A%20%23795da3%3B%0A%7D%0A%2Epl%2Ds%20%2Epl%2Ds1%2C%0A%2Epl%2Dsmi%20%7B%0Acolor%3A%20%23333%3B%0A%7D%0A%2Epl%2Dent%20%7B%0Acolor%3A%20%2363a35c%3B%0A%7D%0A%2Epl%2Dk%20%7B%0Acolor%3A%20%23a71d5d%3B%0A%7D%0A%2Epl%2Dpds%2C%0A%2Epl%2Ds%2C%0A%2Epl%2Ds%20%2Epl%2Dpse%20%2Epl%2Ds1%2C%0A%2Epl%2Dsr%2C%0A%2Epl%2Dsr%20%2Epl%2Dcce%2C%0A%2Epl%2Dsr%20%2Epl%2Dsra%2C%0A%2Epl%2Dsr%20%2Epl%2Dsre%20%7B%0Acolor%3A%20%23183691%3B%0A%7D%0A%2Epl%2Dv%20%7B%0Acolor%3A%20%23ed6a43%3B%0A%7D%0A%2Epl%2Did%20%7B%0Acolor%3A%20%23b52a1d%3B%0A%7D%0A%2Epl%2Dii%20%7B%0Abackground%2Dcolor%3A%20%23b52a1d%3B%0Acolor%3A%20%23f8f8f8%3B%0A%7D%0A%2Epl%2Dsr%20%2Epl%2Dcce%20%7B%0Acolor%3A%20%2363a35c%3B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0A%2Epl%2Dml%20%7B%0Acolor%3A%20%23693a17%3B%0A%7D%0A%2Epl%2Dmh%2C%0A%2Epl%2Dmh%20%2Epl%2Den%2C%0A%2Epl%2Dms%20%7B%0Acolor%3A%20%231d3e81%3B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0A%2Epl%2Dmq%20%7B%0Acolor%3A%20%23008080%3B%0A%7D%0A%2Epl%2Dmi%20%7B%0Acolor%3A%20%23333%3B%0Afont%2Dstyle%3A%20italic%3B%0A%7D%0A%2Epl%2Dmb%20%7B%0Acolor%3A%20%23333%3B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0A%2Epl%2Dmd%20%7B%0Abackground%2Dcolor%3A%20%23ffecec%3B%0Acolor%3A%20%23bd2c00%3B%0A%7D%0A%2Epl%2Dmi1%20%7B%0Abackground%2Dcolor%3A%20%23eaffea%3B%0Acolor%3A%20%2355a532%3B%0A%7D%0A%2Epl%2Dmdr%20%7B%0Acolor%3A%20%23795da3%3B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0A%2Epl%2Dmo%20%7B%0Acolor%3A%20%231d3e81%3B%0A%7D%0Akbd%20%7B%0Adisplay%3A%20inline%2Dblock%3B%0Apadding%3A%203px%205px%3B%0Afont%3A%2011px%20Consolas%2C%20%22Liberation%20Mono%22%2C%20Menlo%2C%20Courier%2C%20monospace%3B%0Aline%2Dheight%3A%2010px%3B%0Acolor%3A%20%23555%3B%0Avertical%2Dalign%3A%20middle%3B%0Abackground%2Dcolor%3A%20%23fcfcfc%3B%0Aborder%3A%20solid%201px%20%23ccc%3B%0Aborder%2Dbottom%2Dcolor%3A%20%23bbb%3B%0Aborder%2Dradius%3A%203px%3B%0Abox%2Dshadow%3A%20inset%200%20%2D1px%200%20%23bbb%3B%0A%7D%0A%2Etask%2Dlist%2Ditem%20%7B%0Alist%2Dstyle%2Dtype%3A%20none%3B%0A%7D%0A%2Etask%2Dlist%2Ditem%2B%2Etask%2Dlist%2Ditem%20%7B%0Amargin%2Dtop%3A%203px%3B%0A%7D%0A%2Etask%2Dlist%2Ditem%20input%20%7B%0Amargin%3A%200%200%2E35em%200%2E25em%20%2D1%2E6em%3B%0Avertical%2Dalign%3A%20middle%3B%0A%7D%0A%3Achecked%2B%2Eradio%2Dlabel%20%7B%0Az%2Dindex%3A%201%3B%0Aposition%3A%20relative%3B%0Aborder%2Dcolor%3A%20%234078c0%3B%0A%7D%0A%2EsourceLine%20%7B%0Adisplay%3A%20inline%2Dblock%3B%0A%7D%0Acode%20%2Ekw%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Edt%20%7B%20color%3A%20%23ed6a43%3B%20%7D%0Acode%20%2Edv%20%7B%20color%3A%20%23009999%3B%20%7D%0Acode%20%2Ebn%20%7B%20color%3A%20%23009999%3B%20%7D%0Acode%20%2Efl%20%7B%20color%3A%20%23009999%3B%20%7D%0Acode%20%2Ech%20%7B%20color%3A%20%23009999%3B%20%7D%0Acode%20%2Est%20%7B%20color%3A%20%23183691%3B%20%7D%0Acode%20%2Eco%20%7B%20color%3A%20%23969896%3B%20%7D%0Acode%20%2Eot%20%7B%20color%3A%20%230086b3%3B%20%7D%0Acode%20%2Eal%20%7B%20color%3A%20%23a61717%3B%20%7D%0Acode%20%2Efu%20%7B%20color%3A%20%2363a35c%3B%20%7D%0Acode%20%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%0Acode%20%2Ewa%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Ecn%20%7B%20color%3A%20%23008080%3B%20%7D%0Acode%20%2Esc%20%7B%20color%3A%20%23008080%3B%20%7D%0Acode%20%2Evs%20%7B%20color%3A%20%23183691%3B%20%7D%0Acode%20%2Ess%20%7B%20color%3A%20%23183691%3B%20%7D%0Acode%20%2Eim%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Eva%20%7Bcolor%3A%20%23008080%3B%20%7D%0Acode%20%2Ecf%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Eop%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Ebu%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Eex%20%7B%20color%3A%20%23000000%3B%20%7D%0Acode%20%2Epp%20%7B%20color%3A%20%23999999%3B%20%7D%0Acode%20%2Eat%20%7B%20color%3A%20%23008080%3B%20%7D%0Acode%20%2Edo%20%7B%20color%3A%20%23969896%3B%20%7D%0Acode%20%2Ean%20%7B%20color%3A%20%23008080%3B%20%7D%0Acode%20%2Ecv%20%7B%20color%3A%20%23008080%3B%20%7D%0Acode%20%2Ein%20%7B%20color%3A%20%23008080%3B%20%7D%0A">
+<style>
+body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  padding-top: 0px;
 }
 </style>
-
-
-<link rel="stylesheet" href="html/fixes.css" type="text/css" />
-
-
-
-<style type = "text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-img {
-  max-width:100%;
-}
-.tabbed-pane {
-  padding-top: 12px;
-}
-.html-widget {
-  margin-bottom: 20px;
-}
-button.code-folding-btn:focus {
-  outline: none;
-}
-summary {
-  display: list-item;
-}
-details > summary > p:only-child {
-  display: inline;
-}
-pre code {
-  padding: 0;
-}
-</style>
-
-
-<style type="text/css">
-.dropdown-submenu {
-  position: relative;
-}
-.dropdown-submenu>.dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: -6px;
-  margin-left: -1px;
-  border-radius: 0 6px 6px 6px;
-}
-.dropdown-submenu:hover>.dropdown-menu {
-  display: block;
-}
-.dropdown-submenu>a:after {
-  display: block;
-  content: " ";
-  float: right;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 5px 0 5px 5px;
-  border-left-color: #cccccc;
-  margin-top: 5px;
-  margin-right: -10px;
-}
-.dropdown-submenu:hover>a:after {
-  border-left-color: #adb5bd;
-}
-.dropdown-submenu.pull-left {
-  float: none;
-}
-.dropdown-submenu.pull-left>.dropdown-menu {
-  left: -100%;
-  margin-left: 10px;
-  border-radius: 6px 0 6px 6px;
-}
-</style>
-
-<script type="text/javascript">
-// manage active state of menu based on current page
-$(document).ready(function () {
-  // active menu anchor
-  href = window.location.pathname
-  href = href.substr(href.lastIndexOf('/') + 1)
-  if (href === "")
-    href = "index.html";
-  var menuAnchor = $('a[href="' + href + '"]');
-
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
-
-  // Navbar adjustments
-  var navHeight = $(".navbar").first().height() + 15;
-  var style = document.createElement('style');
-  var pt = "padding-top: " + navHeight + "px; ";
-  var mt = "margin-top: -" + navHeight + "px; ";
-  var css = "";
-  // offset scroll position for anchor links (for fixed navbar)
-  for (var i = 1; i <= 6; i++) {
-    css += ".section h" + i + "{ " + pt + mt + "}\n";
-  }
-  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
-  document.head.appendChild(style);
-});
-</script>
-
-<!-- tabsets -->
-
-<style type="text/css">
-.tabset-dropdown > .nav-tabs {
-  display: inline-table;
-  max-height: 500px;
-  min-height: 44px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs > li.active {
-  display: block;
-}
-
-.tabset-dropdown > .nav-tabs > li > a,
-.tabset-dropdown > .nav-tabs > li > a:focus,
-.tabset-dropdown > .nav-tabs > li > a:hover {
-  border: none;
-  display: inline-block;
-  border-radius: 4px;
-  background-color: transparent;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-  display: block;
-  float: none;
-}
-
-.tabset-dropdown > .nav-tabs > li {
-  display: none;
-}
-</style>
-
-<!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
-
-
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
-
-</style>
-
-
 
 </head>
 
 <body>
 
-
-<div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
-
-
-<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="index.html">How slogans end up moving billions</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fas fa-pen-fancy"></span>
-     
-    Domesticated Lexicon
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="00_lexicon-gender.html">Lexicon: gender</a>
-    </li>
-    <li>
-      <a href="00_lexicon-green.html">Lexicon: green</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="01_data-overview.html">
-    <span class="fas fa-table"></span>
-     
-    Process and merge data
-  </a>
-</li>
-<li>
-  <a href="02_descriptive-analysis.html">
-    <span class="fas fa-chart-bar"></span>
-     
-    Descriptive analysis
-  </a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fas fa-chart-line"></span>
-     
-    Models
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="03_modeling-choices.html">Modeling choices</a>
-    </li>
-    <li>
-      <a href="03_model-details.html">Model details and diagnostics</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="04_predictions.html">
-    <span class="fas fa-question-circle"></span>
-     
-    Predictions
-  </a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="far fa-file-alt"></span>
-     
-    Manuscript
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="output/manuscript.pdf">PDF</a>
-    </li>
-    <li>
-      <a href="output/manuscript-ms.pdf">Manuscripty PDF</a>
-    </li>
-    <li>
-      <a href="output/manuscript.html">HTML</a>
-    </li>
-    <li>
-      <a href="output/manuscript.docx">Word</a>
-    </li>
-    <li>
-      <a href="output/extracted-citations.bib">Citations</a>
-    </li>
-    <li>
-      <a href="output/appendix.pdf">Appendix (PDF)</a>
-    </li>
-    <li>
-      <a href="output/appendix-ms.pdf">Appendix (Manuscripty PDF)</a>
-    </li>
-    <li>
-      <a href="output/appendix.html">Appendix (HTML)</a>
-    </li>
-  </ul>
-</li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div><!--/.container -->
-</div><!--/.navbar -->
-
-<div id="header">
-
-<div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-<li role="separator" class="divider"></li>
-<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
-</ul>
-</div>
-
-
-
-
-</div>
-
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<div id="follow-the-buzzword" class="section level1">
-<h1>Follow the buzzword</h1>
+
+<h1 id="follow-the-buzzword">Follow the buzzword</h1>
 <p><a href="https://luisamimmi.com/">Luisa M. Mimmi</a> • Independent Consultant</p>
 <hr />
 <!-- [![OSF DOI](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FMTR6X-blue)](https://dx.doi.org/10.17605/OSF.IO/MTR6X) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5715402.svg)](https://doi.org/10.5281/zenodo.5715402) -->
+
 <blockquote>
 <p>Luisa M. Mimmi. 2022. <a href="https://doi.org/10.1177/0899764020971045">“Follow the buzzword,”</a> <em>Journal of Human Rights</em> (forthcoming).</p>
 </blockquote>
@@ -458,9 +40,8 @@ div.tocify {
 <li><a href="#data">Download the data</a></li>
 <li><a href="https://stats.andrewheiss.com/cautioning-canary/">See the analysis notebook website</a></li>
 </ul>
-<p><img src="img/data_large_color.png" alt="Open data" />   <img src="img/materials_large_color.png" alt="Open" /></p>
-<div id="how-to-builddeploy-the-site" class="section level2">
-<h2>How to build/deploy the site</h2>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACXCAMAAAA1fdnFAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjE4NTVEOURCMTI3NTExRTM5ODlCQjgwQzJERTNDMkQzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjE4NTVEOURDMTI3NTExRTM5ODlCQjgwQzJERTNDMkQzIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MTg1NUQ5RDkxMjc1MTFFMzk4OUJCODBDMkRFM0MyRDMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MTg1NUQ5REExMjc1MTFFMzk4OUJCODBDMkRFM0MyRDMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6qso+hAAABMlBMVEW61e+goKAam9fMztBApdq/0tp4teNydHadn6IAappLc5EsS1wLaomIiozY2dvw8fFOT1Hv9Pa0trgQV3VAeZEAU3Pv9/wgYn5naGvr8vqpq63f8PkQj9C/4fLj5OV/w+Z/pbW4ytgAkNLK3vPa6PYgltPi6e6f0uykvc5gtOCSlJfP3eM9fJlgj6OJiYlcXF+ApLuZxOmPyulVp91NTU4AWnrM2ONwm61ejqmfvMhwvOO3t7ivx9HPz9AAYoIAi899f4IwbogwntZoruDn5+c+odrAwsTP6PZZWVrf6e1vmbPz8/OPsL6v2e+JvOZQhJpOhaFxcXEAldQpc5FQrd2srKySsMWpzOxlZWZmgZc8YHZ4gYhAj7PDw8SuyN3b29t9fX0ATGxBQUIAh83///////+q80z4AAAAZnRSTlP//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wA1jqi3AAAGyElEQVR42uzcd1vbOBgAcEGG8R2ZQMgggZAQZtlwbLiyRxmltL19jpTv/xVOXiEklmTLsvDTy/sHDY7r/CK/Ggl6XtASEaXZvegEhFDVNO3Xh6mYkIu2gP9L5NY/Qit0mx4jH2JhsOUmJyDstuEYjb27bXYGQkebpj1cv6utHIWQaNNGpjLvZivNQ0izadr47jvZOhONYPOXdty2TzMQurBp2oeMZNtlFEKXNpx2Mm25eQjd23DaHUizrU9AbzacdotSbOUZCD3bNO2XTOC2UhRCLps2chesLbcHIa8Np10sQNvsBPRjw2l3HZCt/BFCnzZN8zKNubaVvkAowKaN7Iq25SYhFGPDi8+YUNvsDBRnc716cmMrRyEUanO5emLbSvNs0+fz+BrA8fccjp3H4TGmzs3qiWmbZI0bn08B6ont1WeWj716AhwroY44Pq0jUqwOM3Ss1RPgWAm1Y3oNUWN7iZV2vLYcI9GO44gZVUbbUVdPgGMlZMZGHbmJr1uMtFv0bCszEm0QIJfR2GH0CuLqCXCshNiJ5jHt7tzbWCshGC8gbzF3pHGsnoD323leR95jlePG9tpmGUMtQFzR2GGsADJsG512fI+4Y/uZfl8XWTY67bSA/MQcdTwZz9BtVNpgHfmNmzEPt/Wt7ZIy3k4DJCAaj7QJlmajfCKII0FRpYwnB2QbeeE9XUPigtxjRzIkW4mcaQUkMr6OubqrnTbiumMDCY4qEbfobCtJo1Fwo862eXk0Cu7ayZYj5RoKJOZIE6uTbZ3QQwvB2NAqoas62QhLthoKKpZYYxxg3NL7wGioscW4qW1bWWay0VJutNfmPCfUg7Qh57m117YX6CRKuKuOA0mmxxaV2UfbSyYnW8yVbQ0FHVu8tunAaY6DnCvbffA2NMZnOy5IsO3w2TYk0NA2nw3IsKFnHtu0FJpDb3Bh25Bja/DYvnl6iXhHeEuGIw6bt17KP9M9erd5TDd+26p326AsW9W7LS7Lhn4s270025FnG5BmG+7b+rYf2FYDr1ELmW3QwwzTt/VtfVvf1rf1bf9bW22wI2rhsoGuc/u2vs2XLS7NNhZim/fP9aeybA3h3yOJs815tx3Lst1wfG9Zl2Rb4rCtSbJtcdjO5diqXH/7KEix3XDZ1qTYtrhsgzJsVc6/UdYl2JY4bRvB27a5/yZeCNy2w22jzKmFji/YAH4Pnb/WXX//5rjRwZ0t4O0hhG0/MXd7V86DpVVd7l1x3sb1LVDbMH0jV9t2KXeHmfOUQNiP1HLe2hvgXSVsHbxzsBG2NAa2t6ZxxNoN+mr7BOVuziNszRvv2DfYDG0MgOXQ2s7AYVhp/+J8+x5S2yG27YeTdmX0081Q2vYN20AYaZu3hu2Mdd5KMYmS2RX8KBHBcZFoNvMRMxL6oRPzmbx9vnFWpHhi/jZkPBOxo6k/zrIHEGvsZQwj+ZQ5WGLSkPkomVasAXRIP5RaMZ5R7P9gnYVPw7+k8f/GlPaQi+n4Z545gFg2+jCyotMi+g9Ff9VkBT9awLaK2W46JNljS0Yq5nFDkkrr7YYvYbRbBBlaaiy356wn2mlFowHSWXxlU7CAHyl6k702UrHbhh8rKaOpk1aTGybjvSJTyxhAbBt1GMEXX7HuzRtbxWg26wae9Nr0Frto5vEPswFtG36vWUtLjO8dcz1tGEHmJY1L25m0oNjpph/CL5Uq9trSekvj506yZn5ZthSqpC0tbQCxbdSeihMnbf37pi+8tptyYRzttp1gG27tlDJk5pdp01tTiTB6w/KrjdpRs+aVF/T3amR5EYve5JuSrjjY0jgZFhJWQ+v5Zdoi1pEsa3QzbbfUmQFnDKoUk0ZGt7PK7qdWJ1C6bUmjW6bSSXvoSFi2FdShJceLbXuh95nE6zvttBlhdV3jZveMb6k8fl9JRVESRn4ZNpyXRXyE1RuubNsVY7DR0wMlE02KTX/hLlukmNbzYcHq63nTljKzN++mN2DbX2GcT59M21Mo1yH/6LazUNL0YQS0wvqB4bYFbjdDahtogZewfpa5aoGrsNqa+2DAdfz2EzN+/5kZf7h+vUMP9ZFc1Pph1qtxXePHc10pZo0kVVhtJI5aYYzaUqqwmlJcNdaoNblUYbW4+Oq/0Sp4qMJqmPHWzSNXPlGF1X7jr4VIKjGiCquZ56eGpHOlHVVYrUFf9S0dKxSpwmo0+qwL6lDZSRVW29JvPdXeiliqsJqgvm09lcRUYbVUBdi6KrCpwmrQirDh8eSLk23cZ+1eMTbcdu2C0apdLvpAwGWF2PQRpTy5F41G/xwdfZjaXRRzzdZ/AgwAXHHVLerUqPcAAAAASUVORK5CYII=" alt="Open data" />   <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAACXCAMAAAA1fdnFAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAytpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QURBN0RDRDMxMjc1MTFFMzk4OUJCODBDMkRFM0MyRDMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QURBN0RDRDIxMjc1MTFFMzk4OUJCODBDMkRFM0MyRDMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5kaWQ6YmE0NjBhMTYtNTNkYy00ODVjLWIzNDYtODQ0MTFmMmI4NzNkIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOmJhNDYwYTE2LTUzZGMtNDg1Yy1iMzQ2LTg0NDExZjJiODczZCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PnGLpUUAAAE7UExURczO0J2foqCgoPzNjdq2jHJ0dtODHcWKSf3Jipx+V35lRv/26/qmOvmgKv7WpbS2uNjZ2/2+coiKjE5PUf/v3PDx8X1/gv/iwPuxV//58fusSOPk5f3Ef7p3J2doa/r28f/pzujPs/mhKlxcX717L7l0I/u0VcDCxMiSU/jv5r6ANqmrrePIqP3mxvqoOPLj1Pbt4v7y49aqet+8lf7Ql+zbxf/css6aYpKUl/zTm/y4ZfvBcdu0h8qSVcGCPP3ZqujSt/Pz81lZWvHk1O3Zw7e3uOTGpE1NTv3guOfn596/mtGlcNKibsybYYmJif7s1PquR/u6Y8OJRM/P0NaufnFxcfzHgH19fdvb22VlZpSUlZ+OeKysrN6iVtGOQJKGecPDxIxxT/LXuee4gkFBQrVuGfmbHP///////5tx1y4AAABpdFJOU///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AKA3ZhoAAAiqSURBVHja7JxZQ9s4EIAVwIHdhNwhgYRACCSk4b6hZaEt0NLSsm2322Pv3Vji//+C1eEjiWVLPuMH5iXBkcefR6PRWBYDHoKQ+deT7S0IYVJV1SfrU5eBKH0AAei4+AA1IWxU3l3Ggu1iC0ILGzbfxtjZNn+GkMumqusvx8q2+wFCWzZVfbs0Nrb5SQgd2dTFqTGxXaxAERt2u8sxsG22IZRgw263EzHb7lMIJdlU9ZelCNnmJ1egCzZ18U1kbK+3IHTFht3uMBK2+zaErtnwTLETOtv8Uwg9sanq1FK4bHaOJsOmLm6EyLa5BaEPNlX9eBgS224bQp9seBrbCYFt/lcIA2DD09hS0GynKzAYNhfZkxzbcCbkk006e5JhG82EfLNJZk9AYoISM6WrMwcVLP82seztTa9KuF0AbBciR0vXj1JoVLb3j9dEbnfpk21TEDdm88vITm6ORW6344Nt96mAbCaFnGR7T0DnnD0BD5mQLnVnMkonsJ1j9gQ8ZEJMqstIRpo/Cdzu0DXbvcDR0kdIVvYFo8I2ewIeMiHiaMiFdEVuZzONAS8TVD6F3Mn2tOohe+Kw7QomqGoFuZemIByvL8mwbTobLZ1B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" alt="Open" /></p>
+<h2 id="how-to-builddeploy-the-site">How to build/deploy the site</h2>
 <p>This project is an <code>Rmarkdown</code> websites hosted on <code>Github Pages</code> and accessible here <a href="https://lulliter.github.io/slogan/">https://lulliter.github.io/slogan/</a>. The folder containing the html files of the website is <code>./docs/</code> (this was also specified in the <code>_site.yml</code>)</p>
 <pre><code>#&gt; .
 #&gt; ├── 00_lexicon-gender.Rmd
@@ -508,6 +89,8 @@ div.tocify {
 #&gt; │   ├── fixes.css
 #&gt; │   └── footer.html
 #&gt; ├── img
+#&gt; │   ├── data_large_color.png
+#&gt; │   └── materials_large_color.png
 #&gt; ├── index.Rmd
 #&gt; ├── site_libs
 #&gt; │   ├── bootstrap-3.3.5
@@ -526,125 +109,32 @@ div.tocify {
 <li>Here I can also decide whether to use <code>git add -u</code> (only stuff already tracked) or <code>git add --A</code> (also new stuff)</li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
-<li>Using automated instructions in <code>Makefile</code><br />
-</li>
+<li>Using automated instructions in <code>Makefile</code></li>
 </ol>
 <ul>
 <li>Here I have set it up exclusively with <code>git add -u</code></li>
 </ul>
 <hr />
-</div>
-<div id="acknowledgements" class="section level2">
-<h2>Acknowledgements</h2>
-<p><strong>RMarkdown Website Instructions</strong> <a href="https://psyteachr.github.io/hack-your-data/rmarkdown_2.html">here</a> <a href="https://gist.github.com/cobyism/4730490" class="uri">https://gist.github.com/cobyism/4730490</a></p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p><strong>RMarkdown Website Instructions</strong> <a href="https://psyteachr.github.io/hack-your-data/rmarkdown_2.html">here</a> <a href="https://gist.github.com/cobyism/4730490">https://gist.github.com/cobyism/4730490</a></p>
 <p><strong>Gh pages from subtree 1</strong> <a href="https://gist.github.com/cobyism/4730490">here</a> <strong>Gh pages from subtree 2</strong> <a href="https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html">here</a></p>
-</div>
-<div id="abstract" class="section level2">
-<h2>Abstract</h2>
+<h2 id="abstract">Abstract</h2>
 <p>bla bla bla</p>
 <hr />
 <!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
+
 <!-- > Luisa M. Mimmi. 2022. "Follow the buzzword"". Accessed April 11, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
-</div>
-<div id="data" class="section level2">
-<h2>Data</h2>
+
+<h2 id="data">Data</h2>
 <div style="color:#FF4136">
+
 <p>cccccc</p>
 </div>
-</div>
-<div id="licenses" class="section level2">
-<h2>Licenses</h2>
+
+<h2 id="licenses">Licenses</h2>
 <p><strong>Text and figures:</strong> All prose and images are licensed under Creative Commons (<a href="http://creativecommons.org/licenses/by/4.0/">CC-BY-4.0</a>)</p>
 <p><strong>Code:</strong> All code is licensed under the <a href="LICENSE.md">MIT License</a>.</p>
-</div>
-<div id="contributions" class="section level2">
-<h2>Contributions</h2>
-</div>
-</div>
-
-<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgYnV6endvcmQiCkF1dGhvcnMgPC0gIkx1aXNhIE0uIE1pbW1pIgpZZWFyIDwtICIyMDIyIgpgYGAKCiMgYHIgVGl0bGVgCgpbTHVpc2EgTS4gTWltbWldKGh0dHBzOi8vbHVpc2FtaW1taS5jb20vKSDigKIgSW5kZXBlbmRlbnQgQ29uc3VsdGFudCAgCgotLS0KCjwhLS0gWyFbT1NGIERPSV0oaHR0cHM6Ly9pbWcuc2hpZWxkcy5pby9iYWRnZS9PU0YtMTAuMTc2MDUlMkZPU0YuSU8lMkZNVFI2WC1ibHVlKV0oaHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WCkgWyFbRE9JXShodHRwczovL3plbm9kby5vcmcvYmFkZ2UvRE9JLzEwLjUyODEvemVub2RvLjU3MTU0MDIuc3ZnKV0oaHR0cHM6Ly9kb2kub3JnLzEwLjUyODEvemVub2RvLjU3MTU0MDIpIC0tPgoKPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuIFsiYHIgVGl0bGVgLCJdKGh0dHBzOi8vZG9pLm9yZy8xMC4xMTc3LzA4OTk3NjQwMjA5NzEwNDUpICpKb3VybmFsIG9mIEh1bWFuIFJpZ2h0cyogKGZvcnRoY29taW5nKS4KCioqQWxsIHRoaXMgcHJvamVjdCdzIG1hdGVyaWFscyBhcmUgZnJlZSBhbmQgb3BlbjoqKgoKLSBbRG93bmxvYWQgdGhlIGRhdGFdKCNkYXRhKQotIFtTZWUgdGhlIGFuYWx5c2lzIG5vdGVib29rIHdlYnNpdGVdKGh0dHBzOi8vc3RhdHMuYW5kcmV3aGVpc3MuY29tL2NhdXRpb25pbmctY2FuYXJ5LykKCiFbT3BlbiBkYXRhXShpbWcvZGF0YV9sYXJnZV9jb2xvci5wbmcpICZlbXNwOyAhW09wZW5dKGltZy9tYXRlcmlhbHNfbGFyZ2VfY29sb3IucG5nKQoKCiMjIEhvdyB0byBidWlsZC9kZXBsb3kgdGhlIHNpdGUgClRoaXMgcHJvamVjdCBpcyBhbiBgUm1hcmtkb3duYCB3ZWJzaXRlcyBob3N0ZWQgb24gYEdpdGh1YiBQYWdlc2AgYW5kIGFjY2Vzc2libGUgaGVyZSBbaHR0cHM6Ly9sdWxsaXRlci5naXRodWIuaW8vc2xvZ2FuL10oaHR0cHM6Ly9sdWxsaXRlci5naXRodWIuaW8vc2xvZ2FuLykuIFRoZSBmb2xkZXIgY29udGFpbmluZyB0aGUgaHRtbCBmaWxlcyBvZiB0aGUgd2Vic2l0ZSBpcyBgLi9kb2NzL2AgKHRoaXMgd2FzIGFsc28gc3BlY2lmaWVkIGluIHRoZSBgX3NpdGUueW1sYCkKIApgYGB7ciwgIGVjaG89RkFMU0UgfQojIGJhc2ggdHJlZSAtQyAtTCAxCgpmczo6ZGlyX3RyZWUocGF0aCA9ICIuIiwgcmVjdXJzZSA9IDEgKQpgYGAKClVwb24gbWFraW5nIGNoYW5nZXMgaW4gdGhlIGxvY2FsIGZvbGRlciwgSSBoYXZlIDIgd2F5cyBpbiB3aGljaCBJIGNhbiBjb21taXQgYW5kIHB1c2ggY2hhbmdlcyB0byBHaXRIdWIgKGFzIHdlbGwgYXMgdXBkYXRlIHB1YmxpYyB2ZXJzaW9uIG9mIHdlYnNpdGUgb24gR2l0SHViIFBhZ2VzKQoKMS4gUHNldWRvIG1hbnVhbCBzaGVsbCBjb21tYW5kcyBpbiBgX2J1aWxkX2RlcGxveS5zaGAgZmlsZSAKICArIEhlcmUgSSBjYW4gYWxzbyBkZWNpZGUgd2hldGhlciB0byB1c2UgYGdpdCBhZGQgLXVgIChvbmx5IHN0dWZmIGFscmVhZHkgdHJhY2tlZCkgb3IgYGdpdCBhZGQgLS1BYCAoYWxzbyBuZXcgc3R1ZmYpCjIuIFVzaW5nIGF1dG9tYXRlZCBpbnN0cnVjdGlvbnMgaW4gYE1ha2VmaWxlYCAgCiAgKyBIZXJlIEkgaGF2ZSBzZXQgaXQgdXAgZXhjbHVzaXZlbHkgd2l0aCBgZ2l0IGFkZCAtdWAKCi0tLSAKCiMjIEFja25vd2xlZGdlbWVudHMKIAoqKlJNYXJrZG93biBXZWJzaXRlIEluc3RydWN0aW9ucyoqIFtoZXJlXShodHRwczovL3BzeXRlYWNoci5naXRodWIuaW8vaGFjay15b3VyLWRhdGEvcm1hcmtkb3duXzIuaHRtbCkKaHR0cHM6Ly9naXN0LmdpdGh1Yi5jb20vY29ieWlzbS80NzMwNDkwIAoKKipHaCBwYWdlcyBmcm9tIHN1YnRyZWUgMSoqIFtoZXJlXShodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTApCioqR2ggcGFnZXMgZnJvbSBzdWJ0cmVlIDIqKiBbaGVyZV0oaHR0cHM6Ly9zYW5nc29vbmFtLmdpdGh1Yi5pby8yMDE5LzAyLzA4L3VzaW5nLWdpdC13b3JrdHJlZS10by1kZXBsb3ktZ2l0aHViLXBhZ2VzLmh0bWwpCgoKIyMgQWJzdHJhY3QKCmJsYSBibGEgYmxhIAoKLS0tCgo8IS0tIFRoaXMgcmVwb3NpdG9yeSBjb250YWlucyB0aGUgZGF0YSBhbmQgY29kZSBmb3Igb3VyIHBhcGVyLiBPdXIgcHJlLXByaW50IGlzIG9ubGluZSBoZXJlOiAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuICJgciBUaXRsZWAiIi4gQWNjZXNzZWQgYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiAlZSwgJVknKWAuIE9ubGluZSBhdCA8aHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WD4gLS0+CgoKIyMgRGF0YQoKPGRpdiBzdHlsZT0iY29sb3I6I0ZGNDEzNiI+CmNjY2NjYwo8L2Rpdj4KCiAKIyMgTGljZW5zZXMKCioqVGV4dCBhbmQgZmlndXJlczoqKiBBbGwgcHJvc2UgYW5kIGltYWdlcyBhcmUgbGljZW5zZWQgdW5kZXIgQ3JlYXRpdmUgQ29tbW9ucyAoW0NDLUJZLTQuMF0oaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnkvNC4wLykpCgoqKkNvZGU6KiogQWxsIGNvZGUgaXMgbGljZW5zZWQgdW5kZXIgdGhlIFtNSVQgTGljZW5zZV0oTElDRU5TRS5tZCkuCgojIyBDb250cmlidXRpb25zCiAK</div>
-<p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
-
-
-</div>
-</div>
-
-</div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-<!-- tabsets -->
-
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open');
-  });
-});
-</script>
-
-<!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeSourceEmbed("README.Rmd");
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
-
-<script>
-$(document).ready(function ()  {
-
-    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
-    $('.unlisted.unnumbered').addClass('toc-ignore')
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3,h4",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = false;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
-
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
+<h2 id="contributions">Contributions</h2>
 
 </body>
 </html>
