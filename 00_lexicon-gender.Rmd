@@ -105,6 +105,6 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 
 # Reduction
 
-### MAIN INSPIRATION
+### Main Inspiration
 [@garbini_uscire_2003]
 
