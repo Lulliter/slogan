@@ -50,6 +50,109 @@
 
 
 
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 <style type="text/css">
@@ -58,6 +161,28 @@
 }
 </style>
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="html/fixes.css" type="text/css" />
 
@@ -441,14 +566,100 @@ div.tocify {
 
 <h1 class="title toc-ignore">Process and merge data</h1>
 <h4 class="author">Luisa M. Mimmi</h4>
-<h4 class="date">Last run: 2022-04-11</h4>
+<h4 class="date">Last run: 2022-04-28</h4>
 
 </div>
 
 
+<p><i class="fa fa-refresh fa-spin fa-2x" style="color: firebrick"></i> Work in progress</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pckgs -------------------------------------</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span> (<span class="st">&quot;pacman&quot;</span>)) (<span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>))</span></code></pre></div>
+<pre><code>## Loading required package: pacman</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse,  tibble, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       here,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       httr, jsonlite, XML,xml2, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>       oai, <span class="co"># R client to work with OAI-PMH </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       citr)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Function(s) -------------------------------------</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># source(here::here (&quot;R&quot;, &quot;WB-OKR_scrape-function.R&quot;) )</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Data -------------------------------------</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA https://datacatalog.worldbank.org/search/dataset/0037800 </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api</span></span></code></pre></div>
+<div id="data-ingest" class="section level1">
+<h1>Data ingest</h1>
+<div id="oai-pmh" class="section level2">
+<h2>OAI-PMH</h2>
+<p><strong>OAI-PMH</strong> (Open Archives Initiative Protocol for Metadata Harvest-ing) services, a protocol developed by the Open Archives Initiative (<a href="https://en.wikipedia.org/wiki/Open_Archives_Initiative" class="uri">https://en.wikipedia.org/wiki/Open_Archives_Initiative</a>). OAI-PMH uses XML data format transported over HTTP.</p>
+<ul>
+<li>packg: Package <code>oai</code> is built on xml2 and httr.</li>
+<li>paging: OAI-PMH uses (optionally) <code>resumptionTokens</code>, with an optional expiration date. These tokens can be used to continue on to the next chunk of data, if the first request did not get to the end.</li>
+</ul>
+</div>
+<div id="world-bank-list-of-world-development-reports" class="section level2">
+<h2>2. World Bank list of World Development Reports</h2>
+<p>Following <a href="https://github.com/transteph/world-bank-document-scraping">Stephanie Tran</a> project to extract documents metadata from WBG OKR repository, who created the function <code>R/WB-OKR_scrape-function.R</code>.</p>
+<p>Which metadata: + collections: “Books” <a href="https://openknowledge.worldbank.org/handle/10986/4" class="uri">https://openknowledge.worldbank.org/handle/10986/4</a> + sub-collections: “Corporate Flagships” <a href="https://openknowledge.worldbank.org/handle/10986/2123" class="uri">https://openknowledge.worldbank.org/handle/10986/2123</a> + World Development Report (WDR); <a href="https://openknowledge.worldbank.org/handle/10986/2124" class="uri">https://openknowledge.worldbank.org/handle/10986/2124</a> + Global Economic Prospects (GEP), + Doing Business (DB), and + Poverty and Shared Prosperity (PSP).<br />
++ …</p>
+<p>Exe: Adding with a keyword:<br />
++ World Development Report (WDR); + Keyword = <em>“economic development”</em></p>
+<p>the url would become: <a href="https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&amp;filter_relational_operator=equals&amp;filter=economic+development" class="uri">https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&amp;filter_relational_operator=equals&amp;filter=economic+development</a></p>
+<div id="parsing-xml-one-indicator-at-a-time-header" class="section level3">
+<h3>Parsing xml ONE INDICATOR AT A TIME (header)</h3>
+</div>
+</div>
+</div>
+<div id="review" class="section level1">
+<h1>REVIEW —</h1>
+<div id="world-bank-projects-operations" class="section level2">
+<h2>1. World Bank Projects &amp; Operations:</h2>
+</div>
+</div>
+<div id="wrangling-the-text" class="section level1">
+<h1>Wrangling the text</h1>
+<p>Following: <span class="citation">(Kaye 2019; Robinson 2017)</span></p>
+<div id="tokenization" class="section level2">
+<h2>Tokenization</h2>
+<ul>
+<li><p>A <em>token</em> is a meaningful unit of text, such as a word, that we are interested in using for analysis</p></li>
+<li><p>bigrams</p></li>
+</ul>
+</div>
+</div>
+<div id="connections" class="section level1">
+<h1>connections</h1>
+<p>Following the example of <a href="http://varianceexplained.org/r/hn-trends/">David Robinson on HN titles</a></p>
+</div>
+<div id="data-sources" class="section level1">
+<h1>Data sources:</h1>
+<ol style="list-style-type: decimal">
+<li>World Bank Projects &amp; Operations: <a href="https://datacatalog.worldbank.org/search/dataset/0037800" class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a> <a href="https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations" class="uri">https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations</a></li>
+</ol>
+<ul>
+<li>Accessibility Classification: <strong>public</strong> under <a href="https://datacatalog.worldbank.org/public-licenses?fragment=cc">Creative Commons Attribution 4.0</a></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>World Bank - World Development Reports</li>
+</ol>
+<ul>
+<li>Accessibility Classification:</li>
+</ul>
+</div>
+<div id="tutorials" class="section level1">
+<h1>Tutorials</h1>
+<p><a href="https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/" class="uri">https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/</a></p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-kaye_ella_2019" class="csl-entry">
+Kaye, Ella. 2019. <span>“<span>ELLA KAYE</span>: <span>Working</span> with Text in <span>R</span>,”</span> October. <a href="https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/">https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/</a>.
+</div>
+<div id="ref-robinson_words_2017" class="csl-entry">
+Robinson, David. 2017. <span>“Words Growing or Shrinking in <span>Hacker News</span> Titles: A Tidy Analysis.”</span> <span>Variance Explained</span>. June 8, 2017. <a href="http://varianceexplained.org/r/hn-trends/">http://varianceexplained.org/r/hn-trends/</a>.
+</div>
+</div>
+</div>
 
-
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQotLS0K</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IGJ1enp3b3Jkcy5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCBmYS1zcGluIGZhLTJ4IiBzdHlsZT0iY29sb3I6IGZpcmVicmljayI+PC9pPiAgV29yayBpbiBwcm9ncmVzcwogCgoKYGBge3Igc2V0dXBfaW5wfQojIFBja2dzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KaWYgKCFyZXF1aXJlICgicGFjbWFuIikpIChpbnN0YWxsLnBhY2thZ2VzKCJwYWNtYW4iKSkKcF9sb2FkKHRpZHl2ZXJzZSwgIHRpYmJsZSwgCiAgICAgICBoZXJlLAogICAgICAgaHR0ciwganNvbmxpdGUsIFhNTCx4bWwyLCAKICAgICAgIG9haSwgIyBSIGNsaWVudCB0byB3b3JrIHdpdGggT0FJLVBNSCAKICAgICAgIGNpdHIpCgojIEZ1bmN0aW9uKHMpIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBzb3VyY2UoaGVyZTo6aGVyZSAoIlIiLCAiV0ItT0tSX3NjcmFwZS1mdW5jdGlvbi5SIikgKQoKIyBEYXRhIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBEQVRBIGh0dHBzOi8vZGF0YWNhdGFsb2cud29ybGRiYW5rLm9yZy9zZWFyY2gvZGF0YXNldC8wMDM3ODAwIAojIElOU1RSVUNUSU9OUyBodHRwczovL2RvY3VtZW50cy53b3JsZGJhbmsub3JnL2VuL3B1YmxpY2F0aW9uL2RvY3VtZW50cy1yZXBvcnRzL2FwaQoKYGBgCiAgCiMgRGF0YSBpbmdlc3QKCiMjIE9BSS1QTUggIAoKKipPQUktUE1IKiogKE9wZW4gQXJjaGl2ZXMgSW5pdGlhdGl2ZSBQcm90b2NvbCBmb3IgTWV0YWRhdGEgSGFydmVzdC1pbmcpIHNlcnZpY2VzLCBhIHByb3RvY29sIGRldmVsb3BlZCBieSB0aGUgT3BlbiBBcmNoaXZlcyBJbml0aWF0aXZlIChodHRwczovL2VuLndpa2lwZWRpYS5vcmcvd2lraS9PcGVuX0FyY2hpdmVzX0luaXRpYXRpdmUpLiBPQUktUE1IIHVzZXMgWE1MIGRhdGEgZm9ybWF0IHRyYW5zcG9ydGVkIG92ZXIgSFRUUC4KCisgcGFja2c6IFBhY2thZ2UgYG9haWAgaXMgYnVpbHQgb24geG1sMiBhbmQgaHR0ci4gCisgcGFnaW5nOiBPQUktUE1IIHVzZXMgKG9wdGlvbmFsbHkpIGByZXN1bXB0aW9uVG9rZW5zYCwgd2l0aCBhbiBvcHRpb25hbCBleHBpcmF0aW9uIGRhdGUuIFRoZXNlIHRva2VucyBjYW4gYmUgdXNlZCB0byBjb250aW51ZSBvbiB0byB0aGUgbmV4dCBjaHVuayBvZiBkYXRhLAppZiB0aGUgZmlyc3QgcmVxdWVzdCBkaWQgbm90IGdldCB0byB0aGUgZW5kLgoKIyMgMi4gV29ybGQgQmFuayBsaXN0IG9mIFdvcmxkIERldmVsb3BtZW50IFJlcG9ydHMKICAgICAKRm9sbG93aW5nIFtTdGVwaGFuaWUgVHJhbl0oaHR0cHM6Ly9naXRodWIuY29tL3RyYW5zdGVwaC93b3JsZC1iYW5rLWRvY3VtZW50LXNjcmFwaW5nKSBwcm9qZWN0IHRvIGV4dHJhY3QgZG9jdW1lbnRzIG1ldGFkYXRhIGZyb20gV0JHIE9LUiByZXBvc2l0b3J5LCB3aG8gY3JlYXRlZCB0aGUgZnVuY3Rpb24gYFIvV0ItT0tSX3NjcmFwZS1mdW5jdGlvbi5SYC4gCgpXaGljaCBtZXRhZGF0YToKICArICBjb2xsZWN0aW9uczogIkJvb2tzIiAgICAgICAgICAgICAgICAgICAgICAgaHR0cHM6Ly9vcGVua25vd2xlZGdlLndvcmxkYmFuay5vcmcvaGFuZGxlLzEwOTg2LzQKICAgICsgc3ViLWNvbGxlY3Rpb25zOiAiQ29ycG9yYXRlIEZsYWdzaGlwcyIgICAgaHR0cHM6Ly9vcGVua25vd2xlZGdlLndvcmxkYmFuay5vcmcvaGFuZGxlLzEwOTg2LzIxMjMKICAgICAgKyBXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnQgKFdEUik7ICAgICAgICAgaHR0cHM6Ly9vcGVua25vd2xlZGdlLndvcmxkYmFuay5vcmcvaGFuZGxlLzEwOTg2LzIxMjQKICAgICAgKyBHbG9iYWwgRWNvbm9taWMgUHJvc3BlY3RzIChHRVApLCAKICAgICAgKyBEb2luZyBCdXNpbmVzcyAoREIpLCBhbmQgCiAgICAgICsgUG92ZXJ0eSBhbmQgU2hhcmVkIFByb3NwZXJpdHkgKFBTUCkuICAKICAgICAgKyAuLi4KCkV4ZTogQWRkaW5nIHdpdGggYSBrZXl3b3JkOiAgICAgICAgICAgCiAgICAgICsgV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0IChXRFIpOwogICAgICAgICsgS2V5d29yZCA9IF8iZWNvbm9taWMgZGV2ZWxvcG1lbnQiXyAgICAKICAgICAgICAKdGhlIHVybCB3b3VsZCBiZWNvbWU6IGh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8yMTI0L2Rpc2NvdmVyP2ZpbHRlcnR5cGU9c3ViamVjdCZmaWx0ZXJfcmVsYXRpb25hbF9vcGVyYXRvcj1lcXVhbHMmZmlsdGVyPWVjb25vbWljK2RldmVsb3BtZW50CiAKIAoKIyMjIFBhcnNpbmcgeG1sIE9ORSBJTkRJQ0FUT1IgQVQgQSBUSU1FIChoZWFkZXIpCgogCiMgUkVWSUVXIC0tLSAKCiMjIDEuIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOgoKIAoKIyBXcmFuZ2xpbmcgdGhlIHRleHQgCkZvbGxvd2luZzogW0BrYXllX2VsbGFfMjAxOTsgQHJvYmluc29uX3dvcmRzXzIwMTddCgoKIyMgVG9rZW5pemF0aW9uIAoKKiBBIF90b2tlbl8gaXMgYSBtZWFuaW5nZnVsIHVuaXQgb2YgdGV4dCwgc3VjaCBhcyBhIHdvcmQsIHRoYXQgd2UgYXJlIGludGVyZXN0ZWQgaW4gdXNpbmcgZm9yIGFuYWx5c2lzCgoqIGJpZ3JhbXMgCgojIGNvbm5lY3Rpb25zIAoKRm9sbG93aW5nIHRoZSBleGFtcGxlIG9mIFtEYXZpZCBSb2JpbnNvbiBvbiBITiB0aXRsZXNdKGh0dHA6Ly92YXJpYW5jZWV4cGxhaW5lZC5vcmcvci9obi10cmVuZHMvKQogIAojIERhdGEgc291cmNlczogCgoxLiBXb3JsZCBCYW5rIFByb2plY3RzICYgT3BlcmF0aW9uczogaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDAgCiBodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMC9Xb3JsZC1CYW5rLVByb2plY3RzLS0tT3BlcmF0aW9ucwoKICArIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246ICoqcHVibGljKiogdW5kZXIgW0NyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wXShodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvcHVibGljLWxpY2Vuc2VzP2ZyYWdtZW50PWNjKQoKMi4gV29ybGQgQmFuayAtIFdvcmxkIERldmVsb3BtZW50IFJlcG9ydHMKCiAgKyBBY2Nlc3NpYmlsaXR5IENsYXNzaWZpY2F0aW9uOgoKIyBUdXRvcmlhbHMgCmh0dHBzOi8vY2Zzcy51Y2hpY2Fnby5lZHUvc3lsbGFidXMvZ2V0dGluZy1kYXRhLWZyb20tdGhlLXdlYi1hcGktYWNjZXNzLwo=</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

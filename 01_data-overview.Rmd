@@ -7,4 +7,95 @@ output:
     code_folding: hide
 editor_options: 
   chunk_output_type: console
+bibliography: buzzwords.bib
 ---
+
+<i class="fa fa-refresh fa-spin fa-2x" style="color: firebrick"></i>  Work in progress
+ 
+
+
+```{r setup_inp}
+# Pckgs -------------------------------------
+if (!require ("pacman")) (install.packages("pacman"))
+p_load(tidyverse,  tibble, 
+       here,
+       httr, jsonlite, XML,xml2, 
+       oai, # R client to work with OAI-PMH 
+       citr)
+
+# Function(s) -------------------------------------
+# source(here::here ("R", "WB-OKR_scrape-function.R") )
+
+# Data -------------------------------------
+# DATA https://datacatalog.worldbank.org/search/dataset/0037800 
+# INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api
+
+```
+  
+# Data ingest
+
+## OAI-PMH  
+
+**OAI-PMH** (Open Archives Initiative Protocol for Metadata Harvest-ing) services, a protocol developed by the Open Archives Initiative (https://en.wikipedia.org/wiki/Open_Archives_Initiative). OAI-PMH uses XML data format transported over HTTP.
+
++ packg: Package `oai` is built on xml2 and httr. 
++ paging: OAI-PMH uses (optionally) `resumptionTokens`, with an optional expiration date. These tokens can be used to continue on to the next chunk of data,
+if the first request did not get to the end.
+
+## 2. World Bank list of World Development Reports
+     
+Following [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project to extract documents metadata from WBG OKR repository, who created the function `R/WB-OKR_scrape-function.R`. 
+
+Which metadata:
+  +  collections: "Books"                       https://openknowledge.worldbank.org/handle/10986/4
+    + sub-collections: "Corporate Flagships"    https://openknowledge.worldbank.org/handle/10986/2123
+      + World Development Report (WDR);         https://openknowledge.worldbank.org/handle/10986/2124
+      + Global Economic Prospects (GEP), 
+      + Doing Business (DB), and 
+      + Poverty and Shared Prosperity (PSP).  
+      + ...
+
+Exe: Adding with a keyword:           
+      + World Development Report (WDR);
+        + Keyword = _"economic development"_    
+        
+the url would become: https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&filter_relational_operator=equals&filter=economic+development
+ 
+ 
+
+### Parsing xml ONE INDICATOR AT A TIME (header)
+
+ 
+# REVIEW --- 
+
+## 1. World Bank Projects & Operations:
+
+ 
+
+# Wrangling the text 
+Following: [@kaye_ella_2019; @robinson_words_2017]
+
+
+## Tokenization 
+
+* A _token_ is a meaningful unit of text, such as a word, that we are interested in using for analysis
+
+* bigrams 
+
+# connections 
+
+Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
+  
+# Data sources: 
+
+1. World Bank Projects & Operations: https://datacatalog.worldbank.org/search/dataset/0037800 
+ https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations
+
+  + Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+
+2. World Bank - World Development Reports
+
+  + Accessibility Classification:
+
+# Tutorials 
+https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/

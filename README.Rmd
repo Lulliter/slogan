@@ -16,6 +16,8 @@ Authors <- "Luisa M. Mimmi"
 Year <- "2022"
 ```
 
+🚧 _work in progress_ 🚧
+
 # `r Title`
 
 [Luisa M. Mimmi](https://luisamimmi.com/) • Independent Consultant  
@@ -54,10 +56,9 @@ Upon making changes in the local folder, I have 2 ways in which I can commit and
 
 ## Acknowledgements
  
-**RMarkdown Website Instructions** [here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
++ RMarkdown Website Instructions: [here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
 https://gist.github.com/cobyism/4730490 
-
-**Gh pages from subtree 1** [here](https://gist.github.com/cobyism/4730490) **and 2** [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
++ Gh pages from subtree 1: [here](https://gist.github.com/cobyism/4730490) **and 2** [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
 
 
 ## Abstract

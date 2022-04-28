@@ -32,7 +32,7 @@ options(dplyr.summarise.inform = FALSE,
 ```
 
 ```{r load-libraries-data, message=FALSE, warning=FALSE}
-# Load required packages
+# Load required packages 
 if (!require("pacman")) install.packages('pacman' )
 library(pacman) # for loading packages
 p_load(here, tidyverse, tibble, janitor,
@@ -56,6 +56,8 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 # library(patchwork)
 # library(scales)
 # library(here)
+
+# 
 
 # # Load data
 # # Need to use this withr thing because tar_read() and tar_load() need to see the
@@ -90,6 +92,11 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 # }
 ```
 
+# At the core of reduction 
+I was really struck the first time I realized how the Latin motto I had heard since childhood: "Mens sana in corpore sano", was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: "Orandum est ut sit mens sana in corpore sano" (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version, and refers prayer and not to sport .
+
+> In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l’analisi non insiste sull’aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L’effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate ‘riduzionismi’. [@garbini_uscire_2003]
+
 
 # Some important definitions
 
@@ -99,13 +106,9 @@ An _adage_ is an ancient saying or maxim, brief and sometimes mysterious, that h
 > **Example(s)**: "The early bird gets the worm", "Better late than never."
 
 ## Slogan
-????? urlo di guerra - da raccolta simbolica di idee chiave diventa sempre piu una dottrina. 
+The English word _slogan_ has a Scottish Gaelic origin and derives from the combination of _sluagh_ (army) + _gairm_ (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called _taglines_ in the United States 
 
-# At the core of reduction 
-Capita che venga trasmesso come riduzione dell'originale (es «orandum est ut sit mens sana in corpore sano» (Sat., X, 356) [@garbini_uscire_2003]
 
-In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l’analisi non insiste sull’aspetto riduzionista.bLe deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L’effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate ‘riduzionismi’.
-
-### Reference
+# Reference
 
 
