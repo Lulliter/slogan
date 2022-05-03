@@ -11,6 +11,8 @@
 .DS_Store
 
 
+# --------------  My  STUFF (in prog etc)  -------------- #
+_my_stuff/*
 # --------------  AH STUFF  -------------- #
 # R Environment Variables
 .Renviron
