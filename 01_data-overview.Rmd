@@ -10,16 +10,24 @@ editor_options:
 bibliography: buzzwords.bib
 ---
 
-<i class="fa fa-refresh fa-spin fa-2x" style="color: firebrick"></i>  Work in progress
+<i class="fa fa-refresh" style="color: firebrick"></i>  Work in progress
  
 
 
 ```{r setup_inp}
 # Pckgs -------------------------------------
 if (!require ("pacman")) (install.packages("pacman"))
-p_load(tidyverse,  tibble, 
+p_load(tidyverse, 
+       # ggplot2, for data visualisation.
+       # dplyr, for data manipulation.
+       # tidyr, for data tidying.
+       # readr, for data import.
+       # purrr, for functional programming.
+       # tibble, for tibbles, a modern re-imagining of data frames.
+       # stringr, for strings.
+       # forcats, for factors.
        here,
-       httr, jsonlite, XML,xml2, 
+       httr, jsonlite, XML, xml2, 
        oai, # R client to work with OAI-PMH 
        citr)
 
@@ -33,35 +41,18 @@ p_load(tidyverse,  tibble,
 ```
   
 # Data ingest
+<!-- Done in "./_my_stuff/_01_data-overview.Rmd"  -->
 
-## OAI-PMH  
+```{r}
+# WRD metadata taken with API get (issues) 
+WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" ))
 
-**OAI-PMH** (Open Archives Initiative Protocol for Metadata Harvest-ing) services, a protocol developed by the Open Archives Initiative (https://en.wikipedia.org/wiki/Open_Archives_Initiative). OAI-PMH uses XML data format transported over HTTP.
+# WRD subject/date_issued taken by manual review 
+WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", "WDR_subjects.xlsx" )) 
+WDR_subjects <- WDR_subjects[1:45,]
 
-+ packg: Package `oai` is built on xml2 and httr. 
-+ paging: OAI-PMH uses (optionally) `resumptionTokens`, with an optional expiration date. These tokens can be used to continue on to the next chunk of data,
-if the first request did not get to the end.
+```
 
-## 2. World Bank list of World Development Reports
-     
-Following [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project to extract documents metadata from WBG OKR repository, who created the function `R/WB-OKR_scrape-function.R`. 
-
-Which metadata:
-  +  collections: "Books"                       https://openknowledge.worldbank.org/handle/10986/4
-    + sub-collections: "Corporate Flagships"    https://openknowledge.worldbank.org/handle/10986/2123
-      + World Development Report (WDR);         https://openknowledge.worldbank.org/handle/10986/2124
-      + Global Economic Prospects (GEP), 
-      + Doing Business (DB), and 
-      + Poverty and Shared Prosperity (PSP).  
-      + ...
-
-Exe: Adding with a keyword:           
-      + World Development Report (WDR);
-        + Keyword = _"economic development"_    
-        
-the url would become: https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&filter_relational_operator=equals&filter=economic+development
- 
- 
 
 ### Parsing xml ONE INDICATOR AT A TIME (header)
 
@@ -79,7 +70,6 @@ Following: [@kaye_ella_2019; @robinson_words_2017]
 ## Tokenization 
 
 * A _token_ is a meaningful unit of text, such as a word, that we are interested in using for analysis
-
 * bigrams 
 
 # connections 
@@ -98,4 +88,6 @@ Following the example of [David Robinson on HN titles](http://varianceexplained.
   + Accessibility Classification:
 
 # Tutorials 
-https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+

@@ -1,5 +1,5 @@
 # Go to the right directory
-cd ~/My\ Drive/Github/slogan
+cd ~/Github/slogan
 
 # PUTTING ALL IN A SCRIPT
 echo -e "\033[0;32mDeploying updates to GitHub...\033[0m"
@@ -20,7 +20,7 @@ Rscript -e "rmarkdown::render_site(encoding = 'UTF-8')"
 # check
 git status
 # Stage
-git add -u # git add --all  # git add README.html
+git add -u # git add --all  # git add data/derived_data/
 # Commit (way 1)
 # git commit -m "worked on WRD from API" -m "Put work in _my_stuff/_01_data-overview.Rmd bc it exe But not knit  "
 # Commit (way 2)
