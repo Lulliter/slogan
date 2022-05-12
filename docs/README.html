@@ -449,9 +449,7 @@ div.tocify {
 <p><a href="https://luisamimmi.com/">Luisa M. Mimmi</a> • Independent Consultant</p>
 <hr />
 <!-- [![OSF DOI](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FMTR6X-blue)](https://dx.doi.org/10.17605/OSF.IO/MTR6X) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5715402.svg)](https://doi.org/10.5281/zenodo.5715402) -->
-<blockquote>
-<p>Luisa M. Mimmi. 2022. <a href="https://doi.org/10.1177/0899764020971045">“Follow the buzzword,”</a> <em>Journal of Human Rights</em> (forthcoming).</p>
-</blockquote>
+<!-- > Luisa M. Mimmi. 2022. ["Follow the buzzword,"](https://doi.org/10.1177/0899764020971045) *Journal of Human Rights* (forthcoming). -->
 <p><strong>All this project’s materials are free and open:</strong></p>
 <ul>
 <li><a href="#data">Download the data</a></li>
@@ -472,6 +470,7 @@ div.tocify {
 #&gt; ├── 04_predictions.Rmd
 #&gt; ├── Makefile
 #&gt; ├── R
+#&gt; │   ├── WB-OKR_scrape-function.R
 #&gt; │   ├── funs_data-cleaning.R
 #&gt; │   ├── funs_knitting.R
 #&gt; │   ├── funs_notebook.R
@@ -479,13 +478,17 @@ div.tocify {
 #&gt; │   ├── models_details.R
 #&gt; │   ├── models_lhr.R
 #&gt; │   ├── models_pts.R
-#&gt; │   └── psyteachr_setup.R
+#&gt; │   ├── psyteachr_setup.R
+#&gt; │   ├── toy_nested_list.R
+#&gt; │   └── turn_list_to_tibble.R
 #&gt; ├── README.Rmd
 #&gt; ├── README.html
 #&gt; ├── README.md
 #&gt; ├── _build_deploy.sh
+#&gt; ├── _my_stuff
+#&gt; │   ├── WDR_test.R
+#&gt; │   └── _01_data-overview.Rmd
 #&gt; ├── _site.yml
-#&gt; ├── _slogan.bib
 #&gt; ├── buzzwords.bib
 #&gt; ├── data
 #&gt; │   ├── DO-NOT-EDIT-ANY-FILES-IN-HERE-BY-HAND
@@ -514,14 +517,6 @@ div.tocify {
 #&gt; │   ├── data_large_color.png
 #&gt; │   └── materials_large_color.png
 #&gt; ├── index.Rmd
-#&gt; ├── site_libs
-#&gt; │   ├── bootstrap-3.3.5
-#&gt; │   ├── font-awesome-5.1.0
-#&gt; │   ├── header-attrs-2.13
-#&gt; │   ├── jquery-3.6.0
-#&gt; │   ├── jqueryui-1.11.4
-#&gt; │   ├── navigation-1.1
-#&gt; │   └── tocify-1.9.1
 #&gt; └── slogan.Rproj</code></pre>
 <p>Upon making changes in the local folder, I have 2 ways in which I can commit and push changes to GitHub (as well as update public version of website on GitHub Pages)</p>
 <ol style="list-style-type: decimal">
@@ -551,7 +546,7 @@ div.tocify {
 <p>bla bla bla</p>
 <hr />
 <!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
-<!-- > Luisa M. Mimmi. 2022. "Follow the buzzword"". Accessed April 22, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+<!-- > Luisa M. Mimmi. 2022. "Follow the buzzword"". Accessed May  7, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
@@ -569,7 +564,7 @@ div.tocify {
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgYnV6endvcmQiCkF1dGhvcnMgPC0gIkx1aXNhIE0uIE1pbW1pIgpZZWFyIDwtICIyMDIyIgpgYGAKCvCfmqcgX3dvcmsgaW4gcHJvZ3Jlc3NfIPCfmqcKCiMgYHIgVGl0bGVgCgpbTHVpc2EgTS4gTWltbWldKGh0dHBzOi8vbHVpc2FtaW1taS5jb20vKSDigKIgSW5kZXBlbmRlbnQgQ29uc3VsdGFudCAgCgotLS0KCjwhLS0gWyFbT1NGIERPSV0oaHR0cHM6Ly9pbWcuc2hpZWxkcy5pby9iYWRnZS9PU0YtMTAuMTc2MDUlMkZPU0YuSU8lMkZNVFI2WC1ibHVlKV0oaHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WCkgWyFbRE9JXShodHRwczovL3plbm9kby5vcmcvYmFkZ2UvRE9JLzEwLjUyODEvemVub2RvLjU3MTU0MDIuc3ZnKV0oaHR0cHM6Ly9kb2kub3JnLzEwLjUyODEvemVub2RvLjU3MTU0MDIpIC0tPgoKPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuIFsiYHIgVGl0bGVgLCJdKGh0dHBzOi8vZG9pLm9yZy8xMC4xMTc3LzA4OTk3NjQwMjA5NzEwNDUpICpKb3VybmFsIG9mIEh1bWFuIFJpZ2h0cyogKGZvcnRoY29taW5nKS4KCioqQWxsIHRoaXMgcHJvamVjdCdzIG1hdGVyaWFscyBhcmUgZnJlZSBhbmQgb3BlbjoqKgoKLSBbRG93bmxvYWQgdGhlIGRhdGFdKCNkYXRhKQotIFtTZWUgdGhlIGFuYWx5c2lzIG5vdGVib29rIHdlYnNpdGVdKGh0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi8pCgohW09wZW4gZGF0YV0oaW1nL2RhdGFfbGFyZ2VfY29sb3IucG5nKSAmZW1zcDsgIVtPcGVuXShpbWcvbWF0ZXJpYWxzX2xhcmdlX2NvbG9yLnBuZykKCgojIyBIb3cgdG8gYnVpbGQvZGVwbG95IHRoZSBzaXRlIApUaGlzIHByb2plY3QgaXMgYW4gYFJtYXJrZG93bmAgd2Vic2l0ZXMgaG9zdGVkIG9uIGBHaXRodWIgUGFnZXNgIGFuZCBhY2Nlc3NpYmxlIGhlcmUgW2h0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi9dKGh0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi8pLiBUaGUgZm9sZGVyIGNvbnRhaW5pbmcgdGhlIGh0bWwgZmlsZXMgb2YgdGhlIHdlYnNpdGUgaXMgYC4vZG9jcy9gICh0aGlzIHdhcyBhbHNvIHNwZWNpZmllZCBpbiB0aGUgYF9zaXRlLnltbGApCiAKYGBge3IsICBlY2hvPUZBTFNFIH0KIyBiYXNoIHRyZWUgLUMgLUwgMQoKZnM6OmRpcl90cmVlKHBhdGggPSAiLiIsIHJlY3Vyc2UgPSAxICkKYGBgCgpVcG9uIG1ha2luZyBjaGFuZ2VzIGluIHRoZSBsb2NhbCBmb2xkZXIsIEkgaGF2ZSAyIHdheXMgaW4gd2hpY2ggSSBjYW4gY29tbWl0IGFuZCBwdXNoIGNoYW5nZXMgdG8gR2l0SHViIChhcyB3ZWxsIGFzIHVwZGF0ZSBwdWJsaWMgdmVyc2lvbiBvZiB3ZWJzaXRlIG9uIEdpdEh1YiBQYWdlcykKCjEuIFBzZXVkbyBtYW51YWwgKipzaGVsbCoqIGNvbW1hbmRzIGluIGBfYnVpbGRfZGVwbG95LnNoYCBmaWxlIAogICsgSGVyZSBJIGNhbiBhbHNvIGRlY2lkZSB3aGV0aGVyIHRvIHVzZSBgZ2l0IGFkZCAtdWAgKG9ubHkgc3R1ZmYgYWxyZWFkeSB0cmFja2VkKSBvciBgZ2l0IGFkZCAtLUFgIChhbHNvIG5ldyBzdHVmZikKMi4gVXNpbmcgYXV0b21hdGVkICoqbWFrZSoqIGluc3RydWN0aW9ucyBpbiBgTWFrZWZpbGVgICAKICArIEhlcmUgSSBoYXZlIHNldCBpdCB1cCBleGNsdXNpdmVseSB3aXRoIGBnaXQgYWRkIC11YAoKLS0tIAoKIyMgQWNrbm93bGVkZ2VtZW50cwogCisgUk1hcmtkb3duIFdlYnNpdGUgSW5zdHJ1Y3Rpb25zOiBbaGVyZV0oaHR0cHM6Ly9wc3l0ZWFjaHIuZ2l0aHViLmlvL2hhY2steW91ci1kYXRhL3JtYXJrZG93bl8yLmh0bWwpCmh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2NvYnlpc20vNDczMDQ5MCAKKyBHaCBwYWdlcyBmcm9tIHN1YnRyZWUgMTogW2hlcmVdKGh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2NvYnlpc20vNDczMDQ5MCkgKiphbmQgMioqIFtoZXJlXShodHRwczovL3Nhbmdzb29uYW0uZ2l0aHViLmlvLzIwMTkvMDIvMDgvdXNpbmctZ2l0LXdvcmt0cmVlLXRvLWRlcGxveS1naXRodWItcGFnZXMuaHRtbCkKCgojIyBBYnN0cmFjdAoKYmxhIGJsYSBibGEgCgotLS0KCjwhLS0gVGhpcyByZXBvc2l0b3J5IGNvbnRhaW5zIHRoZSBkYXRhIGFuZCBjb2RlIGZvciBvdXIgcGFwZXIuIE91ciBwcmUtcHJpbnQgaXMgb25saW5lIGhlcmU6IC0tPgoKPCEtLSA+IGByIEF1dGhvcnNgLiBgciBZZWFyYC4gImByIFRpdGxlYCIiLiBBY2Nlc3NlZCBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVCICVlLCAlWScpYC4gT25saW5lIGF0IDxodHRwczovL2R4LmRvaS5vcmcvMTAuMTc2MDUvT1NGLklPL01UUjZYPiAtLT4KCgojIyBEYXRhCgo8ZGl2IHN0eWxlPSJjb2xvcjojRkY0MTM2Ij4KY2NjY2NjCjwvZGl2PgoKIAojIyBMaWNlbnNlcwoKKipUZXh0IGFuZCBmaWd1cmVzOioqIEFsbCBwcm9zZSBhbmQgaW1hZ2VzIGFyZSBsaWNlbnNlZCB1bmRlciBDcmVhdGl2ZSBDb21tb25zIChbQ0MtQlktNC4wXShodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvKSkKCioqQ29kZToqKiBBbGwgY29kZSBpcyBsaWNlbnNlZCB1bmRlciB0aGUgW01JVCBMaWNlbnNlXShMSUNFTlNFLm1kKS4KCiMjIENvbnRyaWJ1dGlvbnMKIAo=</div>
+<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgYnV6endvcmQiCkF1dGhvcnMgPC0gIkx1aXNhIE0uIE1pbW1pIgpZZWFyIDwtICIyMDIyIgpgYGAKCvCfmqcgX3dvcmsgaW4gcHJvZ3Jlc3NfIPCfmqcKCiMgYHIgVGl0bGVgCgpbTHVpc2EgTS4gTWltbWldKGh0dHBzOi8vbHVpc2FtaW1taS5jb20vKSDigKIgSW5kZXBlbmRlbnQgQ29uc3VsdGFudCAgCgotLS0KCjwhLS0gWyFbT1NGIERPSV0oaHR0cHM6Ly9pbWcuc2hpZWxkcy5pby9iYWRnZS9PU0YtMTAuMTc2MDUlMkZPU0YuSU8lMkZNVFI2WC1ibHVlKV0oaHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WCkgWyFbRE9JXShodHRwczovL3plbm9kby5vcmcvYmFkZ2UvRE9JLzEwLjUyODEvemVub2RvLjU3MTU0MDIuc3ZnKV0oaHR0cHM6Ly9kb2kub3JnLzEwLjUyODEvemVub2RvLjU3MTU0MDIpIC0tPgoKPCEtLSA+IGByIEF1dGhvcnNgLiBgciBZZWFyYC4gWyJgciBUaXRsZWAsIl0oaHR0cHM6Ly9kb2kub3JnLzEwLjExNzcvMDg5OTc2NDAyMDk3MTA0NSkgKkpvdXJuYWwgb2YgSHVtYW4gUmlnaHRzKiAoZm9ydGhjb21pbmcpLiAtLT4KCioqQWxsIHRoaXMgcHJvamVjdCdzIG1hdGVyaWFscyBhcmUgZnJlZSBhbmQgb3BlbjoqKgoKLSBbRG93bmxvYWQgdGhlIGRhdGFdKCNkYXRhKQotIFtTZWUgdGhlIGFuYWx5c2lzIG5vdGVib29rIHdlYnNpdGVdKGh0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi8pCgohW09wZW4gZGF0YV0oaW1nL2RhdGFfbGFyZ2VfY29sb3IucG5nKSAmZW1zcDsgIVtPcGVuXShpbWcvbWF0ZXJpYWxzX2xhcmdlX2NvbG9yLnBuZykKCgojIyBIb3cgdG8gYnVpbGQvZGVwbG95IHRoZSBzaXRlIApUaGlzIHByb2plY3QgaXMgYW4gYFJtYXJrZG93bmAgd2Vic2l0ZXMgaG9zdGVkIG9uIGBHaXRodWIgUGFnZXNgIGFuZCBhY2Nlc3NpYmxlIGhlcmUgW2h0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi9dKGh0dHBzOi8vbHVsbGl0ZXIuZ2l0aHViLmlvL3Nsb2dhbi8pLiBUaGUgZm9sZGVyIGNvbnRhaW5pbmcgdGhlIGh0bWwgZmlsZXMgb2YgdGhlIHdlYnNpdGUgaXMgYC4vZG9jcy9gICh0aGlzIHdhcyBhbHNvIHNwZWNpZmllZCBpbiB0aGUgYF9zaXRlLnltbGApCiAKYGBge3IsICBlY2hvPUZBTFNFIH0KIyBiYXNoIHRyZWUgLUMgLUwgMQoKZnM6OmRpcl90cmVlKHBhdGggPSAiLiIsIHJlY3Vyc2UgPSAxICkKYGBgCgpVcG9uIG1ha2luZyBjaGFuZ2VzIGluIHRoZSBsb2NhbCBmb2xkZXIsIEkgaGF2ZSAyIHdheXMgaW4gd2hpY2ggSSBjYW4gY29tbWl0IGFuZCBwdXNoIGNoYW5nZXMgdG8gR2l0SHViIChhcyB3ZWxsIGFzIHVwZGF0ZSBwdWJsaWMgdmVyc2lvbiBvZiB3ZWJzaXRlIG9uIEdpdEh1YiBQYWdlcykKCjEuIFBzZXVkbyBtYW51YWwgKipzaGVsbCoqIGNvbW1hbmRzIGluIGBfYnVpbGRfZGVwbG95LnNoYCBmaWxlIAogICsgSGVyZSBJIGNhbiBhbHNvIGRlY2lkZSB3aGV0aGVyIHRvIHVzZSBgZ2l0IGFkZCAtdWAgKG9ubHkgc3R1ZmYgYWxyZWFkeSB0cmFja2VkKSBvciBgZ2l0IGFkZCAtLUFgIChhbHNvIG5ldyBzdHVmZikKMi4gVXNpbmcgYXV0b21hdGVkICoqbWFrZSoqIGluc3RydWN0aW9ucyBpbiBgTWFrZWZpbGVgICAKICArIEhlcmUgSSBoYXZlIHNldCBpdCB1cCBleGNsdXNpdmVseSB3aXRoIGBnaXQgYWRkIC11YAoKLS0tIAoKIyMgQWNrbm93bGVkZ2VtZW50cwogCisgUk1hcmtkb3duIFdlYnNpdGUgSW5zdHJ1Y3Rpb25zOiBbaGVyZV0oaHR0cHM6Ly9wc3l0ZWFjaHIuZ2l0aHViLmlvL2hhY2steW91ci1kYXRhL3JtYXJrZG93bl8yLmh0bWwpCmh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2NvYnlpc20vNDczMDQ5MCAKKyBHaCBwYWdlcyBmcm9tIHN1YnRyZWUgMTogW2hlcmVdKGh0dHBzOi8vZ2lzdC5naXRodWIuY29tL2NvYnlpc20vNDczMDQ5MCkgKiphbmQgMioqIFtoZXJlXShodHRwczovL3Nhbmdzb29uYW0uZ2l0aHViLmlvLzIwMTkvMDIvMDgvdXNpbmctZ2l0LXdvcmt0cmVlLXRvLWRlcGxveS1naXRodWItcGFnZXMuaHRtbCkKCgojIyBBYnN0cmFjdAoKYmxhIGJsYSBibGEgCgotLS0KCjwhLS0gVGhpcyByZXBvc2l0b3J5IGNvbnRhaW5zIHRoZSBkYXRhIGFuZCBjb2RlIGZvciBvdXIgcGFwZXIuIE91ciBwcmUtcHJpbnQgaXMgb25saW5lIGhlcmU6IC0tPgoKPCEtLSA+IGByIEF1dGhvcnNgLiBgciBZZWFyYC4gImByIFRpdGxlYCIiLiBBY2Nlc3NlZCBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVCICVlLCAlWScpYC4gT25saW5lIGF0IDxodHRwczovL2R4LmRvaS5vcmcvMTAuMTc2MDUvT1NGLklPL01UUjZYPiAtLT4KCgojIyBEYXRhCgo8ZGl2IHN0eWxlPSJjb2xvcjojRkY0MTM2Ij4KY2NjY2NjCjwvZGl2PgoKIAojIyBMaWNlbnNlcwoKKipUZXh0IGFuZCBmaWd1cmVzOioqIEFsbCBwcm9zZSBhbmQgaW1hZ2VzIGFyZSBsaWNlbnNlZCB1bmRlciBDcmVhdGl2ZSBDb21tb25zIChbQ0MtQlktNC4wXShodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvKSkKCioqQ29kZToqKiBBbGwgY29kZSBpcyBsaWNlbnNlZCB1bmRlciB0aGUgW01JVCBMaWNlbnNlXShMSUNFTlNFLm1kKS4KCiMjIENvbnRyaWJ1dGlvbnMKIAo=</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

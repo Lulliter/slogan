@@ -10,9 +10,7 @@ editor_options:
 bibliography: buzzwords.bib
 ---
 
-<i class="fa fa-refresh" style="color: firebrick"></i>  Work in progress
- 
-
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
 ```{r setup_inp}
 # Pckgs -------------------------------------
@@ -29,7 +27,8 @@ p_load(tidyverse,
        here,
        httr, jsonlite, XML, xml2, 
        oai, # R client to work with OAI-PMH 
-       citr)
+       citr, 
+       tidytext)
 
 # Function(s) -------------------------------------
 # source(here::here ("R", "WB-OKR_scrape-function.R") )
@@ -39,55 +38,110 @@ p_load(tidyverse,
 # INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api
 
 ```
-  
-# Data ingest
+
+# Data ingesting & cleaning
+
+## 1. World Development Reports (WRDs) 
 <!-- Done in "./_my_stuff/_01_data-overview.Rmd"  -->
 
 ```{r}
 # WRD metadata taken with API get (issues) 
-WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" ))
+WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
+      # Extract only the portion of string AFTER the backslash {/}
+  mutate(id =  as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$")) ) %>% 
+  dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
+  mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full") )%>% 
+  dplyr::relocate(url_keys, .before =  doc_mt_identifier_1)
 
 # WRD subject/date_issued taken by manual review 
-WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", "WDR_subjects.xlsx" )) 
-WDR_subjects <- WDR_subjects[1:45,]
+WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", "WDR_subjects.xlsx" )) %>% 
+  drop_na(id)
 
+# join
+WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>% 
+  dplyr::relocate(date_issued, .before = id ) %>% 
+  # drop useles clmns 
+  dplyr::select(-doc_mt_identifier_1, -doc_mt_identifier_2, -doc_mt_date, 
+                -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
+  dplyr::relocate(url_keys, .after = subj_216 ) %>% 
+  dplyr::rename(abstract = doc_mt_description) %>% 
+  # correct titles -> portion after {:}
+  dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
+  dplyr::relocate(title, .after = id)  %>% 
+  dplyr::rename(title_miss = doc_mt_title) %>% 
+  dplyr::mutate(title_miss = case_when(
+      str_starts(title, "World Development Report") ~ "Y",
+      TRUE ~ NA_character_) 
+  ) %>% 
+  dplyr::mutate(subject_mess = if_else(!is.na(subj_136), 
+                                       "Y", 
+                                       NA_character_))  %>% 
+  dplyr::relocate(subject_mess, .after = title_miss)  
+ 
+#convert all columns that start with "subj_" to lowercase
+# WDR_com[7:223] <- sapply(WDR_com[7:223], function(x) tolower(x))
+WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
+
+# combine all `subj_...` vars into a vector separated by comma
+col_subj <- names(WDR_com[, grep("^subj_", names(WDR_com))] )
+
+WDR_com <- WDR_com %>% tidyr::unite(
+  col = "subj_all", 
+  subj_1:subj_216, 
+  sep = ",",
+  remove = FALSE)
 ```
 
 
-### Parsing xml ONE INDICATOR AT A TIME (header)
+### Wrangling the text
 
+Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+### Tokenization
+
+Some definitions:
+-   A **token** ~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
+-   *tokenization* ~ splitting text into tokens
+-   **bigrams**/**n-gram** ~ sentence, or paragraph
+-   ***tidy text*** ~ "a table with one-token-per-row"
+-   ***corpus*** ~  objects that typically contain raw strings annotated with additional metadata and details
+-   ***Document-term matrix*** ~ sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term.  (`WDR_com`)
  
-# REVIEW --- 
+```{r}
+# printing out data as tibble 
+sbj_all_4 <- c(WDR_com$subj_1[4],WDR_com$subj_2[4] ,WDR_com$subj_3[4] ,WDR_com$subj_4[4] )
 
-## 1. World Bank Projects & Operations:
+library(dplyr)
+sbj_all_4_df <- tibble(line = 1:4, sbj_all_4 = sbj_all_4)
 
+
+# break the text [e.g. 1 abstract] into individual tokens 
+abs_1 <- as_tibble(WDR_com$abstract[1] )
+abs_1_t <-  abs_1 %>% 
+  # unnest (newColName, oldColName)
+  unnest_tokens(word, value ) # --> tidytext
+```
  
+ 
+# -------------- REVIEW ------------------ #
 
-# Wrangling the text 
-Following: [@kaye_ella_2019; @robinson_words_2017]
+## 2. World Bank Projects & Operations:
 
 
-## Tokenization 
-
-* A _token_ is a meaningful unit of text, such as a word, that we are interested in using for analysis
-* bigrams 
-
-# connections 
+# Connections
 
 Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
-  
-# Data sources: 
 
-1. World Bank Projects & Operations: https://datacatalog.worldbank.org/search/dataset/0037800 
- https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations
+# Data sources:
 
-  + Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+1.  World Bank Projects & Operations: <https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations>
 
-2. World Bank - World Development Reports
+-   Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
 
-  + Accessibility Classification:
+2.  World Bank - World Development Reports
 
-# Tutorials 
-[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
-[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+-   Accessibility Classification:
 
+# Tutorials
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/) [Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)

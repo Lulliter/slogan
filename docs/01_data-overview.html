@@ -14,7 +14,7 @@
 
 <title>Process and merge data</title>
 
-<script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -566,78 +566,145 @@ div.tocify {
 
 <h1 class="title toc-ignore">Process and merge data</h1>
 <h4 class="author">Luisa M. Mimmi</h4>
-<h4 class="date">Last run: 2022-05-03</h4>
+<h4 class="date">Last run: 2022-05-12</h4>
 
 </div>
 
 
-<p><i class="fa fa-refresh" style="color: firebrick"></i> Work in progress</p>
+<p><i class="fa fa-refresh" style="color: firebrick"></i> Work in
+progress</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pckgs -------------------------------------</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span> (<span class="st">&quot;pacman&quot;</span>)) (<span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>))</span></code></pre></div>
 <pre><code>## Loading required package: pacman</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse,  tibble, </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       here,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       httr, jsonlite, XML,xml2, </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>       oai, <span class="co"># R client to work with OAI-PMH </span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       citr)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Function(s) -------------------------------------</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># source(here::here (&quot;R&quot;, &quot;WB-OKR_scrape-function.R&quot;) )</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Data -------------------------------------</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA https://datacatalog.worldbank.org/search/dataset/0037800 </span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api</span></span></code></pre></div>
-<div id="data-ingest" class="section level1">
-<h1>Data ingest</h1>
-<div id="oai-pmh" class="section level2">
-<h2>OAI-PMH</h2>
-<p><strong>OAI-PMH</strong> (Open Archives Initiative Protocol for Metadata Harvest-ing) services, a protocol developed by the Open Archives Initiative (<a href="https://en.wikipedia.org/wiki/Open_Archives_Initiative" class="uri">https://en.wikipedia.org/wiki/Open_Archives_Initiative</a>). OAI-PMH uses XML data format transported over HTTP.</p>
-<ul>
-<li>packg: Package <code>oai</code> is built on xml2 and httr.</li>
-<li>paging: OAI-PMH uses (optionally) <code>resumptionTokens</code>, with an optional expiration date. These tokens can be used to continue on to the next chunk of data, if the first request did not get to the end.</li>
-</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(tidyverse, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>       <span class="co"># ggplot2, for data visualisation.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>       <span class="co"># dplyr, for data manipulation.</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>       <span class="co"># tidyr, for data tidying.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       <span class="co"># readr, for data import.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>       <span class="co"># purrr, for functional programming.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>       <span class="co"># tibble, for tibbles, a modern re-imagining of data frames.</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>       <span class="co"># stringr, for strings.</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>       <span class="co"># forcats, for factors.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>       here,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       httr, jsonlite, XML, xml2, </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       oai, <span class="co"># R client to work with OAI-PMH </span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>       citr, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>       tidytext)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Function(s) -------------------------------------</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># source(here::here (&quot;R&quot;, &quot;WB-OKR_scrape-function.R&quot;) )</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Data -------------------------------------</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA https://datacatalog.worldbank.org/search/dataset/0037800 </span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api</span></span></code></pre></div>
+<div id="data-ingesting-cleaning" class="section level1">
+<h1>Data ingesting &amp; cleaning</h1>
+<div id="world-development-reports-wrds" class="section level2">
+<h2>1. World Development Reports (WRDs)</h2>
+<!-- Done in "./_my_stuff/_01_data-overview.Rmd"  -->
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># WRD metadata taken with API get (issues) </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>WDR <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw_data&quot;</span>, <span class="st">&quot;WDR.rds&quot;</span> )) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Extract only the portion of string AFTER the backslash {/}</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span>  <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(doc_mt_identifier_1, <span class="st">&quot;[^/]+$&quot;</span>)) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(id, <span class="at">.before =</span> doc_mt_identifier_1) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">url_keys =</span> <span class="fu">paste0</span>(<span class="st">&quot;https://openknowledge.worldbank.org/handle/10986/&quot;</span>, id , <span class="st">&quot;?show=full&quot;</span>) )<span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(url_keys, <span class="at">.before =</span>  doc_mt_identifier_1)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># WRD subject/date_issued taken by manual review </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>WDR_subjects <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw_data&quot;</span>, <span class="st">&quot;WDR_subjects.xlsx&quot;</span> )) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(id)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># join</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> <span class="fu">left_join</span>(WDR, WDR_subjects, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(date_issued, <span class="at">.before =</span> id ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># drop useles clmns </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>doc_mt_identifier_1, <span class="sc">-</span>doc_mt_identifier_2, <span class="sc">-</span>doc_mt_date, </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>doc_mt_subject, <span class="sc">-</span>doc_mt_creator, <span class="sc">-</span>doc_mt_set_spec) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(url_keys, <span class="at">.after =</span> subj_216 ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">abstract =</span> doc_mt_description) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># correct titles -&gt; portion after {:}</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(., <span class="at">title =</span> <span class="fu">str_extract</span>(doc_mt_title,<span class="st">&quot;[^:]+$&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(title, <span class="at">.after =</span> id)  <span class="sc">%&gt;%</span> </span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">title_miss =</span> doc_mt_title) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">title_miss =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_starts</span>(title, <span class="st">&quot;World Development Report&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>) </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subject_mess =</span> <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(subj_136), </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                                       <span class="cn">NA_character_</span>))  <span class="sc">%&gt;%</span> </span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(subject_mess, <span class="at">.after =</span> title_miss)  </span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#convert all columns that start with &quot;subj_&quot; to lowercase</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co"># WDR_com[7:223] &lt;- sapply(WDR_com[7:223], function(x) tolower(x))</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] <span class="ot">&lt;-</span> <span class="fu">sapply</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))], <span class="cf">function</span>(x) <span class="fu">tolower</span>(x))</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co"># combine all `subj_...` vars into a vector separated by comma</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>col_subj <span class="ot">&lt;-</span> <span class="fu">names</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] )</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> WDR_com <span class="sc">%&gt;%</span> tidyr<span class="sc">::</span><span class="fu">unite</span>(</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;subj_all&quot;</span>, </span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  subj_1<span class="sc">:</span>subj_216, </span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>,</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div id="wrangling-the-text" class="section level3">
+<h3>Wrangling the text</h3>
+<p>Following: <span class="citation">(Kaye 2019; Robinson 2017; Robinson
+and Silge 2022)</span></p>
 </div>
-<div id="world-bank-list-of-world-development-reports" class="section level2">
-<h2>2. World Bank list of World Development Reports</h2>
-<p>Following <a href="https://github.com/transteph/world-bank-document-scraping">Stephanie Tran</a> project to extract documents metadata from WBG OKR repository, who created the function <code>R/WB-OKR_scrape-function.R</code>.</p>
-<p>Which metadata: + collections: “Books” <a href="https://openknowledge.worldbank.org/handle/10986/4" class="uri">https://openknowledge.worldbank.org/handle/10986/4</a> + sub-collections: “Corporate Flagships” <a href="https://openknowledge.worldbank.org/handle/10986/2123" class="uri">https://openknowledge.worldbank.org/handle/10986/2123</a> + World Development Report (WDR); <a href="https://openknowledge.worldbank.org/handle/10986/2124" class="uri">https://openknowledge.worldbank.org/handle/10986/2124</a> + Global Economic Prospects (GEP), + Doing Business (DB), and + Poverty and Shared Prosperity (PSP).<br />
-+ …</p>
-<p>Exe: Adding with a keyword:<br />
-+ World Development Report (WDR); + Keyword = <em>“economic development”</em></p>
-<p>the url would become: <a href="https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&amp;filter_relational_operator=equals&amp;filter=economic+development" class="uri">https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&amp;filter_relational_operator=equals&amp;filter=economic+development</a></p>
-<div id="parsing-xml-one-indicator-at-a-time-header" class="section level3">
-<h3>Parsing xml ONE INDICATOR AT A TIME (header)</h3>
+<div id="tokenization" class="section level3">
+<h3>Tokenization</h3>
+<p>Some definitions: - A <strong>token</strong> ~ is a meaningful unit
+of text, such as a <em>word</em>, that we are interested in using for
+analysis - <em>tokenization</em> ~ splitting text into tokens -
+<strong>bigrams</strong>/<strong>n-gram</strong> ~ sentence, or
+paragraph - <strong><em>tidy text</em></strong> ~ “a table with
+one-token-per-row” - <strong><em>corpus</em></strong> ~ objects that
+typically contain raw strings annotated with additional metadata and
+details - <strong><em>Document-term matrix</em></strong> ~ sparse matrix
+describing a collection (i.e., a corpus) of documents with one row for
+each document and one column for each term. (<code>WDR_com</code>)</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># printing out data as tibble </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sbj_all_4 <span class="ot">&lt;-</span> <span class="fu">c</span>(WDR_com<span class="sc">$</span>subj_1[<span class="dv">4</span>],WDR_com<span class="sc">$</span>subj_2[<span class="dv">4</span>] ,WDR_com<span class="sc">$</span>subj_3[<span class="dv">4</span>] ,WDR_com<span class="sc">$</span>subj_4[<span class="dv">4</span>] )</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sbj_all_4_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">line =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sbj_all_4 =</span> sbj_all_4)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># break the text [e.g. 1 abstract] into individual tokens </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>abs_1 <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(WDR_com<span class="sc">$</span>abstract[<span class="dv">1</span>] )</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>abs_1_t <span class="ot">&lt;-</span>  abs_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest (newColName, oldColName)</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, value ) <span class="co"># --&gt; tidytext</span></span></code></pre></div>
 </div>
 </div>
 </div>
 <div id="review" class="section level1">
-<h1>REVIEW —</h1>
+<h1>————– REVIEW ——————</h1>
 <div id="world-bank-projects-operations" class="section level2">
-<h2>1. World Bank Projects &amp; Operations:</h2>
-</div>
-</div>
-<div id="wrangling-the-text" class="section level1">
-<h1>Wrangling the text</h1>
-<p>Following: <span class="citation">(Kaye 2019; Robinson 2017)</span></p>
-<div id="tokenization" class="section level2">
-<h2>Tokenization</h2>
-<ul>
-<li><p>A <em>token</em> is a meaningful unit of text, such as a word, that we are interested in using for analysis</p></li>
-<li><p>bigrams</p></li>
-</ul>
+<h2>2. World Bank Projects &amp; Operations:</h2>
 </div>
 </div>
 <div id="connections" class="section level1">
-<h1>connections</h1>
-<p>Following the example of <a href="http://varianceexplained.org/r/hn-trends/">David Robinson on HN titles</a></p>
+<h1>Connections</h1>
+<p>Following the example of <a
+href="http://varianceexplained.org/r/hn-trends/">David Robinson on HN
+titles</a></p>
 </div>
 <div id="data-sources" class="section level1">
 <h1>Data sources:</h1>
 <ol style="list-style-type: decimal">
-<li>World Bank Projects &amp; Operations: <a href="https://datacatalog.worldbank.org/search/dataset/0037800" class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a> <a href="https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations" class="uri">https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations</a></li>
+<li>World Bank Projects &amp; Operations: <a
+href="https://datacatalog.worldbank.org/search/dataset/0037800"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a>
+<a
+href="https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations</a></li>
 </ol>
 <ul>
-<li>Accessibility Classification: <strong>public</strong> under <a href="https://datacatalog.worldbank.org/public-licenses?fragment=cc">Creative Commons Attribution 4.0</a></li>
+<li>Accessibility Classification: <strong>public</strong> under <a
+href="https://datacatalog.worldbank.org/public-licenses?fragment=cc">Creative
+Commons Attribution 4.0</a></li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
 <li>World Bank - World Development Reports</li>
@@ -648,18 +715,33 @@ div.tocify {
 </div>
 <div id="tutorials" class="section level1">
 <h1>Tutorials</h1>
-<p><a href="https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/" class="uri">https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/</a></p>
+<p><a
+href="https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/">Benjamin
+Soltoff: Computing 4 Social Sciences - API</a> <a
+href="https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/">Benjamin
+Soltoff: Computing 4 Social Sciences - text analysis</a></p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-kaye_ella_2019" class="csl-entry">
-Kaye, Ella. 2019. <span>“<span>ELLA KAYE</span>: <span>Working</span> with Text in <span>R</span>,”</span> October. <a href="https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/">https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/</a>.
+Kaye, Ella. 2019. <span>“<span>ELLA KAYE</span>: <span>Working</span>
+with Text in <span>R</span>,”</span> October. <a
+href="https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/">https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/</a>.
 </div>
 <div id="ref-robinson_words_2017" class="csl-entry">
-Robinson, David. 2017. <span>“Words Growing or Shrinking in <span>Hacker News</span> Titles: A Tidy Analysis.”</span> <span>Variance Explained</span>. June 8, 2017. <a href="http://varianceexplained.org/r/hn-trends/">http://varianceexplained.org/r/hn-trends/</a>.
+Robinson, David. 2017. <span>“Words Growing or Shrinking in <span>Hacker
+News</span> Titles: A Tidy Analysis.”</span> <span>Variance
+Explained</span>. June 8, 2017. <a
+href="http://varianceexplained.org/r/hn-trends/">http://varianceexplained.org/r/hn-trends/</a>.
+</div>
+<div id="ref-robinson_1_2022" class="csl-entry">
+Robinson, David, and Julia Silge. 2022. <em>[1] <span>Welcome</span> to
+<span>Text Mining</span> with <span>R</span> | <span>Text Mining</span>
+with <span>R</span></em>. <a
+href="https://www.tidytextmining.com/">https://www.tidytextmining.com/</a>.
 </div>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IGJ1enp3b3Jkcy5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCIgc3R5bGU9ImNvbG9yOiBmaXJlYnJpY2siPjwvaT4gIFdvcmsgaW4gcHJvZ3Jlc3MKIAoKCmBgYHtyIHNldHVwX2lucH0KIyBQY2tncyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmlmICghcmVxdWlyZSAoInBhY21hbiIpKSAoaW5zdGFsbC5wYWNrYWdlcygicGFjbWFuIikpCnBfbG9hZCh0aWR5dmVyc2UsICB0aWJibGUsIAogICAgICAgaGVyZSwKICAgICAgIGh0dHIsIGpzb25saXRlLCBYTUwseG1sMiwgCiAgICAgICBvYWksICMgUiBjbGllbnQgdG8gd29yayB3aXRoIE9BSS1QTUggCiAgICAgICBjaXRyKQoKIyBGdW5jdGlvbihzKSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgc291cmNlKGhlcmU6OmhlcmUgKCJSIiwgIldCLU9LUl9zY3JhcGUtZnVuY3Rpb24uUiIpICkKCiMgRGF0YSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgREFUQSBodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMCAKIyBJTlNUUlVDVElPTlMgaHR0cHM6Ly9kb2N1bWVudHMud29ybGRiYW5rLm9yZy9lbi9wdWJsaWNhdGlvbi9kb2N1bWVudHMtcmVwb3J0cy9hcGkKCmBgYAogIAojIERhdGEgaW5nZXN0CgojIyBPQUktUE1IICAKCioqT0FJLVBNSCoqIChPcGVuIEFyY2hpdmVzIEluaXRpYXRpdmUgUHJvdG9jb2wgZm9yIE1ldGFkYXRhIEhhcnZlc3QtaW5nKSBzZXJ2aWNlcywgYSBwcm90b2NvbCBkZXZlbG9wZWQgYnkgdGhlIE9wZW4gQXJjaGl2ZXMgSW5pdGlhdGl2ZSAoaHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvT3Blbl9BcmNoaXZlc19Jbml0aWF0aXZlKS4gT0FJLVBNSCB1c2VzIFhNTCBkYXRhIGZvcm1hdCB0cmFuc3BvcnRlZCBvdmVyIEhUVFAuCgorIHBhY2tnOiBQYWNrYWdlIGBvYWlgIGlzIGJ1aWx0IG9uIHhtbDIgYW5kIGh0dHIuIAorIHBhZ2luZzogT0FJLVBNSCB1c2VzIChvcHRpb25hbGx5KSBgcmVzdW1wdGlvblRva2Vuc2AsIHdpdGggYW4gb3B0aW9uYWwgZXhwaXJhdGlvbiBkYXRlLiBUaGVzZSB0b2tlbnMgY2FuIGJlIHVzZWQgdG8gY29udGludWUgb24gdG8gdGhlIG5leHQgY2h1bmsgb2YgZGF0YSwKaWYgdGhlIGZpcnN0IHJlcXVlc3QgZGlkIG5vdCBnZXQgdG8gdGhlIGVuZC4KCiMjIDIuIFdvcmxkIEJhbmsgbGlzdCBvZiBXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnRzCiAgICAgCkZvbGxvd2luZyBbU3RlcGhhbmllIFRyYW5dKGh0dHBzOi8vZ2l0aHViLmNvbS90cmFuc3RlcGgvd29ybGQtYmFuay1kb2N1bWVudC1zY3JhcGluZykgcHJvamVjdCB0byBleHRyYWN0IGRvY3VtZW50cyBtZXRhZGF0YSBmcm9tIFdCRyBPS1IgcmVwb3NpdG9yeSwgd2hvIGNyZWF0ZWQgdGhlIGZ1bmN0aW9uIGBSL1dCLU9LUl9zY3JhcGUtZnVuY3Rpb24uUmAuIAoKV2hpY2ggbWV0YWRhdGE6CiAgKyAgY29sbGVjdGlvbnM6ICJCb29rcyIgICAgICAgICAgICAgICAgICAgICAgIGh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni80CiAgICArIHN1Yi1jb2xsZWN0aW9uczogIkNvcnBvcmF0ZSBGbGFnc2hpcHMiICAgIGh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8yMTIzCiAgICAgICsgV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0IChXRFIpOyAgICAgICAgIGh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8yMTI0CiAgICAgICsgR2xvYmFsIEVjb25vbWljIFByb3NwZWN0cyAoR0VQKSwgCiAgICAgICsgRG9pbmcgQnVzaW5lc3MgKERCKSwgYW5kIAogICAgICArIFBvdmVydHkgYW5kIFNoYXJlZCBQcm9zcGVyaXR5IChQU1ApLiAgCiAgICAgICsgLi4uCgpFeGU6IEFkZGluZyB3aXRoIGEga2V5d29yZDogICAgICAgICAgIAogICAgICArIFdvcmxkIERldmVsb3BtZW50IFJlcG9ydCAoV0RSKTsKICAgICAgICArIEtleXdvcmQgPSBfImVjb25vbWljIGRldmVsb3BtZW50Il8gICAgCiAgICAgICAgCnRoZSB1cmwgd291bGQgYmVjb21lOiBodHRwczovL29wZW5rbm93bGVkZ2Uud29ybGRiYW5rLm9yZy9oYW5kbGUvMTA5ODYvMjEyNC9kaXNjb3Zlcj9maWx0ZXJ0eXBlPXN1YmplY3QmZmlsdGVyX3JlbGF0aW9uYWxfb3BlcmF0b3I9ZXF1YWxzJmZpbHRlcj1lY29ub21pYytkZXZlbG9wbWVudAogCiAKCiMjIyBQYXJzaW5nIHhtbCBPTkUgSU5ESUNBVE9SIEFUIEEgVElNRSAoaGVhZGVyKQoKIAojIFJFVklFVyAtLS0gCgojIyAxLiBXb3JsZCBCYW5rIFByb2plY3RzICYgT3BlcmF0aW9uczoKCiAKCiMgV3JhbmdsaW5nIHRoZSB0ZXh0IApGb2xsb3dpbmc6IFtAa2F5ZV9lbGxhXzIwMTk7IEByb2JpbnNvbl93b3Jkc18yMDE3XQoKCiMjIFRva2VuaXphdGlvbiAKCiogQSBfdG9rZW5fIGlzIGEgbWVhbmluZ2Z1bCB1bml0IG9mIHRleHQsIHN1Y2ggYXMgYSB3b3JkLCB0aGF0IHdlIGFyZSBpbnRlcmVzdGVkIGluIHVzaW5nIGZvciBhbmFseXNpcwoKKiBiaWdyYW1zIAoKIyBjb25uZWN0aW9ucyAKCkZvbGxvd2luZyB0aGUgZXhhbXBsZSBvZiBbRGF2aWQgUm9iaW5zb24gb24gSE4gdGl0bGVzXShodHRwOi8vdmFyaWFuY2VleHBsYWluZWQub3JnL3IvaG4tdHJlbmRzLykKICAKIyBEYXRhIHNvdXJjZXM6IAoKMS4gV29ybGQgQmFuayBQcm9qZWN0cyAmIE9wZXJhdGlvbnM6IGh0dHBzOi8vZGF0YWNhdGFsb2cud29ybGRiYW5rLm9yZy9zZWFyY2gvZGF0YXNldC8wMDM3ODAwIAogaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDAvV29ybGQtQmFuay1Qcm9qZWN0cy0tLU9wZXJhdGlvbnMKCiAgKyBBY2Nlc3NpYmlsaXR5IENsYXNzaWZpY2F0aW9uOiAqKnB1YmxpYyoqIHVuZGVyIFtDcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMF0oaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3B1YmxpYy1saWNlbnNlcz9mcmFnbWVudD1jYykKCjIuIFdvcmxkIEJhbmsgLSBXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnRzCgogICsgQWNjZXNzaWJpbGl0eSBDbGFzc2lmaWNhdGlvbjoKCiMgVHV0b3JpYWxzIApodHRwczovL2Nmc3MudWNoaWNhZ28uZWR1L3N5bGxhYnVzL2dldHRpbmctZGF0YS1mcm9tLXRoZS13ZWItYXBpLWFjY2Vzcy8K</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IGJ1enp3b3Jkcy5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCIgc3R5bGU9ImNvbG9yOiBmaXJlYnJpY2siPjwvaT4gV29yayBpbiBwcm9ncmVzcwoKYGBge3Igc2V0dXBfaW5wfQojIFBja2dzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KaWYgKCFyZXF1aXJlICgicGFjbWFuIikpIChpbnN0YWxsLnBhY2thZ2VzKCJwYWNtYW4iKSkKcF9sb2FkKHRpZHl2ZXJzZSwgCiAgICAgICAjIGdncGxvdDIsIGZvciBkYXRhIHZpc3VhbGlzYXRpb24uCiAgICAgICAjIGRwbHlyLCBmb3IgZGF0YSBtYW5pcHVsYXRpb24uCiAgICAgICAjIHRpZHlyLCBmb3IgZGF0YSB0aWR5aW5nLgogICAgICAgIyByZWFkciwgZm9yIGRhdGEgaW1wb3J0LgogICAgICAgIyBwdXJyciwgZm9yIGZ1bmN0aW9uYWwgcHJvZ3JhbW1pbmcuCiAgICAgICAjIHRpYmJsZSwgZm9yIHRpYmJsZXMsIGEgbW9kZXJuIHJlLWltYWdpbmluZyBvZiBkYXRhIGZyYW1lcy4KICAgICAgICMgc3RyaW5nciwgZm9yIHN0cmluZ3MuCiAgICAgICAjIGZvcmNhdHMsIGZvciBmYWN0b3JzLgogICAgICAgaGVyZSwKICAgICAgIGh0dHIsIGpzb25saXRlLCBYTUwsIHhtbDIsIAogICAgICAgb2FpLCAjIFIgY2xpZW50IHRvIHdvcmsgd2l0aCBPQUktUE1IIAogICAgICAgY2l0ciwgCiAgICAgICB0aWR5dGV4dCkKCiMgRnVuY3Rpb24ocykgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIHNvdXJjZShoZXJlOjpoZXJlICgiUiIsICJXQi1PS1Jfc2NyYXBlLWZ1bmN0aW9uLlIiKSApCgojIERhdGEgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIERBVEEgaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDAgCiMgSU5TVFJVQ1RJT05TIGh0dHBzOi8vZG9jdW1lbnRzLndvcmxkYmFuay5vcmcvZW4vcHVibGljYXRpb24vZG9jdW1lbnRzLXJlcG9ydHMvYXBpCgpgYGAKCiMgRGF0YSBpbmdlc3RpbmcgJiBjbGVhbmluZwoKIyMgMS4gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cyAoV1JEcykgCjwhLS0gRG9uZSBpbiAiLi9fbXlfc3R1ZmYvXzAxX2RhdGEtb3ZlcnZpZXcuUm1kIiAgLS0+CgpgYGB7cn0KIyBXUkQgbWV0YWRhdGEgdGFrZW4gd2l0aCBBUEkgZ2V0IChpc3N1ZXMpIApXRFIgPC0gcmVhZHI6OnJlYWRfcmRzKGhlcmU6OmhlcmUoImRhdGEiLCAicmF3X2RhdGEiLCAiV0RSLnJkcyIgKSkgJT4lIAogICAgICAjIEV4dHJhY3Qgb25seSB0aGUgcG9ydGlvbiBvZiBzdHJpbmcgQUZURVIgdGhlIGJhY2tzbGFzaCB7L30KICBtdXRhdGUoaWQgPSAgYXMubnVtZXJpYyhzdHJpbmdyOjpzdHJfZXh0cmFjdChkb2NfbXRfaWRlbnRpZmllcl8xLCAiW14vXSskIikpICkgJT4lIAogIGRwbHlyOjpyZWxvY2F0ZShpZCwgLmJlZm9yZSA9IGRvY19tdF9pZGVudGlmaWVyXzEpICU+JSAKICBtdXRhdGUodXJsX2tleXMgPSBwYXN0ZTAoImh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8iLCBpZCAsICI/c2hvdz1mdWxsIikgKSU+JSAKICBkcGx5cjo6cmVsb2NhdGUodXJsX2tleXMsIC5iZWZvcmUgPSAgZG9jX210X2lkZW50aWZpZXJfMSkKCiMgV1JEIHN1YmplY3QvZGF0ZV9pc3N1ZWQgdGFrZW4gYnkgbWFudWFsIHJldmlldyAKV0RSX3N1YmplY3RzIDwtIHJlYWR4bDo6cmVhZF9leGNlbChoZXJlOjpoZXJlKCJkYXRhIiwgInJhd19kYXRhIiwgIldEUl9zdWJqZWN0cy54bHN4IiApKSAlPiUgCiAgZHJvcF9uYShpZCkKCiMgam9pbgpXRFJfY29tIDwtIGxlZnRfam9pbihXRFIsIFdEUl9zdWJqZWN0cywgYnkgPSAiaWQiKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKGRhdGVfaXNzdWVkLCAuYmVmb3JlID0gaWQgKSAlPiUgCiAgIyBkcm9wIHVzZWxlcyBjbG1ucyAKICBkcGx5cjo6c2VsZWN0KC1kb2NfbXRfaWRlbnRpZmllcl8xLCAtZG9jX210X2lkZW50aWZpZXJfMiwgLWRvY19tdF9kYXRlLCAKICAgICAgICAgICAgICAgIC1kb2NfbXRfc3ViamVjdCwgLWRvY19tdF9jcmVhdG9yLCAtZG9jX210X3NldF9zcGVjKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHVybF9rZXlzLCAuYWZ0ZXIgPSBzdWJqXzIxNiApICU+JSAKICBkcGx5cjo6cmVuYW1lKGFic3RyYWN0ID0gZG9jX210X2Rlc2NyaXB0aW9uKSAlPiUgCiAgIyBjb3JyZWN0IHRpdGxlcyAtPiBwb3J0aW9uIGFmdGVyIHs6fQogIGRwbHlyOjptdXRhdGUoLiwgdGl0bGUgPSBzdHJfZXh0cmFjdChkb2NfbXRfdGl0bGUsIlteOl0rJCIpKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHRpdGxlLCAuYWZ0ZXIgPSBpZCkgICU+JSAKICBkcGx5cjo6cmVuYW1lKHRpdGxlX21pc3MgPSBkb2NfbXRfdGl0bGUpICU+JSAKICBkcGx5cjo6bXV0YXRlKHRpdGxlX21pc3MgPSBjYXNlX3doZW4oCiAgICAgIHN0cl9zdGFydHModGl0bGUsICJXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnQiKSB+ICJZIiwKICAgICAgVFJVRSB+IE5BX2NoYXJhY3Rlcl8pIAogICkgJT4lIAogIGRwbHlyOjptdXRhdGUoc3ViamVjdF9tZXNzID0gaWZfZWxzZSghaXMubmEoc3Vial8xMzYpLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIlkiLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTkFfY2hhcmFjdGVyXykpICAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHN1YmplY3RfbWVzcywgLmFmdGVyID0gdGl0bGVfbWlzcykgIAogCiNjb252ZXJ0IGFsbCBjb2x1bW5zIHRoYXQgc3RhcnQgd2l0aCAic3Vial8iIHRvIGxvd2VyY2FzZQojIFdEUl9jb21bNzoyMjNdIDwtIHNhcHBseShXRFJfY29tWzc6MjIzXSwgZnVuY3Rpb24oeCkgdG9sb3dlcih4KSkKV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gPC0gc2FwcGx5KFdEUl9jb21bLCBncmVwKCJec3Vial8iLCBuYW1lcyhXRFJfY29tKSldLCBmdW5jdGlvbih4KSB0b2xvd2VyKHgpKQoKIyBjb21iaW5lIGFsbCBgc3Vial8uLi5gIHZhcnMgaW50byBhIHZlY3RvciBzZXBhcmF0ZWQgYnkgY29tbWEKY29sX3N1YmogPC0gbmFtZXMoV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gKQoKV0RSX2NvbSA8LSBXRFJfY29tICU+JSB0aWR5cjo6dW5pdGUoCiAgY29sID0gInN1YmpfYWxsIiwgCiAgc3Vial8xOnN1YmpfMjE2LCAKICBzZXAgPSAiLCIsCiAgcmVtb3ZlID0gRkFMU0UpCmBgYAoKCiMjIyBXcmFuZ2xpbmcgdGhlIHRleHQKCkZvbGxvd2luZzogW0BrYXllX2VsbGFfMjAxOTsgQHJvYmluc29uX3dvcmRzXzIwMTc7IEByb2JpbnNvbl8xXzIwMjJdCgojIyMgVG9rZW5pemF0aW9uCgpTb21lIGRlZmluaXRpb25zOgotICAgQSAqKnRva2VuKiogfiBpcyBhIG1lYW5pbmdmdWwgdW5pdCBvZiB0ZXh0LCBzdWNoIGFzIGEgKndvcmQqLCB0aGF0IHdlIGFyZSBpbnRlcmVzdGVkIGluIHVzaW5nIGZvciBhbmFseXNpcwotICAgKnRva2VuaXphdGlvbiogfiBzcGxpdHRpbmcgdGV4dCBpbnRvIHRva2VucwotICAgKipiaWdyYW1zKiovKipuLWdyYW0qKiB+IHNlbnRlbmNlLCBvciBwYXJhZ3JhcGgKLSAgICoqKnRpZHkgdGV4dCoqKiB+ICJhIHRhYmxlIHdpdGggb25lLXRva2VuLXBlci1yb3ciCi0gICAqKipjb3JwdXMqKiogfiAgb2JqZWN0cyB0aGF0IHR5cGljYWxseSBjb250YWluIHJhdyBzdHJpbmdzIGFubm90YXRlZCB3aXRoIGFkZGl0aW9uYWwgbWV0YWRhdGEgYW5kIGRldGFpbHMKLSAgICoqKkRvY3VtZW50LXRlcm0gbWF0cml4KioqIH4gc3BhcnNlIG1hdHJpeCBkZXNjcmliaW5nIGEgY29sbGVjdGlvbiAoaS5lLiwgYSBjb3JwdXMpIG9mIGRvY3VtZW50cyB3aXRoIG9uZSByb3cgZm9yIGVhY2ggZG9jdW1lbnQgYW5kIG9uZSBjb2x1bW4gZm9yIGVhY2ggdGVybS4gIChgV0RSX2NvbWApCiAKYGBge3J9CiMgcHJpbnRpbmcgb3V0IGRhdGEgYXMgdGliYmxlIApzYmpfYWxsXzQgPC0gYyhXRFJfY29tJHN1YmpfMVs0XSxXRFJfY29tJHN1YmpfMls0XSAsV0RSX2NvbSRzdWJqXzNbNF0gLFdEUl9jb20kc3Vial80WzRdICkKCmxpYnJhcnkoZHBseXIpCnNial9hbGxfNF9kZiA8LSB0aWJibGUobGluZSA9IDE6NCwgc2JqX2FsbF80ID0gc2JqX2FsbF80KQoKCiMgYnJlYWsgdGhlIHRleHQgW2UuZy4gMSBhYnN0cmFjdF0gaW50byBpbmRpdmlkdWFsIHRva2VucyAKYWJzXzEgPC0gYXNfdGliYmxlKFdEUl9jb20kYWJzdHJhY3RbMV0gKQphYnNfMV90IDwtICBhYnNfMSAlPiUgCiAgIyB1bm5lc3QgKG5ld0NvbE5hbWUsIG9sZENvbE5hbWUpCiAgdW5uZXN0X3Rva2Vucyh3b3JkLCB2YWx1ZSApICMgLS0+IHRpZHl0ZXh0CmBgYAogCiAKIyAtLS0tLS0tLS0tLS0tLSBSRVZJRVcgLS0tLS0tLS0tLS0tLS0tLS0tICMKCiMjIDIuIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOgoKCiMgQ29ubmVjdGlvbnMKCkZvbGxvd2luZyB0aGUgZXhhbXBsZSBvZiBbRGF2aWQgUm9iaW5zb24gb24gSE4gdGl0bGVzXShodHRwOi8vdmFyaWFuY2VleHBsYWluZWQub3JnL3IvaG4tdHJlbmRzLykKCiMgRGF0YSBzb3VyY2VzOgoKMS4gIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOiA8aHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDA+IDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMC9Xb3JsZC1CYW5rLVByb2plY3RzLS0tT3BlcmF0aW9ucz4KCi0gICBBY2Nlc3NpYmlsaXR5IENsYXNzaWZpY2F0aW9uOiAqKnB1YmxpYyoqIHVuZGVyIFtDcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMF0oaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3B1YmxpYy1saWNlbnNlcz9mcmFnbWVudD1jYykKCjIuICBXb3JsZCBCYW5rIC0gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cwoKLSAgIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246CgojIFR1dG9yaWFscwoKW0JlbmphbWluIFNvbHRvZmY6IENvbXB1dGluZyA0IFNvY2lhbCBTY2llbmNlcyAtIEFQSV0oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy9nZXR0aW5nLWRhdGEtZnJvbS10aGUtd2ViLWFwaS1hY2Nlc3MvKSBbQmVuamFtaW4gU29sdG9mZjogQ29tcHV0aW5nIDQgU29jaWFsIFNjaWVuY2VzIC0gdGV4dCBhbmFseXNpc10oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy90ZXh0LWFuYWx5c2lzLWZ1bmRhbWVudGFscy1hbmQtc2VudGltZW50LWFuYWx5c2lzLykK</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

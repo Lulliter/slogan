@@ -13,6 +13,7 @@ bibliography: buzzwords.bib
 ```{r setup, include=FALSE}
 library(knitr)
 library(kableExtra)
+
 knit_print.data.frame <- function(x, ...) {
   res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
   asis_output(res)
@@ -92,23 +93,30 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 # }
 ```
 
-# At the core of reduction 
+# At the core of reduction
+
 I was really struck the first time I realized how the Latin motto I had heard since childhood: "Mens sana in corpore sano", was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: "Orandum est ut sit mens sana in corpore sano" (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it refers prayer and not to sport.
 
-> In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l’analisi non insiste sull’aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L’effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate ‘riduzionismi’. [@garbini_uscire_2003]
-
+> In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'. [@garbini_uscire_2003]
 
 # Some important definitions
 
+## Hermeneutics
+
+Hermeneutics: from Greek *ἑρμηνεία, ας, ἡ* (hermēneia), deriving from the verb *ἑρμηνεύω* (hermēneuō) is the science and practice of interpretation. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches:
+  1.  reconstructing the original intention of the authors
+  2.  adapting the interpretation based on the person who receives the text
+
 ## Adage
-An _adage_ is an ancient saying or maxim, brief and sometimes mysterious, that has become accepted as conventional wisdom. In classical rhetoric, an adage is also known as a _rhetorical proverb_ or _paroemia_. Often it's a type of metaphor. It can express the values of a culture. [@nordquist_words_2018]
+
+An *adage* is an ancient saying or maxim, brief and sometimes mysterious, that has become accepted as conventional wisdom. In classical rhetoric, an adage is also known as a *rhetorical proverb* or *paroemia*. Often it's a type of metaphor. It can express the values of a culture. [@nordquist_words_2018]
 
 > **Example(s)**: "The early bird gets the worm", "Better late than never."
 
 ## Slogan
-The English word _slogan_ has a Scottish Gaelic origin and derives from the combination of _sluagh_ (army) + _gairm_ (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called _taglines_ in the United States 
 
+The English word *slogan* has a Scottish Gaelic origin and derives from the combination of *sluagh* (army) + *gairm* (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called *taglines* in the United States
+
+> **Example(s)**: "...", "..."
 
 # Reference
-
-

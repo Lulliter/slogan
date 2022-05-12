@@ -1,4 +1,3 @@
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # Follow the buzzword
@@ -15,12 +14,12 @@
 
 **All this project’s materials are free and open:**
 
--   [Download the data](#data)
--   [See the analysis notebook
+- [Download the data](#data)
+- [See the analysis notebook
     website](https://lulliter.github.io/slogan/)
 
-![Open data](img/data_large_color.png)  
-![Open](img/materials_large_color.png)
+<!-- ![Open data](img/data_large_color.png) 
+![Open](img/materials_large_color.png)  -->
 
 ## How to build/deploy the site
 
@@ -29,73 +28,46 @@ accessible here <https://lulliter.github.io/slogan/>. The folder
 containing the html files of the website is `./docs/` (this was also
 specified in the `_site.yml`)
 
-    #> .
-    #> ├── 00_home-lexicon.Rmd
-    #> ├── 00_lexicon-gender.Rmd
-    #> ├── 00_lexicon-green.Rmd
-    #> ├── 01_data-overview.Rmd
-    #> ├── 02_descriptive-analysis.Rmd
-    #> ├── 03_model-details.Rmd
-    #> ├── 03_modeling-choices.Rmd
-    #> ├── 04_predictions.Rmd
-    #> ├── Makefile
-    #> ├── R
-    #> │   ├── funs_data-cleaning.R
-    #> │   ├── funs_knitting.R
-    #> │   ├── funs_notebook.R
-    #> │   ├── models_analysis.R
-    #> │   ├── models_details.R
-    #> │   ├── models_lhr.R
-    #> │   ├── models_pts.R
-    #> │   └── psyteachr_setup.R
-    #> ├── README.Rmd
-    #> ├── README.html
-    #> ├── README.md
-    #> ├── _build_deploy.sh
-    #> ├── _site.yml
-    #> ├── _slogan.bib
-    #> ├── buzzwords.bib
-    #> ├── data
-    #> │   ├── DO-NOT-EDIT-ANY-FILES-IN-HERE-BY-HAND
-    #> │   ├── derived_data
-    #> │   └── raw_data
-    #> ├── docs
-    #> │   ├── 00_home-lexicon.html
-    #> │   ├── 00_lexicon-gender.html
-    #> │   ├── 00_lexicon-green.html
-    #> │   ├── 01_data-overview.html
-    #> │   ├── 02_descriptive-analysis.html
-    #> │   ├── 03_model-details.html
-    #> │   ├── 03_modeling-choices.html
-    #> │   ├── 04_predictions.html
-    #> │   ├── R
-    #> │   ├── README.html
-    #> │   ├── data
-    #> │   ├── html
-    #> │   ├── img
-    #> │   ├── index.html
-    #> │   └── site_libs
-    #> ├── html
-    #> │   ├── fixes.css
-    #> │   └── footer.html
-    #> ├── img
-    #> │   ├── data_large_color.png
-    #> │   └── materials_large_color.png
-    #> ├── index.Rmd
-    #> └── slogan.Rproj
+```
+.
+├── 00_home-lexicon.Rmd
+├── 00_lexicon-gender.Rmd
+├── 00_lexicon-green.Rmd
+├── 01_data-overview.Rmd
+├── 02_descriptive-analysis.Rmd
+├── 03_model-details.Rmd
+├── 03_modeling-choices.Rmd
+├── 04_predictions.Rmd
+├── Makefile
+├── R
+├── README.Rmd
+├── README.html
+├── README.md
+├── _build_deploy.sh
+├── _my_stuff
+├── _site.yml
+├── buzzwords.bib
+├── data
+├── docs
+├── html
+├── img
+├── index.Rmd
+├── site_libs
+└── slogan.Rproj
+```
 
 Upon making changes in the local folder, I have 2 ways in which I can
 commit and push changes to GitHub (as well as update public version of
 website on GitHub Pages)
 
-1.  Pseudo manual **shell** commands in `_build_deploy.sh` file
+1. Pseudo manual **shell** commands in `_build_deploy.sh` file
 
--   Here I can also decide whether to use `git add -u` (only stuff
+- Here I can also decide whether to use `git add -u` (only stuff
     already tracked) or `git add --A` (also new stuff)
 
-2.  Using automated **make** instructions in `Makefile`  
+2. Using automated **make** instructions in `Makefile`  
 
--   Here I have set it up exclusively with `git add -u`
+- Here I have set it up exclusively with `git add -u`
 
 ------------------------------------------------------------------------
 
