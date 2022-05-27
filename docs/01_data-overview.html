@@ -566,13 +566,43 @@ div.tocify {
 
 <h1 class="title toc-ignore">Process and merge data</h1>
 <h4 class="author">Luisa M. Mimmi</h4>
-<h4 class="date">Last run: 2022-05-12</h4>
+<h4 class="date">Last run: 2022-05-18</h4>
 
 </div>
 
 
 <p><i class="fa fa-refresh" style="color: firebrick"></i> Work in
 progress</p>
+<div id="intro" class="section level1">
+<h1>0. Intro</h1>
+<div id="some-definitions" class="section level3">
+<h3>— Some definitions:</h3>
+<ul>
+<li><strong>Corpus</strong> ~ a collection of similar documents |
+objects that typically contain raw strings annotated with additional
+metadata and details</li>
+<li><strong>Document-term matrix</strong> ~ sparse matrix describing a
+collection (i.e., a corpus) of documents with one row for each document
+and one column for each term. (<code>WDR_com</code>)</li>
+<li><strong>Document</strong> ~ collection of sentences</li>
+<li><strong>Token</strong> ~ is a meaningful unit of text, such as a
+<em>word</em>, that we are interested in using for analysis</li>
+<li><strong>Tokenization</strong> ~ splitting text into tokens</li>
+<li><strong>Bigrams</strong>/<strong>n-gram</strong> ~ sentence, or
+paragraph</li>
+<li><strong>Tidy text</strong> ~ “a table with one-token-per-row”</li>
+</ul>
+</div>
+<div id="r-text-processing" class="section level3">
+<h3>— R text processing</h3>
+<ul>
+<li>{tm}</li>
+<li>{OpenNLP}</li>
+<li>{RWeka}</li>
+<li>{languageR}</li>
+<li>{korPus}</li>
+<li>{tidytext}</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pckgs -------------------------------------</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span> (<span class="st">&quot;pacman&quot;</span>)) (<span class="fu">install.packages</span>(<span class="st">&quot;pacman&quot;</span>))</span></code></pre></div>
 <pre><code>## Loading required package: pacman</code></pre>
@@ -589,101 +619,645 @@ progress</p>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>       httr, jsonlite, XML, xml2, </span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>       oai, <span class="co"># R client to work with OAI-PMH </span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>       citr, </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>       tidytext)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Function(s) -------------------------------------</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># source(here::here (&quot;R&quot;, &quot;WB-OKR_scrape-function.R&quot;) )</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Data -------------------------------------</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA https://datacatalog.worldbank.org/search/dataset/0037800 </span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api</span></span></code></pre></div>
-<div id="data-ingesting-cleaning" class="section level1">
-<h1>Data ingesting &amp; cleaning</h1>
-<div id="world-development-reports-wrds" class="section level2">
-<h2>1. World Development Reports (WRDs)</h2>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>       tidytext, </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>       sjmisc</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>       )</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Function(s) -------------------------------------</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># source(here::here (&quot;R&quot;, &quot;WB-OKR_scrape-function.R&quot;) )</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Data -------------------------------------</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># DATA https://datacatalog.worldbank.org/search/dataset/0037800 </span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api</span></span></code></pre></div>
+</div>
+</div>
+<div id="a.-world-development-reports-wrds" class="section level1">
+<h1>A. World Development Reports (WRDs)</h1>
+<p>Following: <span class="citation">(Kaye 2019; Robinson 2017; Robinson
+and Silge 2022)</span></p>
+<div id="data-ingesting-cleaning" class="section level2">
+<h2>1. Data ingesting &amp; cleaning</h2>
 <!-- Done in "./_my_stuff/_01_data-overview.Rmd"  -->
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># WRD metadata taken with API get (issues) </span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>WDR <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_rds</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw_data&quot;</span>, <span class="st">&quot;WDR.rds&quot;</span> )) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Extract only the portion of string AFTER the backslash {/}</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span>  <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(doc_mt_identifier_1, <span class="st">&quot;[^/]+$&quot;</span>)) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span>  <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_extract</span>(doc_mt_identifier_1, <span class="st">&quot;[^/]+$&quot;</span>))) <span class="sc">%&gt;%</span> </span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(id, <span class="at">.before =</span> doc_mt_identifier_1) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">url_keys =</span> <span class="fu">paste0</span>(<span class="st">&quot;https://openknowledge.worldbank.org/handle/10986/&quot;</span>, id , <span class="st">&quot;?show=full&quot;</span>) )<span class="sc">%&gt;%</span> </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(url_keys, <span class="at">.before =</span>  doc_mt_identifier_1)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># WRD subject/date_issued taken by manual review </span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>WDR_subjects <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw_data&quot;</span>, <span class="st">&quot;WDR_subjects.xlsx&quot;</span> )) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(id)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># join</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> <span class="fu">left_join</span>(WDR, WDR_subjects, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(date_issued, <span class="at">.before =</span> id ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># drop useles clmns </span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>doc_mt_identifier_1, <span class="sc">-</span>doc_mt_identifier_2, <span class="sc">-</span>doc_mt_date, </span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>doc_mt_subject, <span class="sc">-</span>doc_mt_creator, <span class="sc">-</span>doc_mt_set_spec) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(url_keys, <span class="at">.after =</span> subj_216 ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">abstract =</span> doc_mt_description) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># correct titles -&gt; portion after {:}</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(., <span class="at">title =</span> <span class="fu">str_extract</span>(doc_mt_title,<span class="st">&quot;[^:]+$&quot;</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(title, <span class="at">.after =</span> id)  <span class="sc">%&gt;%</span> </span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">title_miss =</span> doc_mt_title) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">title_miss =</span> <span class="fu">case_when</span>(</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_starts</span>(title, <span class="st">&quot;World Development Report&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Y&quot;</span>,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>) </span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subject_mess =</span> <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(subj_136), </span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;Y&quot;</span>, </span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                                       <span class="cn">NA_character_</span>))  <span class="sc">%&gt;%</span> </span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(subject_mess, <span class="at">.after =</span> title_miss)  </span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#convert all columns that start with &quot;subj_&quot; to lowercase</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co"># WDR_com[7:223] &lt;- sapply(WDR_com[7:223], function(x) tolower(x))</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] <span class="ot">&lt;-</span> <span class="fu">sapply</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))], <span class="cf">function</span>(x) <span class="fu">tolower</span>(x))</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co"># combine all `subj_...` vars into a vector separated by comma</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>col_subj <span class="ot">&lt;-</span> <span class="fu">names</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] )</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> WDR_com <span class="sc">%&gt;%</span> tidyr<span class="sc">::</span><span class="fu">unite</span>(</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;subj_all&quot;</span>, </span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  subj_1<span class="sc">:</span>subj_216, </span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>,</span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<div id="wrangling-the-text" class="section level3">
-<h3>Wrangling the text</h3>
-<p>Following: <span class="citation">(Kaye 2019; Robinson 2017; Robinson
-and Silge 2022)</span></p>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">url_keys =</span> <span class="fu">paste0</span>(<span class="st">&quot;https://openknowledge.worldbank.org/handle/10986/&quot;</span>, id , <span class="st">&quot;?show=full&quot;</span>) )  </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># WRD subject/date_issued taken by manual review </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>WDR_subjects <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;raw_data&quot;</span>, <span class="st">&quot;WDR_subjects.xlsx&quot;</span> )) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(id)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># join</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> <span class="fu">left_join</span>(WDR, WDR_subjects, <span class="at">by =</span> <span class="st">&quot;id&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(date_issued, <span class="at">.before =</span> id ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># drop useles clmns </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>doc_mt_identifier_1, <span class="sc">-</span>doc_mt_identifier_2, <span class="sc">-</span>doc_mt_date, </span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                <span class="sc">-</span>doc_mt_subject, <span class="sc">-</span>doc_mt_creator, <span class="sc">-</span>doc_mt_set_spec) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#dplyr::relocate(url_keys, .after = subj_216 ) %&gt;% </span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">abstract =</span> doc_mt_description) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># correct titles -&gt; portion after {:}</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(., <span class="at">title =</span> <span class="fu">str_extract</span>(doc_mt_title,<span class="st">&quot;[^:]+$&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(title, <span class="at">.after =</span> id)  <span class="sc">%&gt;%</span> </span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">title_miss =</span> doc_mt_title) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">title_miss =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_starts</span>(title, <span class="st">&quot;World Development Report&quot;</span>) <span class="sc">~</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span>) </span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">subject_mess =</span> <span class="fu">if_else</span>(<span class="sc">!</span><span class="fu">is.na</span>(subj_136), </span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                                       <span class="cn">NA_character_</span>))  <span class="sc">%&gt;%</span> </span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(subject_mess, <span class="at">.after =</span> title_miss)  </span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co"># convert all columns that start with &quot;subj_&quot; to lowercase</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># WDR_com[7:223] &lt;- sapply(WDR_com[7:223], function(x) tolower(x))</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] <span class="ot">&lt;-</span> <span class="fu">sapply</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))], <span class="cf">function</span>(x) <span class="fu">tolower</span>(x))</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co"># combine all `subj_...` vars into a vector separated by comma</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>col_subj <span class="ot">&lt;-</span> <span class="fu">names</span>(WDR_com[, <span class="fu">grep</span>(<span class="st">&quot;^subj_&quot;</span>, <span class="fu">names</span>(WDR_com))] )</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>WDR_com <span class="ot">&lt;-</span> WDR_com <span class="sc">%&gt;%</span> tidyr<span class="sc">::</span><span class="fu">unite</span>(</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> <span class="st">&quot;subj_all&quot;</span>, </span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  subj_1<span class="sc">:</span>subj_216, </span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>,</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">remove =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
-<div id="tokenization" class="section level3">
-<h3>Tokenization</h3>
-<p>Some definitions: - A <strong>token</strong> ~ is a meaningful unit
-of text, such as a <em>word</em>, that we are interested in using for
-analysis - <em>tokenization</em> ~ splitting text into tokens -
-<strong>bigrams</strong>/<strong>n-gram</strong> ~ sentence, or
-paragraph - <strong><em>tidy text</em></strong> ~ “a table with
-one-token-per-row” - <strong><em>corpus</em></strong> ~ objects that
-typically contain raw strings annotated with additional metadata and
-details - <strong><em>Document-term matrix</em></strong> ~ sparse matrix
-describing a collection (i.e., a corpus) of documents with one row for
-each document and one column for each term. (<code>WDR_com</code>)</p>
+<div id="tokenization-of-docs-subjects-found-in-metadata"
+class="section level2">
+<h2>2. Tokenization (of Docs’ subjects found in metadata)</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># printing out data as tibble </span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sbj_all_4 <span class="ot">&lt;-</span> <span class="fu">c</span>(WDR_com<span class="sc">$</span>subj_1[<span class="dv">4</span>],WDR_com<span class="sc">$</span>subj_2[<span class="dv">4</span>] ,WDR_com<span class="sc">$</span>subj_3[<span class="dv">4</span>] ,WDR_com<span class="sc">$</span>subj_4[<span class="dv">4</span>] )</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>sbj_all_4_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">line =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">sbj_all_4 =</span> sbj_all_4)</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># break the text [e.g. 1 abstract] into individual tokens </span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>abs_1 <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(WDR_com<span class="sc">$</span>abstract[<span class="dv">1</span>] )</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>abs_1_t <span class="ot">&lt;-</span>  abs_1 <span class="sc">%&gt;%</span> </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest (newColName, oldColName)</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, value ) <span class="co"># --&gt; tidytext</span></span></code></pre></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># break the text [e.g. 1 abstract] into individual tokens </span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>abs_1 <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(WDR_com<span class="sc">$</span>abstract[<span class="dv">1</span>] )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>abs_1_t <span class="ot">&lt;-</span>  abs_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest (newColName, oldColName)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, value ) <span class="co"># --&gt; tidytext</span></span></code></pre></div>
+</div>
+<div id="a-troubleshooting-some-obs" class="section level2">
+<h2>2.a Troubleshooting some obs</h2>
+<blockquote>
+<p>MY PROBLEM HERE IS THAT SOME OF THE SUBJECT LISTS ARE EVIDENTLY WRONG
+(either they are the same of another WDR or they are impossibly
+long)</p>
+</blockquote>
+<div
+id="extrapolate-subjects-from-abstracts---for-wrong-records-with-unlikely-subjects"
+class="section level3">
+<h3>— Extrapolate subjects from abstracts - for [WRONG] records with
+unlikely subjects</h3>
+<blockquote>
+<p>MY SOLUTION: I take the abstract and I create my “own” plausible list
+of subjects</p>
+</blockquote>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- identify wrong subject obs</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>WDR_wr <span class="ot">&lt;-</span> WDR_com <span class="sc">%&gt;%</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>( subject_mess <span class="sc">==</span> <span class="st">&quot;Y&quot;</span>) </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WDR_com)</span></code></pre></div>
+<pre><code>##   [1] &quot;date_issued&quot;  &quot;id&quot;           &quot;title&quot;        &quot;title_miss&quot;   &quot;subject_mess&quot;
+##   [6] &quot;abstract&quot;     &quot;url_keys&quot;     &quot;subj_all&quot;     &quot;subj_1&quot;       &quot;subj_2&quot;      
+##  [11] &quot;subj_3&quot;       &quot;subj_4&quot;       &quot;subj_5&quot;       &quot;subj_6&quot;       &quot;subj_7&quot;      
+##  [16] &quot;subj_8&quot;       &quot;subj_9&quot;       &quot;subj_10&quot;      &quot;subj_11&quot;      &quot;subj_12&quot;     
+##  [21] &quot;subj_13&quot;      &quot;subj_14&quot;      &quot;subj_15&quot;      &quot;subj_16&quot;      &quot;subj_17&quot;     
+##  [26] &quot;subj_18&quot;      &quot;subj_19&quot;      &quot;subj_20&quot;      &quot;subj_21&quot;      &quot;subj_22&quot;     
+##  [31] &quot;subj_23&quot;      &quot;subj_24&quot;      &quot;subj_25&quot;      &quot;subj_26&quot;      &quot;subj_27&quot;     
+##  [36] &quot;subj_28&quot;      &quot;subj_29&quot;      &quot;subj_30&quot;      &quot;subj_31&quot;      &quot;subj_32&quot;     
+##  [41] &quot;subj_33&quot;      &quot;subj_34&quot;      &quot;subj_35&quot;      &quot;subj_36&quot;      &quot;subj_37&quot;     
+##  [46] &quot;subj_38&quot;      &quot;subj_39&quot;      &quot;subj_40&quot;      &quot;subj_41&quot;      &quot;subj_42&quot;     
+##  [51] &quot;subj_43&quot;      &quot;subj_44&quot;      &quot;subj_45&quot;      &quot;subj_46&quot;      &quot;subj_47&quot;     
+##  [56] &quot;subj_48&quot;      &quot;subj_49&quot;      &quot;subj_50&quot;      &quot;subj_51&quot;      &quot;subj_52&quot;     
+##  [61] &quot;subj_53&quot;      &quot;subj_54&quot;      &quot;subj_55&quot;      &quot;subj_56&quot;      &quot;subj_57&quot;     
+##  [66] &quot;subj_58&quot;      &quot;subj_59&quot;      &quot;subj_60&quot;      &quot;subj_61&quot;      &quot;subj_62&quot;     
+##  [71] &quot;subj_63&quot;      &quot;subj_64&quot;      &quot;subj_65&quot;      &quot;subj_66&quot;      &quot;subj_67&quot;     
+##  [76] &quot;subj_68&quot;      &quot;subj_69&quot;      &quot;subj_70&quot;      &quot;subj_71&quot;      &quot;subj_72&quot;     
+##  [81] &quot;subj_73&quot;      &quot;subj_74&quot;      &quot;subj_75&quot;      &quot;subj_76&quot;      &quot;subj_77&quot;     
+##  [86] &quot;subj_78&quot;      &quot;subj_79&quot;      &quot;subj_80&quot;      &quot;subj_81&quot;      &quot;subj_82&quot;     
+##  [91] &quot;subj_83&quot;      &quot;subj_84&quot;      &quot;subj_85&quot;      &quot;subj_86&quot;      &quot;subj_87&quot;     
+##  [96] &quot;subj_88&quot;      &quot;subj_89&quot;      &quot;subj_90&quot;      &quot;subj_91&quot;      &quot;subj_92&quot;     
+## [101] &quot;subj_93&quot;      &quot;subj_94&quot;      &quot;subj_95&quot;      &quot;subj_96&quot;      &quot;subj_97&quot;     
+## [106] &quot;subj_98&quot;      &quot;subj_99&quot;      &quot;subj_100&quot;     &quot;subj_101&quot;     &quot;subj_102&quot;    
+## [111] &quot;subj_103&quot;     &quot;subj_104&quot;     &quot;subj_105&quot;     &quot;subj_106&quot;     &quot;subj_107&quot;    
+## [116] &quot;subj_108&quot;     &quot;subj_109&quot;     &quot;subj_110&quot;     &quot;subj_111&quot;     &quot;subj_112&quot;    
+## [121] &quot;subj_113&quot;     &quot;subj_114&quot;     &quot;subj_115&quot;     &quot;subj_116&quot;     &quot;subj_117&quot;    
+## [126] &quot;subj_118&quot;     &quot;subj_119&quot;     &quot;subj_120&quot;     &quot;subj_121&quot;     &quot;subj_122&quot;    
+## [131] &quot;subj_123&quot;     &quot;subj_124&quot;     &quot;subj_125&quot;     &quot;subj_126&quot;     &quot;subj_127&quot;    
+## [136] &quot;subj_128&quot;     &quot;subj_129&quot;     &quot;subj_130&quot;     &quot;subj_131&quot;     &quot;subj_132&quot;    
+## [141] &quot;subj_133&quot;     &quot;subj_134&quot;     &quot;subj_135&quot;     &quot;subj_136&quot;     &quot;subj_137&quot;    
+## [146] &quot;subj_138&quot;     &quot;subj_139&quot;     &quot;subj_140&quot;     &quot;subj_141&quot;     &quot;subj_142&quot;    
+## [151] &quot;subj_143&quot;     &quot;subj_144&quot;     &quot;subj_145&quot;     &quot;subj_146&quot;     &quot;subj_147&quot;    
+## [156] &quot;subj_148&quot;     &quot;subj_149&quot;     &quot;subj_150&quot;     &quot;subj_151&quot;     &quot;subj_152&quot;    
+## [161] &quot;subj_153&quot;     &quot;subj_154&quot;     &quot;subj_155&quot;     &quot;subj_156&quot;     &quot;subj_157&quot;    
+## [166] &quot;subj_158&quot;     &quot;subj_159&quot;     &quot;subj_160&quot;     &quot;subj_161&quot;     &quot;subj_162&quot;    
+## [171] &quot;subj_163&quot;     &quot;subj_164&quot;     &quot;subj_165&quot;     &quot;subj_166&quot;     &quot;subj_167&quot;    
+## [176] &quot;subj_168&quot;     &quot;subj_169&quot;     &quot;subj_170&quot;     &quot;subj_171&quot;     &quot;subj_172&quot;    
+## [181] &quot;subj_173&quot;     &quot;subj_174&quot;     &quot;subj_175&quot;     &quot;subj_176&quot;     &quot;subj_177&quot;    
+## [186] &quot;subj_178&quot;     &quot;subj_179&quot;     &quot;subj_180&quot;     &quot;subj_181&quot;     &quot;subj_182&quot;    
+## [191] &quot;subj_183&quot;     &quot;subj_184&quot;     &quot;subj_185&quot;     &quot;subj_186&quot;     &quot;subj_187&quot;    
+## [196] &quot;subj_188&quot;     &quot;subj_189&quot;     &quot;subj_190&quot;     &quot;subj_191&quot;     &quot;subj_192&quot;    
+## [201] &quot;subj_193&quot;     &quot;subj_194&quot;     &quot;subj_195&quot;     &quot;subj_196&quot;     &quot;subj_197&quot;    
+## [206] &quot;subj_198&quot;     &quot;subj_199&quot;     &quot;subj_200&quot;     &quot;subj_201&quot;     &quot;subj_202&quot;    
+## [211] &quot;subj_203&quot;     &quot;subj_204&quot;     &quot;subj_205&quot;     &quot;subj_206&quot;     &quot;subj_207&quot;    
+## [216] &quot;subj_208&quot;     &quot;subj_209&quot;     &quot;subj_210&quot;     &quot;subj_211&quot;     &quot;subj_212&quot;    
+## [221] &quot;subj_213&quot;     &quot;subj_214&quot;     &quot;subj_215&quot;     &quot;subj_216&quot;</code></pre>
+<div id="single-wdr-case" class="section level4">
+<h4>– Single WDR case</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- tokenize abstract </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>WDR_4389 <span class="ot">&lt;-</span> WDR_wr <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(id <span class="sc">==</span><span class="st">&quot;4389&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span> (abstract) <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(word, abstract) <span class="co"># -&gt; 251 words </span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- remove stop words</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>stop_words <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(stop_words) <span class="sc">%&gt;%</span> <span class="co"># in the tidytext dataset </span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;report&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;development&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2011&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># --- isolate meaningful tokens</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>WDR_4389 <span class="ot">&lt;-</span> WDR_4389 <span class="sc">%&gt;%</span> </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>( stop_words ) <span class="sc">%&gt;%</span>   <span class="co"># -&gt; 131  words </span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># group and count </span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> T)  <span class="co"># -&gt; 101  words </span></span></code></pre></div>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># rename column in result corrected   </span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>WDR_4389_w <span class="ot">&lt;-</span> <span class="fu">t</span>(WDR_4389) <span class="sc">%&gt;%</span> <span class="fu">as_tibble</span>()  </span></code></pre></div>
+<pre><code>## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+## Using compatibility `.name_repair`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WDR_4389_w) <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="at">x =</span> <span class="fu">names</span>(WDR_4389_w), <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">V&quot;</span>, <span class="at">replacement =</span> <span class="st">&quot;subj_&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a> <span class="co"># --- graph words</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># p &lt;- WDR_4389 %&gt;% count(word, sort = TRUE) %&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   filter(n &gt; 600) %&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   mutate(word = reorder(word, n)) %&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   ggplot(aes(n, word)) +</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   geom_col() +</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   labs(y = NULL)</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># p  </span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#   </span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># --- replace as subjects </span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>WDR_4389_w  <span class="ot">&lt;-</span> WDR_4389_w <span class="sc">%&gt;%</span>  </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">row_number</span>() <span class="sc">==</span> <span class="dv">1</span> ) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="dv">4389</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">relocate</span>(id, <span class="at">.before =</span> subj_1)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WDR_4389_w)</span></code></pre></div>
+<pre><code>##   [1] &quot;id&quot;       &quot;subj_1&quot;   &quot;subj_2&quot;   &quot;subj_3&quot;   &quot;subj_4&quot;   &quot;subj_5&quot;  
+##   [7] &quot;subj_6&quot;   &quot;subj_7&quot;   &quot;subj_8&quot;   &quot;subj_9&quot;   &quot;subj_10&quot;  &quot;subj_11&quot; 
+##  [13] &quot;subj_12&quot;  &quot;subj_13&quot;  &quot;subj_14&quot;  &quot;subj_15&quot;  &quot;subj_16&quot;  &quot;subj_17&quot; 
+##  [19] &quot;subj_18&quot;  &quot;subj_19&quot;  &quot;subj_20&quot;  &quot;subj_21&quot;  &quot;subj_22&quot;  &quot;subj_23&quot; 
+##  [25] &quot;subj_24&quot;  &quot;subj_25&quot;  &quot;subj_26&quot;  &quot;subj_27&quot;  &quot;subj_28&quot;  &quot;subj_29&quot; 
+##  [31] &quot;subj_30&quot;  &quot;subj_31&quot;  &quot;subj_32&quot;  &quot;subj_33&quot;  &quot;subj_34&quot;  &quot;subj_35&quot; 
+##  [37] &quot;subj_36&quot;  &quot;subj_37&quot;  &quot;subj_38&quot;  &quot;subj_39&quot;  &quot;subj_40&quot;  &quot;subj_41&quot; 
+##  [43] &quot;subj_42&quot;  &quot;subj_43&quot;  &quot;subj_44&quot;  &quot;subj_45&quot;  &quot;subj_46&quot;  &quot;subj_47&quot; 
+##  [49] &quot;subj_48&quot;  &quot;subj_49&quot;  &quot;subj_50&quot;  &quot;subj_51&quot;  &quot;subj_52&quot;  &quot;subj_53&quot; 
+##  [55] &quot;subj_54&quot;  &quot;subj_55&quot;  &quot;subj_56&quot;  &quot;subj_57&quot;  &quot;subj_58&quot;  &quot;subj_59&quot; 
+##  [61] &quot;subj_60&quot;  &quot;subj_61&quot;  &quot;subj_62&quot;  &quot;subj_63&quot;  &quot;subj_64&quot;  &quot;subj_65&quot; 
+##  [67] &quot;subj_66&quot;  &quot;subj_67&quot;  &quot;subj_68&quot;  &quot;subj_69&quot;  &quot;subj_70&quot;  &quot;subj_71&quot; 
+##  [73] &quot;subj_72&quot;  &quot;subj_73&quot;  &quot;subj_74&quot;  &quot;subj_75&quot;  &quot;subj_76&quot;  &quot;subj_77&quot; 
+##  [79] &quot;subj_78&quot;  &quot;subj_79&quot;  &quot;subj_80&quot;  &quot;subj_81&quot;  &quot;subj_82&quot;  &quot;subj_83&quot; 
+##  [85] &quot;subj_84&quot;  &quot;subj_85&quot;  &quot;subj_86&quot;  &quot;subj_87&quot;  &quot;subj_88&quot;  &quot;subj_89&quot; 
+##  [91] &quot;subj_90&quot;  &quot;subj_91&quot;  &quot;subj_92&quot;  &quot;subj_93&quot;  &quot;subj_94&quot;  &quot;subj_95&quot; 
+##  [97] &quot;subj_96&quot;  &quot;subj_97&quot;  &quot;subj_98&quot;  &quot;subj_99&quot;  &quot;subj_100&quot; &quot;subj_101&quot;</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(WDR_com)</span></code></pre></div>
+<pre><code>##   [1] &quot;date_issued&quot;  &quot;id&quot;           &quot;title&quot;        &quot;title_miss&quot;   &quot;subject_mess&quot;
+##   [6] &quot;abstract&quot;     &quot;url_keys&quot;     &quot;subj_all&quot;     &quot;subj_1&quot;       &quot;subj_2&quot;      
+##  [11] &quot;subj_3&quot;       &quot;subj_4&quot;       &quot;subj_5&quot;       &quot;subj_6&quot;       &quot;subj_7&quot;      
+##  [16] &quot;subj_8&quot;       &quot;subj_9&quot;       &quot;subj_10&quot;      &quot;subj_11&quot;      &quot;subj_12&quot;     
+##  [21] &quot;subj_13&quot;      &quot;subj_14&quot;      &quot;subj_15&quot;      &quot;subj_16&quot;      &quot;subj_17&quot;     
+##  [26] &quot;subj_18&quot;      &quot;subj_19&quot;      &quot;subj_20&quot;      &quot;subj_21&quot;      &quot;subj_22&quot;     
+##  [31] &quot;subj_23&quot;      &quot;subj_24&quot;      &quot;subj_25&quot;      &quot;subj_26&quot;      &quot;subj_27&quot;     
+##  [36] &quot;subj_28&quot;      &quot;subj_29&quot;      &quot;subj_30&quot;      &quot;subj_31&quot;      &quot;subj_32&quot;     
+##  [41] &quot;subj_33&quot;      &quot;subj_34&quot;      &quot;subj_35&quot;      &quot;subj_36&quot;      &quot;subj_37&quot;     
+##  [46] &quot;subj_38&quot;      &quot;subj_39&quot;      &quot;subj_40&quot;      &quot;subj_41&quot;      &quot;subj_42&quot;     
+##  [51] &quot;subj_43&quot;      &quot;subj_44&quot;      &quot;subj_45&quot;      &quot;subj_46&quot;      &quot;subj_47&quot;     
+##  [56] &quot;subj_48&quot;      &quot;subj_49&quot;      &quot;subj_50&quot;      &quot;subj_51&quot;      &quot;subj_52&quot;     
+##  [61] &quot;subj_53&quot;      &quot;subj_54&quot;      &quot;subj_55&quot;      &quot;subj_56&quot;      &quot;subj_57&quot;     
+##  [66] &quot;subj_58&quot;      &quot;subj_59&quot;      &quot;subj_60&quot;      &quot;subj_61&quot;      &quot;subj_62&quot;     
+##  [71] &quot;subj_63&quot;      &quot;subj_64&quot;      &quot;subj_65&quot;      &quot;subj_66&quot;      &quot;subj_67&quot;     
+##  [76] &quot;subj_68&quot;      &quot;subj_69&quot;      &quot;subj_70&quot;      &quot;subj_71&quot;      &quot;subj_72&quot;     
+##  [81] &quot;subj_73&quot;      &quot;subj_74&quot;      &quot;subj_75&quot;      &quot;subj_76&quot;      &quot;subj_77&quot;     
+##  [86] &quot;subj_78&quot;      &quot;subj_79&quot;      &quot;subj_80&quot;      &quot;subj_81&quot;      &quot;subj_82&quot;     
+##  [91] &quot;subj_83&quot;      &quot;subj_84&quot;      &quot;subj_85&quot;      &quot;subj_86&quot;      &quot;subj_87&quot;     
+##  [96] &quot;subj_88&quot;      &quot;subj_89&quot;      &quot;subj_90&quot;      &quot;subj_91&quot;      &quot;subj_92&quot;     
+## [101] &quot;subj_93&quot;      &quot;subj_94&quot;      &quot;subj_95&quot;      &quot;subj_96&quot;      &quot;subj_97&quot;     
+## [106] &quot;subj_98&quot;      &quot;subj_99&quot;      &quot;subj_100&quot;     &quot;subj_101&quot;     &quot;subj_102&quot;    
+## [111] &quot;subj_103&quot;     &quot;subj_104&quot;     &quot;subj_105&quot;     &quot;subj_106&quot;     &quot;subj_107&quot;    
+## [116] &quot;subj_108&quot;     &quot;subj_109&quot;     &quot;subj_110&quot;     &quot;subj_111&quot;     &quot;subj_112&quot;    
+## [121] &quot;subj_113&quot;     &quot;subj_114&quot;     &quot;subj_115&quot;     &quot;subj_116&quot;     &quot;subj_117&quot;    
+## [126] &quot;subj_118&quot;     &quot;subj_119&quot;     &quot;subj_120&quot;     &quot;subj_121&quot;     &quot;subj_122&quot;    
+## [131] &quot;subj_123&quot;     &quot;subj_124&quot;     &quot;subj_125&quot;     &quot;subj_126&quot;     &quot;subj_127&quot;    
+## [136] &quot;subj_128&quot;     &quot;subj_129&quot;     &quot;subj_130&quot;     &quot;subj_131&quot;     &quot;subj_132&quot;    
+## [141] &quot;subj_133&quot;     &quot;subj_134&quot;     &quot;subj_135&quot;     &quot;subj_136&quot;     &quot;subj_137&quot;    
+## [146] &quot;subj_138&quot;     &quot;subj_139&quot;     &quot;subj_140&quot;     &quot;subj_141&quot;     &quot;subj_142&quot;    
+## [151] &quot;subj_143&quot;     &quot;subj_144&quot;     &quot;subj_145&quot;     &quot;subj_146&quot;     &quot;subj_147&quot;    
+## [156] &quot;subj_148&quot;     &quot;subj_149&quot;     &quot;subj_150&quot;     &quot;subj_151&quot;     &quot;subj_152&quot;    
+## [161] &quot;subj_153&quot;     &quot;subj_154&quot;     &quot;subj_155&quot;     &quot;subj_156&quot;     &quot;subj_157&quot;    
+## [166] &quot;subj_158&quot;     &quot;subj_159&quot;     &quot;subj_160&quot;     &quot;subj_161&quot;     &quot;subj_162&quot;    
+## [171] &quot;subj_163&quot;     &quot;subj_164&quot;     &quot;subj_165&quot;     &quot;subj_166&quot;     &quot;subj_167&quot;    
+## [176] &quot;subj_168&quot;     &quot;subj_169&quot;     &quot;subj_170&quot;     &quot;subj_171&quot;     &quot;subj_172&quot;    
+## [181] &quot;subj_173&quot;     &quot;subj_174&quot;     &quot;subj_175&quot;     &quot;subj_176&quot;     &quot;subj_177&quot;    
+## [186] &quot;subj_178&quot;     &quot;subj_179&quot;     &quot;subj_180&quot;     &quot;subj_181&quot;     &quot;subj_182&quot;    
+## [191] &quot;subj_183&quot;     &quot;subj_184&quot;     &quot;subj_185&quot;     &quot;subj_186&quot;     &quot;subj_187&quot;    
+## [196] &quot;subj_188&quot;     &quot;subj_189&quot;     &quot;subj_190&quot;     &quot;subj_191&quot;     &quot;subj_192&quot;    
+## [201] &quot;subj_193&quot;     &quot;subj_194&quot;     &quot;subj_195&quot;     &quot;subj_196&quot;     &quot;subj_197&quot;    
+## [206] &quot;subj_198&quot;     &quot;subj_199&quot;     &quot;subj_200&quot;     &quot;subj_201&quot;     &quot;subj_202&quot;    
+## [211] &quot;subj_203&quot;     &quot;subj_204&quot;     &quot;subj_205&quot;     &quot;subj_206&quot;     &quot;subj_207&quot;    
+## [216] &quot;subj_208&quot;     &quot;subj_209&quot;     &quot;subj_210&quot;     &quot;subj_211&quot;     &quot;subj_212&quot;    
+## [221] &quot;subj_213&quot;     &quot;subj_214&quot;     &quot;subj_215&quot;     &quot;subj_216&quot;</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a vector of column names to add to reach the nlength(WDR_com)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>col_names <span class="ot">&lt;-</span>  <span class="fu">as.vector</span>(  <span class="fu">paste0</span>(<span class="st">&#39;subj_&#39;</span>, <span class="dv">102</span><span class="sc">:</span><span class="dv">216</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make a df with those cols and 1 row made of Nas values </span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>to_add <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">setNames</span>(<span class="fu">rep</span>(<span class="st">&quot;&quot;</span>, <span class="fu">length</span>(col_names)), col_names))[<span class="cn">NA_character_</span>, ]</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># --- pad until subj_216 with nas.........  </span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>WDR_4389_w_pad <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(WDR_4389_w, to_add)</span></code></pre></div>
+</div>
+<div id="now-replace-corrected-single-wdr-case-into-master-df"
+class="section level4">
+<h4>– NOW: replace corrected single WDR case into master df</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># initial check ---</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  WDR_com<span class="sc">$</span>subj_1[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span>] </span></code></pre></div>
+<pre><code>## [1] &quot;agglomeration benefits&quot;</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>  WDR_com<span class="sc">$</span>subj_3[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span>] </span></code></pre></div>
+<pre><code>## [1] &quot;agriculture&quot;</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#--- </span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co">#id &lt;-  4389 </span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>col_subj_names <span class="ot">&lt;-</span> <span class="fu">names</span>(WDR_4389_w_pad)[<span class="sc">-</span><span class="dv">1</span>] <span class="co"># without id</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>col_subj_names</span></code></pre></div>
+<pre><code>##   [1] &quot;subj_1&quot;   &quot;subj_2&quot;   &quot;subj_3&quot;   &quot;subj_4&quot;   &quot;subj_5&quot;   &quot;subj_6&quot;  
+##   [7] &quot;subj_7&quot;   &quot;subj_8&quot;   &quot;subj_9&quot;   &quot;subj_10&quot;  &quot;subj_11&quot;  &quot;subj_12&quot; 
+##  [13] &quot;subj_13&quot;  &quot;subj_14&quot;  &quot;subj_15&quot;  &quot;subj_16&quot;  &quot;subj_17&quot;  &quot;subj_18&quot; 
+##  [19] &quot;subj_19&quot;  &quot;subj_20&quot;  &quot;subj_21&quot;  &quot;subj_22&quot;  &quot;subj_23&quot;  &quot;subj_24&quot; 
+##  [25] &quot;subj_25&quot;  &quot;subj_26&quot;  &quot;subj_27&quot;  &quot;subj_28&quot;  &quot;subj_29&quot;  &quot;subj_30&quot; 
+##  [31] &quot;subj_31&quot;  &quot;subj_32&quot;  &quot;subj_33&quot;  &quot;subj_34&quot;  &quot;subj_35&quot;  &quot;subj_36&quot; 
+##  [37] &quot;subj_37&quot;  &quot;subj_38&quot;  &quot;subj_39&quot;  &quot;subj_40&quot;  &quot;subj_41&quot;  &quot;subj_42&quot; 
+##  [43] &quot;subj_43&quot;  &quot;subj_44&quot;  &quot;subj_45&quot;  &quot;subj_46&quot;  &quot;subj_47&quot;  &quot;subj_48&quot; 
+##  [49] &quot;subj_49&quot;  &quot;subj_50&quot;  &quot;subj_51&quot;  &quot;subj_52&quot;  &quot;subj_53&quot;  &quot;subj_54&quot; 
+##  [55] &quot;subj_55&quot;  &quot;subj_56&quot;  &quot;subj_57&quot;  &quot;subj_58&quot;  &quot;subj_59&quot;  &quot;subj_60&quot; 
+##  [61] &quot;subj_61&quot;  &quot;subj_62&quot;  &quot;subj_63&quot;  &quot;subj_64&quot;  &quot;subj_65&quot;  &quot;subj_66&quot; 
+##  [67] &quot;subj_67&quot;  &quot;subj_68&quot;  &quot;subj_69&quot;  &quot;subj_70&quot;  &quot;subj_71&quot;  &quot;subj_72&quot; 
+##  [73] &quot;subj_73&quot;  &quot;subj_74&quot;  &quot;subj_75&quot;  &quot;subj_76&quot;  &quot;subj_77&quot;  &quot;subj_78&quot; 
+##  [79] &quot;subj_79&quot;  &quot;subj_80&quot;  &quot;subj_81&quot;  &quot;subj_82&quot;  &quot;subj_83&quot;  &quot;subj_84&quot; 
+##  [85] &quot;subj_85&quot;  &quot;subj_86&quot;  &quot;subj_87&quot;  &quot;subj_88&quot;  &quot;subj_89&quot;  &quot;subj_90&quot; 
+##  [91] &quot;subj_91&quot;  &quot;subj_92&quot;  &quot;subj_93&quot;  &quot;subj_94&quot;  &quot;subj_95&quot;  &quot;subj_96&quot; 
+##  [97] &quot;subj_97&quot;  &quot;subj_98&quot;  &quot;subj_99&quot;  &quot;subj_100&quot; &quot;subj_101&quot; &quot;subj_102&quot;
+## [103] &quot;subj_103&quot; &quot;subj_104&quot; &quot;subj_105&quot; &quot;subj_106&quot; &quot;subj_107&quot; &quot;subj_108&quot;
+## [109] &quot;subj_109&quot; &quot;subj_110&quot; &quot;subj_111&quot; &quot;subj_112&quot; &quot;subj_113&quot; &quot;subj_114&quot;
+## [115] &quot;subj_115&quot; &quot;subj_116&quot; &quot;subj_117&quot; &quot;subj_118&quot; &quot;subj_119&quot; &quot;subj_120&quot;
+## [121] &quot;subj_121&quot; &quot;subj_122&quot; &quot;subj_123&quot; &quot;subj_124&quot; &quot;subj_125&quot; &quot;subj_126&quot;
+## [127] &quot;subj_127&quot; &quot;subj_128&quot; &quot;subj_129&quot; &quot;subj_130&quot; &quot;subj_131&quot; &quot;subj_132&quot;
+## [133] &quot;subj_133&quot; &quot;subj_134&quot; &quot;subj_135&quot; &quot;subj_136&quot; &quot;subj_137&quot; &quot;subj_138&quot;
+## [139] &quot;subj_139&quot; &quot;subj_140&quot; &quot;subj_141&quot; &quot;subj_142&quot; &quot;subj_143&quot; &quot;subj_144&quot;
+## [145] &quot;subj_145&quot; &quot;subj_146&quot; &quot;subj_147&quot; &quot;subj_148&quot; &quot;subj_149&quot; &quot;subj_150&quot;
+## [151] &quot;subj_151&quot; &quot;subj_152&quot; &quot;subj_153&quot; &quot;subj_154&quot; &quot;subj_155&quot; &quot;subj_156&quot;
+## [157] &quot;subj_157&quot; &quot;subj_158&quot; &quot;subj_159&quot; &quot;subj_160&quot; &quot;subj_161&quot; &quot;subj_162&quot;
+## [163] &quot;subj_163&quot; &quot;subj_164&quot; &quot;subj_165&quot; &quot;subj_166&quot; &quot;subj_167&quot; &quot;subj_168&quot;
+## [169] &quot;subj_169&quot; &quot;subj_170&quot; &quot;subj_171&quot; &quot;subj_172&quot; &quot;subj_173&quot; &quot;subj_174&quot;
+## [175] &quot;subj_175&quot; &quot;subj_176&quot; &quot;subj_177&quot; &quot;subj_178&quot; &quot;subj_179&quot; &quot;subj_180&quot;
+## [181] &quot;subj_181&quot; &quot;subj_182&quot; &quot;subj_183&quot; &quot;subj_184&quot; &quot;subj_185&quot; &quot;subj_186&quot;
+## [187] &quot;subj_187&quot; &quot;subj_188&quot; &quot;subj_189&quot; &quot;subj_190&quot; &quot;subj_191&quot; &quot;subj_192&quot;
+## [193] &quot;subj_193&quot; &quot;subj_194&quot; &quot;subj_195&quot; &quot;subj_196&quot; &quot;subj_197&quot; &quot;subj_198&quot;
+## [199] &quot;subj_199&quot; &quot;subj_200&quot; &quot;subj_201&quot; &quot;subj_202&quot; &quot;subj_203&quot; &quot;subj_204&quot;
+## [205] &quot;subj_205&quot; &quot;subj_206&quot; &quot;subj_207&quot; &quot;subj_208&quot; &quot;subj_209&quot; &quot;subj_210&quot;
+## [211] &quot;subj_211&quot; &quot;subj_212&quot; &quot;subj_213&quot; &quot;subj_214&quot; &quot;subj_215&quot; &quot;subj_216&quot;</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>col_subj_names[<span class="dv">1</span>]</span></code></pre></div>
+<pre><code>## [1] &quot;subj_1&quot;</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>col_subj_names</span></code></pre></div>
+<pre><code>##   [1] &quot;subj_1&quot;   &quot;subj_2&quot;   &quot;subj_3&quot;   &quot;subj_4&quot;   &quot;subj_5&quot;   &quot;subj_6&quot;  
+##   [7] &quot;subj_7&quot;   &quot;subj_8&quot;   &quot;subj_9&quot;   &quot;subj_10&quot;  &quot;subj_11&quot;  &quot;subj_12&quot; 
+##  [13] &quot;subj_13&quot;  &quot;subj_14&quot;  &quot;subj_15&quot;  &quot;subj_16&quot;  &quot;subj_17&quot;  &quot;subj_18&quot; 
+##  [19] &quot;subj_19&quot;  &quot;subj_20&quot;  &quot;subj_21&quot;  &quot;subj_22&quot;  &quot;subj_23&quot;  &quot;subj_24&quot; 
+##  [25] &quot;subj_25&quot;  &quot;subj_26&quot;  &quot;subj_27&quot;  &quot;subj_28&quot;  &quot;subj_29&quot;  &quot;subj_30&quot; 
+##  [31] &quot;subj_31&quot;  &quot;subj_32&quot;  &quot;subj_33&quot;  &quot;subj_34&quot;  &quot;subj_35&quot;  &quot;subj_36&quot; 
+##  [37] &quot;subj_37&quot;  &quot;subj_38&quot;  &quot;subj_39&quot;  &quot;subj_40&quot;  &quot;subj_41&quot;  &quot;subj_42&quot; 
+##  [43] &quot;subj_43&quot;  &quot;subj_44&quot;  &quot;subj_45&quot;  &quot;subj_46&quot;  &quot;subj_47&quot;  &quot;subj_48&quot; 
+##  [49] &quot;subj_49&quot;  &quot;subj_50&quot;  &quot;subj_51&quot;  &quot;subj_52&quot;  &quot;subj_53&quot;  &quot;subj_54&quot; 
+##  [55] &quot;subj_55&quot;  &quot;subj_56&quot;  &quot;subj_57&quot;  &quot;subj_58&quot;  &quot;subj_59&quot;  &quot;subj_60&quot; 
+##  [61] &quot;subj_61&quot;  &quot;subj_62&quot;  &quot;subj_63&quot;  &quot;subj_64&quot;  &quot;subj_65&quot;  &quot;subj_66&quot; 
+##  [67] &quot;subj_67&quot;  &quot;subj_68&quot;  &quot;subj_69&quot;  &quot;subj_70&quot;  &quot;subj_71&quot;  &quot;subj_72&quot; 
+##  [73] &quot;subj_73&quot;  &quot;subj_74&quot;  &quot;subj_75&quot;  &quot;subj_76&quot;  &quot;subj_77&quot;  &quot;subj_78&quot; 
+##  [79] &quot;subj_79&quot;  &quot;subj_80&quot;  &quot;subj_81&quot;  &quot;subj_82&quot;  &quot;subj_83&quot;  &quot;subj_84&quot; 
+##  [85] &quot;subj_85&quot;  &quot;subj_86&quot;  &quot;subj_87&quot;  &quot;subj_88&quot;  &quot;subj_89&quot;  &quot;subj_90&quot; 
+##  [91] &quot;subj_91&quot;  &quot;subj_92&quot;  &quot;subj_93&quot;  &quot;subj_94&quot;  &quot;subj_95&quot;  &quot;subj_96&quot; 
+##  [97] &quot;subj_97&quot;  &quot;subj_98&quot;  &quot;subj_99&quot;  &quot;subj_100&quot; &quot;subj_101&quot; &quot;subj_102&quot;
+## [103] &quot;subj_103&quot; &quot;subj_104&quot; &quot;subj_105&quot; &quot;subj_106&quot; &quot;subj_107&quot; &quot;subj_108&quot;
+## [109] &quot;subj_109&quot; &quot;subj_110&quot; &quot;subj_111&quot; &quot;subj_112&quot; &quot;subj_113&quot; &quot;subj_114&quot;
+## [115] &quot;subj_115&quot; &quot;subj_116&quot; &quot;subj_117&quot; &quot;subj_118&quot; &quot;subj_119&quot; &quot;subj_120&quot;
+## [121] &quot;subj_121&quot; &quot;subj_122&quot; &quot;subj_123&quot; &quot;subj_124&quot; &quot;subj_125&quot; &quot;subj_126&quot;
+## [127] &quot;subj_127&quot; &quot;subj_128&quot; &quot;subj_129&quot; &quot;subj_130&quot; &quot;subj_131&quot; &quot;subj_132&quot;
+## [133] &quot;subj_133&quot; &quot;subj_134&quot; &quot;subj_135&quot; &quot;subj_136&quot; &quot;subj_137&quot; &quot;subj_138&quot;
+## [139] &quot;subj_139&quot; &quot;subj_140&quot; &quot;subj_141&quot; &quot;subj_142&quot; &quot;subj_143&quot; &quot;subj_144&quot;
+## [145] &quot;subj_145&quot; &quot;subj_146&quot; &quot;subj_147&quot; &quot;subj_148&quot; &quot;subj_149&quot; &quot;subj_150&quot;
+## [151] &quot;subj_151&quot; &quot;subj_152&quot; &quot;subj_153&quot; &quot;subj_154&quot; &quot;subj_155&quot; &quot;subj_156&quot;
+## [157] &quot;subj_157&quot; &quot;subj_158&quot; &quot;subj_159&quot; &quot;subj_160&quot; &quot;subj_161&quot; &quot;subj_162&quot;
+## [163] &quot;subj_163&quot; &quot;subj_164&quot; &quot;subj_165&quot; &quot;subj_166&quot; &quot;subj_167&quot; &quot;subj_168&quot;
+## [169] &quot;subj_169&quot; &quot;subj_170&quot; &quot;subj_171&quot; &quot;subj_172&quot; &quot;subj_173&quot; &quot;subj_174&quot;
+## [175] &quot;subj_175&quot; &quot;subj_176&quot; &quot;subj_177&quot; &quot;subj_178&quot; &quot;subj_179&quot; &quot;subj_180&quot;
+## [181] &quot;subj_181&quot; &quot;subj_182&quot; &quot;subj_183&quot; &quot;subj_184&quot; &quot;subj_185&quot; &quot;subj_186&quot;
+## [187] &quot;subj_187&quot; &quot;subj_188&quot; &quot;subj_189&quot; &quot;subj_190&quot; &quot;subj_191&quot; &quot;subj_192&quot;
+## [193] &quot;subj_193&quot; &quot;subj_194&quot; &quot;subj_195&quot; &quot;subj_196&quot; &quot;subj_197&quot; &quot;subj_198&quot;
+## [199] &quot;subj_199&quot; &quot;subj_200&quot; &quot;subj_201&quot; &quot;subj_202&quot; &quot;subj_203&quot; &quot;subj_204&quot;
+## [205] &quot;subj_205&quot; &quot;subj_206&quot; &quot;subj_207&quot; &quot;subj_208&quot; &quot;subj_209&quot; &quot;subj_210&quot;
+## [211] &quot;subj_211&quot; &quot;subj_212&quot; &quot;subj_213&quot; &quot;subj_214&quot; &quot;subj_215&quot; &quot;subj_216&quot;</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># pick the id </span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">4389</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># --- function --- NO JOY!</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(col_subj_names)) {</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  col <span class="ot">&lt;-</span>  col_subj_names[j]</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print(col) # nolint</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  WDR_com <span class="sc">%&gt;%</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span> (id <span class="sc">==</span> i) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span> (., <span class="at">col =</span> WDR_4389_w_pad<span class="sc">$</span>col) </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  WDR_com_2 <span class="ot">&lt;-</span> WDR_com</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<pre><code>## Warning: Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.
+## Unknown or uninitialised column: `col`.</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>WDR_com_2</span></code></pre></div>
+<pre><code>## # A tibble: 45 × 224
+##    date_issued    id title    title_miss subject_mess abstract url_keys subj_all
+##          &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt;   
+##  1        2009  2586 &quot; A Cri… &lt;NA&gt;       Y            &quot;The Wo… https:/… absolut…
+##  2        2010  4387 &quot; Devel… &lt;NA&gt;       Y            &quot;Thirty… https:/… agglome…
+##  3        2011  4389 &quot; Confl… &lt;NA&gt;       Y            &quot;The 20… https:/… agglome…
+##  4        2012  4391 &quot; Gende… &lt;NA&gt;       &lt;NA&gt;         &quot;The ma… https:/… economi…
+##  5        1978  5961 &quot;World … Y          &lt;NA&gt;         &quot;This f… https:/… agricul…
+##  6        1979  5962 &quot;World … Y          &lt;NA&gt;         &quot;Struct… https:/… agricul…
+##  7        1980  5963 &quot;World … Y          &lt;NA&gt;         &quot;Develo… https:/… commerc…
+##  8        1981  5964 &quot;World … Y          &lt;NA&gt;         &quot;This i… https:/… capital…
+##  9        1982  5965 &quot;World … Y          &lt;NA&gt;         &quot;This r… https:/… agricul…
+## 10        1983  5966 &quot;World … Y          &lt;NA&gt;         &quot;This r… https:/… develop…
+## # … with 35 more rows, and 216 more variables: subj_1 &lt;chr&gt;, subj_2 &lt;chr&gt;,
+## #   subj_3 &lt;chr&gt;, subj_4 &lt;chr&gt;, subj_5 &lt;chr&gt;, subj_6 &lt;chr&gt;, subj_7 &lt;chr&gt;,
+## #   subj_8 &lt;chr&gt;, subj_9 &lt;chr&gt;, subj_10 &lt;chr&gt;, subj_11 &lt;chr&gt;, subj_12 &lt;chr&gt;,
+## #   subj_13 &lt;chr&gt;, subj_14 &lt;chr&gt;, subj_15 &lt;chr&gt;, subj_16 &lt;chr&gt;, subj_17 &lt;chr&gt;,
+## #   subj_18 &lt;chr&gt;, subj_19 &lt;chr&gt;, subj_20 &lt;chr&gt;, subj_21 &lt;chr&gt;, subj_22 &lt;chr&gt;,
+## #   subj_23 &lt;chr&gt;, subj_24 &lt;chr&gt;, subj_25 &lt;chr&gt;, subj_26 &lt;chr&gt;, subj_27 &lt;chr&gt;,
+## #   subj_28 &lt;chr&gt;, subj_29 &lt;chr&gt;, subj_30 &lt;chr&gt;, subj_31 &lt;chr&gt;, …</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># final  check ---</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  WDR_com<span class="sc">$</span>subj_1[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agglomeration benefits&quot;</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>  WDR_com<span class="sc">$</span>subj_3[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agriculture&quot;</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>  WDR_com_2<span class="sc">$</span>subj_1[WDR_com_2<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agglomeration benefits&quot;</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>  WDR_com_2<span class="sc">$</span>subj_3[WDR_com_2<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agriculture&quot;</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#--- </span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>WDR_com<span class="sc">$</span>subj_1[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agglomeration benefits&quot;</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>WDR_com<span class="sc">$</span>subj_3[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;agriculture&quot;</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>WDR_com<span class="sc">$</span>title[WDR_com<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot; Conflict, Security, and Development&quot;</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># r is vectorized so </span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>WDR_com_3 <span class="ot">&lt;-</span> WDR_com</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>WDR_com_3[WDR_com_3<span class="sc">$</span>id <span class="sc">%in%</span> WDR_4389_w_pad<span class="sc">$</span>id, <span class="dv">9</span><span class="sc">:</span><span class="dv">224</span>] <span class="ot">&lt;-</span> WDR_4389_w_pad[, <span class="dv">2</span><span class="sc">:</span><span class="dv">217</span>]</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>WDR_com_3<span class="sc">$</span>subj_1[WDR_com_3<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;countries&quot;</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>WDR_com_3<span class="sc">$</span>subj_3[WDR_com_3<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot;income&quot;</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>WDR_com_3<span class="sc">$</span>title[WDR_com_3<span class="sc">$</span>id <span class="sc">==</span> <span class="dv">4389</span> ] </span></code></pre></div>
+<pre><code>## [1] &quot; Conflict, Security, and Development&quot;</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li><h1 id="to-do-to-rethink">————– TO do | To Rethink ——————</h1></li>
+</ol>
+<ul>
+<li>create my own stop_words list (which excludes also “year”, “report”,
+etc)</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 <div id="review" class="section level1">
 <h1>————– REVIEW ——————</h1>
-<div id="world-bank-projects-operations" class="section level2">
-<h2>2. World Bank Projects &amp; Operations:</h2>
 </div>
+<div id="b.-world-bank-projects-operations" class="section level1">
+<h1>B. World Bank Projects &amp; Operations:</h1>
 </div>
 <div id="connections" class="section level1">
 <h1>Connections</h1>
@@ -741,7 +1315,7 @@ href="https://www.tidytextmining.com/">https://www.tidytextmining.com/</a>.
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IGJ1enp3b3Jkcy5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCIgc3R5bGU9ImNvbG9yOiBmaXJlYnJpY2siPjwvaT4gV29yayBpbiBwcm9ncmVzcwoKYGBge3Igc2V0dXBfaW5wfQojIFBja2dzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KaWYgKCFyZXF1aXJlICgicGFjbWFuIikpIChpbnN0YWxsLnBhY2thZ2VzKCJwYWNtYW4iKSkKcF9sb2FkKHRpZHl2ZXJzZSwgCiAgICAgICAjIGdncGxvdDIsIGZvciBkYXRhIHZpc3VhbGlzYXRpb24uCiAgICAgICAjIGRwbHlyLCBmb3IgZGF0YSBtYW5pcHVsYXRpb24uCiAgICAgICAjIHRpZHlyLCBmb3IgZGF0YSB0aWR5aW5nLgogICAgICAgIyByZWFkciwgZm9yIGRhdGEgaW1wb3J0LgogICAgICAgIyBwdXJyciwgZm9yIGZ1bmN0aW9uYWwgcHJvZ3JhbW1pbmcuCiAgICAgICAjIHRpYmJsZSwgZm9yIHRpYmJsZXMsIGEgbW9kZXJuIHJlLWltYWdpbmluZyBvZiBkYXRhIGZyYW1lcy4KICAgICAgICMgc3RyaW5nciwgZm9yIHN0cmluZ3MuCiAgICAgICAjIGZvcmNhdHMsIGZvciBmYWN0b3JzLgogICAgICAgaGVyZSwKICAgICAgIGh0dHIsIGpzb25saXRlLCBYTUwsIHhtbDIsIAogICAgICAgb2FpLCAjIFIgY2xpZW50IHRvIHdvcmsgd2l0aCBPQUktUE1IIAogICAgICAgY2l0ciwgCiAgICAgICB0aWR5dGV4dCkKCiMgRnVuY3Rpb24ocykgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIHNvdXJjZShoZXJlOjpoZXJlICgiUiIsICJXQi1PS1Jfc2NyYXBlLWZ1bmN0aW9uLlIiKSApCgojIERhdGEgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIERBVEEgaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDAgCiMgSU5TVFJVQ1RJT05TIGh0dHBzOi8vZG9jdW1lbnRzLndvcmxkYmFuay5vcmcvZW4vcHVibGljYXRpb24vZG9jdW1lbnRzLXJlcG9ydHMvYXBpCgpgYGAKCiMgRGF0YSBpbmdlc3RpbmcgJiBjbGVhbmluZwoKIyMgMS4gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cyAoV1JEcykgCjwhLS0gRG9uZSBpbiAiLi9fbXlfc3R1ZmYvXzAxX2RhdGEtb3ZlcnZpZXcuUm1kIiAgLS0+CgpgYGB7cn0KIyBXUkQgbWV0YWRhdGEgdGFrZW4gd2l0aCBBUEkgZ2V0IChpc3N1ZXMpIApXRFIgPC0gcmVhZHI6OnJlYWRfcmRzKGhlcmU6OmhlcmUoImRhdGEiLCAicmF3X2RhdGEiLCAiV0RSLnJkcyIgKSkgJT4lIAogICAgICAjIEV4dHJhY3Qgb25seSB0aGUgcG9ydGlvbiBvZiBzdHJpbmcgQUZURVIgdGhlIGJhY2tzbGFzaCB7L30KICBtdXRhdGUoaWQgPSAgYXMubnVtZXJpYyhzdHJpbmdyOjpzdHJfZXh0cmFjdChkb2NfbXRfaWRlbnRpZmllcl8xLCAiW14vXSskIikpICkgJT4lIAogIGRwbHlyOjpyZWxvY2F0ZShpZCwgLmJlZm9yZSA9IGRvY19tdF9pZGVudGlmaWVyXzEpICU+JSAKICBtdXRhdGUodXJsX2tleXMgPSBwYXN0ZTAoImh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8iLCBpZCAsICI/c2hvdz1mdWxsIikgKSU+JSAKICBkcGx5cjo6cmVsb2NhdGUodXJsX2tleXMsIC5iZWZvcmUgPSAgZG9jX210X2lkZW50aWZpZXJfMSkKCiMgV1JEIHN1YmplY3QvZGF0ZV9pc3N1ZWQgdGFrZW4gYnkgbWFudWFsIHJldmlldyAKV0RSX3N1YmplY3RzIDwtIHJlYWR4bDo6cmVhZF9leGNlbChoZXJlOjpoZXJlKCJkYXRhIiwgInJhd19kYXRhIiwgIldEUl9zdWJqZWN0cy54bHN4IiApKSAlPiUgCiAgZHJvcF9uYShpZCkKCiMgam9pbgpXRFJfY29tIDwtIGxlZnRfam9pbihXRFIsIFdEUl9zdWJqZWN0cywgYnkgPSAiaWQiKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKGRhdGVfaXNzdWVkLCAuYmVmb3JlID0gaWQgKSAlPiUgCiAgIyBkcm9wIHVzZWxlcyBjbG1ucyAKICBkcGx5cjo6c2VsZWN0KC1kb2NfbXRfaWRlbnRpZmllcl8xLCAtZG9jX210X2lkZW50aWZpZXJfMiwgLWRvY19tdF9kYXRlLCAKICAgICAgICAgICAgICAgIC1kb2NfbXRfc3ViamVjdCwgLWRvY19tdF9jcmVhdG9yLCAtZG9jX210X3NldF9zcGVjKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHVybF9rZXlzLCAuYWZ0ZXIgPSBzdWJqXzIxNiApICU+JSAKICBkcGx5cjo6cmVuYW1lKGFic3RyYWN0ID0gZG9jX210X2Rlc2NyaXB0aW9uKSAlPiUgCiAgIyBjb3JyZWN0IHRpdGxlcyAtPiBwb3J0aW9uIGFmdGVyIHs6fQogIGRwbHlyOjptdXRhdGUoLiwgdGl0bGUgPSBzdHJfZXh0cmFjdChkb2NfbXRfdGl0bGUsIlteOl0rJCIpKSAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHRpdGxlLCAuYWZ0ZXIgPSBpZCkgICU+JSAKICBkcGx5cjo6cmVuYW1lKHRpdGxlX21pc3MgPSBkb2NfbXRfdGl0bGUpICU+JSAKICBkcGx5cjo6bXV0YXRlKHRpdGxlX21pc3MgPSBjYXNlX3doZW4oCiAgICAgIHN0cl9zdGFydHModGl0bGUsICJXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnQiKSB+ICJZIiwKICAgICAgVFJVRSB+IE5BX2NoYXJhY3Rlcl8pIAogICkgJT4lIAogIGRwbHlyOjptdXRhdGUoc3ViamVjdF9tZXNzID0gaWZfZWxzZSghaXMubmEoc3Vial8xMzYpLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIlkiLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTkFfY2hhcmFjdGVyXykpICAlPiUgCiAgZHBseXI6OnJlbG9jYXRlKHN1YmplY3RfbWVzcywgLmFmdGVyID0gdGl0bGVfbWlzcykgIAogCiNjb252ZXJ0IGFsbCBjb2x1bW5zIHRoYXQgc3RhcnQgd2l0aCAic3Vial8iIHRvIGxvd2VyY2FzZQojIFdEUl9jb21bNzoyMjNdIDwtIHNhcHBseShXRFJfY29tWzc6MjIzXSwgZnVuY3Rpb24oeCkgdG9sb3dlcih4KSkKV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gPC0gc2FwcGx5KFdEUl9jb21bLCBncmVwKCJec3Vial8iLCBuYW1lcyhXRFJfY29tKSldLCBmdW5jdGlvbih4KSB0b2xvd2VyKHgpKQoKIyBjb21iaW5lIGFsbCBgc3Vial8uLi5gIHZhcnMgaW50byBhIHZlY3RvciBzZXBhcmF0ZWQgYnkgY29tbWEKY29sX3N1YmogPC0gbmFtZXMoV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gKQoKV0RSX2NvbSA8LSBXRFJfY29tICU+JSB0aWR5cjo6dW5pdGUoCiAgY29sID0gInN1YmpfYWxsIiwgCiAgc3Vial8xOnN1YmpfMjE2LCAKICBzZXAgPSAiLCIsCiAgcmVtb3ZlID0gRkFMU0UpCmBgYAoKCiMjIyBXcmFuZ2xpbmcgdGhlIHRleHQKCkZvbGxvd2luZzogW0BrYXllX2VsbGFfMjAxOTsgQHJvYmluc29uX3dvcmRzXzIwMTc7IEByb2JpbnNvbl8xXzIwMjJdCgojIyMgVG9rZW5pemF0aW9uCgpTb21lIGRlZmluaXRpb25zOgotICAgQSAqKnRva2VuKiogfiBpcyBhIG1lYW5pbmdmdWwgdW5pdCBvZiB0ZXh0LCBzdWNoIGFzIGEgKndvcmQqLCB0aGF0IHdlIGFyZSBpbnRlcmVzdGVkIGluIHVzaW5nIGZvciBhbmFseXNpcwotICAgKnRva2VuaXphdGlvbiogfiBzcGxpdHRpbmcgdGV4dCBpbnRvIHRva2VucwotICAgKipiaWdyYW1zKiovKipuLWdyYW0qKiB+IHNlbnRlbmNlLCBvciBwYXJhZ3JhcGgKLSAgICoqKnRpZHkgdGV4dCoqKiB+ICJhIHRhYmxlIHdpdGggb25lLXRva2VuLXBlci1yb3ciCi0gICAqKipjb3JwdXMqKiogfiAgb2JqZWN0cyB0aGF0IHR5cGljYWxseSBjb250YWluIHJhdyBzdHJpbmdzIGFubm90YXRlZCB3aXRoIGFkZGl0aW9uYWwgbWV0YWRhdGEgYW5kIGRldGFpbHMKLSAgICoqKkRvY3VtZW50LXRlcm0gbWF0cml4KioqIH4gc3BhcnNlIG1hdHJpeCBkZXNjcmliaW5nIGEgY29sbGVjdGlvbiAoaS5lLiwgYSBjb3JwdXMpIG9mIGRvY3VtZW50cyB3aXRoIG9uZSByb3cgZm9yIGVhY2ggZG9jdW1lbnQgYW5kIG9uZSBjb2x1bW4gZm9yIGVhY2ggdGVybS4gIChgV0RSX2NvbWApCiAKYGBge3J9CiMgcHJpbnRpbmcgb3V0IGRhdGEgYXMgdGliYmxlIApzYmpfYWxsXzQgPC0gYyhXRFJfY29tJHN1YmpfMVs0XSxXRFJfY29tJHN1YmpfMls0XSAsV0RSX2NvbSRzdWJqXzNbNF0gLFdEUl9jb20kc3Vial80WzRdICkKCmxpYnJhcnkoZHBseXIpCnNial9hbGxfNF9kZiA8LSB0aWJibGUobGluZSA9IDE6NCwgc2JqX2FsbF80ID0gc2JqX2FsbF80KQoKCiMgYnJlYWsgdGhlIHRleHQgW2UuZy4gMSBhYnN0cmFjdF0gaW50byBpbmRpdmlkdWFsIHRva2VucyAKYWJzXzEgPC0gYXNfdGliYmxlKFdEUl9jb20kYWJzdHJhY3RbMV0gKQphYnNfMV90IDwtICBhYnNfMSAlPiUgCiAgIyB1bm5lc3QgKG5ld0NvbE5hbWUsIG9sZENvbE5hbWUpCiAgdW5uZXN0X3Rva2Vucyh3b3JkLCB2YWx1ZSApICMgLS0+IHRpZHl0ZXh0CmBgYAogCiAKIyAtLS0tLS0tLS0tLS0tLSBSRVZJRVcgLS0tLS0tLS0tLS0tLS0tLS0tICMKCiMjIDIuIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOgoKCiMgQ29ubmVjdGlvbnMKCkZvbGxvd2luZyB0aGUgZXhhbXBsZSBvZiBbRGF2aWQgUm9iaW5zb24gb24gSE4gdGl0bGVzXShodHRwOi8vdmFyaWFuY2VleHBsYWluZWQub3JnL3IvaG4tdHJlbmRzLykKCiMgRGF0YSBzb3VyY2VzOgoKMS4gIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOiA8aHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDA+IDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMC9Xb3JsZC1CYW5rLVByb2plY3RzLS0tT3BlcmF0aW9ucz4KCi0gICBBY2Nlc3NpYmlsaXR5IENsYXNzaWZpY2F0aW9uOiAqKnB1YmxpYyoqIHVuZGVyIFtDcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMF0oaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3B1YmxpYy1saWNlbnNlcz9mcmFnbWVudD1jYykKCjIuICBXb3JsZCBCYW5rIC0gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cwoKLSAgIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246CgojIFR1dG9yaWFscwoKW0JlbmphbWluIFNvbHRvZmY6IENvbXB1dGluZyA0IFNvY2lhbCBTY2llbmNlcyAtIEFQSV0oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy9nZXR0aW5nLWRhdGEtZnJvbS10aGUtd2ViLWFwaS1hY2Nlc3MvKSBbQmVuamFtaW4gU29sdG9mZjogQ29tcHV0aW5nIDQgU29jaWFsIFNjaWVuY2VzIC0gdGV4dCBhbmFseXNpc10oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy90ZXh0LWFuYWx5c2lzLWZ1bmRhbWVudGFscy1hbmQtc2VudGltZW50LWFuYWx5c2lzLykK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IGJ1enp3b3Jkcy5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCIgc3R5bGU9ImNvbG9yOiBmaXJlYnJpY2siPjwvaT4gV29yayBpbiBwcm9ncmVzcwoKIyAwLiBJbnRybyAKCiMjIyAtLS0gU29tZSBkZWZpbml0aW9uczogCgorICoqQ29ycHVzKiogXH4gYSBjb2xsZWN0aW9uIG9mIHNpbWlsYXIgZG9jdW1lbnRzIHwgb2JqZWN0cyB0aGF0IHR5cGljYWxseSBjb250YWluIHJhdyBzdHJpbmdzIGFubm90YXRlZCB3aXRoIGFkZGl0aW9uYWwgbWV0YWRhdGEgYW5kIGRldGFpbHMgCisgKipEb2N1bWVudC10ZXJtIG1hdHJpeCoqIFx+IHNwYXJzZSBtYXRyaXggZGVzY3JpYmluZyBhIGNvbGxlY3Rpb24gKGkuZS4sIGEgY29ycHVzKSBvZiBkb2N1bWVudHMgd2l0aCBvbmUgcm93IGZvciBlYWNoIGRvY3VtZW50IGFuZCBvbmUgY29sdW1uIGZvciBlYWNoIHRlcm0uIChgV0RSX2NvbWApCisgKipEb2N1bWVudCoqIFx+IGNvbGxlY3Rpb24gb2Ygc2VudGVuY2VzIAorICoqVG9rZW4qKiBcfiBpcyBhIG1lYW5pbmdmdWwgdW5pdCBvZiB0ZXh0LCBzdWNoIGFzIGEgKndvcmQqLCB0aGF0IHdlIGFyZSBpbnRlcmVzdGVkIGluIHVzaW5nIGZvciBhbmFseXNpcyAKLSAqKlRva2VuaXphdGlvbioqIFx+IHNwbGl0dGluZyB0ZXh0IGludG8gdG9rZW5zIAotICoqQmlncmFtcyoqLyoqbi1ncmFtKiogXH4gc2VudGVuY2UsIG9yIHBhcmFncmFwaCAKLSAqKlRpZHkgdGV4dCoqIFx+ICJhIHRhYmxlIHdpdGggb25lLXRva2VuLXBlci1yb3ciIAoKIyMjIC0tLSBSIHRleHQgcHJvY2Vzc2luZyAKCisge3RtfQorIHtPcGVuTkxQfQorIHtSV2VrYX0KKyB7bGFuZ3VhZ2VSfQorIHtrb3JQdXN9IAorIHt0aWR5dGV4dH0KCmBgYHtyIHNldHVwX2lucH0KIyBQY2tncyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCmlmICghcmVxdWlyZSAoInBhY21hbiIpKSAoaW5zdGFsbC5wYWNrYWdlcygicGFjbWFuIikpCnBfbG9hZCh0aWR5dmVyc2UsIAogICAgICAgIyBnZ3Bsb3QyLCBmb3IgZGF0YSB2aXN1YWxpc2F0aW9uLgogICAgICAgIyBkcGx5ciwgZm9yIGRhdGEgbWFuaXB1bGF0aW9uLgogICAgICAgIyB0aWR5ciwgZm9yIGRhdGEgdGlkeWluZy4KICAgICAgICMgcmVhZHIsIGZvciBkYXRhIGltcG9ydC4KICAgICAgICMgcHVycnIsIGZvciBmdW5jdGlvbmFsIHByb2dyYW1taW5nLgogICAgICAgIyB0aWJibGUsIGZvciB0aWJibGVzLCBhIG1vZGVybiByZS1pbWFnaW5pbmcgb2YgZGF0YSBmcmFtZXMuCiAgICAgICAjIHN0cmluZ3IsIGZvciBzdHJpbmdzLgogICAgICAgIyBmb3JjYXRzLCBmb3IgZmFjdG9ycy4KICAgICAgIGhlcmUsCiAgICAgICBodHRyLCBqc29ubGl0ZSwgWE1MLCB4bWwyLCAKICAgICAgIG9haSwgIyBSIGNsaWVudCB0byB3b3JrIHdpdGggT0FJLVBNSCAKICAgICAgIGNpdHIsIAogICAgICAgdGlkeXRleHQsIAogICAgICAgc2ptaXNjCiAgICAgICApCgojIEZ1bmN0aW9uKHMpIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBzb3VyY2UoaGVyZTo6aGVyZSAoIlIiLCAiV0ItT0tSX3NjcmFwZS1mdW5jdGlvbi5SIikgKQoKIyBEYXRhIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBEQVRBIGh0dHBzOi8vZGF0YWNhdGFsb2cud29ybGRiYW5rLm9yZy9zZWFyY2gvZGF0YXNldC8wMDM3ODAwIAojIElOU1RSVUNUSU9OUyBodHRwczovL2RvY3VtZW50cy53b3JsZGJhbmsub3JnL2VuL3B1YmxpY2F0aW9uL2RvY3VtZW50cy1yZXBvcnRzL2FwaQoKYGBgCgojIEEuIFdvcmxkIERldmVsb3BtZW50IFJlcG9ydHMgKFdSRHMpCgpGb2xsb3dpbmc6IFtAa2F5ZV9lbGxhXzIwMTk7IEByb2JpbnNvbl93b3Jkc18yMDE3OyBAcm9iaW5zb25fMV8yMDIyXQoKIyMgMS4gRGF0YSBpbmdlc3RpbmcgJiBjbGVhbmluZwoKPCEtLSBEb25lIGluICIuL19teV9zdHVmZi9fMDFfZGF0YS1vdmVydmlldy5SbWQiICAtLT4KYGBge3J9CiMgV1JEIG1ldGFkYXRhIHRha2VuIHdpdGggQVBJIGdldCAoaXNzdWVzKSAKV0RSIDwtIHJlYWRyOjpyZWFkX3JkcyhoZXJlOjpoZXJlKCJkYXRhIiwgInJhd19kYXRhIiwgIldEUi5yZHMiICkpICU+JSAKICAgICAgIyBFeHRyYWN0IG9ubHkgdGhlIHBvcnRpb24gb2Ygc3RyaW5nIEFGVEVSIHRoZSBiYWNrc2xhc2ggey99CiAgbXV0YXRlKGlkID0gIGFzLm51bWVyaWMoc3RyaW5ncjo6c3RyX2V4dHJhY3QoZG9jX210X2lkZW50aWZpZXJfMSwgIlteL10rJCIpKSkgJT4lIAogIGRwbHlyOjpyZWxvY2F0ZShpZCwgLmJlZm9yZSA9IGRvY19tdF9pZGVudGlmaWVyXzEpICU+JSAKICBtdXRhdGUodXJsX2tleXMgPSBwYXN0ZTAoImh0dHBzOi8vb3Blbmtub3dsZWRnZS53b3JsZGJhbmsub3JnL2hhbmRsZS8xMDk4Ni8iLCBpZCAsICI/c2hvdz1mdWxsIikgKSAgCgojIFdSRCBzdWJqZWN0L2RhdGVfaXNzdWVkIHRha2VuIGJ5IG1hbnVhbCByZXZpZXcgCldEUl9zdWJqZWN0cyA8LSByZWFkeGw6OnJlYWRfZXhjZWwoaGVyZTo6aGVyZSgiZGF0YSIsICJyYXdfZGF0YSIsICJXRFJfc3ViamVjdHMueGxzeCIgKSkgJT4lIAogIGRyb3BfbmEoaWQpCgojIGpvaW4KV0RSX2NvbSA8LSBsZWZ0X2pvaW4oV0RSLCBXRFJfc3ViamVjdHMsIGJ5ID0gImlkIikgJT4lIAogIGRwbHlyOjpyZWxvY2F0ZShkYXRlX2lzc3VlZCwgLmJlZm9yZSA9IGlkICkgJT4lIAogICMgZHJvcCB1c2VsZXMgY2xtbnMgCiAgZHBseXI6OnNlbGVjdCgtZG9jX210X2lkZW50aWZpZXJfMSwgLWRvY19tdF9pZGVudGlmaWVyXzIsIC1kb2NfbXRfZGF0ZSwgCiAgICAgICAgICAgICAgICAtZG9jX210X3N1YmplY3QsIC1kb2NfbXRfY3JlYXRvciwgLWRvY19tdF9zZXRfc3BlYykgJT4lIAogICNkcGx5cjo6cmVsb2NhdGUodXJsX2tleXMsIC5hZnRlciA9IHN1YmpfMjE2ICkgJT4lIAogIGRwbHlyOjpyZW5hbWUoYWJzdHJhY3QgPSBkb2NfbXRfZGVzY3JpcHRpb24pICU+JSAKICAjIGNvcnJlY3QgdGl0bGVzIC0+IHBvcnRpb24gYWZ0ZXIgezp9CiAgZHBseXI6Om11dGF0ZSguLCB0aXRsZSA9IHN0cl9leHRyYWN0KGRvY19tdF90aXRsZSwiW146XSskIikpICU+JSAKICBkcGx5cjo6cmVsb2NhdGUodGl0bGUsIC5hZnRlciA9IGlkKSAgJT4lIAogIGRwbHlyOjpyZW5hbWUodGl0bGVfbWlzcyA9IGRvY19tdF90aXRsZSkgJT4lIAogIGRwbHlyOjptdXRhdGUodGl0bGVfbWlzcyA9IGNhc2Vfd2hlbigKICAgICAgc3RyX3N0YXJ0cyh0aXRsZSwgIldvcmxkIERldmVsb3BtZW50IFJlcG9ydCIpIH4gIlkiLAogICAgICBUUlVFIH4gTkFfY2hhcmFjdGVyXykgCiAgKSAlPiUgCiAgZHBseXI6Om11dGF0ZShzdWJqZWN0X21lc3MgPSBpZl9lbHNlKCFpcy5uYShzdWJqXzEzNiksIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiWSIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBOQV9jaGFyYWN0ZXJfKSkgICU+JSAKICBkcGx5cjo6cmVsb2NhdGUoc3ViamVjdF9tZXNzLCAuYWZ0ZXIgPSB0aXRsZV9taXNzKSAgCiAKIyBjb252ZXJ0IGFsbCBjb2x1bW5zIHRoYXQgc3RhcnQgd2l0aCAic3Vial8iIHRvIGxvd2VyY2FzZQojIFdEUl9jb21bNzoyMjNdIDwtIHNhcHBseShXRFJfY29tWzc6MjIzXSwgZnVuY3Rpb24oeCkgdG9sb3dlcih4KSkKV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gPC0gc2FwcGx5KFdEUl9jb21bLCBncmVwKCJec3Vial8iLCBuYW1lcyhXRFJfY29tKSldLCBmdW5jdGlvbih4KSB0b2xvd2VyKHgpKQoKIyBjb21iaW5lIGFsbCBgc3Vial8uLi5gIHZhcnMgaW50byBhIHZlY3RvciBzZXBhcmF0ZWQgYnkgY29tbWEKY29sX3N1YmogPC0gbmFtZXMoV0RSX2NvbVssIGdyZXAoIl5zdWJqXyIsIG5hbWVzKFdEUl9jb20pKV0gKQoKV0RSX2NvbSA8LSBXRFJfY29tICU+JSB0aWR5cjo6dW5pdGUoCiAgY29sID0gInN1YmpfYWxsIiwgCiAgc3Vial8xOnN1YmpfMjE2LCAKICBzZXAgPSAiLCIsCiAgcmVtb3ZlID0gRkFMU0UpCmBgYAoKCiMjIDIuIFRva2VuaXphdGlvbiAob2YgRG9jcycgc3ViamVjdHMgZm91bmQgaW4gbWV0YWRhdGEpCgpgYGB7cn0KIyBwcmludGluZyBvdXQgZGF0YSBhcyB0aWJibGUgCnNial9hbGxfNCA8LSBjKFdEUl9jb20kc3Vial8xWzRdLFdEUl9jb20kc3Vial8yWzRdICxXRFJfY29tJHN1YmpfM1s0XSAsV0RSX2NvbSRzdWJqXzRbNF0gKQoKbGlicmFyeShkcGx5cikKc2JqX2FsbF80X2RmIDwtIHRpYmJsZShsaW5lID0gMTo0LCBzYmpfYWxsXzQgPSBzYmpfYWxsXzQpCgojIGJyZWFrIHRoZSB0ZXh0IFtlLmcuIDEgYWJzdHJhY3RdIGludG8gaW5kaXZpZHVhbCB0b2tlbnMgCmFic18xIDwtIGFzX3RpYmJsZShXRFJfY29tJGFic3RyYWN0WzFdICkKYWJzXzFfdCA8LSAgYWJzXzEgJT4lIAogICMgdW5uZXN0IChuZXdDb2xOYW1lLCBvbGRDb2xOYW1lKQogIHVubmVzdF90b2tlbnMod29yZCwgdmFsdWUgKSAjIC0tPiB0aWR5dGV4dApgYGAKCiMjIDIuYSBUcm91Ymxlc2hvb3Rpbmcgc29tZSBvYnMgCgo+TVkgUFJPQkxFTSBIRVJFIElTIFRIQVQgU09NRSBPRiBUSEUgU1VCSkVDVCBMSVNUUyBBUkUgRVZJREVOVExZIFdST05HIChlaXRoZXIgdGhleSBhcmUgdGhlIHNhbWUgb2YgYW5vdGhlciBXRFIgb3IgdGhleSBhcmUgaW1wb3NzaWJseSBsb25nKSAgCgojIyMgLS0tIEV4dHJhcG9sYXRlIHN1YmplY3RzIGZyb20gYWJzdHJhY3RzIC0gZm9yIFtXUk9OR10gcmVjb3JkcyB3aXRoIHVubGlrZWx5IHN1YmplY3RzCj5NWSBTT0xVVElPTjogSSB0YWtlIHRoZSBhYnN0cmFjdCBhbmQgSSBjcmVhdGUgbXkgIm93biIgcGxhdXNpYmxlIGxpc3Qgb2Ygc3ViamVjdHMKCmBgYHtyfQojIC0tLSBpZGVudGlmeSB3cm9uZyBzdWJqZWN0IG9icwpXRFJfd3IgPC0gV0RSX2NvbSAlPiUgCiAgZmlsdGVyKCBzdWJqZWN0X21lc3MgPT0gIlkiKSAKbmFtZXMoV0RSX2NvbSkKYGBgCgojIyMjIC0tIFNpbmdsZSBXRFIgY2FzZSAKYGBge3J9CiMgLS0tIHRva2VuaXplIGFic3RyYWN0IApXRFJfNDM4OSA8LSBXRFJfd3IgJT4lIAogIGZpbHRlcihpZCA9PSI0Mzg5IikgJT4lIAogIHNlbGVjdCAoYWJzdHJhY3QpICU+JSBhc190aWJibGUoKSAlPiUgCiAgdGlkeXRleHQ6OnVubmVzdF90b2tlbnMod29yZCwgYWJzdHJhY3QpICMgLT4gMjUxIHdvcmRzIAoKIyAtLS0gcmVtb3ZlIHN0b3Agd29yZHMKc3RvcF93b3JkcyA8LSBhc190aWJibGUoc3RvcF93b3JkcykgJT4lICMgaW4gdGhlIHRpZHl0ZXh0IGRhdGFzZXQgCiAgYWRkX3Jvdyh3b3JkID0gInJlcG9ydCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiZGV2ZWxvcG1lbnQiLCBsZXhpY29uID0gTkFfY2hhcmFjdGVyXykgJT4lCiAgYWRkX3Jvdyh3b3JkID0gIjIwMTEiLCBsZXhpY29uID0gTkFfY2hhcmFjdGVyXykKCiMgLS0tIGlzb2xhdGUgbWVhbmluZ2Z1bCB0b2tlbnMKV0RSXzQzODkgPC0gV0RSXzQzODkgJT4lIAogIGFudGlfam9pbiggc3RvcF93b3JkcyApICU+JSAgICMgLT4gMTMxICB3b3JkcyAKICAjIGdyb3VwIGFuZCBjb3VudCAKICBjb3VudCh3b3JkLCBzb3J0ID0gVCkgICMgLT4gMTAxICB3b3JkcyAKCiMgcmVuYW1lIGNvbHVtbiBpbiByZXN1bHQgY29ycmVjdGVkICAgCldEUl80Mzg5X3cgPC0gdChXRFJfNDM4OSkgJT4lIGFzX3RpYmJsZSgpICAKbmFtZXMoV0RSXzQzODlfdykgPC0gZ3N1Yih4ID0gbmFtZXMoV0RSXzQzODlfdyksIHBhdHRlcm4gPSAiXFxWIiwgcmVwbGFjZW1lbnQgPSAic3Vial8iKQogIyAtLS0gZ3JhcGggd29yZHMKICAjIHAgPC0gV0RSXzQzODkgJT4lIGNvdW50KHdvcmQsIHNvcnQgPSBUUlVFKSAlPiUKICAjICAgZmlsdGVyKG4gPiA2MDApICU+JQogICMgICBtdXRhdGUod29yZCA9IHJlb3JkZXIod29yZCwgbikpICU+JQogICMgICBnZ3Bsb3QoYWVzKG4sIHdvcmQpKSArCiAgIyAgIGdlb21fY29sKCkgKwogICMgICBsYWJzKHkgPSBOVUxMKQogICMgcCAgCiAgIyAgIAoKIyAtLS0gcmVwbGFjZSBhcyBzdWJqZWN0cyAKV0RSXzQzODlfdyAgPC0gV0RSXzQzODlfdyAlPiUgIAogIGZpbHRlcihyb3dfbnVtYmVyKCkgPT0gMSApICU+JSAKICBtdXRhdGUoaWQgPSA0Mzg5KSAlPiUgCiAgcmVsb2NhdGUoaWQsIC5iZWZvcmUgPSBzdWJqXzEpCgpuYW1lcyhXRFJfNDM4OV93KQpuYW1lcyhXRFJfY29tKQoKIyBjcmVhdGUgYSB2ZWN0b3Igb2YgY29sdW1uIG5hbWVzIHRvIGFkZCB0byByZWFjaCB0aGUgbmxlbmd0aChXRFJfY29tKQpjb2xfbmFtZXMgPC0gIGFzLnZlY3RvciggIHBhc3RlMCgnc3Vial8nLCAxMDI6MjE2KSkKCiMgbWFrZSBhIGRmIHdpdGggdGhvc2UgY29scyBhbmQgMSByb3cgbWFkZSBvZiBOYXMgdmFsdWVzIAp0b19hZGQgPC0gYmluZF9yb3dzKHNldE5hbWVzKHJlcCgiIiwgbGVuZ3RoKGNvbF9uYW1lcykpLCBjb2xfbmFtZXMpKVtOQV9jaGFyYWN0ZXJfLCBdCgojIC0tLSBwYWQgdW50aWwgc3Vial8yMTYgd2l0aCBuYXMuLi4uLi4uLi4gIApXRFJfNDM4OV93X3BhZCA8LSBiaW5kX2NvbHMoV0RSXzQzODlfdywgdG9fYWRkKQpgYGAKCiMjIyMgLS0gTk9XOiByZXBsYWNlIGNvcnJlY3RlZCBzaW5nbGUgV0RSIGNhc2UgaW50byBtYXN0ZXIgZGYgCmBgYHtyfQogICMgaW5pdGlhbCBjaGVjayAtLS0KICBXRFJfY29tJHN1YmpfMVtXRFJfY29tJGlkID09IDQzODldIAogIFdEUl9jb20kc3Vial8zW1dEUl9jb20kaWQgPT0gNDM4OV0gCiAgIy0tLSAKCiNpZCA8LSAgNDM4OSAKY29sX3N1YmpfbmFtZXMgPC0gbmFtZXMoV0RSXzQzODlfd19wYWQpWy0xXSAjIHdpdGhvdXQgaWQKY29sX3N1YmpfbmFtZXMKCmNvbF9zdWJqX25hbWVzWzFdCmNvbF9zdWJqX25hbWVzCgojIHBpY2sgdGhlIGlkIAppIDwtIDQzODkKCiMgLS0tIGZ1bmN0aW9uIC0tLSBOTyBKT1khCmZvciAoaiBpbiAxOmxlbmd0aChjb2xfc3Vial9uYW1lcykpIHsKICBjb2wgPC0gIGNvbF9zdWJqX25hbWVzW2pdCiAgIyBwcmludChjb2wpICMgbm9saW50CiAgV0RSX2NvbSAlPiUKICAgIGRwbHlyOjpmaWx0ZXIgKGlkID09IGkpICU+JSAKICAgIGRwbHlyOjptdXRhdGUgKC4sIGNvbCA9IFdEUl80Mzg5X3dfcGFkJGNvbCkgCiAgV0RSX2NvbV8yIDwtIFdEUl9jb20KfQoKV0RSX2NvbV8yCgogICMgZmluYWwgIGNoZWNrIC0tLQogIFdEUl9jb20kc3Vial8xW1dEUl9jb20kaWQgPT0gNDM4OSBdIAogIFdEUl9jb20kc3Vial8zW1dEUl9jb20kaWQgPT0gNDM4OSBdIAoKICBXRFJfY29tXzIkc3Vial8xW1dEUl9jb21fMiRpZCA9PSA0Mzg5IF0gCiAgV0RSX2NvbV8yJHN1YmpfM1tXRFJfY29tXzIkaWQgPT0gNDM4OSBdIAogICMtLS0gCmBgYAoKIApgYGB7ciBTT3NvbH0KV0RSX2NvbSRzdWJqXzFbV0RSX2NvbSRpZCA9PSA0Mzg5IF0gCldEUl9jb20kc3Vial8zW1dEUl9jb20kaWQgPT0gNDM4OSBdIApXRFJfY29tJHRpdGxlW1dEUl9jb20kaWQgPT0gNDM4OSBdIAoKIyByIGlzIHZlY3Rvcml6ZWQgc28gCldEUl9jb21fMyA8LSBXRFJfY29tCldEUl9jb21fM1tXRFJfY29tXzMkaWQgJWluJSBXRFJfNDM4OV93X3BhZCRpZCwgOToyMjRdIDwtIFdEUl80Mzg5X3dfcGFkWywgMjoyMTddCgpXRFJfY29tXzMkc3Vial8xW1dEUl9jb21fMyRpZCA9PSA0Mzg5IF0gCldEUl9jb21fMyRzdWJqXzNbV0RSX2NvbV8zJGlkID09IDQzODkgXSAKV0RSX2NvbV8zJHRpdGxlW1dEUl9jb21fMyRpZCA9PSA0Mzg5IF0gCgpgYGAKCjMuIAojIC0tLS0tLS0tLS0tLS0tIFRPIGRvIHwgVG8gUmV0aGluayAtLS0tLS0tLS0tLS0tLS0tLS0KCisgY3JlYXRlIG15IG93biBzdG9wX3dvcmRzIGxpc3QgKHdoaWNoIGV4Y2x1ZGVzIGFsc28gInllYXIiLCAicmVwb3J0IiwgZXRjKQoKCiMgLS0tLS0tLS0tLS0tLS0gUkVWSUVXIC0tLS0tLS0tLS0tLS0tLS0tLQoKIyBCLiBXb3JsZCBCYW5rIFByb2plY3RzICYgT3BlcmF0aW9uczoKCiMgQ29ubmVjdGlvbnMKCkZvbGxvd2luZyB0aGUgZXhhbXBsZSBvZiBbRGF2aWQgUm9iaW5zb24gb24gSE4gdGl0bGVzXShodHRwOi8vdmFyaWFuY2VleHBsYWluZWQub3JnL3IvaG4tdHJlbmRzLykKCiMgRGF0YSBzb3VyY2VzOgoKMS4gIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOiA8aHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3NlYXJjaC9kYXRhc2V0LzAwMzc4MDA+IDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMC9Xb3JsZC1CYW5rLVByb2plY3RzLS0tT3BlcmF0aW9ucz4KCi0gICBBY2Nlc3NpYmlsaXR5IENsYXNzaWZpY2F0aW9uOiAqKnB1YmxpYyoqIHVuZGVyIFtDcmVhdGl2ZSBDb21tb25zIEF0dHJpYnV0aW9uIDQuMF0oaHR0cHM6Ly9kYXRhY2F0YWxvZy53b3JsZGJhbmsub3JnL3B1YmxpYy1saWNlbnNlcz9mcmFnbWVudD1jYykKCjIuICBXb3JsZCBCYW5rIC0gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cwoKLSAgIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246CgojIFR1dG9yaWFscwoKW0JlbmphbWluIFNvbHRvZmY6IENvbXB1dGluZyA0IFNvY2lhbCBTY2llbmNlcyAtIEFQSV0oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy9nZXR0aW5nLWRhdGEtZnJvbS10aGUtd2ViLWFwaS1hY2Nlc3MvKSBbQmVuamFtaW4gU29sdG9mZjogQ29tcHV0aW5nIDQgU29jaWFsIFNjaWVuY2VzIC0gdGV4dCBhbmFseXNpc10oaHR0cHM6Ly9jZnNzLnVjaGljYWdvLmVkdS9zeWxsYWJ1cy90ZXh0LWFuYWx5c2lzLWZ1bmRhbWVudGFscy1hbmQtc2VudGltZW50LWFuYWx5c2lzLykK</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

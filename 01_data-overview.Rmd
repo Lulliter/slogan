@@ -12,10 +12,36 @@ bibliography: buzzwords.bib
 
 <i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
+# 0. Intro
+
+### --- Some definitions:
+
+-   **Corpus** \~ a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
+-   **Document-term matrix** \~ sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+-   **Document** \~ collection of sentences
+-   **Token** \~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
+-   **Tokenization** \~ splitting text into tokens
+-   **Bigrams**/**n-gram** \~ sentence, or paragraph
+-   **Tidy text** \~ "a table with one-token-per-row"
+
+### --- R text processing
+
+-   {tm}
+-   {OpenNLP}
+-   {RWeka}
+-   {languageR}
+-   {korPus}
+-   {tidytext}
+
 ```{r setup_inp}
 # Pckgs -------------------------------------
 if (!require ("pacman")) (install.packages("pacman"))
-p_load(tidyverse, 
+#p_install_gh("luisDVA/annotater")
+#p_install_gh("HumanitiesDataAnalysis/hathidy")
+# devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis") 
+p_load(here,
+       annotater,
+       tidyverse, 
        # ggplot2, for data visualisation.
        # dplyr, for data manipulation.
        # tidyr, for data tidying.
@@ -24,12 +50,25 @@ p_load(tidyverse,
        # tibble, for tibbles, a modern re-imagining of data frames.
        # stringr, for strings.
        # forcats, for factors.
-       here,
-       httr, jsonlite, XML, xml2, 
+       skimr,
+       httr, 
+       jsonlite, 
+       XML, 
+       xml2, 
        oai, # R client to work with OAI-PMH 
-       citr, 
-       tidytext)
+       citr
+       )
 
+p_load(
+  tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+  sjmisc, # Data and Variable Transformation Functions
+  ggraph, # An Implementation of Grammar of Graphics for Graphs and Networks
+  widyr, # Widen, Process, then Re-Tidy Data
+  SnowballC, 
+  HumanitiesDataAnalysis, # ,hathidy
+  sentencepiece
+)
+ 
 # Function(s) -------------------------------------
 # source(here::here ("R", "WB-OKR_scrape-function.R") )
 
@@ -39,19 +78,21 @@ p_load(tidyverse,
 
 ```
 
-# Data ingesting & cleaning
+# A. World Development Reports (WRDs)
 
-## 1. World Development Reports (WRDs) 
+Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+## 1. Data ingesting & cleaning
+
 <!-- Done in "./_my_stuff/_01_data-overview.Rmd"  -->
 
-```{r}
+```{r ingest}
 # WRD metadata taken with API get (issues) 
 WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
       # Extract only the portion of string AFTER the backslash {/}
-  mutate(id =  as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$")) ) %>% 
+  mutate(id =  as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$"))) %>% 
   dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
-  mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full") )%>% 
-  dplyr::relocate(url_keys, .before =  doc_mt_identifier_1)
+  mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full") )  
 
 # WRD subject/date_issued taken by manual review 
 WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", "WDR_subjects.xlsx" )) %>% 
@@ -63,7 +104,7 @@ WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>%
   # drop useles clmns 
   dplyr::select(-doc_mt_identifier_1, -doc_mt_identifier_2, -doc_mt_date, 
                 -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
-  dplyr::relocate(url_keys, .after = subj_216 ) %>% 
+  #dplyr::relocate(url_keys, .after = subj_216 ) %>% 
   dplyr::rename(abstract = doc_mt_description) %>% 
   # correct titles -> portion after {:}
   dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
@@ -78,7 +119,7 @@ WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>%
                                        NA_character_))  %>% 
   dplyr::relocate(subject_mess, .after = title_miss)  
  
-#convert all columns that start with "subj_" to lowercase
+# convert all columns that start with "subj_" to lowercase
 # WDR_com[7:223] <- sapply(WDR_com[7:223], function(x) tolower(x))
 WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
 
@@ -92,41 +133,554 @@ WDR_com <- WDR_com %>% tidyr::unite(
   remove = FALSE)
 ```
 
+#### -- Set stopwords [more...]
 
-### Wrangling the text
+```{r stop}
+# --- set up stop words
+stop_words <- as_tibble(stop_words) %>% # in the tidytext dataset 
+  add_row(word = "report", lexicon = NA_character_) %>%
+  add_row(word = "development", lexicon = NA_character_) %>%
+  add_row(word = "1978", lexicon = NA_character_)%>%
+  add_row(word = "1979", lexicon = NA_character_)%>%
+add_row(word = "1980", lexicon = NA_character_) %>%
+  add_row(word = "1981", lexicon = NA_character_) %>%
+  add_row(word = "1982", lexicon = NA_character_)%>%
+  add_row(word = "1983", lexicon = NA_character_)%>%
+  add_row(word = "1984", lexicon = NA_character_)%>%
+  add_row(word = "1985", lexicon = NA_character_)%>%
+  add_row(word = "1986", lexicon = NA_character_)%>%
+  add_row(word = "1987", lexicon = NA_character_)%>%
+  add_row(word = "1988", lexicon = NA_character_)%>%
+  add_row(word = "1989", lexicon = NA_character_)%>%
+add_row(word = "1990", lexicon = NA_character_) %>%
+  add_row(word = "1991", lexicon = NA_character_) %>%
+  add_row(word = "1992", lexicon = NA_character_)%>%
+  add_row(word = "1993", lexicon = NA_character_)%>%
+  add_row(word = "1994", lexicon = NA_character_)%>%
+  add_row(word = "1995", lexicon = NA_character_)%>%
+  add_row(word = "1996", lexicon = NA_character_)%>%
+  add_row(word = "1997", lexicon = NA_character_)%>%
+  add_row(word = "1998", lexicon = NA_character_)%>%
+  add_row(word = "1999", lexicon = NA_character_)%>%
+add_row(word = "2000", lexicon = NA_character_) %>%
+  add_row(word = "2001", lexicon = NA_character_) %>%
+  add_row(word = "2002", lexicon = NA_character_)%>%
+  add_row(word = "2003", lexicon = NA_character_)%>%
+  add_row(word = "2004", lexicon = NA_character_)%>%
+  add_row(word = "2005", lexicon = NA_character_)%>%
+  add_row(word = "2006", lexicon = NA_character_)%>%
+  add_row(word = "2007", lexicon = NA_character_)%>%
+  add_row(word = "2008", lexicon = NA_character_)%>%
+  add_row(word = "2009", lexicon = NA_character_)%>%
+add_row(word = "2010", lexicon = NA_character_)%>%
+  add_row(word = "2011", lexicon = NA_character_) %>%
+  add_row(word = "2012", lexicon = NA_character_)%>%
+  add_row(word = "2013", lexicon = NA_character_)%>%
+  add_row(word = "2014", lexicon = NA_character_)%>%
+  add_row(word = "2015", lexicon = NA_character_)%>%
+  add_row(word = "2016", lexicon = NA_character_)%>%
+  add_row(word = "2017", lexicon = NA_character_)%>%
+  add_row(word = "2018", lexicon = NA_character_)%>%
+  add_row(word = "2019", lexicon = NA_character_)%>%
+add_row(word = "2020", lexicon = NA_character_)%>%
+  add_row(word = "2021", lexicon = NA_character_)%>%
+  add_row(word = "2022", lexicon = NA_character_)
 
-Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+```
 
-### Tokenization
+## 1.a Troubleshooting some obs
 
-Some definitions:
--   A **token** ~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
--   *tokenization* ~ splitting text into tokens
--   **bigrams**/**n-gram** ~ sentence, or paragraph
--   ***tidy text*** ~ "a table with one-token-per-row"
--   ***corpus*** ~  objects that typically contain raw strings annotated with additional metadata and details
--   ***Document-term matrix*** ~ sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term.  (`WDR_com`)
- 
+> MY PROBLEM HERE IS THAT SOME OF THE SUBJECT LISTS ARE EVIDENTLY WRONG (either they are the same of another WDR or they are impossibly long)
+
+### --- Extrapolate subjects from abstracts - for [WRONG] records with unlikely subjects
+
+> MY SOLUTION: I take the abstract and I create my own "plausible list" of subjects
+
+(\*) There will remain a problem: this corrected records have tokens and not bi\|n-grams (which make more sense)!
+
+```{r wrongWDRs}
+# --- identify wrong subject obs
+WDR_wr <- WDR_com %>% 
+  filter( subject_mess == "Y") 
+# names(WDR_com)
+```
+
+#### -- WDR caseid = 4389
+
+```{r fix4389}
+# --- tokenize abstract 
+WDR_4389 <- WDR_wr %>% 
+  filter(id =="4389") %>% 
+  select (abstract) %>% as_tibble() %>% 
+  tidytext::unnest_tokens(word, abstract) # -> 251 words 
+
+# --- remove stop words
+# --- isolate meaningful tokens
+WDR_4389 <- WDR_4389 %>% 
+  anti_join( stop_words ) %>%   # -> 131  words 
+  # group and count 
+  count(word, sort = T)  # -> 101  words 
+
+# rename column in result corrected   
+WDR_4389_w <- t(WDR_4389) %>% as_tibble()  
+names(WDR_4389_w) <- gsub(x = names(WDR_4389_w), pattern = "\\V", replacement = "subj_")
+ # --- graph words
+  # p <- WDR_4389 %>% count(word, sort = TRUE) %>%
+  #   filter(n > 600) %>%
+  #   mutate(word = reorder(word, n)) %>%
+  #   ggplot(aes(n, word)) +
+  #   geom_col() +
+  #   labs(y = NULL)
+  # p  
+  #   
+
+# --- replace as subjects 
+WDR_4389_w  <- WDR_4389_w %>%  
+  filter(row_number() == 1 ) %>% 
+  mutate(id = 4389) %>% 
+  relocate(id, .before = subj_1)
+
+names(WDR_4389_w)
+
+# create a vector of column names to add to reach the nlength(WDR_com)
+col_names <-  as.vector(  paste0('subj_', length(WDR_4389_w):216))
+
+# make a df with those cols and 1 row made of Nas values 
+to_add <- bind_rows(setNames(rep("", length(col_names)), col_names))[NA_character_, ]
+
+# --- pad until subj_216 with nas.........  
+WDR_4389_w_pad <- bind_cols(WDR_4389_w, to_add)
+
+#### -- NOW: replace corrected single WDR case into master df 
+  # initial check ---
+  WDR_com$subj_1[WDR_com$id == 4389] 
+  WDR_com$subj_3[WDR_com$id == 4389] 
+  #--- 
+
+#id <-  4389 
+col_subj_names <- names(WDR_4389_w_pad)[-1] # without id
+
+# pick the id 
+i <- 4389
+
+# # --- function --- NO JOY!
+# for (j in 1:length(col_subj_names)) {
+#   col <-  col_subj_names[j]
+#   # print(col) # nolint
+#   WDR_com %>%
+#     dplyr::filter (id == i) %>% 
+#     dplyr::mutate (., col = WDR_4389_w_pad$col) 
+#   WDR_com_2 <- WDR_com
+# }
+
+# ---------# Solution from SO guy 
+# r is vectorized so 
+WDR_com_3 <- WDR_com
+WDR_com_3[WDR_com_3$id %in% WDR_4389_w_pad$id, 9:224] <- WDR_4389_w_pad[, 2:217]
+
+WDR_com_3$subj_1[WDR_com_3$id == 4389 ] 
+WDR_com_3$subj_3[WDR_com_3$id == 4389 ] 
+WDR_com_3$title[WDR_com_3$id == 4389 ] 
+```
+
+#### -- WDR caseid = 4387
+
+```{r fix4387}
+# --- tokenize abstract 
+WDR_4387 <- WDR_wr %>% 
+  filter(id =="4387") %>% 
+  select (abstract) %>% as_tibble() %>% 
+  tidytext::unnest_tokens(word, abstract) # -> 249 words 
+
+# --- remove stop words
+# --- isolate meaningful tokens
+WDR_4387 <- WDR_4387 %>% 
+  anti_join( stop_words ) %>%   # -> 131  words 
+  # group and count 
+  count(word, sort = T)  # -> 86  words 
+
+# rename column in result corrected   
+WDR_4387_w <- t(WDR_4387) %>% as_tibble()  
+names(WDR_4387_w) <- gsub(x = names(WDR_4387_w), pattern = "\\V", replacement = "subj_")
+
+# --- replace as subjects 
+WDR_4387_w  <- WDR_4387_w %>%  
+  filter(row_number() == 1 ) %>% 
+  mutate(id = 4387) %>% 
+  relocate(id, .before = subj_1)
+
+names(WDR_4387_w)
+
+# create a vector of column names to add to reach the n length(WDR_com)
+col_names <-  as.vector(  paste0('subj_', length(WDR_4387_w):216))
+#col_names
+# make a df with those cols and 1 row made of Nas values 
+to_add <- bind_rows(setNames(rep("", length(col_names)), col_names))[NA_character_, ]
+
+# --- pad with NA filled cols until col == subj_216 .........  
+WDR_4387_w_pad <- bind_cols(WDR_4387_w, to_add)
+
+#### -- NOW: replace corrected single WDR case into master df 
+  # initial check ---
+  WDR_com$subj_1[WDR_com$id == 4387] 
+  WDR_com$subj_3[WDR_com$id == 4387] 
+  #--- 
+
+#id <-  4387 
+col_subj_names <- names(WDR_4387_w_pad)[-1] # without id
+
+# pick the id 
+i <- 4387
+
+# ---------# Solution from SO guy 
+# r is vectorized so 
+WDR_com_4 <- WDR_com_3
+WDR_com_4[WDR_com_4$id %in% WDR_4387_w_pad$id, 9:224] <- WDR_4387_w_pad[, 2:217]
+
+WDR_com_4$subj_1[WDR_com_4$id == 4387 ] 
+WDR_com_4$subj_3[WDR_com_4$id == 4387 ] 
+WDR_com_4$title[WDR_com_4$id == 4387 ] 
+```
+
+#### -- WDR caseid = 2586
+
+```{r fix2586}
+# --- tokenize abstract 
+WDR_2586 <- WDR_wr %>% 
+  filter(id =="2586") %>% 
+  select (abstract) %>% as_tibble() %>% 
+  tidytext::unnest_tokens(word, abstract) # -> 249 words 
+
+# --- remove stop words
+# --- isolate meaningful tokens
+WDR_2586 <- WDR_2586 %>% 
+  anti_join( stop_words ) %>%   # -> 131  words 
+  # group and count 
+  count(word, sort = T)  # -> 86  words 
+
+# rename column in result corrected   
+WDR_2586_w <- t(WDR_2586) %>% as_tibble()  
+names(WDR_2586_w) <- gsub(x = names(WDR_2586_w), pattern = "\\V", replacement = "subj_")
+
+# --- replace as subjects 
+WDR_2586_w  <- WDR_2586_w %>%  
+  filter(row_number() == 1 ) %>% 
+  mutate(id = 2586) %>% 
+  relocate(id, .before = subj_1)
+
+names(WDR_2586_w)
+
+# create a vector of column names to add to reach the n length(WDR_com)
+col_names <-  as.vector(  paste0('subj_', length(WDR_2586_w):216))
+#col_names
+# make a df with those cols and 1 row made of Nas values 
+to_add <- bind_rows(setNames(rep("", length(col_names)), col_names))[NA_character_, ]
+
+# --- pad with NA filled cols until col == subj_216 .........  
+WDR_2586_w_pad <- bind_cols(WDR_2586_w, to_add)
+
+#### -- NOW: replace corrected single WDR case into master df 
+  # initial check ---
+  WDR_com$subj_1[WDR_com$id == 2586] 
+  WDR_com$subj_3[WDR_com$id == 2586] 
+  #--- 
+
+#id <-  2586 
+col_subj_names <- names(WDR_2586_w_pad)[-1] # without id
+
+# pick the id 
+i <- 2586
+
+# ---------# Solution from SO guy 
+# r is vectorized so 
+WDR_com_5 <- WDR_com_4
+WDR_com_5[WDR_com_5$id %in% WDR_2586_w_pad$id, 9:224] <- WDR_2586_w_pad[, 2:217]
+
+WDR_com_5$subj_1[WDR_com_5$id == 2586] 
+WDR_com_5$subj_3[WDR_com_5$id == 2586] 
+WDR_com_5$title[WDR_com_5$id == 2586] 
+WDR_com_5$title[WDR_com_5$id == 2586] 
+```
+
+```{r cleanenv}
+wdr <- WDR_com_5
+# ls objects
+list_old_WDR <-  ls(pattern = "^WDR", all.names = TRUE)
+list_old_WDR
+rm(list = list_old_WDR)
+rm(to_add)
+```
+
+# ---
+
+## 2.1 Tokenization (of WDRs' abstract)
+
+### --- Starting from 1 abstract
+
 ```{r}
-# printing out data as tibble 
-sbj_all_4 <- c(WDR_com$subj_1[4],WDR_com$subj_2[4] ,WDR_com$subj_3[4] ,WDR_com$subj_4[4] )
+abs_1 <- as_tibble(wdr$abstract[1] )
+```
 
-library(dplyr)
-sbj_all_4_df <- tibble(line = 1:4, sbj_all_4 = sbj_all_4)
+Break the text [e.g. 1 abstract] into individual tokens
+
+```{r}
+# --- modo 1 
+# abs_1_t2 <- abs_1 %>%
+#   stringr::str_split("[^A-Za-z]")  # gives a list 
+
+# --- modo 2
+#abs_1_t <-  abs_1 %>% 
+#  # unnest (newColName, oldColName)
+#  unnest_tokens(word, value ) # --> tidytext
+
+```
+
+### --- The choices of tokenization
+
+    + Should words be lowercased?
+    + Should punctuation be removed?
+    + Should numbers be replaced by some placeholder?
+    + Should words be stemmed (also called lemmatization).
+    + Should bigrams or other multi-word phrase be used instead of or in addition to single word phrases?
+    + Should stopwords (the most common words) be removed?
+    + Should rare words be removed?
+
+```{r}
+# features I can add to `unnest_tokens`
+tok_feat_l <- list(
+  # all 2 lowercase 
+  abs_1 %>% unnest_tokens(word, value) %>% select(lowercase = word),
+  # This function`SnowballC::wordStem` extracts the stems of each of the given words in the vector.
+  abs_1 %>% unnest_tokens(word, value) %>% rowwise() %>% mutate(word = SnowballC::wordStem(word)) %>% select(stemmed = word),
+  # keep uppercase if there are 
+  abs_1 %>% unnest_tokens(word, value, to_lower = F) %>% select(uppercase = word),
+  # keep punctuation {default is rid} 
+  abs_1 %>% unnest_tokens(word, value, to_lower = F, strip_punc = FALSE) %>% select(punctuations = word),
+  # bigram
+  abs_1 %>% unnest_tokens(word, value, token = "ngrams", n = 2, to_lower = F) %>% select(bigrams = word)
+) 
+
+# Return a data frame created by column-binding.
+tok_feat_df <- map_dfc(tok_feat_l  , ~ .x %>% head(10))
+tok_feat_df
+
+# my choice 
+abs_1_t_mod <- abs_1 %>% 
+  # no punctuation, yes capitalized
+  unnest_tokens(word, value, to_lower = F, strip_punc = TRUE) %>% # 249 obs
+  # exclude stopwords 
+  anti_join(stop_words) # 109 obs
+
+head(abs_1_t_mod, 15)
+```
+
+### --- Tokenizing ALL abstracts
+
+```{r}
+# isolate only abstracts 
+abs_all <- wdr %>% 
+  dplyr::select(id, date_issued, title, abstract)
+
+abs_all_token <-  abs_all %>% 
+  unnest_tokens(output =  word,
+                input = abstract,
+                to_lower = T, # otherwise cannot match the stop_words  
+                strip_punc = TRUE) %>% #10018
+  anti_join(stop_words) # 4786
+```
+
+### --- Plotting obtained tokens (all abstractS)--------------------------------------------------------
+
+```{r}
+## Wordcounts/plots --------------------------------------------------------
+
+# Count words
+wordcounts <- abs_all_token %>%
+  group_by(word) %>%
+  summarize(n = n()) %>%
+  arrange(-n)
+
+wordcounts %>% head(5)
+# plot
+wordcounts <- wordcounts %>%
+  mutate(rank = rank(-n)) %>%
+  filter(n > 2, word != "")
+ggplot(wordcounts) + aes(x = rank, y = n, label = word) + geom_text() # ugly!!!
+
+# Putting logarithmic scales on both axes reveals something interesting about the way that data is structured; this turns into a straight line.
+ggplot(wordcounts) +
+  aes(x = rank, y = n, label = word) +
+  geom_point(alpha = .3, color = "grey") +
+  geom_text(check_overlap = TRUE) +
+  scale_x_continuous(trans = "log") +
+  scale_y_continuous(trans = "log") +
+  labs(title = "Zipf's Law",
+       subtitle="The log-frequency of a term is inversely correlated with the logarithm of its rank.")
+# ...the logarithm of rank decreases linearly with the logarithm of count
+# This is “Zipf’s law:” the phenomenon means that the most common word is twice as common as the second most common word, three times as common as the third most common word, four times as common as the fourth most common word, and so forth.
+```
+
+### --- Analyzing tf-idf: word and document frequency  --------------------------------------------------------
+
+What is the document about?
+
++ **term frequency (tf)** = how frequently a word occurs in a document,
++ term's **inverse document frequency (idf)** = decreases the weight for commonly used words and increases the weight +r words that are not used very much in a collection of documents.
++ **statistic tf-idf** = to measure how important a word is to a document in a collection (or corpus) of documents, for example, to one novel in a collection of novels or to one website in a collection of websites. 
+
+> rule-of-thumb or heuristic quantity; while it has proved useful its theoretical foundations are considered less than firm by information theory experts. 
+
+The inverse document frequency for any given term is defined as
+
+$$idf(\text{term}) = \ln{\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)}$$
+
+```{r tf_idf}
+# Count words
+abs_words <-  abs_all %>% 
+  unnest_tokens(output =  word,
+                input = abstract,
+                to_lower = T, # otherwise cannot match the stop_words  
+                strip_punc = TRUE) %>%  #10018
+  count(title, word, sort = TRUE)
+
+abs_total_words <- abs_words %>%
+  dplyr::group_by(title) %>%
+  dplyr::summarise(total = sum(n))  
+
+abs_words <- left_join(abs_words, abs_total_words)   
+ abs_words
+# here there is one row for each word-WDR(abs) combination 
+# `n` is the number of times that word is used in that book and 
+# `total` is the total words in that book.
+```
 
 
+let’s look at the distribution of n/total for each novel, the number of times a word appears in a novel divided by the total number of terms (words) in that novel. This is exactly what term frequency is.
+
+```{r}
+
+ggplot(abs_words, aes(n/total, fill = title)) +
+  geom_histogram( show.legend = FALSE) + #, binwidth = 1) + 
+  xlim(NA, 0.05) +
+  facet_wrap( ~title ) # , ncol = 2, scales = "free_y")
+```
+
+# -------------- STOP ------------------
+
+
+## 2.2 Tokenization by n-gram - ITERATIVELY]
+
+## 3. [Word Frequencies]
+
+## 4. Relationships between words: n-grams and correlations
+
+examples are examining which words tend to follow others immediately, or that tend to co-occur within the same documents. + `tidytext::token = "ngrams" argument` is a method tidytext offers for calculating and visualizing relationships between words in your text dataset. It tokenizes by pairs of adjacent words rather than by individual ones. We'll also introduce two new packages: `ggraph`, which extends `ggplot2` to construct network plots, and `widyr`, which calculates pairwise correlations and distances within a tidy data frame. Together these expand our toolbox for exploring text within the tidy data framework.
+
+### --- Tokenizing by n-gram
+
+```{r}
 # break the text [e.g. 1 abstract] into individual tokens 
-abs_1 <- as_tibble(WDR_com$abstract[1] )
+abs_1 <- as_tibble(wdr$abstract[1] )
 abs_1_t <-  abs_1 %>% 
   # unnest (newColName, oldColName)
   unnest_tokens(word, value ) # --> tidytext
+
+
+abs_2022_bigrams <- wdr_5 %>% 
+  dplyr::filter(id == 36883) %>% 
+  select(abstract) %>% 
+  as_tibble() %>% 
+  unnest_tokens(., output = bigram, input = abstract, token = "ngrams", n=2 )  
+# notice how these bigrams overlap
 ```
- 
- 
-# -------------- REVIEW ------------------ #
 
-## 2. World Bank Projects & Operations:
+### --- Tokenizing by n-gram - ITERATIVELY
 
+```{r}
+# ---modo 1
+# here I am basically adding rows wit repeated id attached 
+abs_bigrams <- wdr %>% 
+  #dplyr::filter(id == 36883) %>% 
+  select(id, title, date_issued, abstract) %>% 
+  as_tibble() %>% 
+  unnest_tokens(., output = bigram, input = abstract, token = "ngrams", n=2 )  %>% 
+  count(bigram, sort = TRUE) # 7348 obs 
+
+# ----- what if I wanted to keep my 45 rows and add bigrams in a wide sense? 
+
+# ---modo 2
+ abs_prep <- wdr %>% 
+  #dplyr::filter(id == 36883) %>% 
+  select(id, title, date_issued, abstract) %>% 
+  as_tibble() # 45 obs
+ 
+myComplexFunction <- function(arg1, arg2, arg3, arg4){
+  col <- arg1 * arg2 * arg3 * arg4
+  x <- as.data.frame(col)
+}
+
+arg1 <- c(1, 3, 5, 7, 9)
+arg2 <- c(2, 4, 6, 8, 10)
+arg3 <- c(5, 10, 15, 20, 25)
+arg4 <- c(10, 20, 30, 40, 50)
+
+argList <- list(arg1, arg2, arg3, arg4)
+
+abs_bigr_45 <- map_dfr(tbl = abs_prep,
+                       .x = abs_prep$abstract, .f = unnest_tokens(), output = bigram, input = abstract, token = "ngrams", n=2 )
+
+
+```
+
+### --- Counting and filtering n-grams
+
+```{r}
+# separate words 
+abs_2022_bigrams_sep <- abs_2022_bigrams %>% 
+  count(bigram, sort = TRUE) %>%
+  # since many are bigram with a stopword
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word)
+
+# new bigram counts:
+abs_2022_bigrams_sep_counts <- abs_2022_bigrams_sep %>% 
+  count(word1, word2, sort = TRUE)
+
+abs_2022_bigrams_sep_counts
+
+ # OPPOSITE: reunite words 
+abs_2022_bigrams_united <- abs_2022_bigrams_sep %>% 
+  unite(bigram, word1, word2, sep = " ")
+  
+```
+
+### --- Analyzing bigrams
+
+In other analyses you may be interested in the most common trigrams, which are consecutive sequences of 3 words. We can find this by setting n = 3:
+
+```{r}
+
+```
+
+### --- Trigrams
+
+In other analyses you may be interested in the most common trigrams, which are consecutive sequences of 3 words. We can find this by setting n = 3:
+
+```{r}
+
+```
+
+## 5. [Concordances: lag and lead words...]
+
+As in [Ben Schmidt Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)
+
+# -------------- TO do \| To Rethink ------------------
+
+-   create my own stop_words list (which excludes also "year", "report", etc)
+
+
+# B. World Bank Projects & Operations:
 
 # Connections
 
@@ -142,6 +696,8 @@ Following the example of [David Robinson on HN titles](http://varianceexplained.
 
 -   Accessibility Classification:
 
-# Tutorials
+# Reference Tutorials
 
-[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/) [Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+@robinson_1_2022 [Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/) [Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+
+[Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)
