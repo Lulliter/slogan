@@ -566,16 +566,16 @@ div.tocify {
 
 <h1 class="title toc-ignore">Lexicon home</h1>
 <h4 class="author">Luisa M. Mimmi</h4>
-<h4 class="date">Last run: 2022-05-12</h4>
+<h4 class="date">Last run: 2022-06-10</h4>
 
 </div>
 
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages </span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;pacman&quot;</span>)) <span class="fu">install.packages</span>(<span class="st">&#39;pacman&#39;</span> )</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pacman) <span class="co"># for loading packages</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load</span>(here, tidyverse, tibble, janitor,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>       emo, readr, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse, tibble, janitor,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="co">#  emo, </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>       readr, </span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>       gt,</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>       <span class="co">#captioner,</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>       knitr, </span>
@@ -585,75 +585,103 @@ div.tocify {
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       stringi,</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       wordcountaddin <span class="co"># You may have to download this</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>       )  </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">p_load_gh</span>(<span class="st">&quot;crsh/citr&quot;</span>) <span class="co"># not on CRAN (as of Nov 2021!)</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#p_load_gh(&quot;benmarwick/wordcountaddin&quot;)</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># library(tidyverse)</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># library(targets)</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># library(yardstick)</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># library(broom)</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># library(patchwork)</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># library(scales)</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># library(here)</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># # Load data</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># # Need to use this withr thing because tar_read() and tar_load() need to see the</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># # _targets folder in the current directory, but this .Rmd file is in a subfolder</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># withr::with_dir(here::here(), {</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co">#   source(tar_read(plot_funs))</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">#   canary_testing_lagged &lt;- tar_read(panel_testing_lagged)</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Load big list of models</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">#   model_df &lt;- tar_read(model_df) %&gt;% </span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">#     filter(str_detect(model, &quot;baseline&quot;) | str_detect(model, &quot;v2csreprss&quot;))</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Load actual model objects</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">#   tar_load(c(m_pts_baseline_train, m_pts_v2csreprss_train,</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_pts_total_train, m_pts_advocacy_train, </span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_pts_entry_train, m_pts_funding_train,</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_baseline_train, m_lhr_v2csreprss_train,</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_total_train, m_lhr_advocacy_train, </span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_entry_train, m_lhr_funding_train))</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># })</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># pts_levels &lt;- levels(canary_testing_lagged$PTS_factor)</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co"># # Returns a data frame of predicted probabilities with actual = 1 </span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co"># # when the response outcome happens</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># match_actual &lt;- function(x, pred, actual) {</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co">#   pred %&gt;% </span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co">#     select(fitted = {{x}}) %&gt;% </span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co">#     mutate(actual = as.numeric(actual == colnames(pred[x])),</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="co">#            plot_level = colnames(pred[x]))</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span></code></pre></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load_gh</span>(<span class="st">&quot;crsh/citr&quot;</span>) <span class="co"># not on CRAN (as of Nov 2021!)</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#p_load_gh(&quot;benmarwick/wordcountaddin&quot;)</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># library(tidyverse)</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># library(targets)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># library(yardstick)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># library(broom)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># library(patchwork)</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># library(scales)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># library(here)</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># # Load data</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># # Need to use this withr thing because tar_read() and tar_load() need to see the</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># # _targets folder in the current directory, but this .Rmd file is in a subfolder</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># withr::with_dir(here::here(), {</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">#   source(tar_read(plot_funs))</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co">#   canary_testing_lagged &lt;- tar_read(panel_testing_lagged)</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Load big list of models</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="co">#   model_df &lt;- tar_read(model_df) %&gt;% </span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co">#     filter(str_detect(model, &quot;baseline&quot;) | str_detect(model, &quot;v2csreprss&quot;))</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co">#   </span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co">#   # Load actual model objects</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co">#   tar_load(c(m_pts_baseline_train, m_pts_v2csreprss_train,</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_pts_total_train, m_pts_advocacy_train, </span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_pts_entry_train, m_pts_funding_train,</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_baseline_train, m_lhr_v2csreprss_train,</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_total_train, m_lhr_advocacy_train, </span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co">#              m_lhr_entry_train, m_lhr_funding_train))</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co"># })</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="co"># pts_levels &lt;- levels(canary_testing_lagged$PTS_factor)</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co"># # Returns a data frame of predicted probabilities with actual = 1 </span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="co"># # when the response outcome happens</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="co"># match_actual &lt;- function(x, pred, actual) {</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="co">#   pred %&gt;% </span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a><span class="co">#     select(fitted = {{x}}) %&gt;% </span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="co">#     mutate(actual = as.numeric(actual == colnames(pred[x])),</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="co">#            plot_level = colnames(pred[x]))</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span></code></pre></div>
 <div id="at-the-core-of-reduction" class="section level1">
 <h1>At the core of reduction</h1>
 <p>I was really struck the first time I realized how the Latin motto I
-had heard since childhood: “Mens sana in corpore sano”, was actually a
-partial quotation used in 1861 by the Englishman John Hulley, as a motto
-for his Liverpool Athletic Club. In fact, it was extrapolated from a
-longer sentence by Juvenal poet: “Orandum est ut sit mens sana in
-corpore sano” (Satire X, 356). Taken in its entirety, the statement has
-quite a different meaning than its widely used shortened version: for
-one thing, it refers prayer and not to sport.</p>
+had heard since childhood: <em>“Mens sana in corpore sano”</em>, was
+actually a partial quotation used in 1861 by the Englishman John Hulley,
+as a motto for his Liverpool Athletic Club. In fact, it was extrapolated
+from a longer sentence by Juvenal poet: <em>“Orandum est ut sit mens
+sana in corpore sano”</em> (Satire X, 356). Taken in its entirety, the
+statement has quite a different meaning than its widely used shortened
+version: for one thing, it referred to prayer and not to sport.</p>
+<p>I have seen this same dynamic (the meaning of words/phrases
+progressively detaching from the reality they originally described) at
+work also in the field of public policy, so I decided to dig deeper.</p>
+<div id="research-question-1" class="section level2">
+<h2>Research question # 1</h2>
+<p>The important question is “Why” such a deviation from the original
+meaning of a word/sentence may occur. Granted, languages evolve on their
+own along with, but it can also be subject to manipulation, as George
+Orwell’s “1984” so powerfully depicted illustrating the rules and
+purpose of fictional Oceania nation’s <em>newspeak</em>. The risks
+connected to this potential abuse of language are clearly laid out by
+Riccardo Garbini in his “Lessico - Uscire da Babele” <span
+class="citation">(Garbini 2003)</span> <a href="#fn1"
+class="footnote-ref" id="fnref1"><sup>1</sup></a><br />
+<!-- > In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'.  --></p>
 <blockquote>
-<p>In alcuni casi la deviazione del significato si evidenzia mediante la
-soppressione pura e semplice del termine (1984): in tali casi dunque
-l’analisi non insiste sull’aspetto riduzionista. Le deviazioni, laddove
-presenti, sono dettate soprattutto da intenti ideologici, ossia dalla
-sovrapposizione di una griglia interpretativa con maglie piuttosto
-rigide sui dati oggettivi della realtà. L’effetto della sovrapposizione
-di questa griglia interpretativa chiamata ideologia risulta in tal modo
-una riduzione del campo percettivo ed interpretativo della realtà. Per
-questa ragione le deviazioni semantiche sono state denominate
-‘riduzionismi’. <span class="citation">(Garbini 2003)</span></p>
+<p>(In some cases the deviation of the meaning is evidenced by the pure
+and simple suppression of the term (1984): in such cases, therefore, the
+analysis does not insist on the reductionist aspect. The deviations,
+where present, are dictated above all by ideological intentions, that
+is, by the superimposition of an interpretative grid with rather rigid
+meshes on the objective data of reality. The effect of the
+superimposition of this interpretative grid called ideology thus results
+in a reduction of the perceptive and interpretative field of reality.
+For this reason semantic deviations have been called
+‘reductionisms’.)</p>
 </blockquote>
 </div>
-<div id="some-important-definitions" class="section level1">
-<h1>Some important definitions</h1>
+<div id="research-question-2" class="section level2">
+<h2>Research question # 2</h2>
+<p>Besides investigating the origin, it would be equally important to
+understand the consequence of a lamented lessical approximation or
+reduction, because, quoting Giovanni Gentile, <em>“Language is not a
+garment of thought: it is its own body”</em><span
+class="citation">(Garbini 2003, p3)</span>
+<!-- La lingua non è veste del pensiero: è il suo corpo stesso --></p>
+</div>
+</div>
+<div id="essential-list-of-rhetorical-devices" class="section level1">
+<h1>Essential list of rhetorical devices</h1>
+<p>This goes back to Aristotle…… and it is beyond the scope …. let’s
+just recall</p>
 <div id="hermeneutics" class="section level2">
 <h2>Hermeneutics</h2>
 <p>Hermeneutics: from Greek <em>ἑρμηνεία, ας, ἡ</em> (hermēneia),
@@ -688,9 +716,48 @@ slogans are often called <em>taglines</em> in the United States</p>
 </blockquote>
 </div>
 </div>
+<div id="issues-of-modern-english" class="section level1">
+<h1>Issues of modern English</h1>
+<p>Below is the list of <em>red flags</em> detected in Orwell’s
+“Politics and the English Language”<span class="citation">(Orwell
+1946)</span>:</p>
+<ul>
+<li><strong>Dying metaphors</strong>, or worn−out metaphors which have
+lost all evocative power and are merely used because they save people
+the trouble of inventing phrases for themselves.</li>
+<li><strong>Operators, or verbal false limbs</strong>, which save the
+trouble of picking out appropriate verbs and nouns, and at the same time
+pad each sentence with extra syllables which give it an appearance of
+symmetry. Characteristic phrases are: render inoperative, militate
+against, prove unacceptable, make contact with, be subjected to, give
+rise to, give grounds for, having the effect of, play a leading part
+(role) in, make itself felt, take effect, exhibit a tendency to, serve
+the purpose of, etc.</li>
+<li><strong>Pretentious diction (used to dress up simple statements and
+give an air of scientific impartiality to biased judgments), foreign
+words and expressions, jargon</strong></li>
+<li><strong>Meaningless words</strong>, as in certain kinds of writing,
+particularly in art criticism and literary criticism, where they not
+only do not point to any discoverable object, but are hardly even
+expected to do so by the reader (like romantic, plastic, values, human,
+dead, sentimental, natural, vitality), it is normal to come across long
+passages which are almost completely lacking in meaning. Many political
+words are similarly abused: The words democracy, socialism, freedom,
+patriotic, realistic, justice, have each of them several different
+meanings which cannot be reconciled with one another. <strong><em>Words
+of this kind are often used in a consciously dishonest way. That is, the
+person who uses them has his own private definition, but allows his
+hearer to think he means something quite different.</em></strong></li>
+</ul>
+</div>
 <div id="reference" class="section level1 unnumbered">
 <h1 class="unnumbered">Reference</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-fioravanti_pedagogia_2006" class="csl-entry">
+Fioravanti, Giuseppe. 2006. <em>Pedagogia dello studio: considerazioni e
+spunti per una pedagogia del desiderio</em>. <span>L’Aquila</span>:
+<span>Japadre</span>.
+</div>
 <div id="ref-garbini_uscire_2003" class="csl-entry">
 Garbini, Riccardo. 2003. <em>Uscire da Babele - lessico per una
 pedagogia dello studio</em>. Japadre Editore. <span>L’Aquila</span>.
@@ -701,10 +768,23 @@ Nordquist, Richard. 2018. <span>“Words of the <span>Wise</span>:
 <span>ThoughtCo</span>. February 14, 2018. <a
 href="https://www.thoughtco.com/what-is-adage-1688967">https://www.thoughtco.com/what-is-adage-1688967</a>.
 </div>
+<div id="ref-orwell_politics_1946" class="csl-entry">
+Orwell, George. 1946. <span>“Politics and the <span>English</span>
+Language.”</span> <span>London, Great Britain</span>. <a
+href="https://www.overdrive.com/search?q=17B95B5F-11C8-4665-B9EF-59C01245A329">https://www.overdrive.com/search?q=17B95B5F-11C8-4665-B9EF-59C01245A329</a>.
 </div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>Annex to the Giuseppe Fioravanti’s book <span
+class="citation">(Fioravanti 2006)</span><a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiTGV4aWNvbiBob21lIgphdXRob3I6ICJMdWlzYSBNLiBNaW1taSIKZGF0ZTogIkxhc3QgcnVuOiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVGJylgIgpvdXRwdXQ6IAogIGh0bWxfZG9jdW1lbnQ6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKZWRpdG9yX29wdGlvbnM6IAogIGNodW5rX291dHB1dF90eXBlOiBjb25zb2xlCmJpYmxpb2dyYXBoeTogYnV6endvcmRzLmJpYgotLS0KCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQpsaWJyYXJ5KGtuaXRyKQpsaWJyYXJ5KGthYmxlRXh0cmEpCgprbml0X3ByaW50LmRhdGEuZnJhbWUgPC0gZnVuY3Rpb24oeCwgLi4uKSB7CiAgcmVzIDwtIHBhc3RlKGMoJycsICcnLCBrYWJsZV9zdHlsaW5nKGthYmxlKHgsIGJvb2t0YWJzID0gVFJVRSkpKSwgY29sbGFwc2UgPSAnXG4nKQogIGFzaXNfb3V0cHV0KHJlcykKfQoKcmVnaXN0ZXJTM21ldGhvZCgia25pdF9wcmludCIsICJkYXRhLmZyYW1lIiwga25pdF9wcmludC5kYXRhLmZyYW1lKQpyZWdpc3RlclMzbWV0aG9kKCJrbml0X3ByaW50IiwgImdyb3VwZWRfZGYiLCBrbml0X3ByaW50LmRhdGEuZnJhbWUpCgprbml0cjo6b3B0c19jaHVuayRzZXQoZmlnLnJldGluYSA9IDMsCiAgICAgICAgICAgICAgICAgICAgICB0aWR5Lm9wdHMgPSBsaXN0KHdpZHRoLmN1dG9mZiA9IDEyMCksICAjIEZvciBjb2RlCiAgICAgICAgICAgICAgICAgICAgICBvcHRpb25zKHdpZHRoID0gOTApLCAgIyBGb3Igb3V0cHV0CiAgICAgICAgICAgICAgICAgICAgICBmaWcuYXNwID0gMC42MTgsIGZpZy53aWR0aCA9IDcsIAogICAgICAgICAgICAgICAgICAgICAgZmlnLmFsaWduID0gImNlbnRlciIsIG91dC53aWR0aCA9ICI4NSUiKQoKb3B0aW9ucyhkcGx5ci5zdW1tYXJpc2UuaW5mb3JtID0gRkFMU0UsCiAgICAgICAga25pdHIua2FibGUuTkEgPSAiIikKYGBgCgpgYGB7ciBsb2FkLWxpYnJhcmllcy1kYXRhLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQojIExvYWQgcmVxdWlyZWQgcGFja2FnZXMgCmlmICghcmVxdWlyZSgicGFjbWFuIikpIGluc3RhbGwucGFja2FnZXMoJ3BhY21hbicgKQpsaWJyYXJ5KHBhY21hbikgIyBmb3IgbG9hZGluZyBwYWNrYWdlcwpwX2xvYWQoaGVyZSwgdGlkeXZlcnNlLCB0aWJibGUsIGphbml0b3IsCiAgICAgICBlbW8sIHJlYWRyLCAKICAgICAgIGd0LAogICAgICAgI2NhcHRpb25lciwKICAgICAgIGtuaXRyLCAKICAgICAgIGZsZXh0YWJsZSwgIyBiZXR0ZXIgYmMgT0sgaW4gaHRtbCAmIHdvcmQKICAgICAgIG9mZmljZXIsICMgdG8gc2F2ZSBmbGV4dGFibGUgaW4gd29yZAogICAgICAgc2hpbnksIAogICAgICAgc3RyaW5naSwKICAgICAgIHdvcmRjb3VudGFkZGluICMgWW91IG1heSBoYXZlIHRvIGRvd25sb2FkIHRoaXMKICAgICAgICkgIApwX2xvYWRfZ2goImNyc2gvY2l0ciIpICMgbm90IG9uIENSQU4gKGFzIG9mIE5vdiAyMDIxISkKI3BfbG9hZF9naCgiYmVubWFyd2ljay93b3JkY291bnRhZGRpbiIpCgojIGxpYnJhcnkodGlkeXZlcnNlKQojIGxpYnJhcnkodGFyZ2V0cykKIyBsaWJyYXJ5KHlhcmRzdGljaykKIyBsaWJyYXJ5KGJyb29tKQojIGxpYnJhcnkocGF0Y2h3b3JrKQojIGxpYnJhcnkoc2NhbGVzKQojIGxpYnJhcnkoaGVyZSkKCiMgCgojICMgTG9hZCBkYXRhCiMgIyBOZWVkIHRvIHVzZSB0aGlzIHdpdGhyIHRoaW5nIGJlY2F1c2UgdGFyX3JlYWQoKSBhbmQgdGFyX2xvYWQoKSBuZWVkIHRvIHNlZSB0aGUKIyAjIF90YXJnZXRzIGZvbGRlciBpbiB0aGUgY3VycmVudCBkaXJlY3RvcnksIGJ1dCB0aGlzIC5SbWQgZmlsZSBpcyBpbiBhIHN1YmZvbGRlcgojIHdpdGhyOjp3aXRoX2RpcihoZXJlOjpoZXJlKCksIHsKIyAgIHNvdXJjZSh0YXJfcmVhZChwbG90X2Z1bnMpKQojICAgCiMgICBjYW5hcnlfdGVzdGluZ19sYWdnZWQgPC0gdGFyX3JlYWQocGFuZWxfdGVzdGluZ19sYWdnZWQpCiMgICAKIyAgICMgTG9hZCBiaWcgbGlzdCBvZiBtb2RlbHMKIyAgIG1vZGVsX2RmIDwtIHRhcl9yZWFkKG1vZGVsX2RmKSAlPiUgCiMgICAgIGZpbHRlcihzdHJfZGV0ZWN0KG1vZGVsLCAiYmFzZWxpbmUiKSB8IHN0cl9kZXRlY3QobW9kZWwsICJ2MmNzcmVwcnNzIikpCiMgICAKIyAgICMgTG9hZCBhY3R1YWwgbW9kZWwgb2JqZWN0cwojICAgdGFyX2xvYWQoYyhtX3B0c19iYXNlbGluZV90cmFpbiwgbV9wdHNfdjJjc3JlcHJzc190cmFpbiwKIyAgICAgICAgICAgICAgbV9wdHNfdG90YWxfdHJhaW4sIG1fcHRzX2Fkdm9jYWN5X3RyYWluLCAKIyAgICAgICAgICAgICAgbV9wdHNfZW50cnlfdHJhaW4sIG1fcHRzX2Z1bmRpbmdfdHJhaW4sCiMgICAgICAgICAgICAgIG1fbGhyX2Jhc2VsaW5lX3RyYWluLCBtX2xocl92MmNzcmVwcnNzX3RyYWluLAojICAgICAgICAgICAgICBtX2xocl90b3RhbF90cmFpbiwgbV9saHJfYWR2b2NhY3lfdHJhaW4sIAojICAgICAgICAgICAgICBtX2xocl9lbnRyeV90cmFpbiwgbV9saHJfZnVuZGluZ190cmFpbikpCiMgfSkKIyAKIyBwdHNfbGV2ZWxzIDwtIGxldmVscyhjYW5hcnlfdGVzdGluZ19sYWdnZWQkUFRTX2ZhY3RvcikKIyAKIyAjIFJldHVybnMgYSBkYXRhIGZyYW1lIG9mIHByZWRpY3RlZCBwcm9iYWJpbGl0aWVzIHdpdGggYWN0dWFsID0gMSAKIyAjIHdoZW4gdGhlIHJlc3BvbnNlIG91dGNvbWUgaGFwcGVucwojIG1hdGNoX2FjdHVhbCA8LSBmdW5jdGlvbih4LCBwcmVkLCBhY3R1YWwpIHsKIyAgIHByZWQgJT4lIAojICAgICBzZWxlY3QoZml0dGVkID0ge3t4fX0pICU+JSAKIyAgICAgbXV0YXRlKGFjdHVhbCA9IGFzLm51bWVyaWMoYWN0dWFsID09IGNvbG5hbWVzKHByZWRbeF0pKSwKIyAgICAgICAgICAgIHBsb3RfbGV2ZWwgPSBjb2xuYW1lcyhwcmVkW3hdKSkKIyB9CmBgYAoKIyBBdCB0aGUgY29yZSBvZiByZWR1Y3Rpb24KCkkgd2FzIHJlYWxseSBzdHJ1Y2sgdGhlIGZpcnN0IHRpbWUgSSByZWFsaXplZCBob3cgdGhlIExhdGluIG1vdHRvIEkgaGFkIGhlYXJkIHNpbmNlIGNoaWxkaG9vZDogIk1lbnMgc2FuYSBpbiBjb3Jwb3JlIHNhbm8iLCB3YXMgYWN0dWFsbHkgYSBwYXJ0aWFsIHF1b3RhdGlvbiB1c2VkIGluIDE4NjEgYnkgdGhlIEVuZ2xpc2htYW4gSm9obiBIdWxsZXksIGFzIGEgbW90dG8gZm9yIGhpcyBMaXZlcnBvb2wgQXRobGV0aWMgQ2x1Yi4gSW4gZmFjdCwgaXQgd2FzIGV4dHJhcG9sYXRlZCBmcm9tIGEgbG9uZ2VyIHNlbnRlbmNlIGJ5IEp1dmVuYWwgcG9ldDogIk9yYW5kdW0gZXN0IHV0IHNpdCBtZW5zIHNhbmEgaW4gY29ycG9yZSBzYW5vIiAoU2F0aXJlIFgsIDM1NikuIFRha2VuIGluIGl0cyBlbnRpcmV0eSwgdGhlIHN0YXRlbWVudCBoYXMgcXVpdGUgYSBkaWZmZXJlbnQgbWVhbmluZyB0aGFuIGl0cyB3aWRlbHkgdXNlZCBzaG9ydGVuZWQgdmVyc2lvbjogZm9yIG9uZSB0aGluZywgaXQgcmVmZXJzIHByYXllciBhbmQgbm90IHRvIHNwb3J0LgoKPiBJbiBhbGN1bmkgY2FzaSBsYSBkZXZpYXppb25lIGRlbCBzaWduaWZpY2F0byBzaSBldmlkZW56aWEgbWVkaWFudGUgbGEgc29wcHJlc3Npb25lIHB1cmEgZSBzZW1wbGljZSBkZWwgdGVybWluZSAoMTk4NCk6IGluIHRhbGkgY2FzaSBkdW5xdWUgbCdhbmFsaXNpIG5vbiBpbnNpc3RlIHN1bGwnYXNwZXR0byByaWR1emlvbmlzdGEuIExlIGRldmlhemlvbmksIGxhZGRvdmUgcHJlc2VudGksIHNvbm8gZGV0dGF0ZSBzb3ByYXR0dXR0byBkYSBpbnRlbnRpIGlkZW9sb2dpY2ksIG9zc2lhIGRhbGxhIHNvdnJhcHBvc2l6aW9uZSBkaSB1bmEgZ3JpZ2xpYSBpbnRlcnByZXRhdGl2YSBjb24gbWFnbGllIHBpdXR0b3N0byByaWdpZGUgc3VpIGRhdGkgb2dnZXR0aXZpIGRlbGxhIHJlYWx0w6AuIEwnZWZmZXR0byBkZWxsYSBzb3ZyYXBwb3NpemlvbmUgZGkgcXVlc3RhIGdyaWdsaWEgaW50ZXJwcmV0YXRpdmEgY2hpYW1hdGEgaWRlb2xvZ2lhIHJpc3VsdGEgaW4gdGFsIG1vZG8gdW5hIHJpZHV6aW9uZSBkZWwgY2FtcG8gcGVyY2V0dGl2byBlZCBpbnRlcnByZXRhdGl2byBkZWxsYSByZWFsdMOgLiBQZXIgcXVlc3RhIHJhZ2lvbmUgbGUgZGV2aWF6aW9uaSBzZW1hbnRpY2hlIHNvbm8gc3RhdGUgZGVub21pbmF0ZSAncmlkdXppb25pc21pJy4gW0BnYXJiaW5pX3VzY2lyZV8yMDAzXQoKIyBTb21lIGltcG9ydGFudCBkZWZpbml0aW9ucwoKIyMgSGVybWVuZXV0aWNzCgpIZXJtZW5ldXRpY3M6IGZyb20gR3JlZWsgKuG8kc+BzrzOt869zrXOr86xLCDOsc+CLCDhvKEqIChoZXJtxJNuZWlhKSwgZGVyaXZpbmcgZnJvbSB0aGUgdmVyYiAq4byRz4HOvM63zr3Otc+Nz4kqIChoZXJtxJNuZXXFjSkgaXMgdGhlIHNjaWVuY2UgYW5kIHByYWN0aWNlIG9mIGludGVycHJldGF0aW9uLiBPdmVyIGhpc3RvcnksIGl0IGhhcyBiZWVuIG1haW5seSBhcHBsaWVkIHRvIHNhY3JlZCBvciBqdXJpZGljYWwgdGV4dHMuIFR3byBhcmUgdGhlIG1haW4gYXBwcm9hY2hlczoKICAxLiAgcmVjb25zdHJ1Y3RpbmcgdGhlIG9yaWdpbmFsIGludGVudGlvbiBvZiB0aGUgYXV0aG9ycwogIDIuICBhZGFwdGluZyB0aGUgaW50ZXJwcmV0YXRpb24gYmFzZWQgb24gdGhlIHBlcnNvbiB3aG8gcmVjZWl2ZXMgdGhlIHRleHQKCiMjIEFkYWdlCgpBbiAqYWRhZ2UqIGlzIGFuIGFuY2llbnQgc2F5aW5nIG9yIG1heGltLCBicmllZiBhbmQgc29tZXRpbWVzIG15c3RlcmlvdXMsIHRoYXQgaGFzIGJlY29tZSBhY2NlcHRlZCBhcyBjb252ZW50aW9uYWwgd2lzZG9tLiBJbiBjbGFzc2ljYWwgcmhldG9yaWMsIGFuIGFkYWdlIGlzIGFsc28ga25vd24gYXMgYSAqcmhldG9yaWNhbCBwcm92ZXJiKiBvciAqcGFyb2VtaWEqLiBPZnRlbiBpdCdzIGEgdHlwZSBvZiBtZXRhcGhvci4gSXQgY2FuIGV4cHJlc3MgdGhlIHZhbHVlcyBvZiBhIGN1bHR1cmUuIFtAbm9yZHF1aXN0X3dvcmRzXzIwMThdCgo+ICoqRXhhbXBsZShzKSoqOiAiVGhlIGVhcmx5IGJpcmQgZ2V0cyB0aGUgd29ybSIsICJCZXR0ZXIgbGF0ZSB0aGFuIG5ldmVyLiIKCiMjIFNsb2dhbgoKVGhlIEVuZ2xpc2ggd29yZCAqc2xvZ2FuKiBoYXMgYSBTY290dGlzaCBHYWVsaWMgb3JpZ2luIGFuZCBkZXJpdmVzIGZyb20gdGhlIGNvbWJpbmF0aW9uIG9mICpzbHVhZ2gqIChhcm15KSArICpnYWlybSogKHNob3V0KSwgaS5lLiBhICJiYXR0bGUgY3J5Ii4gTm93YWRheXMsIGl0IHNpZ25pZmllcyBhIHNob3J0LCBtZW1vcmFibGUgYW5kIGNvbmNpc2UgcGhyYXNlIHVzZWQgZm9yIG1hcmtldGluZyBvciBwb2xpdGljYWwgY2FtcGFpZ25zLiBNYXJrZXRpbmcgc2xvZ2FucyBhcmUgb2Z0ZW4gY2FsbGVkICp0YWdsaW5lcyogaW4gdGhlIFVuaXRlZCBTdGF0ZXMKCj4gKipFeGFtcGxlKHMpKio6ICIuLi4iLCAiLi4uIgoKIyBSZWZlcmVuY2UK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiTGV4aWNvbiBob21lIgphdXRob3I6ICJMdWlzYSBNLiBNaW1taSIKZGF0ZTogIkxhc3QgcnVuOiBgciBmb3JtYXQoU3lzLnRpbWUoKSwgJyVGJylgIgpvdXRwdXQ6IAogIGh0bWxfZG9jdW1lbnQ6CiAgICBjb2RlX2ZvbGRpbmc6IGhpZGUKZWRpdG9yX29wdGlvbnM6IAogIGNodW5rX291dHB1dF90eXBlOiBjb25zb2xlCmJpYmxpb2dyYXBoeTogc2xvZ2FuLmJpYgotLS0KCmBgYHtyIHNldHVwLCBpbmNsdWRlPUZBTFNFfQpsaWJyYXJ5KGtuaXRyKQpsaWJyYXJ5KGthYmxlRXh0cmEpCgprbml0X3ByaW50LmRhdGEuZnJhbWUgPC0gZnVuY3Rpb24oeCwgLi4uKSB7CiAgcmVzIDwtIHBhc3RlKGMoJycsICcnLCBrYWJsZV9zdHlsaW5nKGthYmxlKHgsIGJvb2t0YWJzID0gVFJVRSkpKSwgY29sbGFwc2UgPSAnXG4nKQogIGFzaXNfb3V0cHV0KHJlcykKfQoKcmVnaXN0ZXJTM21ldGhvZCgia25pdF9wcmludCIsICJkYXRhLmZyYW1lIiwga25pdF9wcmludC5kYXRhLmZyYW1lKQpyZWdpc3RlclMzbWV0aG9kKCJrbml0X3ByaW50IiwgImdyb3VwZWRfZGYiLCBrbml0X3ByaW50LmRhdGEuZnJhbWUpCgprbml0cjo6b3B0c19jaHVuayRzZXQoZmlnLnJldGluYSA9IDMsCiAgICAgICAgICAgICAgICAgICAgICB0aWR5Lm9wdHMgPSBsaXN0KHdpZHRoLmN1dG9mZiA9IDEyMCksICAjIEZvciBjb2RlCiAgICAgICAgICAgICAgICAgICAgICBvcHRpb25zKHdpZHRoID0gOTApLCAgIyBGb3Igb3V0cHV0CiAgICAgICAgICAgICAgICAgICAgICBmaWcuYXNwID0gMC42MTgsIGZpZy53aWR0aCA9IDcsIAogICAgICAgICAgICAgICAgICAgICAgZmlnLmFsaWduID0gImNlbnRlciIsIG91dC53aWR0aCA9ICI4NSUiKQoKb3B0aW9ucyhkcGx5ci5zdW1tYXJpc2UuaW5mb3JtID0gRkFMU0UsCiAgICAgICAga25pdHIua2FibGUuTkEgPSAiIikKYGBgCgpgYGB7ciBsb2FkLWxpYnJhcmllcy1kYXRhLCBtZXNzYWdlPUZBTFNFLCB3YXJuaW5nPUZBTFNFfQojIExvYWQgcmVxdWlyZWQgcGFja2FnZXMgCmlmICghcmVxdWlyZSgicGFjbWFuIikpIGluc3RhbGwucGFja2FnZXMoJ3BhY21hbicgKQpwYWNtYW46OnBfbG9hZChoZXJlLCB0aWR5dmVyc2UsIHRpYmJsZSwgamFuaXRvciwKICAgICAgIyAgZW1vLCAKICAgICAgIHJlYWRyLCAKICAgICAgIGd0LAogICAgICAgI2NhcHRpb25lciwKICAgICAgIGtuaXRyLCAKICAgICAgIGZsZXh0YWJsZSwgIyBiZXR0ZXIgYmMgT0sgaW4gaHRtbCAmIHdvcmQKICAgICAgIG9mZmljZXIsICMgdG8gc2F2ZSBmbGV4dGFibGUgaW4gd29yZAogICAgICAgc2hpbnksIAogICAgICAgc3RyaW5naSwKICAgICAgIHdvcmRjb3VudGFkZGluICMgWW91IG1heSBoYXZlIHRvIGRvd25sb2FkIHRoaXMKICAgICAgICkgIAoKcGFjbWFuOjpwX2xvYWRfZ2goImNyc2gvY2l0ciIpICMgbm90IG9uIENSQU4gKGFzIG9mIE5vdiAyMDIxISkKI3BfbG9hZF9naCgiYmVubWFyd2ljay93b3JkY291bnRhZGRpbiIpCgojIGxpYnJhcnkodGlkeXZlcnNlKQojIGxpYnJhcnkodGFyZ2V0cykKIyBsaWJyYXJ5KHlhcmRzdGljaykKIyBsaWJyYXJ5KGJyb29tKQojIGxpYnJhcnkocGF0Y2h3b3JrKQojIGxpYnJhcnkoc2NhbGVzKQojIGxpYnJhcnkoaGVyZSkKCiMgCgojICMgTG9hZCBkYXRhCiMgIyBOZWVkIHRvIHVzZSB0aGlzIHdpdGhyIHRoaW5nIGJlY2F1c2UgdGFyX3JlYWQoKSBhbmQgdGFyX2xvYWQoKSBuZWVkIHRvIHNlZSB0aGUKIyAjIF90YXJnZXRzIGZvbGRlciBpbiB0aGUgY3VycmVudCBkaXJlY3RvcnksIGJ1dCB0aGlzIC5SbWQgZmlsZSBpcyBpbiBhIHN1YmZvbGRlcgojIHdpdGhyOjp3aXRoX2RpcihoZXJlOjpoZXJlKCksIHsKIyAgIHNvdXJjZSh0YXJfcmVhZChwbG90X2Z1bnMpKQojICAgCiMgICBjYW5hcnlfdGVzdGluZ19sYWdnZWQgPC0gdGFyX3JlYWQocGFuZWxfdGVzdGluZ19sYWdnZWQpCiMgICAKIyAgICMgTG9hZCBiaWcgbGlzdCBvZiBtb2RlbHMKIyAgIG1vZGVsX2RmIDwtIHRhcl9yZWFkKG1vZGVsX2RmKSAlPiUgCiMgICAgIGZpbHRlcihzdHJfZGV0ZWN0KG1vZGVsLCAiYmFzZWxpbmUiKSB8IHN0cl9kZXRlY3QobW9kZWwsICJ2MmNzcmVwcnNzIikpCiMgICAKIyAgICMgTG9hZCBhY3R1YWwgbW9kZWwgb2JqZWN0cwojICAgdGFyX2xvYWQoYyhtX3B0c19iYXNlbGluZV90cmFpbiwgbV9wdHNfdjJjc3JlcHJzc190cmFpbiwKIyAgICAgICAgICAgICAgbV9wdHNfdG90YWxfdHJhaW4sIG1fcHRzX2Fkdm9jYWN5X3RyYWluLCAKIyAgICAgICAgICAgICAgbV9wdHNfZW50cnlfdHJhaW4sIG1fcHRzX2Z1bmRpbmdfdHJhaW4sCiMgICAgICAgICAgICAgIG1fbGhyX2Jhc2VsaW5lX3RyYWluLCBtX2xocl92MmNzcmVwcnNzX3RyYWluLAojICAgICAgICAgICAgICBtX2xocl90b3RhbF90cmFpbiwgbV9saHJfYWR2b2NhY3lfdHJhaW4sIAojICAgICAgICAgICAgICBtX2xocl9lbnRyeV90cmFpbiwgbV9saHJfZnVuZGluZ190cmFpbikpCiMgfSkKIyAKIyBwdHNfbGV2ZWxzIDwtIGxldmVscyhjYW5hcnlfdGVzdGluZ19sYWdnZWQkUFRTX2ZhY3RvcikKIyAKIyAjIFJldHVybnMgYSBkYXRhIGZyYW1lIG9mIHByZWRpY3RlZCBwcm9iYWJpbGl0aWVzIHdpdGggYWN0dWFsID0gMSAKIyAjIHdoZW4gdGhlIHJlc3BvbnNlIG91dGNvbWUgaGFwcGVucwojIG1hdGNoX2FjdHVhbCA8LSBmdW5jdGlvbih4LCBwcmVkLCBhY3R1YWwpIHsKIyAgIHByZWQgJT4lIAojICAgICBzZWxlY3QoZml0dGVkID0ge3t4fX0pICU+JSAKIyAgICAgbXV0YXRlKGFjdHVhbCA9IGFzLm51bWVyaWMoYWN0dWFsID09IGNvbG5hbWVzKHByZWRbeF0pKSwKIyAgICAgICAgICAgIHBsb3RfbGV2ZWwgPSBjb2xuYW1lcyhwcmVkW3hdKSkKIyB9CmBgYAoKIyBBdCB0aGUgY29yZSBvZiByZWR1Y3Rpb24KCkkgd2FzIHJlYWxseSBzdHJ1Y2sgdGhlIGZpcnN0IHRpbWUgSSByZWFsaXplZCBob3cgdGhlIExhdGluIG1vdHRvIEkgaGFkIGhlYXJkIHNpbmNlIGNoaWxkaG9vZDogKiJNZW5zIHNhbmEgaW4gY29ycG9yZSBzYW5vIiosIHdhcyBhY3R1YWxseSBhIHBhcnRpYWwgcXVvdGF0aW9uIHVzZWQgaW4gMTg2MSBieSB0aGUgRW5nbGlzaG1hbiBKb2huIEh1bGxleSwgYXMgYSBtb3R0byBmb3IgaGlzIExpdmVycG9vbCBBdGhsZXRpYyBDbHViLiBJbiBmYWN0LCBpdCB3YXMgZXh0cmFwb2xhdGVkIGZyb20gYSBsb25nZXIgc2VudGVuY2UgYnkgSnV2ZW5hbCBwb2V0OiAqIk9yYW5kdW0gZXN0IHV0IHNpdCBtZW5zIHNhbmEgaW4gY29ycG9yZSBzYW5vIiogKFNhdGlyZSBYLCAzNTYpLiBUYWtlbiBpbiBpdHMgZW50aXJldHksIHRoZSBzdGF0ZW1lbnQgaGFzIHF1aXRlIGEgZGlmZmVyZW50IG1lYW5pbmcgdGhhbiBpdHMgd2lkZWx5IHVzZWQgc2hvcnRlbmVkIHZlcnNpb246IGZvciBvbmUgdGhpbmcsIGl0IHJlZmVycmVkIHRvIHByYXllciBhbmQgbm90IHRvIHNwb3J0LiAKCkkgaGF2ZSBzZWVuIHRoaXMgc2FtZSBkeW5hbWljICh0aGUgbWVhbmluZyBvZiB3b3Jkcy9waHJhc2VzIHByb2dyZXNzaXZlbHkgZGV0YWNoaW5nIGZyb20gdGhlIHJlYWxpdHkgdGhleSBvcmlnaW5hbGx5IGRlc2NyaWJlZCkgYXQgd29yayBhbHNvIGluIHRoZSBmaWVsZCBvZiBwdWJsaWMgcG9saWN5LCBzbyBJIGRlY2lkZWQgdG8gZGlnIGRlZXBlci4gCgojIyBSZXNlYXJjaCBxdWVzdGlvbiAjIDEKVGhlIGltcG9ydGFudCBxdWVzdGlvbiBpcyAiV2h5IiBzdWNoIGEgZGV2aWF0aW9uIGZyb20gdGhlIG9yaWdpbmFsIG1lYW5pbmcgb2YgYSB3b3JkL3NlbnRlbmNlIG1heSBvY2N1ci4gR3JhbnRlZCwgbGFuZ3VhZ2VzIGV2b2x2ZSBvbiB0aGVpciBvd24gYWxvbmcgd2l0aCwgYnV0IGl0IGNhbiBhbHNvIGJlIHN1YmplY3QgdG8gbWFuaXB1bGF0aW9uLCBhcyBHZW9yZ2UgT3J3ZWxsJ3MgIjE5ODQiIHNvIHBvd2VyZnVsbHkgZGVwaWN0ZWQgaWxsdXN0cmF0aW5nIHRoZSBydWxlcyBhbmQgcHVycG9zZSBvZiBmaWN0aW9uYWwgT2NlYW5pYSBuYXRpb24ncyBfbmV3c3BlYWtfLiBUaGUgcmlza3MgY29ubmVjdGVkIHRvIHRoaXMgcG90ZW50aWFsIGFidXNlIG9mIGxhbmd1YWdlIGFyZSBjbGVhcmx5IGxhaWQgb3V0IGJ5IFJpY2NhcmRvIEdhcmJpbmkgaW4gaGlzICJMZXNzaWNvIC0gVXNjaXJlIGRhIEJhYmVsZSIgW0BnYXJiaW5pX3VzY2lyZV8yMDAzXSBbXjFdXAo8IS0tID4gSW4gYWxjdW5pIGNhc2kgbGEgZGV2aWF6aW9uZSBkZWwgc2lnbmlmaWNhdG8gc2kgZXZpZGVuemlhIG1lZGlhbnRlIGxhIHNvcHByZXNzaW9uZSBwdXJhIGUgc2VtcGxpY2UgZGVsIHRlcm1pbmUgKDE5ODQpOiBpbiB0YWxpIGNhc2kgZHVucXVlIGwnYW5hbGlzaSBub24gaW5zaXN0ZSBzdWxsJ2FzcGV0dG8gcmlkdXppb25pc3RhLiBMZSBkZXZpYXppb25pLCBsYWRkb3ZlIHByZXNlbnRpLCBzb25vIGRldHRhdGUgc29wcmF0dHV0dG8gZGEgaW50ZW50aSBpZGVvbG9naWNpLCBvc3NpYSBkYWxsYSBzb3ZyYXBwb3NpemlvbmUgZGkgdW5hIGdyaWdsaWEgaW50ZXJwcmV0YXRpdmEgY29uIG1hZ2xpZSBwaXV0dG9zdG8gcmlnaWRlIHN1aSBkYXRpIG9nZ2V0dGl2aSBkZWxsYSByZWFsdMOgLiBMJ2VmZmV0dG8gZGVsbGEgc292cmFwcG9zaXppb25lIGRpIHF1ZXN0YSBncmlnbGlhIGludGVycHJldGF0aXZhIGNoaWFtYXRhIGlkZW9sb2dpYSByaXN1bHRhIGluIHRhbCBtb2RvIHVuYSByaWR1emlvbmUgZGVsIGNhbXBvIHBlcmNldHRpdm8gZWQgaW50ZXJwcmV0YXRpdm8gZGVsbGEgcmVhbHTDoC4gUGVyIHF1ZXN0YSByYWdpb25lIGxlIGRldmlhemlvbmkgc2VtYW50aWNoZSBzb25vIHN0YXRlIGRlbm9taW5hdGUgJ3JpZHV6aW9uaXNtaScuICAtLT4KCj4gKEluIHNvbWUgY2FzZXMgdGhlIGRldmlhdGlvbiBvZiB0aGUgbWVhbmluZyBpcyBldmlkZW5jZWQgYnkgdGhlIHB1cmUgYW5kIHNpbXBsZSBzdXBwcmVzc2lvbiBvZiB0aGUgdGVybSAoMTk4NCk6IGluIHN1Y2ggY2FzZXMsIHRoZXJlZm9yZSwgdGhlIGFuYWx5c2lzIGRvZXMgbm90IGluc2lzdCBvbiB0aGUgcmVkdWN0aW9uaXN0IGFzcGVjdC4gVGhlIGRldmlhdGlvbnMsIHdoZXJlIHByZXNlbnQsIGFyZSBkaWN0YXRlZCBhYm92ZSBhbGwgYnkgaWRlb2xvZ2ljYWwgaW50ZW50aW9ucywgdGhhdCBpcywgYnkgdGhlIHN1cGVyaW1wb3NpdGlvbiBvZiBhbiBpbnRlcnByZXRhdGl2ZSBncmlkIHdpdGggcmF0aGVyIHJpZ2lkIG1lc2hlcyBvbiB0aGUgb2JqZWN0aXZlIGRhdGEgb2YgcmVhbGl0eS4gVGhlIGVmZmVjdCBvZiB0aGUgc3VwZXJpbXBvc2l0aW9uIG9mIHRoaXMgaW50ZXJwcmV0YXRpdmUgZ3JpZCBjYWxsZWQgaWRlb2xvZ3kgdGh1cyByZXN1bHRzIGluIGEgcmVkdWN0aW9uIG9mIHRoZSBwZXJjZXB0aXZlIGFuZCBpbnRlcnByZXRhdGl2ZSBmaWVsZCBvZiByZWFsaXR5LiBGb3IgdGhpcyByZWFzb24gc2VtYW50aWMgZGV2aWF0aW9ucyBoYXZlIGJlZW4gY2FsbGVkICdyZWR1Y3Rpb25pc21zJy4pCgoKW14xXTogQW5uZXggdG8gdGhlIEdpdXNlcHBlIEZpb3JhdmFudGkncyBib29rIFtAZmlvcmF2YW50aV9wZWRhZ29naWFfMjAwNl0KCiMjIFJlc2VhcmNoIHF1ZXN0aW9uICMgMgoKQmVzaWRlcyBpbnZlc3RpZ2F0aW5nIHRoZSBvcmlnaW4sIGl0IHdvdWxkIGJlIGVxdWFsbHkgaW1wb3J0YW50IHRvIHVuZGVyc3RhbmQgdGhlIGNvbnNlcXVlbmNlIG9mIGEgbGFtZW50ZWQgbGVzc2ljYWwgYXBwcm94aW1hdGlvbiBvciByZWR1Y3Rpb24sIGJlY2F1c2UsIHF1b3RpbmcgR2lvdmFubmkgR2VudGlsZSwgXyJMYW5ndWFnZSBpcyBub3QgYSBnYXJtZW50IG9mIHRob3VnaHQ6IGl0IGlzIGl0cyBvd24gYm9keSJfW0BnYXJiaW5pX3VzY2lyZV8yMDAzLCBwM10KPCEtLSBMYSBsaW5ndWEgbm9uIMOoIHZlc3RlIGRlbCBwZW5zaWVybzogw6ggaWwgc3VvIGNvcnBvIHN0ZXNzbyAtLT4KCiMgRXNzZW50aWFsIGxpc3Qgb2YgcmhldG9yaWNhbCBkZXZpY2VzCgpUaGlzIGdvZXMgYmFjayB0byBBcmlzdG90bGUuLi4uLi4gYW5kIGl0IGlzIGJleW9uZCB0aGUgc2NvcGUgLi4uLiBsZXQncyBqdXN0IHJlY2FsbCAKCiMjIEhlcm1lbmV1dGljcwoKSGVybWVuZXV0aWNzOiBmcm9tIEdyZWVrICrhvJHPgc68zrfOvc61zq/OsSwgzrHPgiwg4byhKiAoaGVybcSTbmVpYSksIGRlcml2aW5nIGZyb20gdGhlIHZlcmIgKuG8kc+BzrzOt869zrXPjc+JKiAoaGVybcSTbmV1xY0pIGlzIHRoZSBzY2llbmNlIGFuZCBwcmFjdGljZSBvZiBpbnRlcnByZXRhdGlvbi4gT3ZlciBoaXN0b3J5LCBpdCBoYXMgYmVlbiBtYWlubHkgYXBwbGllZCB0byBzYWNyZWQgb3IganVyaWRpY2FsIHRleHRzLiBUd28gYXJlIHRoZSBtYWluIGFwcHJvYWNoZXM6IDEuIHJlY29uc3RydWN0aW5nIHRoZSBvcmlnaW5hbCBpbnRlbnRpb24gb2YgdGhlIGF1dGhvcnMgMi4gYWRhcHRpbmcgdGhlIGludGVycHJldGF0aW9uIGJhc2VkIG9uIHRoZSBwZXJzb24gd2hvIHJlY2VpdmVzIHRoZSB0ZXh0CgojIyBBZGFnZQoKQW4gKmFkYWdlKiBpcyBhbiBhbmNpZW50IHNheWluZyBvciBtYXhpbSwgYnJpZWYgYW5kIHNvbWV0aW1lcyBteXN0ZXJpb3VzLCB0aGF0IGhhcyBiZWNvbWUgYWNjZXB0ZWQgYXMgY29udmVudGlvbmFsIHdpc2RvbS4gSW4gY2xhc3NpY2FsIHJoZXRvcmljLCBhbiBhZGFnZSBpcyBhbHNvIGtub3duIGFzIGEgKnJoZXRvcmljYWwgcHJvdmVyYiogb3IgKnBhcm9lbWlhKi4gT2Z0ZW4gaXQncyBhIHR5cGUgb2YgbWV0YXBob3IuIEl0IGNhbiBleHByZXNzIHRoZSB2YWx1ZXMgb2YgYSBjdWx0dXJlLiBbQG5vcmRxdWlzdF93b3Jkc18yMDE4XQoKPiAqKkV4YW1wbGUocykqKjogIlRoZSBlYXJseSBiaXJkIGdldHMgdGhlIHdvcm0iLCAiQmV0dGVyIGxhdGUgdGhhbiBuZXZlci4iCgojIyBTbG9nYW4KClRoZSBFbmdsaXNoIHdvcmQgKnNsb2dhbiogaGFzIGEgU2NvdHRpc2ggR2FlbGljIG9yaWdpbiBhbmQgZGVyaXZlcyBmcm9tIHRoZSBjb21iaW5hdGlvbiBvZiAqc2x1YWdoKiAoYXJteSkgKyAqZ2Fpcm0qIChzaG91dCksIGkuZS4gYSAiYmF0dGxlIGNyeSIuIE5vd2FkYXlzLCBpdCBzaWduaWZpZXMgYSBzaG9ydCwgbWVtb3JhYmxlIGFuZCBjb25jaXNlIHBocmFzZSB1c2VkIGZvciBtYXJrZXRpbmcgb3IgcG9saXRpY2FsIGNhbXBhaWducy4gTWFya2V0aW5nIHNsb2dhbnMgYXJlIG9mdGVuIGNhbGxlZCAqdGFnbGluZXMqIGluIHRoZSBVbml0ZWQgU3RhdGVzCgo+ICoqRXhhbXBsZShzKSoqOiAiLi4uIiwgIi4uLiIKCgojIElzc3VlcyBvZiBtb2Rlcm4gRW5nbGlzaCAKCkJlbG93IGlzIHRoZSBsaXN0IG9mIF9yZWQgZmxhZ3NfIGRldGVjdGVkIGluIE9yd2VsbCdzICJQb2xpdGljcyBhbmQgdGhlIEVuZ2xpc2ggTGFuZ3VhZ2UiW0BvcndlbGxfcG9saXRpY3NfMTk0Nl06CgorICoqRHlpbmcgbWV0YXBob3JzKiosIG9yIHdvcm7iiJJvdXQgbWV0YXBob3JzIHdoaWNoIGhhdmUgbG9zdCBhbGwgZXZvY2F0aXZlIHBvd2VyIGFuZCBhcmUgbWVyZWx5IHVzZWQgYmVjYXVzZSB0aGV5IHNhdmUgcGVvcGxlIHRoZSB0cm91YmxlIG9mIGludmVudGluZyBwaHJhc2VzIGZvciB0aGVtc2VsdmVzLgorICoqT3BlcmF0b3JzLCBvciB2ZXJiYWwgZmFsc2UgbGltYnMqKiwgd2hpY2ggIHNhdmUgdGhlIHRyb3VibGUgb2YgcGlja2luZyBvdXQgYXBwcm9wcmlhdGUgdmVyYnMgYW5kIG5vdW5zLCBhbmQgYXQgdGhlIHNhbWUgdGltZSBwYWQgZWFjaCBzZW50ZW5jZSB3aXRoIGV4dHJhIHN5bGxhYmxlcyB3aGljaCBnaXZlIGl0IGFuIGFwcGVhcmFuY2Ugb2Ygc3ltbWV0cnkuIENoYXJhY3RlcmlzdGljIHBocmFzZXMgYXJlOiByZW5kZXIgaW5vcGVyYXRpdmUsIG1pbGl0YXRlIGFnYWluc3QsIHByb3ZlIHVuYWNjZXB0YWJsZSwgbWFrZSBjb250YWN0IHdpdGgsIGJlIHN1YmplY3RlZCB0bywgZ2l2ZSByaXNlIHRvLCBnaXZlIGdyb3VuZHMgZm9yLCBoYXZpbmcgdGhlIGVmZmVjdCBvZiwgcGxheSBhIGxlYWRpbmcgcGFydCAocm9sZSkgaW4sIG1ha2UgaXRzZWxmIGZlbHQsIHRha2UgZWZmZWN0LCBleGhpYml0IGEgdGVuZGVuY3kgdG8sIHNlcnZlIHRoZSBwdXJwb3NlIG9mLCBldGMuCisgKipQcmV0ZW50aW91cyBkaWN0aW9uICh1c2VkIHRvIGRyZXNzIHVwIHNpbXBsZSBzdGF0ZW1lbnRzIGFuZCBnaXZlIGFuIGFpciBvZiBzY2llbnRpZmljIGltcGFydGlhbGl0eSB0byBiaWFzZWQganVkZ21lbnRzKSwgZm9yZWlnbiB3b3JkcyBhbmQgZXhwcmVzc2lvbnMsIGphcmdvbioqCisgKipNZWFuaW5nbGVzcyB3b3JkcyoqLCBhcyBpbiBjZXJ0YWluIGtpbmRzIG9mIHdyaXRpbmcsIHBhcnRpY3VsYXJseSBpbiBhcnQgY3JpdGljaXNtIGFuZCBsaXRlcmFyeSBjcml0aWNpc20sIHdoZXJlIHRoZXkgbm90IG9ubHkgZG8gbm90IHBvaW50IHRvIGFueSBkaXNjb3ZlcmFibGUgb2JqZWN0LCBidXQgYXJlIGhhcmRseSBldmVuIGV4cGVjdGVkIHRvIGRvIHNvIGJ5IHRoZSByZWFkZXIgKGxpa2Ugcm9tYW50aWMsIHBsYXN0aWMsIHZhbHVlcywgaHVtYW4sIGRlYWQsIHNlbnRpbWVudGFsLCBuYXR1cmFsLCB2aXRhbGl0eSksIGl0IGlzIG5vcm1hbCB0byBjb21lIGFjcm9zcyBsb25nIHBhc3NhZ2VzIHdoaWNoIGFyZSBhbG1vc3QgY29tcGxldGVseSBsYWNraW5nIGluIG1lYW5pbmcuIE1hbnkgcG9saXRpY2FsIHdvcmRzIGFyZSBzaW1pbGFybHkgYWJ1c2VkOiBUaGUgd29yZHMgZGVtb2NyYWN5LCBzb2NpYWxpc20sIGZyZWVkb20sIHBhdHJpb3RpYywgcmVhbGlzdGljLCBqdXN0aWNlLCBoYXZlIGVhY2ggb2YgdGhlbSBzZXZlcmFsIGRpZmZlcmVudCBtZWFuaW5ncyB3aGljaCBjYW5ub3QgYmUgcmVjb25jaWxlZCB3aXRoIG9uZSBhbm90aGVyLiAqKipXb3JkcyBvZiB0aGlzIGtpbmQgYXJlIG9mdGVuIHVzZWQgaW4gYSBjb25zY2lvdXNseSBkaXNob25lc3Qgd2F5LiBUaGF0IGlzLCB0aGUgcGVyc29uIHdobyB1c2VzIHRoZW0gaGFzIGhpcyBvd24gcHJpdmF0ZSBkZWZpbml0aW9uLCBidXQgYWxsb3dzIGhpcyBoZWFyZXIgdG8gdGhpbmsgaGUgbWVhbnMgc29tZXRoaW5nIHF1aXRlIGRpZmZlcmVudC4qKiogCgoKIyBSZWZlcmVuY2UK</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

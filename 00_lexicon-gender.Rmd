@@ -7,7 +7,7 @@ output:
     code_folding: hide
 editor_options: 
   chunk_output_type: console
-bibliography: buzzwords.bib
+bibliography: slogan.bib
 ---
 
 ```{r setup, include=FALSE}

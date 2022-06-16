@@ -46,7 +46,7 @@ specified in the `_site.yml`)
 ├── _build_deploy.sh
 ├── _my_stuff
 ├── _site.yml
-├── buzzwords.bib
+├── slogan.bib
 ├── data
 ├── docs
 ├── html

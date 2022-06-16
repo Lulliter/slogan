@@ -7,7 +7,7 @@ output:
     code_folding: hide
 editor_options: 
   chunk_output_type: console
-bibliography: buzzwords.bib
+bibliography: slogan.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -35,9 +35,9 @@ options(dplyr.summarise.inform = FALSE,
 ```{r load-libraries-data, message=FALSE, warning=FALSE}
 # Load required packages 
 if (!require("pacman")) install.packages('pacman' )
-library(pacman) # for loading packages
-p_load(here, tidyverse, tibble, janitor,
-       emo, readr, 
+pacman::p_load(here, tidyverse, tibble, janitor,
+      #  emo, 
+       readr, 
        gt,
        #captioner,
        knitr, 
@@ -47,7 +47,8 @@ p_load(here, tidyverse, tibble, janitor,
        stringi,
        wordcountaddin # You may have to download this
        )  
-p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
+
+pacman::p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 #p_load_gh("benmarwick/wordcountaddin")
 
 # library(tidyverse)
@@ -95,17 +96,42 @@ p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 
 # At the core of reduction
 
-I was really struck the first time I realized how the Latin motto I had heard since childhood: "Mens sana in corpore sano", was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: "Orandum est ut sit mens sana in corpore sano" (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it refers prayer and not to sport.
+I was really struck the first time I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it referred to prayer and not to sport. 
 
-> In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'. [@garbini_uscire_2003]
+I have seen this same dynamic (the meaning of words/phrases progressively detaching from the reality they originally described) at work also in the field of public policy, so I decided to dig deeper. 
 
-# Some important definitions
+## Research question # 1
+The important question is "Why" such a deviation from the original meaning of a word/sentence may occur. Granted, languages evolve on their own along with, but it can also be subject to manipulation, as George Orwell's "1984" so powerfully depicted illustrating the rules and purpose of fictional Oceania nation's _newspeak_. The risks connected to this potential abuse of language are clearly laid out by Riccardo Garbini in his "Lessico - Uscire da Babele" [@garbini_uscire_2003] [^1]\
+<!-- > In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'.  -->
+
+> (In some cases the deviation of the meaning is evidenced by the pure and simple suppression of the term (1984): in such cases, therefore, the analysis does not insist on the reductionist aspect. The deviations, where present, are dictated above all by ideological intentions, that is, by the superimposition of an interpretative grid with rather rigid meshes on the objective data of reality. The effect of the superimposition of this interpretative grid called ideology thus results in a reduction of the perceptive and interpretative field of reality. For this reason semantic deviations have been called 'reductionisms'.)
+
+
+[^1]: Annex to the Giuseppe Fioravanti's book [@fioravanti_pedagogia_2006]
+
+## Research question # 2
+
+Besides investigating the origin, it would be equally important to understand the consequence of a lamented lessical approximation or reduction. In fact, quoting Giovanni Gentile's "Sommario di pedagogia come scienza filosofica": _"Language is not a garment of thought: it is its own body"_ [@garbini_uscire_2003, p3], that is language does not merely communicate our ideas to others, but it is also the tool of our thought, the wings for it to fly. 
+<!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) -->
+
+# Methodological notes
+
+This goes back to Aristotle...... and it is beyond the scope .... let's just recall 
 
 ## Hermeneutics
 
-Hermeneutics: from Greek *ἑρμηνεία, ας, ἡ* (hermēneia), deriving from the verb *ἑρμηνεύω* (hermēneuō) is the science and practice of interpretation. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches:
-  1.  reconstructing the original intention of the authors
-  2.  adapting the interpretation based on the person who receives the text
+Hermeneutics: from Greek *ἑρμηνεία, ας, ἡ* (hermēneia), deriving from the verb *ἑρμηνεύω* (hermēneuō) is the science and practice of interpretation. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches: 1. reconstructing the original intention of the authors 2. adapting the interpretation based on the person who receives the text
+
+## Linguistics
+
+...
+
+## Philology
+
+...
+
+# Essential list of rhetorical devices
+
 
 ## Adage
 
@@ -118,5 +144,23 @@ An *adage* is an ancient saying or maxim, brief and sometimes mysterious, that h
 The English word *slogan* has a Scottish Gaelic origin and derives from the combination of *sluagh* (army) + *gairm* (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called *taglines* in the United States
 
 > **Example(s)**: "...", "..."
+
+# Issues of modern English 
+
+Below is the list of _red flags_ detected in Orwell's "Politics and the English Language"[@orwell_politics_1946]:
+
++ **Dying metaphors**, or worn−out metaphors which have lost all evocative power and are merely used because they save people the trouble of inventing phrases for themselves.
+<!-- GGentile la prima e piu evidente originalita del genio e' la potenza plasmatrice che egli possiede di quel che si dice il materiale linguistico -->
++ **Operators, or verbal false limbs**, which  save the trouble of picking out appropriate verbs and nouns, and at the same time pad each sentence with extra syllables which give it an appearance of symmetry. Characteristic phrases are: render inoperative, militate against, prove unacceptable, make contact with, be subjected to, give rise to, give grounds for, having the effect of, play a leading part (role) in, make itself felt, take effect, exhibit a tendency to, serve the purpose of, etc.
++ **Pretentious diction (used to dress up simple statements and give an air of scientific impartiality to biased judgments), foreign words and expressions, jargon**
++ **Meaningless words**, as in certain kinds of writing, particularly in art criticism and literary criticism, where they not only do not point to any discoverable object, but are hardly even expected to do so by the reader (like romantic, plastic, values, human, dead, sentimental, natural, vitality), it is normal to come across long passages which are almost completely lacking in meaning. Many political words are similarly abused: The words democracy, socialism, freedom, patriotic, realistic, justice, have each of them several different meanings which cannot be reconciled with one another. ***Words of this kind are often used in a consciously dishonest way. That is, the person who uses them has his own private definition, but allows his hearer to think he means something quite different.*** 
+
+> Ma si possono riscontrare anche 
+> 
+> + **statalismo** 
+> + **burocraticismo** 
+
+> lo stesso linguaggio burocratico, che permea la scuola statale (impropriamente detta ‘pubblica’) italiana odierna, come diretta conseguenza dell’ideologia statalista presenta una forma che è «astratta, solenne, tecnicizzata, in funzione del prestigio e del potere che detiene il diffusore del messaggio. Da questa prassi consegue una sclerosi del pensiero che si sorregge sui trampoli di locuzioni fruste e cristallizzate. Ufficialità, reticenza e straniamento sono i caratteri che il messaggio assume nell’esercizio del potere. [@garbini_uscire_2003, p5]
+
 
 # Reference
