@@ -36,7 +36,7 @@ navbar:
         href: 00_lexicon-green.html
   - text: Process and merge data
     icon: fas fa-table
-    href: 01_data-overview.html
+    href: 01_data-exploration.html
   - text: Descriptive analysis
     icon: fas fa-chart-bar
     href: 02_descriptive-analysis.html
