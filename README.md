@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Follow the buzzword
+# Follow the slogan
 
 [Luisa M. Mimmi](https://luisamimmi.com/) • Independent Consultant
 
@@ -9,7 +9,7 @@
 <!-- [![OSF DOI](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FMTR6X-blue)](https://dx.doi.org/10.17605/OSF.IO/MTR6X) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5715402.svg)](https://doi.org/10.5281/zenodo.5715402) -->
 
 > Luisa M. Mimmi. 2022. [“Follow the
-> buzzword,”](https://doi.org/10.1177/0899764020971045) *Journal of
+> slogan,”](https://doi.org/10.1177/0899764020971045) *Journal of
 > Human Rights* (forthcoming).
 
 **All this project’s materials are free and open:**
@@ -88,7 +88,7 @@ bla bla bla
 ------------------------------------------------------------------------
 
 <!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
-<!-- > Luisa M. Mimmi. 2022. "Follow the buzzword"". Accessed April 11, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+<!-- > Luisa M. Mimmi. 2022. "Follow the slogan"". Accessed April 11, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
 
 ## Data
 

@@ -50,6 +50,109 @@
 
 
 
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 <style type="text/css">
@@ -58,6 +161,28 @@
 }
 </style>
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 <link rel="stylesheet" href="html/fixes.css" type="text/css" />
 
@@ -348,7 +473,7 @@ div.tocify {
   </ul>
 </li>
 <li>
-  <a href="01_data-overview.html">
+  <a href="01_data-exploration.html">
     <span class="fas fa-table"></span>
      
     Process and merge data
@@ -441,14 +566,259 @@ div.tocify {
 
 <h1 class="title toc-ignore">Descriptive analysis</h1>
 <h4 class="author">Luisa M. Mimmi</h4>
-<h4 class="date">Last run: 2022-05-12</h4>
+<h4 class="date">Last run: 2022-06-24</h4>
 
 </div>
 
 
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load required packages </span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">&quot;pacman&quot;</span>)) <span class="fu">install.packages</span>(<span class="st">&#39;pacman&#39;</span> )</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here, tidyverse, tibble, janitor,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="co">#  emo, </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>       readr, </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>       gt,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>       <span class="co">#captioner,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>       knitr, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>       flextable, <span class="co"># better bc OK in html &amp; word</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>       officer, <span class="co"># to save flextable in word</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>       shiny, </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>       stringi,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>       wordcountaddin <span class="co"># You may have to download this</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>       )  </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load_gh</span>(<span class="st">&quot;crsh/citr&quot;</span>) <span class="co"># not on CRAN (as of Nov 2021!)</span></span></code></pre></div>
+<div id="why-focus-on-the-wdrs" class="section level1">
+<h1>WHY FOCUS ON THE WDRs?</h1>
+<blockquote>
+<p>The report has served as one of the princi- pal and most widely read
+vehicles for encapsulating the Bank’s knowledge of and policy
+recommendations on key development trends.” —Justin Lin, Senior Vice
+President and Chief Economist, The World Bank <span
+class="citation">(Yusuf 2008)</span></p>
+</blockquote>
+<blockquote>
+<p>The intense interest aroused by a paper on global trends and the
+prospects for developing countries issued in 1974 by Hollis Chenery, the
+Bank’s chief economist, encour- aged McNamara to pursue the idea of an
+annual publication that took the pulse of the international economy,
+that stimulated the search for answers, and that synthesized the “truth”
+as it was revealed. Such a book could become a vehicle for the Bank to
+lead, to propagate its ideas, to mobilize official development
+assistance, and to win adherence for a renewed push to develop. <span
+class="citation">(Yusuf 2008)</span></p>
+</blockquote>
+</div>
+<div id="what-are-wdrs" class="section level1">
+<h1>WHAT ARE WDRs?</h1>
+<p>a trend-maker or a trend-follower?</p>
+<div id="is-it-an-observation-of-what-is-emerging-as-important"
+class="section level2">
+<h2>Is it an observation of what is emerging as important?</h2>
+<blockquote>
+<p>The topics not only provide a window on the Bank’s perception of what
+mattered or matters in the sphere of development at a particular time,
+but also give an indicator of the current fashions in development
+econom- ics that are attracting a significant amount of attention from
+researchers. <span class="citation">(Yusuf 2008, 35)</span></p>
+</blockquote>
+</div>
+<div id="or-is-it-a-vehicle-to-push-an-agenda" class="section level2">
+<h2>Or is it a vehicle to push an agenda?</h2>
+<blockquote>
+<p>With the publication of the first of an annual series, the Bank took
+it upon itself to try to filter and systematize the knowledge on
+development so as to enhance the operational utility of such knowledge.
+In producing the WDR, the Bank was not seeking intellectual leadership
+or attempting to break new ground in the development field. Instead, the
+WDR was seen as a vehicle for persuading the Bank’s member governments
+to broadly unite behind a strategy and to cooperate in making it
+succeed. <span class="citation">(Yusuf 2008, 34)</span></p>
+</blockquote>
+<blockquote>
+<p>The three best remembered WDRs are those on fertility, on poverty,
+and on health. - The <strong><em>1984 fertility report</em></strong>
+took the previously standard, though even then rapidly fading, view that
+population growth was indeed a problem for economic development, that
+more mouths meant less for each (the lump fallacy), and that the
+“tragedy of the commons” meant that the individual decisions of parents
+about their fertility were unlikely to lead to good outcomes. [… ] the
+Bank dropped the issue after the report, and indeed the tide was turning
+against the international population control movement from the mid-1980s
+on. Yet much harm had already been done, as documented in Matthew Con-
+nelly’s (2008) Fatal Misconceptions […]. - The <strong><em>1990 poverty
+report</em></strong> is famous for introducing the international
+dollar-a-day poverty standard and the associated counts. These counts
+have continued to date, regularly updated by Martin Ravallion and his
+team, who were also the original authors. They have had an immense
+effect on development practice and on development debate, not least
+through the use of the dollar-a-day standard to define the first of the
+Millennium Development Goals (MDGs) and the appointment of the Bank as
+the subsequent scorekeeper. - The <strong><em>1993 WDR on
+health</em></strong> is also famous, mostly for its introduction of the
+disability-adjusted life year (DALY), although this concept and its
+subsequent sweeping of the world is attributable less to Bank
+researchers than to Chris Murray, who was a consultant to the WDR. The
+DALY, like the dollar-a-day standard, has become a central tool of
+health measurement around the world for computing the burden of disease
+associated with dif- ferent conditions, for permitting a combination of
+mortality and morbidity, and for assigning priorities. But the 1993 WDR,
+more than any other Bank report, put the Bank on the map as a major
+player in global health. It is also famous for reputedly persuading Bill
+Gates that international health was important, certainly an excellent
+example of the WDR mobilizing global opinion and shaping strategy. <span
+class="citation">(Angus Deaton in Yusuf 2008)</span></p>
+</blockquote>
+<p>… the World Development Indicators (WDI), later spun off into an
+immensely successful stand-alone product.</p>
+</div>
+<div id="or-both-or-one-then-the-other-at-different-points"
+class="section level2">
+<h2>Or both? (or one then the other at different points?)</h2>
+<p>Both</p>
+<p>According to Kemal Derviş, more than politics and political ideology
+what influenced a lot the WRDs shifting emphasis over time has been
+academic thinking. <span class="citation">(Kemal Derviş in Yusuf
+2008)</span></p>
+</div>
+<div id="is-is-more-about-ideas-or-facts" class="section level2">
+<h2>Is is more about ideas or facts?</h2>
+<p>Something new in the 1970s (not inundated by facts as we are today),
+&gt;the World Bank used its resources and its access to data to generate
+a decent statistical picture of development. For the first time, many
+statements on the dynamics of devel- opment could be buttressed by
+facts. For the first time, readers were given a good sense of the
+magnitudes involved, and this insight was vital for determining the
+scale of problems and for calibrating policies. In effect, the WDRs
+helped to make development economics more numerate and altered the
+nature of discourse. <span class="citation">(Yusuf 2008, 37)</span></p>
+</div>
+</div>
+<div id="wdrs-winning-ideas-over-time" class="section level1">
+<h1>WDRs “winning ideas” over time</h1>
+<div class="figure">
+<img src="analysis/output/figures/most_common_word_in_title.png" alt="50 Most most common words in WDR titles" width="900" />
+<p class="caption">
+50 Most most common words in WDR titles
+</p>
+</div>
+<div id="s-70s---post-decolonization-world-growth"
+class="section level3">
+<h3><u>- 50s-70s - post-decolonization world: “growth”</u></h3>
+<pre><code>-   ***industrialization***
+-   ***capital-output ratio***. How much growth a country derives from each incremental unit of capital is a function of this conversion factor.
+-   ***two-gap model*****.** it soon became apparent that growth would be constrained not only by the scarcity of domestic capital but also by the paucity of foreign exchange to finance purchases of capital goods and other needed intermediate and consumption goods.
+-   ***I-O models, turnpike models, &quot;golden rule&quot; models*****,** and other dynamic optimizing models employing mathematical techniques that were borrowed from the engineering sciences</code></pre>
+</div>
+<div
+id="s-early80s---economic-stagnation-in-the-1970s-and-the-interrelated-oil-financial-and-adjustment-crises-of-the-early-1980s-war-on-poverty"
+class="section level3">
+<h3><u>- 70s-early80s - economic stagnation in the 1970s and the
+interrelated oil, financial, and adjustment crises of the early 1980s:
+“war on poverty”</u></h3>
+<pre><code>-   embedding of ***poverty in the idea of development*****,** making poverty alleviation an inextricable, if not prime, objective of development.
+    -   (poverty became tangible and measured)
+-   McNamara (1973: 10) warned that &quot;growth is not ***equitably reaching the poor***. And the poor are not significantly contributing to growth.&quot; McNamara called for an eradication of absolute poverty by the end of the 20th century, and he indicated that essential to accomplishing this goal would be an *increase in the productivity of **small-scale agriculture***.
+-   ***basic needs***
+-   ***pro-poor policies*** (1980 WDR---the Bank&#39;s first report on poverty, stressed the importance of managing health, education, and population growth)
+-   (after second energy shock) ***macroeconomic stability and resource equilibrium***
+-   ***structural adjustments*** was seen as vital to ridding the economy of many distorting regulatory encrustations, shrinking the state, and (most important) optimizing the allocation of resources by getting the prices right---one of the enduring mantras of the 1980s and emblematic of the notorious &quot;Washington Consensus&quot;</code></pre>
+</div>
+<div
+id="s---pendulum-shifts-to-market-based-system-that-scaled-down-the-role-of-the-state-in-a-globalizing-environment"
+class="section level3">
+<h3><u>- 1980s - pendulum shifts to market-based system that scaled down
+the role of the state in a globalizing environment</u></h3>
+<pre><code>-   ***market-based economics*** began to dominate, echoing a similar change in mindset among mainstream American academics. *Anne Krueger*, who replaced Hollis Chenery, was a staunch advocate of market solutions, and by prevailing over the views of her peers in the manage- ment group, she hitched the Bank&#39;s approach to development firmly to market forces.
+-   ***Tax and public sector reform*** **and *privatization***, quite suddenly, became immensely popular with policy makers,13 not the least because public sector deficits in some industrial countries made greater revenue effort a matter of urgency.
+-   ***Freer trade***---already promoted by the Kennedy and Tokyo Rounds and the creation of the General Agreement on Tariffs and Trade---was boosted by the ambitious Uruguay Round launched in 1986
+-   ***ODA, private resources, FDI***</code></pre>
+</div>
+<div
+id="s---growth-and-poverty-analyzing-them-from-microeconomic-institutional-and-sectoral-perspectives"
+class="section level3">
+<h3><u>- 1990s - growth and poverty, analyzing them from microeconomic,
+institutional, and sectoral perspectives</u></h3>
+<pre><code>-   redefining the role of the ***state*** , identifying missing institutions, proposing blueprints for these institutions
+-   ***regulatory*** responsibilities
+-   &quot;***50 years is enough***,&quot; protests against the Bretton Woods Institutions, civil society
+_ emphasis shifted to ***micro*** issues (framing and testing of narrow hypotheses and are greatly preoccupied with the minutiae of economic plumbing)
+-   ***access to knowledge*** ( Stiglitz) - In a globalizing world, information, information technologies, the Internet, and institutions that were transforming the sharing of information had become as intrinsic to growth as physical capital, opening a whole new range of opportunities for developing countries and at the same time bringing them face to face with a fresh sheaf of policy issues.
+-   1999/00 four major forces---***globalization*** arising from flows of trade, capital, people and ideas; ***climate and environmental changes***; localization stemming from the combined effects of ***fiscal and administrative decentralization***; and ***rapid urbanization***
+-   PPPs
+- growth could be made ***environmentally friendly*** (WDRs 1992, 2003, )</code></pre>
+</div>
+<div
+id="s---emphasis-on-institutions-that-affect-market-functioning-and-the-entry-innovativeness-and-growth-of-firms"
+class="section level3">
+<h3><u>- 2000s - emphasis on institutions that affect market functioning
+and the entry, innovativeness, and growth of firms</u></h3>
+<ul>
+<li><strong><em>governance</em></strong> of regulatory bodies</li>
+<li><strong><em>information gaps and asymmetries</em></strong>—the cause
+of market failures and countless economic ills.</li>
+<li>concern over <strong>barriers to the entry and functioning of
+firms</strong>, created in part by regulations that curtailed
+competition.</li>
+<li><strong><em>investment climate</em></strong></li>
+</ul>
+</div>
+</div>
+<div id="how-have-wdrs-winning-ideas-prevailed-over-time"
+class="section level1">
+<h1>How have WDRs “winning ideas” prevailed over time?</h1>
+<div id="viz-groups-by-semantic-meaning" class="section level2">
+<h2>[viz?] groups by semantic meaning?</h2>
+<ul>
+<li>can I use any WBG own taxonomy to classify keywords?</li>
+</ul>
+</div>
+<div id="viz-frequency-of-words-by-time-series" class="section level2">
+<h2>[viz?] frequency of words by time series</h2>
+</div>
+<div id="viz-matchingreturning-ideas" class="section level2">
+<h2>[viz?] matching|returning ideas</h2>
+<ul>
+<li>such as poverty in ? ? ?</li>
+<li>environm / climate in ? ? ?</li>
+<li>institutions/regul / governance in ? ? ?</li>
+<li>state / government ? ? ?</li>
+<li>market | finance | PPPs | liberalization &amp; privatization
+???</li>
+</ul>
+</div>
+</div>
+<div
+id="what-effects-if-any-have-the-wdrs-policy-recommendations-had-on-world-bank-lending-decisions"
+class="section level1">
+<h1>WHAT EFFECTS (if any) HAVE THE WDRS’ POLICY RECOMMENDATIONS HAD ON
+WORLD BANK LENDING DECISIONS?</h1>
+<div
+id="is-there-an-increaased-appearance-of-certain-policies-among-subsequent-years-projects-pdos"
+class="section level2">
+<h2>Is there an increaased appearance of certain policies among
+subsequent years’ projects PDOs?</h2>
+</div>
+<div id="if-yes-for-how-long-with-what-level-of-priority"
+class="section level2">
+<h2>If yes, for how long? | With what level of priority?</h2>
+</div>
+<div id="when-observed-is-it-really-something-genuine-of-xxx-washing"
+class="section level2 unnumbered">
+<h2 class="unnumbered">When observed is it really something genuine of
+“xxx-washing”?</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-yusuf_development_2008" class="csl-entry">
+Yusuf, Shahid. 2008. <em>Development <span>Economics</span> Through the
+<span>Decades</span>: <span>A Critical Look</span> at <span>Thirty
+Years</span> of the <span>World Development Report</span></em>.
+<span>The World Bank</span>. <a
+href="https://doi.org/10.1596/978-0-8213-7255-5">https://doi.org/10.1596/978-0-8213-7255-5</a>.
+</div>
+</div>
+</div>
+</div>
 
-
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGVzY3JpcHRpdmUgYW5hbHlzaXMiCmF1dGhvcjogIkx1aXNhIE0uIE1pbW1pIgpkYXRlOiAiTGFzdCBydW46IGByIGZvcm1hdChTeXMudGltZSgpLCAnJUYnKWAiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIGNvZGVfZm9sZGluZzogaGlkZQplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGNvbnNvbGUKLS0tCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRGVzY3JpcHRpdmUgYW5hbHlzaXMiCmF1dGhvcjogIkx1aXNhIE0uIE1pbW1pIgpkYXRlOiAiTGFzdCBydW46IGByIGZvcm1hdChTeXMudGltZSgpLCAnJUYnKWAiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIGNvZGVfZm9sZGluZzogaGlkZQplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGNvbnNvbGUKYmlibGlvZ3JhcGh5OiBzbG9nYW4uYmliCi0tLQoKYGBge3IgbG9hZC1saWJyYXJpZXMtZGF0YSwgbWVzc2FnZT1GQUxTRSwgd2FybmluZz1GQUxTRX0KIyBMb2FkIHJlcXVpcmVkIHBhY2thZ2VzIAppZiAoIXJlcXVpcmUoInBhY21hbiIpKSBpbnN0YWxsLnBhY2thZ2VzKCdwYWNtYW4nICkKcGFjbWFuOjpwX2xvYWQoaGVyZSwgdGlkeXZlcnNlLCB0aWJibGUsIGphbml0b3IsCiAgICAgICMgIGVtbywgCiAgICAgICByZWFkciwgCiAgICAgICBndCwKICAgICAgICNjYXB0aW9uZXIsCiAgICAgICBrbml0ciwgCiAgICAgICBmbGV4dGFibGUsICMgYmV0dGVyIGJjIE9LIGluIGh0bWwgJiB3b3JkCiAgICAgICBvZmZpY2VyLCAjIHRvIHNhdmUgZmxleHRhYmxlIGluIHdvcmQKICAgICAgIHNoaW55LCAKICAgICAgIHN0cmluZ2ksCiAgICAgICB3b3JkY291bnRhZGRpbiAjIFlvdSBtYXkgaGF2ZSB0byBkb3dubG9hZCB0aGlzCiAgICAgICApICAKCnBhY21hbjo6cF9sb2FkX2doKCJjcnNoL2NpdHIiKSAjIG5vdCBvbiBDUkFOIChhcyBvZiBOb3YgMjAyMSEpCgpgYGAKCiMgV0hZIEZPQ1VTIE9OIFRIRSBXRFJzPwoKPiBUaGUgcmVwb3J0IGhhcyBzZXJ2ZWQgYXMgb25lIG9mIHRoZSBwcmluY2ktIHBhbCBhbmQgbW9zdCB3aWRlbHkgcmVhZCB2ZWhpY2xlcyBmb3IgZW5jYXBzdWxhdGluZyB0aGUgQmFuaydzIGtub3dsZWRnZSBvZiBhbmQgcG9saWN5IHJlY29tbWVuZGF0aW9ucyBvbiBrZXkgZGV2ZWxvcG1lbnQgdHJlbmRzLiIgLS0tSnVzdGluIExpbiwgU2VuaW9yIFZpY2UgUHJlc2lkZW50IGFuZCBDaGllZiBFY29ub21pc3QsIFRoZSBXb3JsZCBCYW5rIFtAeXVzdWZfZGV2ZWxvcG1lbnRfMjAwOF0KCj4gVGhlIGludGVuc2UgaW50ZXJlc3QgYXJvdXNlZCBieSBhIHBhcGVyIG9uIGdsb2JhbCB0cmVuZHMgYW5kIHRoZSBwcm9zcGVjdHMgZm9yIGRldmVsb3BpbmcgY291bnRyaWVzIGlzc3VlZCBpbiAxOTc0IGJ5IEhvbGxpcyBDaGVuZXJ5LCB0aGUgQmFuaydzIGNoaWVmIGVjb25vbWlzdCwgZW5jb3VyLSBhZ2VkIE1jTmFtYXJhIHRvIHB1cnN1ZSB0aGUgaWRlYSBvZiBhbiBhbm51YWwgcHVibGljYXRpb24gdGhhdCB0b29rIHRoZSBwdWxzZSBvZiB0aGUgaW50ZXJuYXRpb25hbCBlY29ub215LCB0aGF0IHN0aW11bGF0ZWQgdGhlIHNlYXJjaCBmb3IgYW5zd2VycywgYW5kIHRoYXQgc3ludGhlc2l6ZWQgdGhlICJ0cnV0aCIgYXMgaXQgd2FzIHJldmVhbGVkLiBTdWNoIGEgYm9vayBjb3VsZCBiZWNvbWUgYSB2ZWhpY2xlIGZvciB0aGUgQmFuayB0byBsZWFkLCB0byBwcm9wYWdhdGUgaXRzIGlkZWFzLCB0byBtb2JpbGl6ZSBvZmZpY2lhbCBkZXZlbG9wbWVudCBhc3Npc3RhbmNlLCBhbmQgdG8gd2luIGFkaGVyZW5jZSBmb3IgYSByZW5ld2VkIHB1c2ggdG8gZGV2ZWxvcC4gW0B5dXN1Zl9kZXZlbG9wbWVudF8yMDA4XQoKIyBXSEFUIEFSRSBXRFJzPwoKYSB0cmVuZC1tYWtlciBvciBhIHRyZW5kLWZvbGxvd2VyPwoKIyMgSXMgaXQgYW4gb2JzZXJ2YXRpb24gb2Ygd2hhdCBpcyBlbWVyZ2luZyBhcyBpbXBvcnRhbnQ/Cgo+IFRoZSB0b3BpY3Mgbm90IG9ubHkgcHJvdmlkZSBhIHdpbmRvdyBvbiB0aGUgQmFuaydzIHBlcmNlcHRpb24gb2Ygd2hhdCBtYXR0ZXJlZCBvciBtYXR0ZXJzIGluIHRoZSBzcGhlcmUgb2YgZGV2ZWxvcG1lbnQgYXQgYSBwYXJ0aWN1bGFyIHRpbWUsIGJ1dCBhbHNvIGdpdmUgYW4gaW5kaWNhdG9yIG9mIHRoZSBjdXJyZW50IGZhc2hpb25zIGluIGRldmVsb3BtZW50IGVjb25vbS0gaWNzIHRoYXQgYXJlIGF0dHJhY3RpbmcgYSBzaWduaWZpY2FudCBhbW91bnQgb2YgYXR0ZW50aW9uIGZyb20gcmVzZWFyY2hlcnMuIFtAeXVzdWZfZGV2ZWxvcG1lbnRfMjAwOCwgcC4zNV0KCiMjIE9yIGlzIGl0IGEgdmVoaWNsZSB0byBwdXNoIGFuIGFnZW5kYT8KCj4gV2l0aCB0aGUgcHVibGljYXRpb24gb2YgdGhlIGZpcnN0IG9mIGFuIGFubnVhbCBzZXJpZXMsIHRoZSBCYW5rIHRvb2sgaXQgdXBvbiBpdHNlbGYgdG8gdHJ5IHRvIGZpbHRlciBhbmQgc3lzdGVtYXRpemUgdGhlIGtub3dsZWRnZSBvbiBkZXZlbG9wbWVudCBzbyBhcyB0byBlbmhhbmNlIHRoZSBvcGVyYXRpb25hbCB1dGlsaXR5IG9mIHN1Y2gga25vd2xlZGdlLiBJbiBwcm9kdWNpbmcgdGhlIFdEUiwgdGhlIEJhbmsgd2FzIG5vdCBzZWVraW5nIGludGVsbGVjdHVhbCBsZWFkZXJzaGlwIG9yIGF0dGVtcHRpbmcgdG8gYnJlYWsgbmV3IGdyb3VuZCBpbiB0aGUgZGV2ZWxvcG1lbnQgZmllbGQuIEluc3RlYWQsIHRoZSBXRFIgd2FzIHNlZW4gYXMgYSB2ZWhpY2xlIGZvciBwZXJzdWFkaW5nIHRoZSBCYW5rJ3MgbWVtYmVyIGdvdmVybm1lbnRzIHRvIGJyb2FkbHkgdW5pdGUgYmVoaW5kIGEgc3RyYXRlZ3kgYW5kIHRvIGNvb3BlcmF0ZSBpbiBtYWtpbmcgaXQgc3VjY2VlZC4gW0B5dXN1Zl9kZXZlbG9wbWVudF8yMDA4LCBwLjM0XQoKPiBUaGUgdGhyZWUgYmVzdCByZW1lbWJlcmVkIFdEUnMgYXJlIHRob3NlIG9uIGZlcnRpbGl0eSwgb24gcG92ZXJ0eSwgYW5kIG9uIGhlYWx0aC4gLSBUaGUgKioqMTk4NCBmZXJ0aWxpdHkgcmVwb3J0KioqIHRvb2sgdGhlIHByZXZpb3VzbHkgc3RhbmRhcmQsIHRob3VnaCBldmVuIHRoZW4gcmFwaWRseSBmYWRpbmcsIHZpZXcgdGhhdCBwb3B1bGF0aW9uIGdyb3d0aCB3YXMgaW5kZWVkIGEgcHJvYmxlbSBmb3IgZWNvbm9taWMgZGV2ZWxvcG1lbnQsIHRoYXQgbW9yZSBtb3V0aHMgbWVhbnQgbGVzcyBmb3IgZWFjaCAodGhlIGx1bXAgZmFsbGFjeSksIGFuZCB0aGF0IHRoZSAidHJhZ2VkeSBvZiB0aGUgY29tbW9ucyIgbWVhbnQgdGhhdCB0aGUgaW5kaXZpZHVhbCBkZWNpc2lvbnMgb2YgcGFyZW50cyBhYm91dCB0aGVpciBmZXJ0aWxpdHkgd2VyZSB1bmxpa2VseSB0byBsZWFkIHRvIGdvb2Qgb3V0Y29tZXMuIFsuLi4gXSB0aGUgQmFuayBkcm9wcGVkIHRoZSBpc3N1ZSBhZnRlciB0aGUgcmVwb3J0LCBhbmQgaW5kZWVkIHRoZSB0aWRlIHdhcyB0dXJuaW5nIGFnYWluc3QgdGhlIGludGVybmF0aW9uYWwgcG9wdWxhdGlvbiBjb250cm9sIG1vdmVtZW50IGZyb20gdGhlIG1pZC0xOTgwcyBvbi4gWWV0IG11Y2ggaGFybSBoYWQgYWxyZWFkeSBiZWVuIGRvbmUsIGFzIGRvY3VtZW50ZWQgaW4gTWF0dGhldyBDb24tIG5lbGx5J3MgKDIwMDgpIEZhdGFsIE1pc2NvbmNlcHRpb25zIFsuLi5dLiAtIFRoZSAqKioxOTkwIHBvdmVydHkgcmVwb3J0KioqIGlzIGZhbW91cyBmb3IgaW50cm9kdWNpbmcgdGhlIGludGVybmF0aW9uYWwgZG9sbGFyLWEtZGF5IHBvdmVydHkgc3RhbmRhcmQgYW5kIHRoZSBhc3NvY2lhdGVkIGNvdW50cy4gVGhlc2UgY291bnRzIGhhdmUgY29udGludWVkIHRvIGRhdGUsIHJlZ3VsYXJseSB1cGRhdGVkIGJ5IE1hcnRpbiBSYXZhbGxpb24gYW5kIGhpcyB0ZWFtLCB3aG8gd2VyZSBhbHNvIHRoZSBvcmlnaW5hbCBhdXRob3JzLiBUaGV5IGhhdmUgaGFkIGFuIGltbWVuc2UgZWZmZWN0IG9uIGRldmVsb3BtZW50IHByYWN0aWNlIGFuZCBvbiBkZXZlbG9wbWVudCBkZWJhdGUsIG5vdCBsZWFzdCB0aHJvdWdoIHRoZSB1c2Ugb2YgdGhlIGRvbGxhci1hLWRheSBzdGFuZGFyZCB0byBkZWZpbmUgdGhlIGZpcnN0IG9mIHRoZSBNaWxsZW5uaXVtIERldmVsb3BtZW50IEdvYWxzIChNREdzKSBhbmQgdGhlIGFwcG9pbnRtZW50IG9mIHRoZSBCYW5rIGFzIHRoZSBzdWJzZXF1ZW50IHNjb3Jla2VlcGVyLiAtIFRoZSAqKioxOTkzIFdEUiBvbiBoZWFsdGgqKiogaXMgYWxzbyBmYW1vdXMsIG1vc3RseSBmb3IgaXRzIGludHJvZHVjdGlvbiBvZiB0aGUgZGlzYWJpbGl0eS1hZGp1c3RlZCBsaWZlIHllYXIgKERBTFkpLCBhbHRob3VnaCB0aGlzIGNvbmNlcHQgYW5kIGl0cyBzdWJzZXF1ZW50IHN3ZWVwaW5nIG9mIHRoZSB3b3JsZCBpcyBhdHRyaWJ1dGFibGUgbGVzcyB0byBCYW5rIHJlc2VhcmNoZXJzIHRoYW4gdG8gQ2hyaXMgTXVycmF5LCB3aG8gd2FzIGEgY29uc3VsdGFudCB0byB0aGUgV0RSLiBUaGUgREFMWSwgbGlrZSB0aGUgZG9sbGFyLWEtZGF5IHN0YW5kYXJkLCBoYXMgYmVjb21lIGEgY2VudHJhbCB0b29sIG9mIGhlYWx0aCBtZWFzdXJlbWVudCBhcm91bmQgdGhlIHdvcmxkIGZvciBjb21wdXRpbmcgdGhlIGJ1cmRlbiBvZiBkaXNlYXNlIGFzc29jaWF0ZWQgd2l0aCBkaWYtIGZlcmVudCBjb25kaXRpb25zLCBmb3IgcGVybWl0dGluZyBhIGNvbWJpbmF0aW9uIG9mIG1vcnRhbGl0eSBhbmQgbW9yYmlkaXR5LCBhbmQgZm9yIGFzc2lnbmluZyBwcmlvcml0aWVzLiBCdXQgdGhlIDE5OTMgV0RSLCBtb3JlIHRoYW4gYW55IG90aGVyIEJhbmsgcmVwb3J0LCBwdXQgdGhlIEJhbmsgb24gdGhlIG1hcCBhcyBhIG1ham9yIHBsYXllciBpbiBnbG9iYWwgaGVhbHRoLiBJdCBpcyBhbHNvIGZhbW91cyBmb3IgcmVwdXRlZGx5IHBlcnN1YWRpbmcgQmlsbCBHYXRlcyB0aGF0IGludGVybmF0aW9uYWwgaGVhbHRoIHdhcyBpbXBvcnRhbnQsIGNlcnRhaW5seSBhbiBleGNlbGxlbnQgZXhhbXBsZSBvZiB0aGUgV0RSIG1vYmlsaXppbmcgZ2xvYmFsIG9waW5pb24gYW5kIHNoYXBpbmcgc3RyYXRlZ3kuIFtBbmd1cyBEZWF0b24gaW4gQHl1c3VmX2RldmVsb3BtZW50XzIwMDhdCgouLi4gdGhlIFdvcmxkIERldmVsb3BtZW50IEluZGljYXRvcnMgKFdESSksIGxhdGVyIHNwdW4gb2ZmIGludG8gYW4gaW1tZW5zZWx5IHN1Y2Nlc3NmdWwgc3RhbmQtYWxvbmUgcHJvZHVjdC4KCiMjIE9yIGJvdGg/IChvciBvbmUgdGhlbiB0aGUgb3RoZXIgYXQgZGlmZmVyZW50IHBvaW50cz8pCgpCb3RoCgpBY2NvcmRpbmcgdG8gS2VtYWwgRGVydmlzzKcsIG1vcmUgdGhhbiBwb2xpdGljcyBhbmQgcG9saXRpY2FsIGlkZW9sb2d5IHdoYXQgaW5mbHVlbmNlZCBhIGxvdCB0aGUgV1JEcyBzaGlmdGluZyBlbXBoYXNpcyBvdmVyIHRpbWUgaGFzIGJlZW4gYWNhZGVtaWMgdGhpbmtpbmcuIFtLZW1hbCBEZXJ2aXPMpyBpbiBAeXVzdWZfZGV2ZWxvcG1lbnRfMjAwOF0KCiMjIElzIGlzIG1vcmUgYWJvdXQgaWRlYXMgb3IgZmFjdHM/CgpTb21ldGhpbmcgbmV3IGluIHRoZSAxOTcwcyAobm90IGludW5kYXRlZCBieSBmYWN0cyBhcyB3ZSBhcmUgdG9kYXkpLCBcPnRoZSBXb3JsZCBCYW5rIHVzZWQgaXRzIHJlc291cmNlcyBhbmQgaXRzIGFjY2VzcyB0byBkYXRhIHRvIGdlbmVyYXRlIGEgZGVjZW50IHN0YXRpc3RpY2FsIHBpY3R1cmUgb2YgZGV2ZWxvcG1lbnQuIEZvciB0aGUgZmlyc3QgdGltZSwgbWFueSBzdGF0ZW1lbnRzIG9uIHRoZSBkeW5hbWljcyBvZiBkZXZlbC0gb3BtZW50IGNvdWxkIGJlIGJ1dHRyZXNzZWQgYnkgZmFjdHMuIEZvciB0aGUgZmlyc3QgdGltZSwgcmVhZGVycyB3ZXJlIGdpdmVuIGEgZ29vZCBzZW5zZSBvZiB0aGUgbWFnbml0dWRlcyBpbnZvbHZlZCwgYW5kIHRoaXMgaW5zaWdodCB3YXMgdml0YWwgZm9yIGRldGVybWluaW5nIHRoZSBzY2FsZSBvZiBwcm9ibGVtcyBhbmQgZm9yIGNhbGlicmF0aW5nIHBvbGljaWVzLiBJbiBlZmZlY3QsIHRoZSBXRFJzIGhlbHBlZCB0byBtYWtlIGRldmVsb3BtZW50IGVjb25vbWljcyBtb3JlIG51bWVyYXRlIGFuZCBhbHRlcmVkIHRoZSBuYXR1cmUgb2YgZGlzY291cnNlLiBbQHl1c3VmX2RldmVsb3BtZW50XzIwMDgsIHAuMzddCgojIFdEUnMgIndpbm5pbmcgaWRlYXMiIG92ZXIgdGltZQoKCmBgYHtyIGNvbW1vbl93X3RpdCwgZmlnLmNhcCA9ICI1MCBNb3N0IG1vc3QgY29tbW9uIHdvcmRzIGluIFdEUiB0aXRsZXMiLCBlY2hvPUZBTFNFfQprbml0cjo6aW5jbHVkZV9ncmFwaGljcyhoZXJlKCJhbmFseXNpcyIsICJvdXRwdXQiLCAiZmlndXJlcyIsICJtb3N0X2NvbW1vbl93b3JkX2luX3RpdGxlLnBuZyIpKQpgYGAKCiMjIyBbLSA1MHMtNzBzIC0gcG9zdC1kZWNvbG9uaXphdGlvbiB3b3JsZDogImdyb3d0aCJdey51bmRlcmxpbmV9CgogICAgLSAgICoqKmluZHVzdHJpYWxpemF0aW9uKioqCiAgICAtICAgKioqY2FwaXRhbC1vdXRwdXQgcmF0aW8qKiouIEhvdyBtdWNoIGdyb3d0aCBhIGNvdW50cnkgZGVyaXZlcyBmcm9tIGVhY2ggaW5jcmVtZW50YWwgdW5pdCBvZiBjYXBpdGFsIGlzIGEgZnVuY3Rpb24gb2YgdGhpcyBjb252ZXJzaW9uIGZhY3Rvci4KICAgIC0gICAqKip0d28tZ2FwIG1vZGVsKioqKiouKiogaXQgc29vbiBiZWNhbWUgYXBwYXJlbnQgdGhhdCBncm93dGggd291bGQgYmUgY29uc3RyYWluZWQgbm90IG9ubHkgYnkgdGhlIHNjYXJjaXR5IG9mIGRvbWVzdGljIGNhcGl0YWwgYnV0IGFsc28gYnkgdGhlIHBhdWNpdHkgb2YgZm9yZWlnbiBleGNoYW5nZSB0byBmaW5hbmNlIHB1cmNoYXNlcyBvZiBjYXBpdGFsIGdvb2RzIGFuZCBvdGhlciBuZWVkZWQgaW50ZXJtZWRpYXRlIGFuZCBjb25zdW1wdGlvbiBnb29kcy4KICAgIC0gICAqKipJLU8gbW9kZWxzLCB0dXJucGlrZSBtb2RlbHMsICJnb2xkZW4gcnVsZSIgbW9kZWxzKioqKiosKiogYW5kIG90aGVyIGR5bmFtaWMgb3B0aW1pemluZyBtb2RlbHMgZW1wbG95aW5nIG1hdGhlbWF0aWNhbCB0ZWNobmlxdWVzIHRoYXQgd2VyZSBib3Jyb3dlZCBmcm9tIHRoZSBlbmdpbmVlcmluZyBzY2llbmNlcwoKIyMjIFstIDcwcy1lYXJseTgwcyAtIGVjb25vbWljIHN0YWduYXRpb24gaW4gdGhlIDE5NzBzIGFuZCB0aGUgaW50ZXJyZWxhdGVkIG9pbCwgZmluYW5jaWFsLCBhbmQgYWRqdXN0bWVudCBjcmlzZXMgb2YgdGhlIGVhcmx5IDE5ODBzOiAid2FyIG9uIHBvdmVydHkiXXsudW5kZXJsaW5lfQoKICAgIC0gICBlbWJlZGRpbmcgb2YgKioqcG92ZXJ0eSBpbiB0aGUgaWRlYSBvZiBkZXZlbG9wbWVudCoqKioqLCoqIG1ha2luZyBwb3ZlcnR5IGFsbGV2aWF0aW9uIGFuIGluZXh0cmljYWJsZSwgaWYgbm90IHByaW1lLCBvYmplY3RpdmUgb2YgZGV2ZWxvcG1lbnQuCiAgICAgICAgLSAgIChwb3ZlcnR5IGJlY2FtZSB0YW5naWJsZSBhbmQgbWVhc3VyZWQpCiAgICAtICAgTWNOYW1hcmEgKDE5NzM6IDEwKSB3YXJuZWQgdGhhdCAiZ3Jvd3RoIGlzIG5vdCAqKiplcXVpdGFibHkgcmVhY2hpbmcgdGhlIHBvb3IqKiouIEFuZCB0aGUgcG9vciBhcmUgbm90IHNpZ25pZmljYW50bHkgY29udHJpYnV0aW5nIHRvIGdyb3d0aC4iIE1jTmFtYXJhIGNhbGxlZCBmb3IgYW4gZXJhZGljYXRpb24gb2YgYWJzb2x1dGUgcG92ZXJ0eSBieSB0aGUgZW5kIG9mIHRoZSAyMHRoIGNlbnR1cnksIGFuZCBoZSBpbmRpY2F0ZWQgdGhhdCBlc3NlbnRpYWwgdG8gYWNjb21wbGlzaGluZyB0aGlzIGdvYWwgd291bGQgYmUgYW4gKmluY3JlYXNlIGluIHRoZSBwcm9kdWN0aXZpdHkgb2YgKipzbWFsbC1zY2FsZSBhZ3JpY3VsdHVyZSoqKi4KICAgIC0gICAqKipiYXNpYyBuZWVkcyoqKgogICAgLSAgICoqKnByby1wb29yIHBvbGljaWVzKioqICgxOTgwIFdEUi0tLXRoZSBCYW5rJ3MgZmlyc3QgcmVwb3J0IG9uIHBvdmVydHksIHN0cmVzc2VkIHRoZSBpbXBvcnRhbmNlIG9mIG1hbmFnaW5nIGhlYWx0aCwgZWR1Y2F0aW9uLCBhbmQgcG9wdWxhdGlvbiBncm93dGgpCiAgICAtICAgKGFmdGVyIHNlY29uZCBlbmVyZ3kgc2hvY2spICoqKm1hY3JvZWNvbm9taWMgc3RhYmlsaXR5IGFuZCByZXNvdXJjZSBlcXVpbGlicml1bSoqKgogICAgLSAgICoqKnN0cnVjdHVyYWwgYWRqdXN0bWVudHMqKiogd2FzIHNlZW4gYXMgdml0YWwgdG8gcmlkZGluZyB0aGUgZWNvbm9teSBvZiBtYW55IGRpc3RvcnRpbmcgcmVndWxhdG9yeSBlbmNydXN0YXRpb25zLCBzaHJpbmtpbmcgdGhlIHN0YXRlLCBhbmQgKG1vc3QgaW1wb3J0YW50KSBvcHRpbWl6aW5nIHRoZSBhbGxvY2F0aW9uIG9mIHJlc291cmNlcyBieSBnZXR0aW5nIHRoZSBwcmljZXMgcmlnaHQtLS1vbmUgb2YgdGhlIGVuZHVyaW5nIG1hbnRyYXMgb2YgdGhlIDE5ODBzIGFuZCBlbWJsZW1hdGljIG9mIHRoZSBub3RvcmlvdXMgIldhc2hpbmd0b24gQ29uc2Vuc3VzIgoKIyMjIFstIDE5ODBzIC0gcGVuZHVsdW0gc2hpZnRzIHRvIG1hcmtldC1iYXNlZCBzeXN0ZW0gdGhhdCBzY2FsZWQgZG93biB0aGUgcm9sZSBvZiB0aGUgc3RhdGUgaW4gYSBnbG9iYWxpemluZyBlbnZpcm9ubWVudF17LnVuZGVybGluZX0KCiAgICAtICAgKioqbWFya2V0LWJhc2VkIGVjb25vbWljcyoqKiBiZWdhbiB0byBkb21pbmF0ZSwgZWNob2luZyBhIHNpbWlsYXIgY2hhbmdlIGluIG1pbmRzZXQgYW1vbmcgbWFpbnN0cmVhbSBBbWVyaWNhbiBhY2FkZW1pY3MuICpBbm5lIEtydWVnZXIqLCB3aG8gcmVwbGFjZWQgSG9sbGlzIENoZW5lcnksIHdhcyBhIHN0YXVuY2ggYWR2b2NhdGUgb2YgbWFya2V0IHNvbHV0aW9ucywgYW5kIGJ5IHByZXZhaWxpbmcgb3ZlciB0aGUgdmlld3Mgb2YgaGVyIHBlZXJzIGluIHRoZSBtYW5hZ2UtIG1lbnQgZ3JvdXAsIHNoZSBoaXRjaGVkIHRoZSBCYW5rJ3MgYXBwcm9hY2ggdG8gZGV2ZWxvcG1lbnQgZmlybWx5IHRvIG1hcmtldCBmb3JjZXMuCiAgICAtICAgKioqVGF4IGFuZCBwdWJsaWMgc2VjdG9yIHJlZm9ybSoqKiAqKmFuZCAqcHJpdmF0aXphdGlvbioqKiwgcXVpdGUgc3VkZGVubHksIGJlY2FtZSBpbW1lbnNlbHkgcG9wdWxhciB3aXRoIHBvbGljeSBtYWtlcnMsMTMgbm90IHRoZSBsZWFzdCBiZWNhdXNlIHB1YmxpYyBzZWN0b3IgZGVmaWNpdHMgaW4gc29tZSBpbmR1c3RyaWFsIGNvdW50cmllcyBtYWRlIGdyZWF0ZXIgcmV2ZW51ZSBlZmZvcnQgYSBtYXR0ZXIgb2YgdXJnZW5jeS4KICAgIC0gICAqKipGcmVlciB0cmFkZSoqKi0tLWFscmVhZHkgcHJvbW90ZWQgYnkgdGhlIEtlbm5lZHkgYW5kIFRva3lvIFJvdW5kcyBhbmQgdGhlIGNyZWF0aW9uIG9mIHRoZSBHZW5lcmFsIEFncmVlbWVudCBvbiBUYXJpZmZzIGFuZCBUcmFkZS0tLXdhcyBib29zdGVkIGJ5IHRoZSBhbWJpdGlvdXMgVXJ1Z3VheSBSb3VuZCBsYXVuY2hlZCBpbiAxOTg2CiAgICAtICAgKioqT0RBLCBwcml2YXRlIHJlc291cmNlcywgRkRJKioqCgojIyMgWy0gMTk5MHMgLSBncm93dGggYW5kIHBvdmVydHksIGFuYWx5emluZyB0aGVtIGZyb20gbWljcm9lY29ub21pYywgaW5zdGl0dXRpb25hbCwgYW5kIHNlY3RvcmFsIHBlcnNwZWN0aXZlc117LnVuZGVybGluZX0KCiAgICAtICAgcmVkZWZpbmluZyB0aGUgcm9sZSBvZiB0aGUgKioqc3RhdGUqKiogLCBpZGVudGlmeWluZyBtaXNzaW5nIGluc3RpdHV0aW9ucywgcHJvcG9zaW5nIGJsdWVwcmludHMgZm9yIHRoZXNlIGluc3RpdHV0aW9ucwogICAgLSAgICoqKnJlZ3VsYXRvcnkqKiogcmVzcG9uc2liaWxpdGllcwogICAgLSAgICIqKio1MCB5ZWFycyBpcyBlbm91Z2gqKiosIiBwcm90ZXN0cyBhZ2FpbnN0IHRoZSBCcmV0dG9uIFdvb2RzIEluc3RpdHV0aW9ucywgY2l2aWwgc29jaWV0eQogICAgXyBlbXBoYXNpcyBzaGlmdGVkIHRvICoqKm1pY3JvKioqIGlzc3VlcyAoZnJhbWluZyBhbmQgdGVzdGluZyBvZiBuYXJyb3cgaHlwb3RoZXNlcyBhbmQgYXJlIGdyZWF0bHkgcHJlb2NjdXBpZWQgd2l0aCB0aGUgbWludXRpYWUgb2YgZWNvbm9taWMgcGx1bWJpbmcpCiAgICAtICAgKioqYWNjZXNzIHRvIGtub3dsZWRnZSoqKiAoIFN0aWdsaXR6KSAtIEluIGEgZ2xvYmFsaXppbmcgd29ybGQsIGluZm9ybWF0aW9uLCBpbmZvcm1hdGlvbiB0ZWNobm9sb2dpZXMsIHRoZSBJbnRlcm5ldCwgYW5kIGluc3RpdHV0aW9ucyB0aGF0IHdlcmUgdHJhbnNmb3JtaW5nIHRoZSBzaGFyaW5nIG9mIGluZm9ybWF0aW9uIGhhZCBiZWNvbWUgYXMgaW50cmluc2ljIHRvIGdyb3d0aCBhcyBwaHlzaWNhbCBjYXBpdGFsLCBvcGVuaW5nIGEgd2hvbGUgbmV3IHJhbmdlIG9mIG9wcG9ydHVuaXRpZXMgZm9yIGRldmVsb3BpbmcgY291bnRyaWVzIGFuZCBhdCB0aGUgc2FtZSB0aW1lIGJyaW5naW5nIHRoZW0gZmFjZSB0byBmYWNlIHdpdGggYSBmcmVzaCBzaGVhZiBvZiBwb2xpY3kgaXNzdWVzLgogICAgLSAgIDE5OTkvMDAgZm91ciBtYWpvciBmb3JjZXMtLS0qKipnbG9iYWxpemF0aW9uKioqIGFyaXNpbmcgZnJvbSBmbG93cyBvZiB0cmFkZSwgY2FwaXRhbCwgcGVvcGxlIGFuZCBpZGVhczsgKioqY2xpbWF0ZSBhbmQgZW52aXJvbm1lbnRhbCBjaGFuZ2VzKioqOyBsb2NhbGl6YXRpb24gc3RlbW1pbmcgZnJvbSB0aGUgY29tYmluZWQgZWZmZWN0cyBvZiAqKipmaXNjYWwgYW5kIGFkbWluaXN0cmF0aXZlIGRlY2VudHJhbGl6YXRpb24qKio7IGFuZCAqKipyYXBpZCB1cmJhbml6YXRpb24qKioKICAgIC0gICBQUFBzCiAgICAtIGdyb3d0aCBjb3VsZCBiZSBtYWRlICoqKmVudmlyb25tZW50YWxseSBmcmllbmRseSoqKiAoV0RScyAxOTkyLCAyMDAzLCApCgojIyMgWy0gMjAwMHMgLSBlbXBoYXNpcyBvbiBpbnN0aXR1dGlvbnMgdGhhdCBhZmZlY3QgbWFya2V0IGZ1bmN0aW9uaW5nIGFuZCB0aGUgZW50cnksIGlubm92YXRpdmVuZXNzLCBhbmQgZ3Jvd3RoIG9mIGZpcm1zXXsudW5kZXJsaW5lfQoKLSAgICoqKmdvdmVybmFuY2UqKiogb2YgcmVndWxhdG9yeSBib2RpZXMKLSAgICoqKmluZm9ybWF0aW9uIGdhcHMgYW5kIGFzeW1tZXRyaWVzKioqLS0tdGhlIGNhdXNlIG9mIG1hcmtldCBmYWlsdXJlcyBhbmQgY291bnRsZXNzIGVjb25vbWljIGlsbHMuCi0gICBjb25jZXJuIG92ZXIgKipiYXJyaWVycyB0byB0aGUgZW50cnkgYW5kIGZ1bmN0aW9uaW5nIG9mIGZpcm1zKiosIGNyZWF0ZWQgaW4gcGFydCBieSByZWd1bGF0aW9ucyB0aGF0IGN1cnRhaWxlZCBjb21wZXRpdGlvbi4KLSAgICoqKmludmVzdG1lbnQgY2xpbWF0ZSoqKgoKIyBIb3cgaGF2ZSBXRFJzICJ3aW5uaW5nIGlkZWFzIiBwcmV2YWlsZWQgb3ZlciB0aW1lPwoKIyMgW3Zpej9dIGdyb3VwcyBieSBzZW1hbnRpYyBtZWFuaW5nPwoKLSAgIGNhbiBJIHVzZSBhbnkgV0JHIG93biB0YXhvbm9teSB0byBjbGFzc2lmeSBrZXl3b3Jkcz8KCiMjIFt2aXo/XSBmcmVxdWVuY3kgb2Ygd29yZHMgYnkgdGltZSBzZXJpZXMKCiMjIFt2aXo/XSBtYXRjaGluZ1x8cmV0dXJuaW5nIGlkZWFzCgotICAgc3VjaCBhcyBwb3ZlcnR5IGluID8gPyA/Ci0gICBlbnZpcm9ubSAvIGNsaW1hdGUgaW4gPyA/ID8KLSAgIGluc3RpdHV0aW9ucy9yZWd1bCAvIGdvdmVybmFuY2UgaW4gPyA/ID8KLSAgIHN0YXRlIC8gZ292ZXJubWVudCA/ID8gPwotICAgbWFya2V0IFx8IGZpbmFuY2UgXHwgUFBQcyBcfCBsaWJlcmFsaXphdGlvbiAmIHByaXZhdGl6YXRpb24gPz8/CgojIFdIQVQgRUZGRUNUUyAoaWYgYW55KSBIQVZFIFRIRSBXRFJTJyBQT0xJQ1kgUkVDT01NRU5EQVRJT05TIEhBRCBPTiBXT1JMRCBCQU5LIExFTkRJTkcgREVDSVNJT05TPwoKIyMgSXMgdGhlcmUgYW4gaW5jcmVhYXNlZCBhcHBlYXJhbmNlIG9mIGNlcnRhaW4gcG9saWNpZXMgYW1vbmcgc3Vic2VxdWVudCB5ZWFycycgcHJvamVjdHMgUERPcz8KCiMjIElmIHllcywgZm9yIGhvdyBsb25nPyBcfCBXaXRoIHdoYXQgbGV2ZWwgb2YgcHJpb3JpdHk/CgojIyBXaGVuIG9ic2VydmVkIGlzIGl0IHJlYWxseSBzb21ldGhpbmcgZ2VudWluZSBvZiAieHh4LXdhc2hpbmciPwo=</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 
