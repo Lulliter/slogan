@@ -15,39 +15,6 @@ bibliography: slogan.bib
 
 <i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
-# Intro
-
-### --- Some text analytics definitions
-
--   **Corpus** \~ a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
--   **Document-term matrix** \~ sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
--   **Document** \~ collection of sentences
--   **Token** \~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
--   **Tokenization** \~ splitting text into tokens
--   **Bigrams**/**n-gram** \~ sentence, or paragraph
--   **Tidy text** \~ "a table with one-token-per-row"
--   **Stemming** \~ A *stem* is the base part of a word to which affixes can be attached for derivatives.
-
-### --- Some commonly used NLP scenarios
-
--   **Text Classification** \~ a supervised learning method of learning and predicting the category or the class of a document given its text content.
--   **Named Entity Recognition** \~ NER is the task of classifying words or key phrases of a text into predefined entities of interest.
--   **Text Summarization** \~ a language generation task of summarizing the input text into a shorter paragraph of text.
--   **Entailment** \~ the task of classifying the binary relation between two natural-language texts, text and hypothesis, to determine if the text agrees with the hypothesis or not.
--   **Question Answering** \~ QA is the task of retrieving or generating a valid answer for a given query in natural language, provided with a passage related to the query.
--   **Sentence Similarity** \~ the process of computing a similarity score given a pair of text documents.
--   **Embeddings** \~ the process of converting a word or a piece of text to a continuous vector space of real number, usually, in low dimension.
--   **Sentiment Analysis** \~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect .
-
-### --- Text processing in R
-
--   {tidytext}
--   {tm} <!-- tm_map(corpus, FUN, ...) -->
--   {SnowballC} <!--4 stemming  -->
--   {OpenNLP}
--   {RWeka}
--   {languageR}
--   {korPus}
 
 #### setup
 ```{r setup_inp, echo=FALSE}
@@ -1501,24 +1468,6 @@ As in [Ben Schmidt Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#conco
 -   leggere [@yusuf_development_2008]
 -   need to create groups "umbrella subjects"
 
-
-### ----------------------------------------------------------------------------
-
-# B. World Bank Projects & Operations:
-
-# Connections
-
-Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
-
-# Data sources:
-
-1.  World Bank Projects & Operations: <https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations>
-
--   Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
-
-2.  World Bank - World Development Reports
-
--   Accessibility Classification:
 
 # Reference Tutorials
 

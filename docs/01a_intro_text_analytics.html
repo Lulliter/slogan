@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Luisa M. Mimmi" />
+
+
+<title>Intro Text Analitycs</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="html/fixes.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">How slogans end up moving billions</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-pen-fancy"></span>
+     
+    Domesticated Lexicon
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="00_home-lexicon.html">Glossary</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="00_lexicon-gender.html">Lexicon: gender</a>
+    </li>
+    <li>
+      <a href="00_lexicon-green.html">Lexicon: green</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-table"></span>
+     
+    Processing data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_intro_text_analytics.html">Intro Text Analytics</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="01b_WDR_data-exploration.html">WDR</a>
+    </li>
+    <li>
+      <a href="01c_WBoper_data-exploration.html">WB operations</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="02_descriptive-analysis.html">
+    <span class="fas fa-chart-bar"></span>
+     
+    Descriptive analysis
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-chart-line"></span>
+     
+    Models
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03_modeling-choices.html">Modeling choices</a>
+    </li>
+    <li>
+      <a href="03_model-details.html">Model details and diagnostics</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="04_predictions.html">
+    <span class="fas fa-question-circle"></span>
+     
+    Predictions
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="far fa-file-alt"></span>
+     
+    Manuscript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="output/manuscript.pdf">PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript-ms.pdf">Manuscripty PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript.html">HTML</a>
+    </li>
+    <li>
+      <a href="output/manuscript.docx">Word</a>
+    </li>
+    <li>
+      <a href="output/extracted-citations.bib">Citations</a>
+    </li>
+    <li>
+      <a href="output/appendix.pdf">Appendix (PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix-ms.pdf">Appendix (Manuscripty PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix.html">Appendix (HTML)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Intro Text Analitycs</h1>
+<h4 class="author">Luisa M. Mimmi</h4>
+<h4 class="date">Last run: 2022-06-27</h4>
+
+</div>
+
+
+<p><i class="fa fa-refresh" style="color: firebrick"></i> Work in
+progress</p>
+<div id="intro" class="section level1">
+<h1>Intro</h1>
+<div id="some-text-analytics-definitions" class="section level3">
+<h3>— Some text analytics definitions</h3>
+<ul>
+<li><strong>Corpus</strong> ~ a collection of similar documents |
+objects that typically contain raw strings annotated with additional
+metadata and details</li>
+<li><strong>Document-term matrix</strong> ~ sparse matrix describing a
+collection (i.e., a corpus) of documents with one row for each document
+and one column for each term. (<code>WDR_com</code>)</li>
+<li><strong>Document</strong> ~ collection of sentences</li>
+<li><strong>Token</strong> ~ is a meaningful unit of text, such as a
+<em>word</em>, that we are interested in using for analysis</li>
+<li><strong>Tokenization</strong> ~ splitting text into tokens</li>
+<li><strong>Bigrams</strong>/<strong>n-gram</strong> ~ sentence, or
+paragraph</li>
+<li><strong>Tidy text</strong> ~ “a table with one-token-per-row”</li>
+<li><strong>Stemming</strong> ~ A <em>stem</em> is the base part of a
+word to which affixes can be attached for derivatives.</li>
+</ul>
+</div>
+<div id="some-commonly-used-nlp-scenarios" class="section level3">
+<h3>— Some commonly used NLP scenarios</h3>
+<ul>
+<li><strong>Text Classification</strong> ~ a supervised learning method
+of learning and predicting the category or the class of a document given
+its text content.</li>
+<li><strong>Named Entity Recognition</strong> ~ NER is the task of
+classifying words or key phrases of a text into predefined entities of
+interest.</li>
+<li><strong>Text Summarization</strong> ~ a language generation task of
+summarizing the input text into a shorter paragraph of text.</li>
+<li><strong>Entailment</strong> ~ the task of classifying the binary
+relation between two natural-language texts, text and hypothesis, to
+determine if the text agrees with the hypothesis or not.</li>
+<li><strong>Question Answering</strong> ~ QA is the task of retrieving
+or generating a valid answer for a given query in natural language,
+provided with a passage related to the query.</li>
+<li><strong>Sentence Similarity</strong> ~ the process of computing a
+similarity score given a pair of text documents.</li>
+<li><strong>Embeddings</strong> ~ the process of converting a word or a
+piece of text to a continuous vector space of real number, usually, in
+low dimension.</li>
+<li><strong>Sentiment Analysis</strong> ~ Provides an example of train
+and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP
+Architect .</li>
+</ul>
+</div>
+<div id="text-processing-in-r" class="section level3">
+<h3>— Text processing in R</h3>
+<ul>
+<li>{tidytext}</li>
+<li>{tm} <!-- tm_map(corpus, FUN, ...) --></li>
+<li>{SnowballC} <!--4 stemming  --></li>
+<li>{OpenNLP}</li>
+<li>{RWeka}</li>
+<li>{languageR}</li>
+<li>{korPus}</li>
+</ul>
+<div id="setup" class="section level4">
+<h4>setup</h4>
+<pre><code>## Loading required package: pacman</code></pre>
+</div>
+</div>
+<div id="section" class="section level3">
+<h3>—————————————————————————-</h3>
+</div>
+</div>
+<div id="a.-world-development-reports-wrds" class="section level1">
+<h1>A. World Development Reports (WRDs)</h1>
+<ul>
+<li>DATA <a
+href="https://datacatalog.worldbank.org/search/dataset/0037800"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a></li>
+<li>INSTRUCTIONS <a
+href="https://documents.worldbank.org/en/publication/documents-reports/api"
+class="uri">https://documents.worldbank.org/en/publication/documents-reports/api</a></li>
+<li>Following: <span class="citation">(Kaye 2019; Robinson 2017;
+Robinson and Silge 2022)</span></li>
+</ul>
+<div id="section-1" class="section level3">
+<h3>—————————————————————————-</h3>
+</div>
+</div>
+<div id="b.-world-bank-projects-operations" class="section level1">
+<h1>B. World Bank Projects &amp; Operations:</h1>
+</div>
+<div id="connections" class="section level1">
+<h1>Connections</h1>
+<p>Following the example of <a
+href="http://varianceexplained.org/r/hn-trends/">David Robinson on HN
+titles</a></p>
+</div>
+<div id="data-sources" class="section level1">
+<h1>Data sources:</h1>
+<ol style="list-style-type: decimal">
+<li>World Bank Projects &amp; Operations: <a
+href="https://datacatalog.worldbank.org/search/dataset/0037800"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a>
+<a
+href="https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations</a></li>
+</ol>
+<ul>
+<li>Accessibility Classification: <strong>public</strong> under <a
+href="https://datacatalog.worldbank.org/public-licenses?fragment=cc">Creative
+Commons Attribution 4.0</a></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>World Bank - World Development Reports</li>
+</ol>
+<ul>
+<li>Accessibility Classification:</li>
+</ul>
+</div>
+<div id="reference-tutorials" class="section level1">
+<h1>Reference Tutorials</h1>
+<p><span class="citation">Robinson and Silge (2022)</span> <a
+href="https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/">Benjamin
+Soltoff: Computing 4 Social Sciences - API</a> <a
+href="https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/">Benjamin
+Soltoff: Computing 4 Social Sciences - text analysis</a></p>
+<p><a href="https://hdf.benschmidt.org/R/">Ben Schmidt Book Humanities
+Crurse</a> <a href="http://benschmidt.org/HDA/texts-as-data.html">Ben
+Schmidt Book Humanities</a></p>
+<p><a
+href="https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations">tidyTuesday
+cast on tidytext</a></p>
+<ol style="list-style-type: decimal">
+<li>✔️ <a href="https://www.youtube.com/watch?v=C69QyycHsgE">MEDIUM
+articles: common words, pairwise correlations - 2018-12-04</a></li>
+<li><a href="https://www.youtube.com/watch?v=KE9ItC3doEU">TidyTuesday
+Tweets - 2019-01-07</a></li>
+<li><a href="https://www.youtube.com/watch?v=AQzZNIyjyWM">Wine Ratings -
+2019-05-31</a> Lasso regression | sentiment lexicon,</li>
+<li><a href="https://www.youtube.com/watch?v=EYuuAGDeGrQ">Simpsons Guest
+Stars 2019-08-30</a> geom_histogram</li>
+<li><a href="https://www.youtube.com/watch?v=yFRSTlk3kRQ">Horror Movies
+2019-10-22</a> explaining glmnet package | Lasso regression</li>
+<li><a href="https://www.youtube.com/watch?v=_IvAubTDQME">The Office
+2020-03-16</a> geom_text_repel from ggrepel | glmnet package to run a
+cross-validated LASSO regression</li>
+<li><a href="https://www.youtube.com/watch?v=Xt7ACiedRRI">Animal
+Crossing 2020-05-05</a> Using geom_line and geom_point to graph ratings
+over time | geom_text to visualize what words are associated with
+positive/negative reviews |topic modelling</li>
+</ol>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-kaye_ella_2019" class="csl-entry">
+Kaye, Ella. 2019. <span>“<span>ELLA KAYE</span>: <span>Working</span>
+with Text in <span>R</span>,”</span> October. <a
+href="https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/">https://ellakaye.rbind.io/talks/2019-10-05-working-with-text-in-r/</a>.
+</div>
+<div id="ref-robinson_words_2017" class="csl-entry">
+Robinson, David. 2017. <span>“Words Growing or Shrinking in <span>Hacker
+News</span> Titles: A Tidy Analysis.”</span> <span>Variance
+Explained</span>. June 8, 2017. <a
+href="http://varianceexplained.org/r/hn-trends/">http://varianceexplained.org/r/hn-trends/</a>.
+</div>
+<div id="ref-robinson_1_2022" class="csl-entry">
+Robinson, David, and Julia Silge. 2022. <em>[1] <span>Welcome</span> to
+<span>Text Mining</span> with <span>R</span> | <span>Text Mining</span>
+with <span>R</span></em>. <a
+href="https://www.tidytextmining.com/">https://www.tidytextmining.com/</a>.
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiSW50cm8gVGV4dCBBbmFsaXR5Y3MiCmF1dGhvcjogIkx1aXNhIE0uIE1pbW1pIgpkYXRlOiAiTGFzdCBydW46IGByIGZvcm1hdChTeXMudGltZSgpLCAnJUYnKWAiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIGNvZGVfZm9sZGluZzogaGlkZQogICAgdG9jOiB0cnVlCiAgICB0b2NfZmxvYXQ6IHRydWUKICAgIHRvY19kZXB0aDogMwplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGNvbnNvbGUKYmlibGlvZ3JhcGh5OiBzbG9nYW4uYmliCi0tLQoKPGkgY2xhc3M9ImZhIGZhLXJlZnJlc2giIHN0eWxlPSJjb2xvcjogZmlyZWJyaWNrIj48L2k+IFdvcmsgaW4gcHJvZ3Jlc3MKCiMgSW50cm8KCiMjIyAtLS0gU29tZSB0ZXh0IGFuYWx5dGljcyBkZWZpbml0aW9ucwoKLSAgICoqQ29ycHVzKiogXH4gYSBjb2xsZWN0aW9uIG9mIHNpbWlsYXIgZG9jdW1lbnRzIFx8IG9iamVjdHMgdGhhdCB0eXBpY2FsbHkgY29udGFpbiByYXcgc3RyaW5ncyBhbm5vdGF0ZWQgd2l0aCBhZGRpdGlvbmFsIG1ldGFkYXRhIGFuZCBkZXRhaWxzCi0gICAqKkRvY3VtZW50LXRlcm0gbWF0cml4KiogXH4gc3BhcnNlIG1hdHJpeCBkZXNjcmliaW5nIGEgY29sbGVjdGlvbiAoaS5lLiwgYSBjb3JwdXMpIG9mIGRvY3VtZW50cyB3aXRoIG9uZSByb3cgZm9yIGVhY2ggZG9jdW1lbnQgYW5kIG9uZSBjb2x1bW4gZm9yIGVhY2ggdGVybS4gKGBXRFJfY29tYCkKLSAgICoqRG9jdW1lbnQqKiBcfiBjb2xsZWN0aW9uIG9mIHNlbnRlbmNlcwotICAgKipUb2tlbioqIFx+IGlzIGEgbWVhbmluZ2Z1bCB1bml0IG9mIHRleHQsIHN1Y2ggYXMgYSAqd29yZCosIHRoYXQgd2UgYXJlIGludGVyZXN0ZWQgaW4gdXNpbmcgZm9yIGFuYWx5c2lzCi0gICAqKlRva2VuaXphdGlvbioqIFx+IHNwbGl0dGluZyB0ZXh0IGludG8gdG9rZW5zCi0gICAqKkJpZ3JhbXMqKi8qKm4tZ3JhbSoqIFx+IHNlbnRlbmNlLCBvciBwYXJhZ3JhcGgKLSAgICoqVGlkeSB0ZXh0KiogXH4gImEgdGFibGUgd2l0aCBvbmUtdG9rZW4tcGVyLXJvdyIKLSAgICoqU3RlbW1pbmcqKiBcfiBBICpzdGVtKiBpcyB0aGUgYmFzZSBwYXJ0IG9mIGEgd29yZCB0byB3aGljaCBhZmZpeGVzIGNhbiBiZSBhdHRhY2hlZCBmb3IgZGVyaXZhdGl2ZXMuCgojIyMgLS0tIFNvbWUgY29tbW9ubHkgdXNlZCBOTFAgc2NlbmFyaW9zCgotICAgKipUZXh0IENsYXNzaWZpY2F0aW9uKiogXH4gYSBzdXBlcnZpc2VkIGxlYXJuaW5nIG1ldGhvZCBvZiBsZWFybmluZyBhbmQgcHJlZGljdGluZyB0aGUgY2F0ZWdvcnkgb3IgdGhlIGNsYXNzIG9mIGEgZG9jdW1lbnQgZ2l2ZW4gaXRzIHRleHQgY29udGVudC4KLSAgICoqTmFtZWQgRW50aXR5IFJlY29nbml0aW9uKiogXH4gTkVSIGlzIHRoZSB0YXNrIG9mIGNsYXNzaWZ5aW5nIHdvcmRzIG9yIGtleSBwaHJhc2VzIG9mIGEgdGV4dCBpbnRvIHByZWRlZmluZWQgZW50aXRpZXMgb2YgaW50ZXJlc3QuCi0gICAqKlRleHQgU3VtbWFyaXphdGlvbioqIFx+IGEgbGFuZ3VhZ2UgZ2VuZXJhdGlvbiB0YXNrIG9mIHN1bW1hcml6aW5nIHRoZSBpbnB1dCB0ZXh0IGludG8gYSBzaG9ydGVyIHBhcmFncmFwaCBvZiB0ZXh0LgotICAgKipFbnRhaWxtZW50KiogXH4gdGhlIHRhc2sgb2YgY2xhc3NpZnlpbmcgdGhlIGJpbmFyeSByZWxhdGlvbiBiZXR3ZWVuIHR3byBuYXR1cmFsLWxhbmd1YWdlIHRleHRzLCB0ZXh0IGFuZCBoeXBvdGhlc2lzLCB0byBkZXRlcm1pbmUgaWYgdGhlIHRleHQgYWdyZWVzIHdpdGggdGhlIGh5cG90aGVzaXMgb3Igbm90LgotICAgKipRdWVzdGlvbiBBbnN3ZXJpbmcqKiBcfiBRQSBpcyB0aGUgdGFzayBvZiByZXRyaWV2aW5nIG9yIGdlbmVyYXRpbmcgYSB2YWxpZCBhbnN3ZXIgZm9yIGEgZ2l2ZW4gcXVlcnkgaW4gbmF0dXJhbCBsYW5ndWFnZSwgcHJvdmlkZWQgd2l0aCBhIHBhc3NhZ2UgcmVsYXRlZCB0byB0aGUgcXVlcnkuCi0gICAqKlNlbnRlbmNlIFNpbWlsYXJpdHkqKiBcfiB0aGUgcHJvY2VzcyBvZiBjb21wdXRpbmcgYSBzaW1pbGFyaXR5IHNjb3JlIGdpdmVuIGEgcGFpciBvZiB0ZXh0IGRvY3VtZW50cy4KLSAgICoqRW1iZWRkaW5ncyoqIFx+IHRoZSBwcm9jZXNzIG9mIGNvbnZlcnRpbmcgYSB3b3JkIG9yIGEgcGllY2Ugb2YgdGV4dCB0byBhIGNvbnRpbnVvdXMgdmVjdG9yIHNwYWNlIG9mIHJlYWwgbnVtYmVyLCB1c3VhbGx5LCBpbiBsb3cgZGltZW5zaW9uLgotICAgKipTZW50aW1lbnQgQW5hbHlzaXMqKiBcfiBQcm92aWRlcyBhbiBleGFtcGxlIG9mIHRyYWluIGFuZCB1c2UgQXNwZWN0IEJhc2VkIFNlbnRpbWVudCBBbmFseXNpcyB3aXRoIEF6dXJlIE1MIGFuZCBJbnRlbCBOTFAgQXJjaGl0ZWN0IC4KCiMjIyAtLS0gVGV4dCBwcm9jZXNzaW5nIGluIFIKCi0gICB7dGlkeXRleHR9Ci0gICB7dG19IDwhLS0gdG1fbWFwKGNvcnB1cywgRlVOLCAuLi4pIC0tPgotICAge1Nub3diYWxsQ30gPCEtLTQgc3RlbW1pbmcgIC0tPgotICAge09wZW5OTFB9Ci0gICB7Uldla2F9Ci0gICB7bGFuZ3VhZ2VSfQotICAge2tvclB1c30KCiMjIyMgc2V0dXAKYGBge3Igc2V0dXBfaW5wLCBlY2hvPUZBTFNFfQojIFBja2dzIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KaWYgKCFyZXF1aXJlICgicGFjbWFuIikpIChpbnN0YWxsLnBhY2thZ2VzKCJwYWNtYW4iKSkKI3BfaW5zdGFsbF9naCgibHVpc0RWQS9hbm5vdGF0ZXIiKQojcF9pbnN0YWxsX2doKCJIdW1hbml0aWVzRGF0YUFuYWx5c2lzL2hhdGhpZHkiKQojIGRldnRvb2xzOjppbnN0YWxsX2dpdGh1YigiSHVtYW5pdGllc0RhdGFBbmFseXNpcy9IdW1hbml0aWVzRGF0YUFuYWx5c2lzIikgCnBhY21hbjo6cF9sb2FkKGhlcmUsCiAgICAgICBhbm5vdGF0ZXIsCiAgICAgICB0aWR5dmVyc2UsIAogICAgICAgc2tpbXIsCiAgICAgICBzY2FsZXMsCiAgICAgICBodHRyLCAKICAgICAgIGNpdHIsCiAgICAgICBwYWludCwgCiAgICAgICBEVCwgIyBhbiBSIGludGVyZmFjZSB0byB0aGUgSmF2YVNjcmlwdCBsaWJyYXJ5IERhdGFUYWJsZXMKICAgICAgICMganNvbmxpdGUsIAogICAgICAgIyBYTUwsIAogICAgICAgIyB4bWwyLCAKICAgICAgICMgb2FpLCAjIFIgY2xpZW50IHRvIHdvcmsgd2l0aCBPQUktUE1IIAogICAgICAgc3BsaXRzdGFja3NoYXBlICNTdGFjayBhbmQgUmVzaGFwZSBEYXRhc2V0cyBBZnRlciBTcGxpdHRpbmcgQ29uY2F0ZW5hdGVkIFZhbHVlcwogICAgICAgKQoKcGFjbWFuOjpwX2xvYWQoCiAgdG0sICMgVGV4dCBNaW5pbmcgUGFja2FnZQogIHRpZHl0ZXh0LCAjIFRleHQgTWluaW5nIHVzaW5nICdkcGx5cicsICdnZ3Bsb3QyJywgYW5kIE90aGVyIFRpZHkgVG9vbHMKICB3aWR5ciwgIyBwYWlyd2lzZSA/Pz8/ICAKICBnZ3JhcGgsCiAgaWdyYXBoLAogIHNqbWlzYywgIyBEYXRhIGFuZCBWYXJpYWJsZSBUcmFuc2Zvcm1hdGlvbiBGdW5jdGlvbnMKICBnZ3JhcGgsICMgQW4gSW1wbGVtZW50YXRpb24gb2YgR3JhbW1hciBvZiBHcmFwaGljcyBmb3IgR3JhcGhzIGFuZCBOZXR3b3JrcwogIHdpZHlyLCAjIFdpZGVuLCBQcm9jZXNzLCB0aGVuIFJlLVRpZHkgRGF0YQogIFNub3diYWxsQywgIyBTbm93YmFsbCBTdGVtbWVycyBCYXNlZCBvbiB0aGUgQyAnbGlic3RlbW1lcicgVVRGLTggTGlicmFyeQogIEh1bWFuaXRpZXNEYXRhQW5hbHlzaXMsICMgRGF0YSBhbmQgQ29kZSBmb3IgVGVhY2hpbmcgSHVtYW5pdGllcyBEYXRhIEFuYWx5c2lzCiAgc2VudGVuY2VwaWVjZSAjIFRleHQgVG9rZW5pemF0aW9uIHVzaW5nIEJ5dGUgUGFpciBFbmNvZGluZyBhbmQgVW5pZ3JhbSBNb2RlbGxpbmcKKQoKIyBGdW5jdGlvbihzKSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgojIERhdGEgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogCmBgYAoKIyMjIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiMgQS4gV29ybGQgRGV2ZWxvcG1lbnQgUmVwb3J0cyAoV1JEcykKCi0gICBEQVRBIDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMD4KLSAgIElOU1RSVUNUSU9OUyA8aHR0cHM6Ly9kb2N1bWVudHMud29ybGRiYW5rLm9yZy9lbi9wdWJsaWNhdGlvbi9kb2N1bWVudHMtcmVwb3J0cy9hcGk+Ci0gICBGb2xsb3dpbmc6IFtAa2F5ZV9lbGxhXzIwMTk7IEByb2JpbnNvbl93b3Jkc18yMDE3OyBAcm9iaW5zb25fMV8yMDIyXQoKCiMjIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgojIEIuIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOgoKIyBDb25uZWN0aW9ucwoKRm9sbG93aW5nIHRoZSBleGFtcGxlIG9mIFtEYXZpZCBSb2JpbnNvbiBvbiBITiB0aXRsZXNdKGh0dHA6Ly92YXJpYW5jZWV4cGxhaW5lZC5vcmcvci9obi10cmVuZHMvKQoKIyBEYXRhIHNvdXJjZXM6CgoxLiAgV29ybGQgQmFuayBQcm9qZWN0cyAmIE9wZXJhdGlvbnM6IDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMD4gPGh0dHBzOi8vZGF0YWNhdGFsb2cud29ybGRiYW5rLm9yZy9zZWFyY2gvZGF0YXNldC8wMDM3ODAwL1dvcmxkLUJhbmstUHJvamVjdHMtLS1PcGVyYXRpb25zPgoKLSAgIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246ICoqcHVibGljKiogdW5kZXIgW0NyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wXShodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvcHVibGljLWxpY2Vuc2VzP2ZyYWdtZW50PWNjKQoKMi4gIFdvcmxkIEJhbmsgLSBXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnRzCgotICAgQWNjZXNzaWJpbGl0eSBDbGFzc2lmaWNhdGlvbjoKCiMgUmVmZXJlbmNlIFR1dG9yaWFscwoKQHJvYmluc29uXzFfMjAyMiBbQmVuamFtaW4gU29sdG9mZjogQ29tcHV0aW5nIDQgU29jaWFsIFNjaWVuY2VzIC0gQVBJXShodHRwczovL2Nmc3MudWNoaWNhZ28uZWR1L3N5bGxhYnVzL2dldHRpbmctZGF0YS1mcm9tLXRoZS13ZWItYXBpLWFjY2Vzcy8pIFtCZW5qYW1pbiBTb2x0b2ZmOiBDb21wdXRpbmcgNCBTb2NpYWwgU2NpZW5jZXMgLSB0ZXh0IGFuYWx5c2lzXShodHRwczovL2Nmc3MudWNoaWNhZ28uZWR1L3N5bGxhYnVzL3RleHQtYW5hbHlzaXMtZnVuZGFtZW50YWxzLWFuZC1zZW50aW1lbnQtYW5hbHlzaXMvKQoKW0JlbiBTY2htaWR0IEJvb2sgSHVtYW5pdGllcyBDcnVyc2VdKGh0dHBzOi8vaGRmLmJlbnNjaG1pZHQub3JnL1IvKSBbQmVuIFNjaG1pZHQgQm9vayBIdW1hbml0aWVzXShodHRwOi8vYmVuc2NobWlkdC5vcmcvSERBL3RleHRzLWFzLWRhdGEuaHRtbCkKClt0aWR5VHVlc2RheSBjYXN0IG9uIHRpZHl0ZXh0XShodHRwczovL2dpdGh1Yi5jb20vZGdydHdvL2RhdGEtc2NyZWVuY2FzdHMvdHJlZS9tYXN0ZXIvc2NyZWVuY2FzdC1hbm5vdGF0aW9ucykKCiAgMS4g4pyU77iPIFtNRURJVU0gYXJ0aWNsZXM6IGNvbW1vbiB3b3JkcywgcGFpcndpc2UgY29ycmVsYXRpb25zIC0gMjAxOC0xMi0wNF0oaHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1DNjlReXljSHNnRSkKICAyLiBbVGlkeVR1ZXNkYXkgVHdlZXRzIC0gIDIwMTktMDEtMDddKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9S0U5SXRDM2RvRVUpCiAgMy4gW1dpbmUgUmF0aW5ncyAtIDIwMTktMDUtMzFdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9QVF6Wk5JeWp5V00pIExhc3NvIHJlZ3Jlc3Npb24gfCBzZW50aW1lbnQgbGV4aWNvbiwKICA0LiBbU2ltcHNvbnMgR3Vlc3QgU3RhcnMgCTIwMTktMDgtMzBdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9RVl1dUFHRGVHclEpIGdlb21faGlzdG9ncmFtCiAgNS4gW0hvcnJvciBNb3ZpZXMgCTIwMTktMTAtMjJdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eUZSU1RsazNrUlEpIGV4cGxhaW5pbmcgZ2xtbmV0IHBhY2thZ2UgfCBMYXNzbyByZWdyZXNzaW9uCiAgNi4gW1RoZSBPZmZpY2UgCTIwMjAtMDMtMTZdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9X0l2QXViVERRTUUpIGdlb21fdGV4dF9yZXBlbCBmcm9tIGdncmVwZWwgfCBnbG1uZXQgcGFja2FnZSB0byBydW4gYSBjcm9zcy12YWxpZGF0ZWQgTEFTU08gcmVncmVzc2lvbgogIDcuIFtBbmltYWwgQ3Jvc3NpbmcgCTIwMjAtMDUtMDVdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9WHQ3QUNpZWRSUkkpIFVzaW5nIGdlb21fbGluZSBhbmQgZ2VvbV9wb2ludCB0byBncmFwaCByYXRpbmdzIG92ZXIgdGltZSB8IGdlb21fdGV4dCB0byB2aXN1YWxpemUgd2hhdCB3b3JkcyBhcmUgYXNzb2NpYXRlZCB3aXRoIHBvc2l0aXZlL25lZ2F0aXZlIHJldmlld3MgfHRvcGljIG1vZGVsbGluZwo=</div>
+<p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("01a_intro_text_analytics.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -34,9 +34,16 @@ navbar:
         href: 00_lexicon-gender.html
       - text: "Lexicon: green"
         href: 00_lexicon-green.html
-  - text: Process and merge data
+  - text: Processing data
     icon: fas fa-table
-    href: 01_data-exploration.html
+    menu:
+      - text: "Intro Text Analytics"
+        href: 01a_intro_text_analytics.html
+      - text: "---------"
+      - text: "WDR"
+        href: 01b_WDR_data-exploration.html
+      - text: "WB operations"
+        href: 01c_WBoper_data-exploration.html
   - text: Descriptive analysis
     icon: fas fa-chart-bar
     href: 02_descriptive-analysis.html
