@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Luisa M. Mimmi" />
+
+
+<title>Process and merge data</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+<style type="text/css">
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="html/fixes.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">How slogans end up moving billions</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-pen-fancy"></span>
+     
+    Domesticated Lexicon
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="00_home-lexicon.html">Glossary</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="00_lexicon-gender.html">Lexicon: gender</a>
+    </li>
+    <li>
+      <a href="00_lexicon-green.html">Lexicon: green</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-table"></span>
+     
+    Processing data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="01a_intro_text_analytics.html">Intro Text Analytics</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="01b_WDR_data-exploration_abstracts.html">WDR - abstracts</a>
+    </li>
+    <li>
+      <a href="01c_WDR_data-exploration_subjects.html">WDR - subjects</a>
+    </li>
+    <li>
+      <a href="01d_WBoper_data-exploration.html">WB operations</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="02_descriptive-analysis.html">
+    <span class="fas fa-chart-bar"></span>
+     
+    Descriptive analysis
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fas fa-chart-line"></span>
+     
+    Models
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="03_modeling-choices.html">Modeling choices</a>
+    </li>
+    <li>
+      <a href="03_model-details.html">Model details and diagnostics</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="04_predictions.html">
+    <span class="fas fa-question-circle"></span>
+     
+    Predictions
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="far fa-file-alt"></span>
+     
+    Manuscript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="output/manuscript.pdf">PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript-ms.pdf">Manuscripty PDF</a>
+    </li>
+    <li>
+      <a href="output/manuscript.html">HTML</a>
+    </li>
+    <li>
+      <a href="output/manuscript.docx">Word</a>
+    </li>
+    <li>
+      <a href="output/extracted-citations.bib">Citations</a>
+    </li>
+    <li>
+      <a href="output/appendix.pdf">Appendix (PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix-ms.pdf">Appendix (Manuscripty PDF)</a>
+    </li>
+    <li>
+      <a href="output/appendix.html">Appendix (HTML)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Process and merge data</h1>
+<h4 class="author">Luisa M. Mimmi</h4>
+<h4 class="date">Last run: 2022-07-15</h4>
+
+</div>
+
+
+<p><i class="fa fa-refresh" style="color: firebrick"></i> Work in
+progress</p>
+<div id="setup" class="section level4">
+<h4>setup</h4>
+<pre><code>## Loading required package: pacman</code></pre>
+</div>
+<div id="set-stopwords-more" class="section level4">
+<h4>– Set stopwords [more…]</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- set up stop words</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>stop_words <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(stop_words) <span class="sc">%&gt;%</span> <span class="co"># in the tidytext dataset </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;WDR&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;world&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;report&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;development&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1978&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1979&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1980&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1981&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1982&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1983&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1984&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1985&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1986&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1987&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1988&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1989&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1990&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1991&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1992&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1993&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1994&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1995&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1996&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1997&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1998&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;1999&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2000&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2001&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2002&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2003&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2004&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2005&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2006&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2007&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2008&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2009&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2010&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2011&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2012&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2013&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2014&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2015&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2016&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2017&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2018&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2019&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2020&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2021&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(<span class="at">word =</span> <span class="st">&quot;2022&quot;</span>, <span class="at">lexicon =</span> <span class="cn">NA_character_</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span> (word <span class="sc">!=</span> <span class="st">&quot;changes&quot;</span>)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="co"># --- set up stop words stemmed</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>stop_words_stem <span class="ot">&lt;-</span> stop_words  <span class="sc">%&gt;%</span> </span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span> (<span class="at">word =</span> SnowballC<span class="sc">::</span><span class="fu">wordStem</span>(word ))</span></code></pre></div>
+</div>
+<div id="b.-world-bank-projects-operations" class="section level1">
+<h1>B. World Bank Projects &amp; Operations:</h1>
+</div>
+<div id="connections" class="section level1">
+<h1>Connections</h1>
+<p>Following the example of <a
+href="http://varianceexplained.org/r/hn-trends/">David Robinson on HN
+titles</a></p>
+</div>
+<div id="data-sources" class="section level1">
+<h1>Data sources:</h1>
+<ol style="list-style-type: decimal">
+<li>World Bank Projects &amp; Operations: <a
+href="https://datacatalog.worldbank.org/search/dataset/0037800"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800</a>
+<a
+href="https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations"
+class="uri">https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations</a></li>
+</ol>
+<ul>
+<li>Accessibility Classification: <strong>public</strong> under <a
+href="https://datacatalog.worldbank.org/public-licenses?fragment=cc">Creative
+Commons Attribution 4.0</a></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>World Bank - World Development Reports</li>
+</ol>
+<ul>
+<li>Accessibility Classification:</li>
+</ul>
+</div>
+<div id="reference-tutorials" class="section level1">
+<h1>Reference Tutorials</h1>
+<p><span class="citation">Robinson and Silge (2022)</span> <a
+href="https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/">Benjamin
+Soltoff: Computing 4 Social Sciences - API</a> <a
+href="https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/">Benjamin
+Soltoff: Computing 4 Social Sciences - text analysis</a></p>
+<p><a href="https://hdf.benschmidt.org/R/">Ben Schmidt Book Humanities
+Crurse</a> <a href="http://benschmidt.org/HDA/texts-as-data.html">Ben
+Schmidt Book Humanities</a></p>
+<p><a
+href="https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations">tidyTuesday
+cast on tidytext</a></p>
+<ol style="list-style-type: decimal">
+<li>✔️ <a href="https://www.youtube.com/watch?v=C69QyycHsgE">MEDIUM
+articles: common words, pairwise correlations - 2018-12-04</a></li>
+<li><a href="https://www.youtube.com/watch?v=KE9ItC3doEU">TidyTuesday
+Tweets - 2019-01-07</a></li>
+<li><a href="https://www.youtube.com/watch?v=AQzZNIyjyWM">Wine Ratings -
+2019-05-31</a> Lasso regression | sentiment lexicon,</li>
+<li><a href="https://www.youtube.com/watch?v=EYuuAGDeGrQ">Simpsons Guest
+Stars 2019-08-30</a> geom_histogram</li>
+<li><a href="https://www.youtube.com/watch?v=yFRSTlk3kRQ">Horror Movies
+2019-10-22</a> explaining glmnet package | Lasso regression</li>
+<li><a href="https://www.youtube.com/watch?v=_IvAubTDQME">The Office
+2020-03-16</a> geom_text_repel from ggrepel | glmnet package to run a
+cross-validated LASSO regression</li>
+<li><a href="https://www.youtube.com/watch?v=Xt7ACiedRRI">Animal
+Crossing 2020-05-05</a> Using geom_line and geom_point to graph ratings
+over time | geom_text to visualize what words are associated with
+positive/negative reviews |topic modelling</li>
+</ol>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-robinson_1_2022" class="csl-entry">
+Robinson, David, and Julia Silge. 2022. <em>[1] <span>Welcome</span> to
+<span>Text Mining</span> with <span>R</span> | <span>Text Mining</span>
+with <span>R</span></em>. <a
+href="https://www.tidytextmining.com/">https://www.tidytextmining.com/</a>.
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvY2VzcyBhbmQgbWVyZ2UgZGF0YSIKYXV0aG9yOiAiTHVpc2EgTS4gTWltbWkiCmRhdGU6ICJMYXN0IHJ1bjogYHIgZm9ybWF0KFN5cy50aW1lKCksICclRicpYCIKb3V0cHV0OiAKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiBoaWRlCiAgICB0b2M6IHRydWUKICAgIHRvY19mbG9hdDogdHJ1ZQogICAgdG9jX2RlcHRoOiAzCmVkaXRvcl9vcHRpb25zOiAKICBjaHVua19vdXRwdXRfdHlwZTogY29uc29sZQpiaWJsaW9ncmFwaHk6IHNsb2dhbi5iaWIKLS0tCgo8aSBjbGFzcz0iZmEgZmEtcmVmcmVzaCIgc3R5bGU9ImNvbG9yOiBmaXJlYnJpY2siPjwvaT4gV29yayBpbiBwcm9ncmVzcwoKIyMjIyBzZXR1cApgYGB7ciBzZXR1cF9pbnAsIGVjaG89RkFMU0V9CiMgUGNrZ3MgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQppZiAoIXJlcXVpcmUgKCJwYWNtYW4iKSkgKGluc3RhbGwucGFja2FnZXMoInBhY21hbiIpKQojcF9pbnN0YWxsX2doKCJsdWlzRFZBL2Fubm90YXRlciIpCiNwX2luc3RhbGxfZ2goIkh1bWFuaXRpZXNEYXRhQW5hbHlzaXMvaGF0aGlkeSIpCiMgZGV2dG9vbHM6Omluc3RhbGxfZ2l0aHViKCJIdW1hbml0aWVzRGF0YUFuYWx5c2lzL0h1bWFuaXRpZXNEYXRhQW5hbHlzaXMiKSAKcGFjbWFuOjpwX2xvYWQoaGVyZSwKICAgICAgIGFubm90YXRlciwKICAgICAgIHRpZHl2ZXJzZSwgCiAgICAgICBza2ltciwKICAgICAgIHNjYWxlcywKICAgICAgIGh0dHIsIAogICAgICAgY2l0ciwKICAgICAgIHBhaW50LCAKICAgICAgIERULCAjIGFuIFIgaW50ZXJmYWNlIHRvIHRoZSBKYXZhU2NyaXB0IGxpYnJhcnkgRGF0YVRhYmxlcwogICAgICAgIyBqc29ubGl0ZSwgCiAgICAgICAjIFhNTCwgCiAgICAgICAjIHhtbDIsIAogICAgICAgIyBvYWksICMgUiBjbGllbnQgdG8gd29yayB3aXRoIE9BSS1QTUggCiAgICAgICBzcGxpdHN0YWNrc2hhcGUgI1N0YWNrIGFuZCBSZXNoYXBlIERhdGFzZXRzIEFmdGVyIFNwbGl0dGluZyBDb25jYXRlbmF0ZWQgVmFsdWVzCiAgICAgICApCgpwYWNtYW46OnBfbG9hZCgKICB0bSwgIyBUZXh0IE1pbmluZyBQYWNrYWdlCiAgdGlkeXRleHQsICMgVGV4dCBNaW5pbmcgdXNpbmcgJ2RwbHlyJywgJ2dncGxvdDInLCBhbmQgT3RoZXIgVGlkeSBUb29scwogIHdpZHlyLCAjIHBhaXJ3aXNlID8/Pz8gIAogIGdncmFwaCwKICBpZ3JhcGgsCiAgc2ptaXNjLCAjIERhdGEgYW5kIFZhcmlhYmxlIFRyYW5zZm9ybWF0aW9uIEZ1bmN0aW9ucwogIGdncmFwaCwgIyBBbiBJbXBsZW1lbnRhdGlvbiBvZiBHcmFtbWFyIG9mIEdyYXBoaWNzIGZvciBHcmFwaHMgYW5kIE5ldHdvcmtzCiAgd2lkeXIsICMgV2lkZW4sIFByb2Nlc3MsIHRoZW4gUmUtVGlkeSBEYXRhCiAgU25vd2JhbGxDLCAjIFNub3diYWxsIFN0ZW1tZXJzIEJhc2VkIG9uIHRoZSBDICdsaWJzdGVtbWVyJyBVVEYtOCBMaWJyYXJ5CiAgSHVtYW5pdGllc0RhdGFBbmFseXNpcywgIyBEYXRhIGFuZCBDb2RlIGZvciBUZWFjaGluZyBIdW1hbml0aWVzIERhdGEgQW5hbHlzaXMKICBzZW50ZW5jZXBpZWNlICMgVGV4dCBUb2tlbml6YXRpb24gdXNpbmcgQnl0ZSBQYWlyIEVuY29kaW5nIGFuZCBVbmlncmFtIE1vZGVsbGluZwopCgojIEZ1bmN0aW9uKHMpIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiMgRGF0YSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiAKYGBgCgojIyMjIC0tIFNldCBzdG9wd29yZHMgW21vcmUuLi5dCgpgYGB7ciBzdG9wfQojIC0tLSBzZXQgdXAgc3RvcCB3b3JkcwpzdG9wX3dvcmRzIDwtIGFzX3RpYmJsZShzdG9wX3dvcmRzKSAlPiUgIyBpbiB0aGUgdGlkeXRleHQgZGF0YXNldCAKICBhZGRfcm93KHdvcmQgPSAiV0RSIiwgbGV4aWNvbiA9IE5BX2NoYXJhY3Rlcl8pICU+JQogIGFkZF9yb3cod29yZCA9ICJ3b3JsZCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAicmVwb3J0IiwgbGV4aWNvbiA9IE5BX2NoYXJhY3Rlcl8pICU+JQogIGFkZF9yb3cod29yZCA9ICJkZXZlbG9wbWVudCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk3OCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk3OSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4MCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4MSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4MiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4MyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4NCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4NSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4NiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4NyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4OCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk4OSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5MCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5MSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5MiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5MyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5NCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5NSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5NiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5NyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5OCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMTk5OSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwMCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwMSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwMiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwMyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwNCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwNSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwNiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwNyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwOCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAwOSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxMCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxMSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxMiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxMyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxNCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxNSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxNiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxNyIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxOCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAxOSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAyMCIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAyMSIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUKICBhZGRfcm93KHdvcmQgPSAiMjAyMiIsIGxleGljb24gPSBOQV9jaGFyYWN0ZXJfKSAlPiUgCiAgZmlsdGVyICh3b3JkICE9ICJjaGFuZ2VzIikKCiMgLS0tIHNldCB1cCBzdG9wIHdvcmRzIHN0ZW1tZWQKc3RvcF93b3Jkc19zdGVtIDwtIHN0b3Bfd29yZHMgICU+JSAKbXV0YXRlICh3b3JkID0gU25vd2JhbGxDOjp3b3JkU3RlbSh3b3JkICkpCmBgYAoKCgojIEIuIFdvcmxkIEJhbmsgUHJvamVjdHMgJiBPcGVyYXRpb25zOgoKIyBDb25uZWN0aW9ucwoKRm9sbG93aW5nIHRoZSBleGFtcGxlIG9mIFtEYXZpZCBSb2JpbnNvbiBvbiBITiB0aXRsZXNdKGh0dHA6Ly92YXJpYW5jZWV4cGxhaW5lZC5vcmcvci9obi10cmVuZHMvKQoKIyBEYXRhIHNvdXJjZXM6CgoxLiAgV29ybGQgQmFuayBQcm9qZWN0cyAmIE9wZXJhdGlvbnM6IDxodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvc2VhcmNoL2RhdGFzZXQvMDAzNzgwMD4gPGh0dHBzOi8vZGF0YWNhdGFsb2cud29ybGRiYW5rLm9yZy9zZWFyY2gvZGF0YXNldC8wMDM3ODAwL1dvcmxkLUJhbmstUHJvamVjdHMtLS1PcGVyYXRpb25zPgoKLSAgIEFjY2Vzc2liaWxpdHkgQ2xhc3NpZmljYXRpb246ICoqcHVibGljKiogdW5kZXIgW0NyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wXShodHRwczovL2RhdGFjYXRhbG9nLndvcmxkYmFuay5vcmcvcHVibGljLWxpY2Vuc2VzP2ZyYWdtZW50PWNjKQoKMi4gIFdvcmxkIEJhbmsgLSBXb3JsZCBEZXZlbG9wbWVudCBSZXBvcnRzCgotICAgQWNjZXNzaWJpbGl0eSBDbGFzc2lmaWNhdGlvbjoKCiMgUmVmZXJlbmNlIFR1dG9yaWFscwoKQHJvYmluc29uXzFfMjAyMiBbQmVuamFtaW4gU29sdG9mZjogQ29tcHV0aW5nIDQgU29jaWFsIFNjaWVuY2VzIC0gQVBJXShodHRwczovL2Nmc3MudWNoaWNhZ28uZWR1L3N5bGxhYnVzL2dldHRpbmctZGF0YS1mcm9tLXRoZS13ZWItYXBpLWFjY2Vzcy8pIFtCZW5qYW1pbiBTb2x0b2ZmOiBDb21wdXRpbmcgNCBTb2NpYWwgU2NpZW5jZXMgLSB0ZXh0IGFuYWx5c2lzXShodHRwczovL2Nmc3MudWNoaWNhZ28uZWR1L3N5bGxhYnVzL3RleHQtYW5hbHlzaXMtZnVuZGFtZW50YWxzLWFuZC1zZW50aW1lbnQtYW5hbHlzaXMvKQoKW0JlbiBTY2htaWR0IEJvb2sgSHVtYW5pdGllcyBDcnVyc2VdKGh0dHBzOi8vaGRmLmJlbnNjaG1pZHQub3JnL1IvKSBbQmVuIFNjaG1pZHQgQm9vayBIdW1hbml0aWVzXShodHRwOi8vYmVuc2NobWlkdC5vcmcvSERBL3RleHRzLWFzLWRhdGEuaHRtbCkKClt0aWR5VHVlc2RheSBjYXN0IG9uIHRpZHl0ZXh0XShodHRwczovL2dpdGh1Yi5jb20vZGdydHdvL2RhdGEtc2NyZWVuY2FzdHMvdHJlZS9tYXN0ZXIvc2NyZWVuY2FzdC1hbm5vdGF0aW9ucykKCiAgMS4g4pyU77iPIFtNRURJVU0gYXJ0aWNsZXM6IGNvbW1vbiB3b3JkcywgcGFpcndpc2UgY29ycmVsYXRpb25zIC0gMjAxOC0xMi0wNF0oaHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1DNjlReXljSHNnRSkKICAyLiBbVGlkeVR1ZXNkYXkgVHdlZXRzIC0gIDIwMTktMDEtMDddKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9S0U5SXRDM2RvRVUpCiAgMy4gW1dpbmUgUmF0aW5ncyAtIDIwMTktMDUtMzFdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9QVF6Wk5JeWp5V00pIExhc3NvIHJlZ3Jlc3Npb24gfCBzZW50aW1lbnQgbGV4aWNvbiwKICA0LiBbU2ltcHNvbnMgR3Vlc3QgU3RhcnMgCTIwMTktMDgtMzBdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9RVl1dUFHRGVHclEpIGdlb21faGlzdG9ncmFtCiAgNS4gW0hvcnJvciBNb3ZpZXMgCTIwMTktMTAtMjJdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9eUZSU1RsazNrUlEpIGV4cGxhaW5pbmcgZ2xtbmV0IHBhY2thZ2UgfCBMYXNzbyByZWdyZXNzaW9uCiAgNi4gW1RoZSBPZmZpY2UgCTIwMjAtMDMtMTZdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9X0l2QXViVERRTUUpIGdlb21fdGV4dF9yZXBlbCBmcm9tIGdncmVwZWwgfCBnbG1uZXQgcGFja2FnZSB0byBydW4gYSBjcm9zcy12YWxpZGF0ZWQgTEFTU08gcmVncmVzc2lvbgogIDcuIFtBbmltYWwgQ3Jvc3NpbmcgCTIwMjAtMDUtMDVdKGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL3dhdGNoP3Y9WHQ3QUNpZWRSUkkpIFVzaW5nIGdlb21fbGluZSBhbmQgZ2VvbV9wb2ludCB0byBncmFwaCByYXRpbmdzIG92ZXIgdGltZSB8IGdlb21fdGV4dCB0byB2aXN1YWxpemUgd2hhdCB3b3JkcyBhcmUgYXNzb2NpYXRlZCB3aXRoIHBvc2l0aXZlL25lZ2F0aXZlIHJldmlld3MgfHRvcGljIG1vZGVsbGluZwo=</div>
+<p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("01d_WBoper_data-exploration.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

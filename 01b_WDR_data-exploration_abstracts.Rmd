@@ -1,0 +1,1638 @@
+---
+title: "Process and merge data"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_float: true
+    toc_depth: 3
+editor_options: 
+  chunk_output_type: console
+bibliography: slogan.bib
+---
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+
+
+```{r setup-libraries-data }
+
+# Pckgs -------------------------------------
+if (!require ("pacman")) (install.packages("pacman"))
+
+#p_install_gh("luisDVA/annotater")
+#p_install_gh("HumanitiesDataAnalysis/hathidy")
+# devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis") 
+pacman::p_load(here,
+               tidyverse, magrittr,
+               skimr,
+               scales, colorspace,
+               httr, 
+               citr,
+               paint, 
+               DT, # an R interface to the JavaScript library DataTables
+               knitr,
+               kableExtra,
+               splitstackshape,  #Stack and Reshape Datasets After Splitting Concatenated Values
+               tm, # Text Mining Package
+               tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+               quanteda,
+               widyr, # pairwise ????  
+               ggraph,
+               igraph,
+               sjmisc, # Data and Variable Transformation Functions
+               ggraph, # An Implementation of Grammar of Graphics for Graphs and Networks
+               widyr, # Widen, Process, then Re-Tidy Data
+               SnowballC, # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
+               HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis
+               sentencepiece, # Text Tokenization using Byte Pair Encoding and Unigram Modelling
+               sysfonts
+)
+
+# Plot Theme(s) -------------------------------------
+#source(here("R", "ggplot_themes.R"))
+ggplot2::theme_set(theme_minimal())
+# color paletts -----
+mycolors_gradient <- c("#ccf6fa", "#80e8f3", "#33d9eb", "#00d0e6", "#0092a1")
+mycolors_contrast <- c("#E7B800", "#a19100", "#0084e6","#005ca1", "#e60066" )
+
+
+# Function(s) -------------------------------------
+
+# Data -------------------------------------
+ 
+# Tables [AH knit setup when using kbl() ]------------------------------------
+knit_print.data.frame <- function(x, ...) {
+  res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
+  asis_output(res)
+}
+
+registerS3method("knit_print", "data.frame", knit_print.data.frame)
+registerS3method("knit_print", "grouped_df", knit_print.data.frame)
+```
+
+
+
+# World Development Reports (WRDs)
+
+-   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
+-   INSTRUCTIONS <https://documents.worldbank.org/en/publication/documents-reports/api>
+-   Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+## I) Pre-processing 
+
+
+### I.ii) -- Set stopwords [more...]
+```{r stop}
+# --- alt stop words
+# mystopwords <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
+#                                    "fig", "file", "cg", "cb", "cm",
+#                                "ab", "_k", "_k_", "_x"))
+
+# --- set up stop words
+stop_words <- as_tibble(stop_words) %>% # in the tidytext dataset 
+  add_row(word = "WDR", lexicon = NA_character_) %>%
+  # add_row(word = "world", lexicon = NA_character_) %>%
+  add_row(word = "report", lexicon = NA_character_) %>%
+  # add_row(word = "development", lexicon = NA_character_) %>%
+  add_row(word = "1978", lexicon = NA_character_) %>%
+  add_row(word = "1979", lexicon = NA_character_) %>%
+  add_row(word = "1980", lexicon = NA_character_) %>%
+  add_row(word = "1981", lexicon = NA_character_) %>%
+  add_row(word = "1982", lexicon = NA_character_) %>%
+  add_row(word = "1983", lexicon = NA_character_) %>%
+  add_row(word = "1984", lexicon = NA_character_) %>%
+  add_row(word = "1985", lexicon = NA_character_) %>%
+  add_row(word = "1986", lexicon = NA_character_) %>%
+  add_row(word = "1987", lexicon = NA_character_) %>%
+  add_row(word = "1988", lexicon = NA_character_) %>%
+  add_row(word = "1989", lexicon = NA_character_) %>%
+  add_row(word = "1990", lexicon = NA_character_) %>%
+  add_row(word = "1991", lexicon = NA_character_) %>%
+  add_row(word = "1992", lexicon = NA_character_) %>%
+  add_row(word = "1993", lexicon = NA_character_) %>%
+  add_row(word = "1994", lexicon = NA_character_) %>%
+  add_row(word = "1995", lexicon = NA_character_) %>%
+  add_row(word = "1996", lexicon = NA_character_) %>%
+  add_row(word = "1997", lexicon = NA_character_) %>%
+  add_row(word = "1998", lexicon = NA_character_) %>%
+  add_row(word = "1999", lexicon = NA_character_) %>%
+  add_row(word = "2000", lexicon = NA_character_) %>%
+  add_row(word = "2001", lexicon = NA_character_) %>%
+  add_row(word = "2002", lexicon = NA_character_) %>%
+  add_row(word = "2003", lexicon = NA_character_) %>%
+  add_row(word = "2004", lexicon = NA_character_) %>%
+  add_row(word = "2005", lexicon = NA_character_) %>%
+  add_row(word = "2006", lexicon = NA_character_) %>%
+  add_row(word = "2007", lexicon = NA_character_) %>%
+  add_row(word = "2008", lexicon = NA_character_) %>%
+  add_row(word = "2009", lexicon = NA_character_) %>%
+  add_row(word = "2010", lexicon = NA_character_) %>%
+  add_row(word = "2011", lexicon = NA_character_) %>%
+  add_row(word = "2012", lexicon = NA_character_) %>%
+  add_row(word = "2013", lexicon = NA_character_) %>%
+  add_row(word = "2014", lexicon = NA_character_) %>%
+  add_row(word = "2015", lexicon = NA_character_) %>%
+  add_row(word = "2016", lexicon = NA_character_) %>%
+  add_row(word = "2017", lexicon = NA_character_) %>%
+  add_row(word = "2018", lexicon = NA_character_) %>%
+  add_row(word = "2019", lexicon = NA_character_) %>%
+  add_row(word = "2020", lexicon = NA_character_) %>%
+  add_row(word = "2021", lexicon = NA_character_) %>%
+  add_row(word = "2022", lexicon = NA_character_) %>% 
+  filter (word != "changes") %>% 
+   filter (word != "value") %>% 
+   filter (word != "member") %>% 
+   filter (word != "part") %>% 
+   filter (word != "possible") %>% 
+   filter (word != "point") %>% 
+   filter (word != "present") %>% 
+   filter (word != "zero") %>% 
+     filter (word != "young") %>% 
+     filter (word != "old") %>% 
+     filter (word != "trying") 
+
+# --- set up stop words stemmed
+stop_words_stem <- stop_words  %>% 
+mutate (word = SnowballC::wordStem(word ))
+```
+
+## II) Data (ingestion), loading & cleaning
+
+Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.Rmd` and the result saved as `WDR.rds` \<-- (Being somewhat computational intensive, I only did it once.)
+
+> 
+    + **WDR = tibble [45, 8]**
+    + **doc_mt_identifier_1** chr oai:openknowledge.worldbank.org:109~ 
+    + **doc_mt_identifier_2** chr http://www-wds.worldbank.org/extern~ 
+    + **doc_mt_title**        chr Development Economics through the  ~ 
+    + **doc_mt_date   **      chr 2012-03-19T10:02:25Z 2012-03-19T19:~ 
+    + **doc_mt_creator **     chr Yusuf, Shahid World Bank World Bank~ 
+    + **doc_mt_subject**      chr ABSOLUTE POVERTY AGGLOMERATION BENE~ 
+    + **doc_mt_description**  chr The World Development Report (WDR) ~ 
+    + **doc_mt_set_spec**     chr oai:openknowledge.worldbank.org:109~ 
+
+Ingestion of WDR **lists of subjects** was available among metadata but presented issues (difficulty to extract, many records with repetition,apparently wrong) so I reconstructed them manually in `data/raw_data/WDR_subjects_corrected2010_2011.xlsx` taking them from site https://elibrary.worldbank.org/ which lists **keywords** correctly [Es 2022 WDR](https://elibrary.worldbank.org/doi/abs/10.1596/978-1-4648-1730-4)
+
+```{r load}
+# WRD metadata taken with API get (issues) 
+WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
+  # Extract only the portion of string AFTER the backslash {/}
+  mutate(id = as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$"))) %>% 
+  dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
+  mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full"))  %>% 
+ # eliminate NON WDR book
+  dplyr::filter(id != "2586") 
+
+# WRD subject/date_issued taken by manual review 
+WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", 
+                                              "WDR_subjects_corrected2010_2011.xlsx")) %>%
+  drop_na(id) %>% 
+ # eliminate NON WDR book
+  dplyr::filter(id != "2586") 
+
+# delete empty cols 
+ColNums_NotAllMissing <- function(df){ # helper function
+  as.vector(which(colSums(is.na(df)) != nrow(df)))
+}
+
+WDR_subjects <- WDR_subjects  %>% 
+  select(ColNums_NotAllMissing(.))
+ # # convert all columns that start with "subj_" to lowercase
+ # WDR_subjects[3:218] <- sapply(WDR_subjects[3:218], function(x) tolower(x))
+
+# join
+WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>% 
+  dplyr::relocate(date_issued, .before = id ) %>% 
+  # drop useles clmns 
+  dplyr::select(#-doc_mt_identifier_1, 
+                -doc_mt_identifier_2, -doc_mt_date, 
+                -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
+  # dplyr::relocate(url_keys, .after = subj_216 ) %>% 
+  dplyr::rename(abstract = doc_mt_description) %>% 
+  # correct titles -> portion after {:}
+  dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
+  dplyr::relocate(title, .after = id)  %>% 
+  dplyr::rename(title_miss = doc_mt_title) %>% 
+  dplyr::mutate(title_miss = case_when(
+    str_starts(title, "World Development Report") ~ "Y",
+    TRUE ~ NA_character_) 
+  ) %>% 
+  dplyr::mutate(subject_miss = if_else(is.na(subj_1), 
+                                       "Y", 
+                                       NA_character_)) %>% 
+  dplyr::relocate(subject_miss, .after = title_miss)    %>% 
+  dplyr::relocate(ISBN, .after = id)    
+  
+#paint(WDR_com)
+
+# convert all columns that start with "subj_" to lowercase (maybe redundant)
+WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
+
+# combine all `subj_...` vars into a vector separated by comma
+col_subj <- names(WDR_com[, grep("^subj_", names(WDR_com))] )
+
+WDR_com <- WDR_com %>% tidyr::unite(
+  col = "all_subj", 
+  subj_1:subj_46, 
+  sep = ",",
+  remove = FALSE,
+  na.rm = TRUE) %>% 
+  arrange(date_issued)
+
+#paint(WDR_com)
+
+```
+
+#### -- Some manual correction of wrong metadata
+
+```{r meta_correct }
+# adding actual titles 
+#WDR_com[WDR_com$date_issued == "1978", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5961"] <- "Prospects for Growth and Alleviation of Poverty"
+
+#WDR_com[WDR_com$date_issued == "1979", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5962"] <- "Structural Change and Development Policy"
+
+#WDR_com[WDR_com$date_issued == "1980", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5963"] <- "Poverty and Human Development"
+
+#WDR_com[WDR_com$date_issued == "1981", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5964"] <- "National and International Adjustment"
+
+#WDR_com[WDR_com$date_issued == "1982", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5965"] <- "Agriculture and Economic Development"
+
+#WDR_com[WDR_com$date_issued == "1983", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5966"] <- "Management in Development"
+
+#WDR_com[WDR_com$date_issued == "1984", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5967"] <- "Population Change and Development"
+
+#WDR_com[WDR_com$date_issued == "1985", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5968"] <- "International Capital and Economic Development"
+
+#WDR_com[WDR_com$date_issued == "1986", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5969"] <- "Trade and Pricing Policies in World Agriculture"
+
+#WDR_com[WDR_com$date_issued == "1987", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5970"] <- "Industrialization and Foreign Trade"
+
+#WDR_com[WDR_com$date_issued == "1988", c("date_issued", "id", "title")]
+WDR_com$title[WDR_com$id == "5971"] <- "Public Finance in Development"
+
+# wrong year 
+#WDR_com[WDR_com$date_issued %in% c( "2011","2012","2013", "2014", "2015"), c("date_issued", "id", "title")]
+WDR_com$date_issued[WDR_com$id == "11843"] <- "2013"
+WDR_com$date_issued[WDR_com$id == "16092"] <- "2014"
+
+```
+
+### II.i) Troubleshooting some obs
+
+> PROBLEM: some of the subjects collections are evidently wrong (either they are the same of another WDR or the list is impossibly long)
+
+> MY SOLUTION #1: I took them manually from the website "elibrary" <https://elibrary.worldbank.org/action/showPublications?SeriesKey=b02>
+
+But, there still is WDR 2011 ("Conflict, Security, and Development") which misses keywords
+
+> MY SOLUTION #2: I take the abstract and I create my own "plausible list" of subjects
+
+#### --- Extrapolate subjects from abstracts - for record with missing subjects/keywords
+
+(\*) There will remain a problem: this corrected records have tokens and not bi\|n-grams (which make more sense)!
+
+```{r wrongWDRs}
+# --- identify wrong subject obs
+WDR_wr <- WDR_com %>% 
+  filter( subject_miss == "Y") 
+# names(WDR_com)
+```
+
+#### -- WDR caseid = 4389
+
+```{r fix4389}
+# --- tokenize abstract 
+WDR_4389 <- WDR_wr %>% 
+  filter(id =="4389") %>% 
+  select (abstract) %>% as_tibble() %>% 
+  tidytext::unnest_tokens(word, abstract) # -> 251 words 
+
+# --- remove stop words
+# --- isolate meaningful tokens
+WDR_4389 <- WDR_4389 %>% 
+  anti_join( stop_words , by = "word") %>%   # -> 131  words 
+  # Count observations by group
+  count(word, sort = T)  # -> 101  words 
+
+# rename column in result corrected   
+WDR_4389_w <- t(WDR_4389) %>% as_tibble()  
+names(WDR_4389_w) <- gsub(x = names(WDR_4389_w), pattern = "\\V", replacement = "subj_")
+ # --- graph words
+  # p <- WDR_4389 %>% count(word, sort = TRUE) %>%
+  #   filter(n > 600) %>%
+  #   mutate(word = reorder(word, n)) %>%
+  #   ggplot(aes(n, word)) +
+  #   geom_col() +
+  #   labs(y = NULL)
+  # p  
+  #   
+
+# --- replace as subjects 
+WDR_4389_w  <- WDR_4389_w %>%  
+  filter(row_number() == 1 ) %>% 
+  mutate(id = 4389) %>% 
+  relocate(id, .before = subj_1)
+
+# names(WDR_4389_w)
+WDR_4389_w <- WDR_4389_w %>% 
+  tidyr::unite(
+    col = "all_subj", 
+    subj_1:subj_100, 
+    sep = ",",
+    remove = FALSE) 
+
+
+#names(WDR_com)
+WDR_com_2 <- WDR_com %>% 
+  relocate(subj_1 ,.after = all_subj)
+
+# # create a vector of column names to add to reach the n length(WDR_com)
+# col_names <-  as.vector(paste0('subj_', length(WDR_4389_w):105))
+# 
+# # make a df with those cols and 1 row made of Nas values 
+# to_add <- bind_rows(setNames(rep("", length(col_names)), col_names))[NA_character_, ]
+# 
+# # --- pad until subj_216 with nas.........  
+# WDR_4389_w_pad <- bind_cols(WDR_4389_w, to_add)
+
+#### -- NOW: replace corrected single WDR case into master df 
+  # # initial check ---
+  # WDR_com$subj_1[WDR_com$id == 4389] 
+  # WDR_com$subj_3[WDR_com$id == 4389] 
+  # #--- 
+
+#id <-  4389 
+col_subj_names <- names(WDR_4389_w)[-(1)] # without "id"  "all_subj"
+
+# pick the id 
+i <- 4389
+
+# # --- function --- NO JOY!
+# for (j in 1:length(col_subj_names)) {
+#   col <-  col_subj_names[j]
+#   # print(col) # nolint
+#   WDR_com %>%
+#     dplyr::filter (id == i) %>% 
+#     dplyr::mutate (., col = WDR_4389_w_pad$col) 
+#   WDR_com_2 <- WDR_com
+# }
+
+# ---------# Solution from SO guy 
+# r is vectorized so 
+WDR_com_2[WDR_com_2$id %in% WDR_4389_w$id, 9:55] <- WDR_4389_w[, 2:48] 
+
+
+```
+
+\* I cut some ...so this record WDR_4389 will be incomplete
+
+<!-- #### -- WDR caseid = 2586 -->
+
+### II.ii)  -- SAVE wdr and cleanenv
+
+```{r cleanenv}
+wdr <- WDR_com_2 %>% 
+  select(-title_miss) %>% 
+  mutate(decade = case_when(
+    str_detect (string = date_issued, pattern = "^197") ~ "1970s", 
+    str_detect (string = date_issued, pattern = "^198") ~ "1980s", 
+    str_detect (string = date_issued, pattern = "^199") ~ "1990s", 
+    str_detect (string = date_issued, pattern = "^200") ~ "2000s", 
+    str_detect (string = date_issued, pattern = "^201") ~ "2010s", 
+    str_detect (string = date_issued, pattern = "^202") ~ "2020s"
+  )) %>% 
+  relocate(decade, .after = date_issued) %>% 
+# correct some datatype
+mutate_at(vars(date_issued, altmetric), as.numeric)  
+
+dataDir <- fs::path_abs(here::here("data","derived_data"))
+fileName <- "/wdr.rds"
+Dir_File <- paste0(dataDir, fileName)
+write_rds(x = wdr, file = Dir_File)
+
+# # ls objects
+# list_old_WDR <-  ls(# pattern = "^WDR", 
+#                     all.names = TRUE)
+# list_old_WDR
+# rm(list = setdiff(list_old_WDR, c("stop_words", "stop_words_stem")))
+```
+
+```{r}
+wdr <- readr::read_rds(here::here("data", "derived_data", "wdr.rds" ))
+```
+
+
+### I.iii) > > Part of Speech Tagging 
+Tagging segments of speech for part-of-speech (nouns, verbs, adjectives, etc.) or entity recognition (person, place, company, etc.)
+https://m-clark.github.io/text-analysis-with-R/part-of-speech-tagging.html 
+
+
+#### -- tagging with `cleanNLP`
+AH: https://datavizs22.classes.andrewheiss.com/example/13-example/#sentiment-analysis
+
+Here’s the general process for tagging (or “annotating”) text with the cleanNLP package:
+
+   1. Make a dataset where one column is the id (line number, chapter number, book+chapter, etc.), and another column is the text itself.
+   2. Initialize the NLP tagger. You can use any of these:
+      + `cnlp_init_udpipe()`: Use an R-only tagger that should work without installing anything extra (a little slower than the others, but requires no extra steps!)
+      + `cnlp_init_spacy()`: Use spaCy (if you’ve installed it on your computer with Python)
+      + `cnlp_init_corenlp()`: Use Stanford’s NLP library (if you’ve installed it on your computer with Java)
+   3. Feed the data frame from step 1 into the cnlp_annotate() function and wait.
+   4. Save the tagged data on your computer so you don’t have to re-tag it every time.
+
+
+
+
+# III) -------------- [ ABSTRACTS ]  ------------------
+
+## III.i) Tokenization
+Where a word is more abstract, a **“type”** is a concrete term used in actual language, and a **“token”** is the particular instance we’re interested in (e.g. abstract things (‘wizards’) and individual instances of the thing (‘Harry Potter.’).
+Breaking a piece of text into words is thus called **“tokenization”**, and it can be done in many ways. 
+
+### --- The choices of tokenization
+
+  1. Should words be lowercased? x 
+  2. Should punctuation be removed? x 
+  3. Should numbers be replaced by some placeholder?
+  4. Should words be stemmed (also called lemmatization). x 
+  5. Should bigrams/multi-word phrase be used instead of single word phrases?
+  6. Should stopwords (the most common words) be removed? x 
+  7. Should rare words be removed? 
+
+### --- Tokenization using `regular expression` syntax
+
+The R function `strsplit` lets us do just this: split a string into pieces.
+*Note, for example, that this makes the word “Don’t” into two words.
+
+
+```{r}
+tok_simple <- as_tibble(wdr$abstract[1] ) %>%
+  str_split("[^A-Za-z]") # “split on anything that isn’t a letter between A and Z.”
+
+str(tok_simple) # list of characters 
+
+#tok_simple[[1]]
+```
+
+### --- Tokenization using `tidytext`
+The simplest way is to remove anything that isn’t a letter. The workhorse function in `tidytext` is `unnest_tokens`. It creates a new columns (here called ‘words’) from each of the individual ones in text.
+ 
+```{r 1abs }
+abs_1 <- as_tibble(wdr$abstract[1] )
+
+# LIST OF features I can add to `unnest_tokens`
+tok_feat_l <- list(
+  # 1) all 2 lowercase 
+  abs_1 %>% unnest_tokens(word, value) %>% select(lowercase = word),
+  # 4) `SnowballC::wordStem` extracts stems of each given words in the vector.
+  abs_1 %>% unnest_tokens(word, value) %>% rowwise() %>% 
+    mutate(word = SnowballC::wordStem(word)) %>% select(stemmed = word),
+  # 1.b) keep uppercase if there are 
+  abs_1 %>% unnest_tokens(word, value, to_lower = F) %>% 
+    select(uppercase = word),
+  # 2) keep punctuation {default is rid} 
+  abs_1 %>% unnest_tokens(word, value, to_lower = F, strip_punc = FALSE) %>% 
+    select(punctuations = word),
+  # 5) bigram
+  abs_1 %>% 
+    unnest_tokens(word, value, token = "ngrams", n = 2, to_lower = F) %>%
+    select(bigrams = word)
+)
+
+# Return a data frame created by column-binding.
+tok_feat_df <- map_dfc(tok_feat_l  , ~ .x %>% head(10))
+tok_feat_df
+
+# # my choice 
+# abs_1_t_mod <- abs_1 %>% 
+#   # no punctuation, yes capitalized
+#   unnest_tokens(word, value, to_lower = F, strip_punc = TRUE) %>% # 249 obs
+#   # exclude stopwords 
+#   anti_join(stop_words) # 109 obs
+# 
+# head(abs_1_t_mod, 15)
+```
+
+### --- Tokenizing ALL abstracts
+
+```{r}
+# isolate only abstracts 
+abs_all <- wdr %>% 
+  dplyr::select(id, date_issued, title, abstract)
+
+abs_all_token <- abs_all %>% 
+  unnest_tokens(output =  word,
+                input = abstract ,
+                to_lower = T, # otherwise cannot match the stop_words  
+                strip_punc = TRUE
+  ) %>% #10018
+  anti_join(stop_words) # 4613
+
+# Count words
+wordcounts <- abs_all_token %>%
+  group_by(word) %>%
+  summarize(n = n()) %>%
+  #arrange(-n) %>%
+  # head(5) %>% 
+  mutate(rank = rank(-n)) %>%
+  filter(n > 2, word != "")
+```
+
+
+## III.ii) Word and document frequency: TF-IDF
+
+The goal is to quantify what a document is about. What is the document about?
+
+-   **term frequency (tf)** = how frequently a word occurs in a document... but there are words that occur many time and are not important
+-   term's **inverse document frequency (idf)** = decreases the weight for commonly used words and increases the weight for words that are not used very much in a collection of documents.
+-   **statistic tf-idf (= tf*-*idf)** = an alternative to using stopwords is *the frequency of a term adjusted for how rarely it is used*. [It measures how important a word is to a document in a collection (or corpus) of documents, but it is still a rule-of-thumb or heuristic quantity]
+
+> The tf-idf is the product of the term frequency and the inverse document frequency::
+
+$$
+\begin{aligned}
+tf(\text{term}) &= \frac{n_{\text{term}}}{n_{\text{terms in document}}} \\
+idf(\text{term}) &= \ln{\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)} \\
+tf\text{-}idf(\text{term}) &= tf(\text{term}) \times idf(\text{term})
+\end{aligned}
+$$
+
+### --- Pre-process 4 TF-IDF
+
+```{r problem}
+# PREP X TF-IDF
+#paint(abs_all)
+skimr::n_unique(abs_all$title)
+skimr::n_unique(abs_all$date_issued)
+
+# Count words (with stopwords)
+temp <-  abs_all %>% 
+  unnest_tokens(output =  word,
+                input = abstract,
+                to_lower = T, # otherwise cannot match the stop_words  
+                strip_punc = TRUE) %>%  #9769 = tot words
+  # mutate(word = SnowballC::wordStem(word)) %>% 
+  ## other important pre-process step
+  # mutate(title = factor(title, ordered = TRUE))  %>% 
+  # mutate(date_issued = factor(date_issued, ordered = TRUE)) %>% 
+  ## implicit group by ...
+  group_by(date_issued) %>%
+  # Count observations by group
+  count(word, sort = TRUE) %>% # 5860 # unique words
+  ungroup() 
+
+
+abs_words <- left_join(temp, abs_all, by = "date_issued")
+paint(abs_words)
+```
+
+### ~~modo I) {Kumaran Ponnambalam} Create a Word Frequency Table~~
+
+[tm way](https://www.linkedin.com/learning/processing-text-with-r-essential-training/improving-term-frequency-matrix?autoSkip=true&autoplay=true&contextUrn=urn%3Ali%3AlearningCollection%3A6932688789001674752&resume=false)
+
+```{r, eval=FALSE}
+# abs_words_freq <-  abs_words %>% 
+#   anti_join(stop_words, by= "word" )  %>% 
+#   tidyr::pivot_wider(names_from = word, values_from = n, values_fill = 0)
+# 
+# # skim(abs_words_freq) 
+#  
+# #Generate the Document Term matrix
+# abs_words_freq_matrix <- as.matrix(abs_words_freq)
+# 
+# abs_words_freq_matrix[ , 'gender']
+# 
+# # .... uses {tm} 
+```
+
+### modo II) {Julia Silge and David Robinson} tidytext::bind_tf_idf
+
+[tidytext way](https://www.tidytextmining.com/tfidf.html)
+
+The idea of `tf-idf` is to find the important words for the content of each document by *decreasing the weight for commonly used words and increasing the weight for words that are not used very much in a collection or corpus of documents*. Calculating tf-idf attempts to find the words that are important (i.e., common) in a text, but not too common. Let's do that now.
+
+```{r prep_tf_idf}
+### ---  abstracts with totals 
+
+# Calculate the total appearances of each words per doc
+abs_total_words <- abs_words %>%
+  dplyr::group_by(title) %>%
+  dplyr::summarise(total = sum(n))  
+
+# Join the total appearances of each words per doc
+abs_words_T <- left_join(abs_words, abs_total_words) %>% 
+  select(id, date_issued, title, abstract, word, n, total )
+
+# The usual suspects are here, “the”, “and”, “to”, and so forth. 
+# ggplot(abs_words_T, aes(n/total, fill = title)) +
+#   geom_histogram(show.legend = FALSE) +
+#    xlim(NA, 0.01) +
+#   facet_wrap(~title, ncol = 2, scales = "free_y")
+```
+
+> `tidytext::bind_tf_idf`: Calculate and bind the term frequency and inverse document frequency of a tidy text dataset, along with the product, tf-idf, to the dataset. Each of these values are added as columns. This function supports non-standard evaluation through the tidyeval framework.
+
+```{r tf_idf}
+abs_words_tf_idf <- abs_words_T %>%
+  #bind_tf_idf(tbl, term, document, n)
+  bind_tf_idf(      word, title, n) %>% # 5860
+  # get rid of stopwords anyway &...
+  anti_join(stop_words, by = "word") %>% # 3703
+  # fileter most importantly weighted 
+  # filter(tf_idf > 0.01 ) %>% # 2278
+  arrange(date_issued, desc(tf_idf))
+
+abs_words_tf_idf
+```
+
+Notice that `idf` and thus `tf-idf` are zero for these extremely common words. These are all words that appear in all docs, so the `idf` term (which will then be the natural log of 1) is zero. \
+
+> The ***inverse document frequency*** (and thus `tf-idf`) is very low (near zero) for words that occur in many of the documents in a collection; this is how this approach decreases the weight for common words.
+***IDF*** will be a higher number for words that occur in fewer of the documents in the collection.
+
+Let's look at recurring terms terms with high tf-idf in WDRs.
+
+```{r  tab_gender}
+# wdr[ wdr$id %in% c("4391" ) , c("date_issued", "title" )]
+
+# let's look specifically at "Gender Equality and Development" 
+tf_idf_2012 <- abs_words_tf_idf %>%
+  filter(date_issued == "2012") %>%
+  select(-total) %>%
+  arrange(desc(tf_idf))
+
+# These words are, as measured by tf-idf, the most important to "Gender Equality and Development"  and most readers would likely agree.
+tf_idf_2012[tf_idf_2012$word %in% c("gender", "equality", "development") ,]
+
+# # A tibble: 3 × 7
+#   date_issued title                              word            n     tf   idf tf_idf
+#   <chr>       <chr>                              <chr>       <int>  <dbl> <dbl>  <dbl>
+# 1 2012        " Gender Equality and Development" gender         13 0.0588  3.09  0.182
+# 2 2012        " Gender Equality and Development" equality        6 0.0271  3.78  0.103
+# 3 2012        " Gender Equality and Development" development    10 0.0452  0     0 
+```
+
+### --- TF-IDF tables/ viz for selected WDRs
+
+Interestingly, some themes are recurrent in cycles (as per [@yusuf_development_2008]). So I wanted to check TF_IDF in these "subsets" of WDRs
+
+#### Poverty
+```{r tab_pov}
+ # wdr[ wdr$id %in% c("5961", "5963", "5973", "11856" ) , c("date_issued", "title" )]
+
+# SIMPLE TABLE WITH FILTER 
+tf_idf_poverty  <-  abs_words_tf_idf %>% 
+  dplyr::filter(date_issued %in%  c("1978", "1980", "1990", "2001")) %>% 
+    dplyr::filter(n > 1) %>% 
+  select(-id, -abstract) %>%
+  dplyr::arrange(date_issued, desc(tf_idf)) 
+```
+
+```{r, eval=FALSE, echo=FALSE}
+tf_idf_poverty %>%
+  DT::datatable(.,
+                elementId = NULL,
+                filter = 'top',  # Problem if there are empty cells !!!
+                extensions = 'Buttons',
+                options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+                               pageLength = 50,
+                               searchHighlight = TRUE,
+                               dom = 'Bfrtip',
+                               buttons = c('csv','excel','pdf'))) %>%
+    # helper functions
+        DT::formatRound(c('tf', 'idf', 'tf_idf'), 3) %>%
+        DT::formatStyle('tf_idf', backgroundColor =  'yellow') %>%
+        DT::formatStyle('tf_idf', color = styleInterval( 0.0114, c('red', 'blue')) )
+
+ 
+# tf_idf_1992_2010   %>% 
+#   # alternative with filters
+#   datatable(
+#   tf_idf_1992_2010,
+#   filter = 'top',
+#   options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+#     pageLength = 5
+#   )
+# )
+```
+
+> What this TF-IDF measure shows is the specific words that distinguish each WDR in this subset themed on poverty: i.e. the point of tf-idf is to identify words that are important to one document within a collection of documents.
+
+#### ...viz
+```{r}
+library(forcats) # Tools for Working with Categorical Variables (Factors)
+
+gg_pov_tfidf <-  tf_idf_poverty %>%
+  mutate (title2 = paste( "WDR of ", date_issued )) %>% 
+  group_by(title2) %>%
+  slice_max(tf_idf, n = 50) %>%
+  ungroup() %>% 
+  ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = title2)) +
+  geom_col(show.legend = FALSE) + 
+  #my_theme() +
+  scale_fill_manual(values = mycolors_contrast) + # my palette
+  # labs(x = "tf-idf for ", y = NULL) +
+  labs(title="TF-IDF ranking in 4 WDRs dedicated to poverty topic", 
+     subtitle="(overall 50 tokens with highest TF-IDF)",
+     #caption="Source: ????",
+     x="TF-IDF values",
+     y=""
+     ) + 
+    facet_wrap(~title2, ncol = 2, scales = "free")  
+
+gg_pov_tfidf 
+
+gg_pov_tfidf %T>% 
+  ggsave(., filename = here("analysis", "output", "figures", "gg_pov_tfidf.pdf"),
+        # width = 2.75, height = 1.5, units = "in", device = cairo_pdf
+        ) %>%
+  ggsave(., filename = here("analysis", "output", "figures", "gg_pov_tfidf.png"),
+         #width = 2.75, height = 1.5, units = "in", type = "cairo", dpi = 300
+         )
+```
+
+
+
+#### Environment/Climate 
+```{r tab_env_clim}
+#wdr[ wdr$id %in% c("5975", "4387" ) , c("date_issued", "title" )]
+
+# SIMPLE TABLE WITH FILTER 
+tf_idf_env  <-  abs_words_tf_idf %>% 
+  dplyr::filter(date_issued %in%  c("1992", "2010")) %>% 
+    dplyr::filter(n > 1) %>% 
+  select(-id, -abstract) %>%
+  dplyr::arrange(date_issued, desc(tf_idf)) 
+
+```
+
+
+```{r, eval=FALSE, echo=FALSE}
+
+tf_idf_env %>%
+  DT::datatable(.,
+                elementId = NULL,
+                filter = 'top',  # Problem if there are empty cells !!!
+                extensions = 'Buttons',
+                options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+                               pageLength = 50,
+                               searchHighlight = TRUE,
+                               dom = 'Bfrtip',
+                               buttons = c('csv','excel','pdf'))) %>%
+    # helper functions
+        DT::formatRound(c('tf', 'idf', 'tf_idf'), 3) %>%
+        DT::formatStyle('tf_idf', backgroundColor =  'yellow') %>%
+        DT::formatStyle('tf_idf', color = styleInterval( 0.0114, c('black', 'red')) )
+# tf_idf_1992_2010   %>% 
+#   # alternative with filters
+#   datatable(
+#   tf_idf_1992_2010,
+#   filter = 'top',
+#   options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+#     pageLength = 5
+#   )
+# )
+```
+
+#### ...viz
+
+Evident how in the 2010 WDR, words like "warming" and "temperatures" appear, while they were unimportant in the 1992 flagship report.
+```{r}
+gg_env_tfidf <- tf_idf_env %>%
+  mutate (title2 = paste( "WDR of ", date_issued )) %>% 
+  group_by(title2) %>%
+  slice_max(tf_idf, n = 50) %>%
+  ungroup()  %>% 
+  ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = title2)) +
+  geom_col(show.legend = FALSE) + 
+  #my_theme() +
+  scale_fill_manual(values = mycolors_contrast) + # my palette
+  # labs(x = "tf-idf for ", y = NULL) +
+  labs(title="TF-IDF ranking in 4 WDRs dedicated to environment/climate change topic", 
+     subtitle="(overall 50 tokens with highest TF-IDF)",
+     #caption="Source: ????",
+     x="TF-IDF values",
+     y=""
+     ) + 
+    facet_wrap(~title2, ncol = 2, scales = "free")  
+
+gg_env_tfidf 
+
+gg_env_tfidf %T>% 
+  ggsave(., filename = here("analysis", "output", "figures", "gg_env_tfidf.pdf"),
+        # width = 2.75, height = 1.5, units = "in", device = cairo_pdf
+        ) %>%
+  ggsave(., filename = here("analysis", "output", "figures", "gg_env_tfidf.png"),
+         #width = 2.75, height = 1.5, units = "in", type = "cairo", dpi = 300
+         )
+```
+
+#### Knowledge/data
+```{r tab_know}
+# skim(abs_words_tf_idf$tf_idf)
+# wdr[ wdr$id %in% c("5981", "35218" ) , c("date_issued", "title" )]
+
+# SIMPLE TABLE WITH FILTER 
+tf_idf_knowl  <-  abs_words_tf_idf %>% 
+  dplyr::filter(date_issued %in%  c("1998", "2021")) %>% 
+    dplyr::filter(n > 1) %>% 
+  select(-id, -abstract) %>%
+  dplyr::arrange(date_issued, desc(tf_idf))
+```
+
+
+```{r echo=FALSE, eval=FALSE}
+tf_idf_knowl %>%
+  DT::datatable(.,
+                elementId = NULL,
+                filter = 'top',  # Problem if there are empty cells !!!
+                extensions = 'Buttons',
+                options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+                               pageLength = 50,
+                               searchHighlight = TRUE,
+                               dom = 'Bfrtip',
+                               buttons = c('csv','excel','pdf'))) %>%
+    # helper functions
+        DT::formatRound(c('tf', 'idf', 'tf_idf'), 3) %>%
+        DT::formatStyle('tf_idf', backgroundColor =  'yellow') %>%
+        DT::formatStyle('tf_idf', color = styleInterval( 0.0114, c('red', 'blue')) )
+
+ 
+# tf_idf_1992_2010   %>% 
+#   # alternative with filters
+#   datatable(
+#   tf_idf_1992_2010,
+#   filter = 'top',
+#   options = list(columnDefs = list(list(targets = c(1, 2, 3), searchable = TRUE)),
+#     pageLength = 5
+#   )
+# )
+```
+
+#### ...viz
+
+```{r}
+gg_knowl_tfidf  <- tf_idf_knowl %>% 
+  dplyr::filter(date_issued %in%  c("1998", "2021")) %>%
+  mutate (title2 = paste( "WDR of ", date_issued )) %>% 
+  group_by(title2) %>%
+  slice_max(tf_idf, n = 50) %>%
+  ungroup()  %>% 
+  ggplot(aes(tf_idf, fct_reorder(word, tf_idf), fill = title2)) +
+  geom_col(show.legend = FALSE) + 
+  #my_theme() +
+  scale_fill_manual(values = mycolors_contrast) + # my palette
+  # labs(x = "tf-idf for ", y = NULL) +
+  labs(title="TF-IDF ranking in 4 WDRs dedicated to knowledge/data change topic", 
+     subtitle="(overall 50 tokens with highest TF-IDF)",
+     #caption="Source: ????",
+     x="TF-IDF values",
+     y=""
+     ) + 
+    facet_wrap(~title2, ncol = 2, scales = "free")  
+
+gg_knowl_tfidf 
+
+gg_knowl_tfidf %T>% 
+  ggsave(., filename = here("analysis", "output", "figures", "gg_knowl_tfidf.pdf"),
+        # width = 2.75, height = 1.5, units = "in", device = cairo_pdf
+        ) %>%
+  ggsave(., filename = here("analysis", "output", "figures", "gg_knowl_tfidf.png"),
+         #width = 2.75, height = 1.5, units = "in", type = "cairo", dpi = 300
+         )
+```
+
+
+## III.iii) Word frequency histogram *{meaningless}*
+
+### --- SCHMIDT's Plotting most frequent words (all abstractS) ----------------
+
+http://benschmidt.org/HDA/texts-as-data.html
+
+```{r, eval=FALSE, include=FALSE}
+## Wordcounts/plots --------------------------------------------------------
+
+ggplot(wordcounts) + 
+  aes(x = rank, y = n, label = word) + 
+  geom_text() # ugly!!!
+```
+The simple plot gives a very skewed curve: As always, you should experiment with multiple scales, and especially *think about logarithms*. Putting logarithmic scales on both axes reveals something interesting about the way that data is structured; this turns into a straight line. 
+
+> “Zipf’s law:” the most common word is twice as common as the second most common word, three times as common as the third most common word, four times as common as the fourth most common word, and so forth.
+
+```{r}
+# Putting logarithmic scales on both axes  
+ggplot(wordcounts) +
+  aes(x = rank, y = n, label = word) +
+  geom_point(alpha = .3, color = "grey") +
+  geom_text(check_overlap = TRUE) +
+  scale_x_continuous(trans = "log") +
+  scale_y_continuous(trans = "log") +
+  labs(title = "Zipf's Law",
+       subtitle="The log-frequency of a term is inversely correlated with the logarithm of its rank.")
+# ...the logarithm of rank decreases linearly with the logarithm of count
+```
+[the logarithm of rank decreases linearily with the logarithm of count.] --> **common words are very common indeed, and logarithmic scales are more often appropriate for plotting than linear ones. **
+
+
+### --- SILGE's Plotting most frequent words (all abstractS) ----------------
+
+* OKKIO n instead of n/total 
+
+```{r}
+# abs_words_T --> 5860
+
+# let's eliminate stopwords 
+abs_words2 <-  anti_join(x = abs_words_T, y = stop_words, by= "word" )  %>% 
+  #filter(n > 1) %>% 
+ select(date_issued, title, word, n, total)
+
+abs_words2 #--> 3699
+# paint(abs_words2)
+# here there is one row for each word-WDR(abs) combination 
+# `n` is the number of times that word is used in that book and 
+# `total` is the total words in that abstract
+```
+
+***frequency*** = let's look at the distribution of `n/total` for each doc, the number of times a word appears in a doc divided by the total number of terms (words) in that doc
+
+> I actually use `n` instead because I have only small numbers having used the abstracts alone
+
+```{r hist_one}
+one <- abs_words2 %>% 
+  filter ( date_issued == "2021") %>% 
+  mutate (freq = n/total)
+ 
+ggplot(data = one, 
+       mapping = aes(x = n, fill = title)) + # y axis not needed ... R will count
+  geom_histogram(binwidth = 1,
+                 color = "white") +
+  scale_y_continuous(breaks= pretty_breaks()) +
+  xlim(0,10) +
+  labs(# title =  title, 
+    x = "frequency",
+    y = "N of words @ that frequency") + 
+  guides( fill = "none")
+
+# #  skim(one$freq)
+# ggplot(data = one, 
+#        mapping = aes(x = freq, fill = title)) + # y axis not needed ... R will count
+#   geom_histogram(binwidth = 1,
+#                  color = "white") +
+#   scale_y_continuous(breaks= pretty_breaks()) +
+#    xlim(0, 0.1) +
+#   labs(# title =  title, 
+#     x = "frequency",
+#     y = "N of words @ that frequency") + 
+#   guides( fill = "none")
+
+```
+
+```{r hist_mess, eval=FALSE}
+# overlayed mess!
+ggplot(abs_words2, aes(n, fill = title)) +
+  geom_histogram(binwidth = 1,
+                 color = "white") +
+  scale_y_continuous(breaks= pretty_breaks()) +
+  xlim(0, 20) +
+  labs(#title = ~date_issued, 
+    x = "frequency",
+    y = "N of words @ that frequency") + 
+  guides( fill = "none")
+```
+
+```{r hist_facet, eval=FALSE}
+ggplot(abs_words2, aes(n, fill = title)) +
+  geom_histogram(binwidth = 1,
+                 color = "white") +
+  scale_y_continuous(breaks= pretty_breaks()) +
+  xlim(0, 10) +
+  labs(#title = ~date_issued, 
+    x = "frequency",
+    y = "N of words @ that frequency") + 
+  facet_wrap( ~date_issued ) + # , ncol = 2, scales = "free_y")
+  guides( fill = "none") # way to turn legend off
+```
+
+#### --- Multiple plots of Word Freq with [purrr]
+
+- [Jennifer Thompson, An Intro to the Magic of purrr](https://htmlpreview.github.io/?https://github.com/jenniferthompson/RLadiesIntroToPurrr/blob/master/purrr_intro.nb.html)
+
+-  [automate ggplots while using variable labels as title and axis titles](https://stackoverflow.com/questions/59095237/automate-ggplots-while-using-variable-labels-as-title-and-axis-titles)
+
+```{r hist_purrr}
+# ---- NON Capisco 
+# # Preferred approach
+# histos <- abs_words2 %>%
+#   group_by(title) %>%
+#   nest() %>%
+#   mutate(plot = map2(data, title, 
+#                      ~ggplot(data = .x , aes(n/total, fill = title)) + 
+#                       geom_histogram( show.legend = FALSE) + 
+#                        xlim(NA, 0.05) +
+#                        # ggtitle(.y) +
+#                        ylab("Words Frequency") +
+#                        xlab("Distribution per WDR title")))
+# 
+#  histos$plot[[1]]
+
+
+# ---- Capisco 
+# https://stackoverflow.com/questions/60671725/ggplot-add-title-based-on-the-variable-in-the-dataframe-used-for-plotting
+list_plot <- abs_words2 %>%
+  dplyr::group_split(date_issued) %>% # Split data frame by groups
+  map(~ggplot(., 
+              mapping = aes(x = n, fill = title)) +
+        geom_histogram(binwidth = 1,
+                       color = "white") +
+        scale_y_continuous(breaks= pretty_breaks()) + # integer ticks {scales}
+        xlim(0, 18) + # max of freq is 17
+        labs(title = .$date_issued, 
+             x = "frequency",
+             y = "N of words @ that frequency")
+  )
+
+list_plot[[1]]
+list_plot[[44]]
+list_plot[[40]]
+#grid.arrange(grobs = list_plot, ncol = 1)
+```
+
+#### --- Zipf’s law for WDR’s abstracts
+Examine Zipf’s law for WDR’s abstracts with just a few lines of dplyr functions.
+> The rank column here tells us the rank of each word within the frequency table; the table was already ordered by n so we could use row_number() to find the rank
+
+```{r abs_Zipf}
+freq_by_rank <- abs_words2 %>% 
+  arrange(desc(n)) %>% # order by n... 
+  group_by(title) %>% 
+  mutate(rank = row_number(), # so this can act as the rank
+         `term frequency` = n/total) %>% # term frequency
+  ungroup()
+freq_by_rank
+```
+
+Zipf’s law is often visualized by plotting rank on the x-axis and term frequency on the y-axis, on logarithmic scales. Plotting this way, an inversely proportional relationship will have a constant, negative slope.
+
+```{r}
+freq_by_rank %>% 
+  filter (date_issued == "2021" | date_issued == "1998") %>% 
+  ggplot(aes(rank, `term frequency`, color = title)) + 
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) + 
+  scale_x_log10() +
+  scale_y_log10() + 
+  labs(title = "Zipf’s law seen for  knowledge (1998) & data (2021) WDRs",
+       subtitle = "(1998) = blue | (2021) = red",
+       x = "rank (log)",
+       y = "term frequency (log)",
+       color = "Legend")   
+
+
+```
+
+https://www.tidytextmining.com/tfidf.html#zipfs-law
+
+perhaps we could view this as a broken power law with, say, three sections. Let’s see what the exponent of the power law is for the middle section of the rank range.
+```{r}
+rank_subset <- freq_by_rank %>% 
+  filter(rank < 500,
+         rank > 10)
+
+lm(log10(`term frequency`) ~ log10(rank), data = rank_subset)
+```
+
+Let’s plot this fitted power law with the obtaied data  to see how it looks
+```{r}
+freq_by_rank %>% 
+  filter (date_issued == "2021" | date_issued == "1998") %>% 
+  ggplot(aes(rank, `term frequency`, color = title)) + 
+  geom_abline(intercept = -1.80, slope = -0.33, 
+              color = "gray50", linetype = 2) +
+  geom_line(size = 1.1, alpha = 0.8, show.legend = FALSE) + 
+  scale_x_log10() +
+  scale_y_log10()
+```
+
+> The deviations we see here at high rank are not uncommon for many kinds of language; **a corpus of language often contains fewer rare words than predicted by a single power law**.
+
+
+## III.iv) Relationships between words: n-grams and correlations
+
+https://www.tidytextmining.com/ngrams.html
+
+>The one-token-per-row framework can be extended from single words to n-grams and other meaningful units of text(e.g. to see which words tend to follow others immediately, or that tend to co-occur within the same documents.)
+
+  + `tidytext::token = "ngrams" argument` is a method tidytext offers for calculating and visualizing relationships between words in your text dataset. It tokenizes by pairs of adjacent words rather than by individual ones. 
+  + `ggraph` extends `ggplot2` to construct network plots, 
+  + `widyr` calculates pairwise correlations and distances within a tidy data frame.  
+
+#### --- Tokenizing by n-gram
+The `unnest_tokens` function can also be used to tokenize into consecutive sequences of words, called _n-grams_. By seeing how often word X is followed by word Y, we can then build a model of the relationships between them.
+
+```{r bigram_1abs}
+# break the text [e.g. 1 abstract] into bi-gram 
+abs_2022_bigrams <- wdr %>% 
+  dplyr::filter(id == 36883) %>% 
+  select(abstract) %>% 
+  as_tibble() %>% 
+  unnest_tokens(., output = bigram, input = abstract, token = "ngrams", n=2 )  
+# notice how these bigrams overlap
+head(abs_2022_bigrams)
+```
+
+```{r bigram_allabs}
+# # my choice 
+# abs_1_t_mod <- abs_1 %>% 
+#   # no punctuation, yes capitalized
+#   unnest_tokens(word, value, to_lower = F, strip_punc = TRUE) %>% # 249 obs
+#   # exclude stopwords 
+#   anti_join(stop_words) # 109 obs
+
+
+abs_all_bigram <- abs_all %>% 
+  unnest_tokens(., output = bigram, input = abstract, token = "ngrams", n=2 )  
+
+head(abs_all_bigram[c("date_issued","bigram")], 10)
+```
+
+> This data structure is still a variation of the tidy text format. It is structured as one-token-per-row but each token now represents a bigram.
+
+#### --- Operations on n-grams: counting and filtering 
+
+```{r}
+bigrams_counts <- abs_all_bigram %>% 
+   count(bigram, sort = TRUE)
+```
+> Not surprisingly, a lot are pairs of stopwords  
+
+Here, I can use `tidyr’s separate()`, which splits a column into multiple based on a delimiter. This separate it into two columns, “word1” and “word2”, to _then remove cases where either is a stop-word_.
+
+In other analyses, we may want to work with the recombined words. `tidyr’s unite()` function is the inverse of `separate()`, and lets us recombine the columns into one. 
+
+```{r bigram_op}
+# separate words 
+bigrams_separated <- abs_all_bigram %>% 
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+# since many are bigram with a stopword
+bigrams_filtered <- bigrams_separated %>% 
+  # remove cases where either is a stop-word
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word)
+
+# OPPOSITE: reunite words 
+bigrams_united <- bigrams_filtered  %>% 
+  unite(bigram, word1, word2, sep = " ")
+```
+
+
+#### --- (Trigrams)
+
+In other analyses you may be interested in the most common trigrams, which are consecutive sequences of 3 words. We can find this by setting n = 3:
+
+```{r trigram}
+trigram <- abs_all %>%
+  unnest_tokens(trigram, abstract, token = "ngrams", n = 3) %>%
+  separate(trigram, c("word1", "word2", "word3"), sep = " ") %>%
+  filter(!word1 %in% stop_words$word,
+         !word2 %in% stop_words$word,
+         !word3 %in% stop_words$word) %>%
+  count(word1, word2, word3, sort = TRUE)
+```
+
+
+#### --- Bigram ~ potential meaningful slogan? 
+
+<i class="fa fa-question-circle" style="color: firebrick"></i> Which of this bigram might be a SLOGAN candidate? 
+
+```{r bigram_slog}
+# new bigram counts:
+bigrams_counts_clean <- bigrams_filtered %>% 
+  # Count observations by group
+  count(word1, word2, sort = TRUE)
+
+bigrams_counts_clean # cleaned up stopwords
+
+
+```
+
+<i class="fa fa-exclamation-circle" style="color: blue"></i> ...Maybe some of these bigram with high tf_idf
+
++ external finance
++ gender equality
++ development impact
++ digital revolution
++ investment climate
++ accelerating growth
++ alleviating poverty
++ ...
+ 
+#### --- Analyzing bigrams
+
+This one-bigram-per-row format is helpful for exploratory analyses of the text. Let's see what comes _before_ "poverty", "change", "knowledge"...
+
+```{r}
+bigrams_filtered %>%
+  filter(word2 == "poverty") %>%
+  count(date_issued, word1, sort = TRUE)
+
+bigrams_filtered %>%
+  filter(word2 == "change") %>%
+  count(date_issued, word1, sort = TRUE)
+
+bigrams_filtered %>%
+  filter(word2 == "knowledge") %>%
+  count(date_issued, word1, sort = TRUE)
+```
+
+...or _after_ "human", "finance", "bottom": 
+```{r}
+# after  
+bigrams_filtered %>%
+  filter(word1 == "human") %>%
+  count(date_issued, word2, sort = TRUE)
+
+bigrams_filtered %>%
+  filter(word1 == "finance") %>%
+  count(date_issued, word2, sort = TRUE)
+
+bigrams_filtered %>%
+  filter(word1 == "bottom") %>%
+  count(date_issued, word2, sort = TRUE)
+```
+
+#### --- Analyzing bigrams: tf-idf
+> There are advantages and disadvantages to examining the tf-idf of bigrams rather than individual words. Pairs of consecutive words might capture structure that isn’t present when one is just counting single words, and _may provide context that makes tokens more understandable_. However, ***the per-bigram counts are also sparser*** (a typical two-word pair is rarer than either of its component words). 
+
+```{r}
+bigram_tf_idf <- abs_all_bigram %>% 
+  # reconstruct the  separated + filtered + united
+  separate(bigram, c("word1", "word2"), sep = " ") %>% 
+   filter(!word1 %in% stop_words$word) %>%
+   filter(!word2 %in% stop_words$word) %>% 
+  # Put the two word columns back together
+  unite(bigram, word1, word2, sep = " ") %>% 
+
+  # then on that calculate tf-idf
+ count(date_issued, bigram) %>%
+  bind_tf_idf(bigram, date_issued, n) %>%
+  arrange(desc(tf_idf))
+
+bigram_tf_idf
+```
+
+
+#### --- (Using bigrams to provide context in sentiment analysis)
+...
+
+#### --- Visualizing a network of bigrams with `ggraph`
+
+The `igraph` package has many powerful functions for manipulating and analyzing networks. 
+
+One way to create an igraph object from tidy data is the `igraph::graph_from_data_frame()` function, which takes a data frame of edges with columns for “from”, “to”, and edge attributes (in this case "n"):
+
+> If vertices is NULL, then the first two columns of df (e.g. word1 = FROM & word2 = TO) are used as a symbolic edge list and additional columns (e.g. n) as edge attributes/weight. The names of the attributes are taken from the names of the columns. 
+
+Here, a graph can be constructed from the tidy object `bigrams_counts_clean` since it has three variables.  
+```{r bi_igraph}
+library(igraph) # Network Analysis and Visualization
+bigrams_counts_clean
+
+# filter for only relatively common combinations
+bigram_graph <- bigrams_counts_clean %>%
+  filter(n > 2) %>%
+  # create an igraph graph from data frames containing the (symbolic) edge list and edge/vertex attributes. 
+  igraph::graph_from_data_frame()
+```
+
+Then we can convert an igraph object into a `ggraph` with the `ggraph` function (extension of `ggplot2`), after which we can add layers to it, much like layers are added in `ggplot2.` For example, for a basic graph we need to add three layers: "nodes", "edges", and "text".
+```{r bi_igraph_ggraph}
+#convert an igraph object into a ggraph with the ggraph function
+library(ggraph) # An Implementation of Grammar of Graphics for Graphs and Networks
+set.seed(2022)
+
+ggraph(bigram_graph, layout = "fr") +
+  # needed basic arguments passed
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1)
+```
+
+> I can already see some common center nodes 
+
+We conclude with a few polishing operations to make a better looking graph (Figure 4.5):
+
+  + We add the `edge_alpha` aesthetic to the link  layer to make links transparent based on how common or rare the bigram is (= n)
+  + We add directionality with an arrow, constructed using `grid::arrow()`, including an `end_cap` option that tells the arrow to end before touching the node
+  + We tinker with the options to the node layer to make the nodes more attractive (larger, blue points)
+  + We add a theme that’s useful for plotting networks, `theme_void()`
+
+```{r}
+set.seed(2022)
+
+a <- grid::arrow(type = "closed", length = unit(.08, "inches"))
+
+abs_bigram_graph <- ggraph(bigram_graph, layout = "fr") +
+  # LINK layer
+  geom_edge_link(aes(edge_alpha = n), # transparency of link based on n
+                 show.legend = FALSE,
+                 # direction
+                 arrow = a,
+                 # arrow to end before touch node
+                 end_cap = circle(.08, 'inches')) +
+  # NODE layer
+  geom_node_point(color = "lightblue", size = 3) +
+  geom_node_text(aes(label = name), 
+                 vjust = 1, hjust = 1,
+                 check_overlap = TRUE, 
+                 repel = FALSE  # adds more lines
+                 
+  ) +
+  # THEME
+  theme_void() +
+  ggtitle("Word Network in WDR's abstracts")  
+
+abs_bigram_graph
+
+abs_bigram_graph %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "abs_bigram_graph.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "abs_bigram_graph.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
+```
+
+
+##  III.iv) Concordances -> KWIC -> Collocation   
+{Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)}
+{Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)}
+https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html
+
+
+
+In the language sciences, ***concordancing*** refers to the extraction of words from a given text or texts. Concordances are commonly displayed in the form of ***keyword-in-context displays (KWICs)*** where the search term is shown in context, i.e. with preceding and following words. 
+
+Concordancing are central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. As concordances allow us to analyze the context in which a word or phrase occurs and provide frequency information about word use, they also enable us to analyze collocations or the collocational profiles of words and phrases (Stefanowitsch 2020, 50–51). Finally, concordances can also be used to extract examples and it is a very common procedure.
+
+#### --- Concordances
+<!-- + Concordances: [Libro Agnese - ITA](https://www.agnesevardanega.eu/books/analisi-testuale-2021/05-esplorazione.html#espl-quanteda) -->
+https://ladal.edu.au/textanalysis.html#Concordancing
+https://www.quantumjitter.com/project/deal/
+```{r}
+# I use again data = abs_words
+library(quanteda) # Quantitative Analysis of Textual Data
+
+abs_q_corpus <- quanteda::corpus(as.data.frame(abs_all), 
+                               docid_field = "title",
+                               text_field = "abstract",
+                               meta = list("id", "date_issued")
+)
+
+summary(abs_q_corpus)
+class(abs_q_corpus)
+
+# create kwic (keywords-in-context)
+# exe 1 --- 
+# Step 1) tokens
+abs_q_tokens <- tokens(x = abs_q_corpus,
+                       remove_punct = TRUE,
+                       remove_symbols = TRUE#,
+                       #remove_numbers = TRUE
+ )
+# Step 2) kwic (exe )
+kwic_abs_data <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
+                                 # define pattern
+                                 pattern = phrase(c("data", "knowledge")),
+                                 # define window size
+                                 window = 5) %>%
+    # convert into a data frame
+    as_tibble() %>%
+    left_join(abs_all, by = c("docname" =  "title")) %>%  
+    # remove superfluous columns
+     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
+  #  slice_sample( n = 50) %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+kwic_abs_data
+class(kwic_abs_data)
+
+# exe 2 --- 
+kwic_abs_regul <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
+                                 # define pattern
+                                 pattern = "regulat*",
+                                 # define window size
+                                 window = 5) %>%
+    # convert into a data frame
+    as_tibble() %>%
+    left_join(abs_all, by = c("docname" =  "title")) %>%  
+    # remove superfluous columns
+     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
+  #  slice_sample( n = 50) %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+kwic_abs_regul
+
+# exe 3 --- 
+kwic_abs_genderequal <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
+                                 # define pattern
+                                 pattern = quanteda::phrase("gender equality"),
+                                 # define window size
+                                 window = 5) %>%
+    # convert into a data frame
+    as_tibble() %>%
+    left_join(abs_all, by = c("docname" =  "title")) %>%  
+    # remove superfluous columns
+     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
+  #  slice_sample( n = 50) %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+kwic_abs_genderequal
+```
+
+
+
+
+
+Iterate `quanteda::kwic` over a vector of tokens
+```{r}
+keywords <- c("gap", "ODA", "globalization")
+keywords_reg <- c("sustainab*", "conditionalit*", "regulat*")
+keywords_phrase <- c("climate change", "investment climate", "pro-poor", "gender equality", "maximizing finance")
+
+# one by one.... 
+kwic_k_gap <- quanteda::kwic(x = abs_q_tokens, 
+               pattern =  "gap",
+               window = 5 )
+
+class(abs_q_tokens)
+class(kwic_k_gap)
+
+kwic_k_ODA <- quanteda::kwic(x = abs_q_tokens, 
+               pattern =  "ODA",
+               window = 5 )
+
+kwic_k_globalization <- quanteda::kwic(x = abs_q_tokens, 
+               pattern =  "globalization",
+               window = 5 )
+# # all togetha
+# map(keywords, 
+#      ~quanteda::kwic(abs_q_tokens,
+#                     pattern =  .x,
+#                     window = 5) %>% 
+#       as_tibble()  
+# )
+
+# all togetha  2
+outputs_key <- map(keywords, 
+               ~quanteda::kwic(abs_q_tokens,
+                               pattern =  .x,
+                               window = 5) %>% 
+                 as_tibble() %>%
+                 left_join(abs_all, by = c("docname" =  "title")) %>%  
+                 # remove superfluous columns
+                 dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) 
+)
+
+# all togetha 3
+n = length(keywords)
+
+ 
+# print)
+outputs_key[[1]] %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+outputs_key[[2]] %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+outputs_key[[3]] %>% 
+   kbl(align = "c") %>% 
+    kable_styling()
+
+# walk(outputs_key,
+#      ~print)
+ 
+```
+
+
+#### --------------  STOP ------------------
+
+
+#### --- keyword-in-context (KWIC) 
+
+
+#### --- Collocation
+<!-- + Collocation - words commonly appearing near each other As in [Computing for the Social Sciences](https://cfss.uchicago.edu/notes/text-analysis-workflow/)\ -->
+
+**Collocations** are words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries. Any word in any given language has collocations, i.e., others words that are attracted/attractive to that word. This allows us to anticipate what word comes next and collocations are context/text type specific. There are various different statistical measures are used to define the strength of the collocations, like the Mutual Information (MI) score and log-likelihood (see here for an over view of different association strengths measures).
+
+```{r}
+
+```
+
+
+
+
+
+#### --- Counting and correlating among sections
+
+The `widyr` package makes operations such as computing counts and correlations easy, by simplifying the pattern of “widen data, perform an operation, then re-tidy data”. We’ll focus on a set of functions that make pairwise comparisons between groups of observations (for example, between documents, or sections of text).
+```{r}
+abs_section_words <- abs_all %>%
+  mutate(text = stringi::stri_split_lines(abstract, omit_empty = FALSE)
+) %>% 
+  #filter(date_issued == "1978") %>%
+  mutate(section = row_number(.$abstract) %/% 5) %>%
+  filter(section > 0) %>%
+  unnest_tokens(output =  word,
+                input = abstract) %>%
+  filter(!word %in% stop_words$word)
+ 
+```
+
+
+
+
+## > > III.vi) Sentiment Analysis 
+https://cfss.uchicago.edu/notes/harry-potter-exercise/
+
+
+## III.v) > >  Topic modeling
++ Robinson, Silge 
++ https://cfss.uchicago.edu/notes/topic-modeling/
++ https://m-clark.github.io/text-analysis-with-R/topic-modeling.html
++ AH: https://datavizf18.classes.andrewheiss.com/class/11-class/#topic-modeling
+
+Topic modeling is a method for unsupervised classification of documents (blog post, news articles), similar to clustering on numeric data, which **finds natural groups of items** even when we’re not sure what we’re looking for.
+
+Methods:
+
++ **Latent Dirichlet allocation (LDA)** is a particularly popular method for fitting a topic model -> It treats each document as a mixture of topics, and each topic as a mixture of words. _The basic idea is that we’ll take a whole lot of features and boil them down to a few ‘topics’_. In this sense LDA is akin to discrete PCA.
+
+#### --- LDA with `topicmodels` package 
+```{r}
+
+```
+ 
+ 
+#### ---  Word-topic probabilities
+ 
+#### ---  Document-topic probabilities
+
+#### ---  Alternative LDA implementations
+
+## > > III.vii) Supervised classification with text data
+https://cfss.uchicago.edu/notes/supervised-text-classification/
+we can now use machine learning models to classify text into specific sets of categories. This is known as supervised learning.
+
+1. 
+
+
+# -------------- TO do \| To Rethink ------------------
+
+-   DAG graph of my research question
+-   metadata $downloads? on WDRs ? (I am using "altmetrics" but I don't know how important it is)
+-   create my own stop_words list (which excludes also "date_issued", "report", etc)
+-   leggere [@yusuf_development_2008]
+-   need to create groups "umbrella subjects"
+- Which of this bigram might be a SLOGAN?
+
+# Reference Tutorials
+
+@robinson_1_2022 
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)\ 
+
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)\
+
+[Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)\
+
+[TidyTuesday casts on tidytext](https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations)\
+
+  1. ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
+  2. ✔️ [TidyTuesday Tweets -  2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
+  3. [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression | sentiment lexicon,
+  4. [Simpsons Guest Stars 	2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
+  5. [Horror Movies 	2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package | Lasso regression
+  6. [The Office 	2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel | glmnet package to run a cross-validated LASSO regression
+  7. [Animal Crossing 	2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time | geom_text to visualize what words are associated with positive/negative reviews |topic modelling
+
