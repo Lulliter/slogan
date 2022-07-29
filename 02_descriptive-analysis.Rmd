@@ -35,12 +35,12 @@ pacman::p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 # Knitr options
 knitr::opts_chunk$set(
   echo = FALSE, warning = FALSE, message = FALSE,
-  tidy.opts = list(width.cutoff = 120),  # Code width
+  tidy.opts = list(width.cutoff = 120)#,  # Code width
   #fig.retina = 3, dpi = conditional_dpi,
   #fig.width = 7, fig.asp = 0.618,
   #fig.align = conditional_align, out.width = "100%",
-  fig.path = "analysis/output/figures/",
-  cache.path = "analysis/output/_cache/"#,
+  #fig.path = "analysis/output/figures/",
+  #cache.path = "analysis/output/_cache/"#,
   # fig.process = function(x) {  # Remove "-1" from figure names
   #   x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
   #   if (file.rename(x, x2)) x2 else x
@@ -50,13 +50,21 @@ knitr::opts_chunk$set(
 
 # WHY FOCUS ON THE WDRs?
 
-> The report has served as one of the princi- pal and most widely read vehicles for encapsulating the Bank's knowledge of and policy recommendations on key development trends." ---Justin Lin, Senior Vice President and Chief Economist, The World Bank [@yusuf_development_2008]
+> The yearly World Bank's publication ("World Development Report") has served as one of the principal and most widely read vehicles for encapsulating the Bank's knowledge of and policy recommendations on key development trends." ---Justin Lin, Senior Vice President and Chief Economist, The World Bank [@yusuf_development_2008]
 
-> The intense interest aroused by a paper on global trends and the prospects for developing countries issued in 1974 by Hollis Chenery, the Bank's chief economist, encour- aged McNamara to pursue the idea of an annual publication that took the pulse of the international economy, that stimulated the search for answers, and that synthesized the "truth" as it was revealed. Such a book could become a vehicle for the Bank to lead, to propagate its ideas, to mobilize official development assistance, and to win adherence for a renewed push to develop. [@yusuf_development_2008]
+> The intense interest aroused by a paper on global trends and the prospects for developing countries issued in 1974 by Hollis Chenery, the Bank's chief economist, encouraged McNamara to pursue the idea of an annual publication that took the pulse of the international economy, that stimulated the search for answers, and that synthesized the "truth" as it was revealed. Such a book could become a vehicle for the Bank to lead, to propagate its ideas, to mobilize official development assistance, and to win adherence for a renewed push to develop. [@yusuf_development_2008]
 
-# WHAT ARE WDRs?
+# OVERARCHING RESEARCH QUESTION
 
-a trend-maker or a trend-follower?
+## What is the purpose of WDRs?
+
+-   
+
+    a)  a trend-follower ("synthesizing the "truth" as it was revealed")? or
+
+-   
+
+    b)  a policy trend-maker ("vehicle for the Bank to lead")
 
 ## Is it an observation of what is emerging as important?
 
@@ -66,7 +74,7 @@ a trend-maker or a trend-follower?
 
 > With the publication of the first of an annual series, the Bank took it upon itself to try to filter and systematize the knowledge on development so as to enhance the operational utility of such knowledge. In producing the WDR, the Bank was not seeking intellectual leadership or attempting to break new ground in the development field. Instead, the WDR was seen as a vehicle for persuading the Bank's member governments to broadly unite behind a strategy and to cooperate in making it succeed. [@yusuf_development_2008, p.34]
 
-> The three best remembered WDRs are those on fertility, on poverty, and on health. - The ***1984 fertility report*** took the previously standard, though even then rapidly fading, view that population growth was indeed a problem for economic development, that more mouths meant less for each (the lump fallacy), and that the "tragedy of the commons" meant that the individual decisions of parents about their fertility were unlikely to lead to good outcomes. [... ] the Bank dropped the issue after the report, and indeed the tide was turning against the international population control movement from the mid-1980s on. Yet much harm had already been done, as documented in Matthew Con- nelly's (2008) Fatal Misconceptions [...]. - The ***1990 poverty report*** is famous for introducing the international dollar-a-day poverty standard and the associated counts. These counts have continued to date, regularly updated by Martin Ravallion and his team, who were also the original authors. They have had an immense effect on development practice and on development debate, not least through the use of the dollar-a-day standard to define the first of the Millennium Development Goals (MDGs) and the appointment of the Bank as the subsequent scorekeeper. - The ***1993 WDR on health*** is also famous, mostly for its introduction of the disability-adjusted life year (DALY), although this concept and its subsequent sweeping of the world is attributable less to Bank researchers than to Chris Murray, who was a consultant to the WDR. The DALY, like the dollar-a-day standard, has become a central tool of health measurement around the world for computing the burden of disease associated with dif- ferent conditions, for permitting a combination of mortality and morbidity, and for assigning priorities. But the 1993 WDR, more than any other Bank report, put the Bank on the map as a major player in global health. It is also famous for reputedly persuading Bill Gates that international health was important, certainly an excellent example of the WDR mobilizing global opinion and shaping strategy. [Angus Deaton in @yusuf_development_2008]
+> The three best remembered WDRs are those on fertility, on poverty, and on health. + The ***1984 fertility report*** took the previously standard, though even then rapidly fading, view that population growth was indeed a problem for economic development, that more mouths meant less for each (the lump fallacy), and that the "tragedy of the commons" meant that the individual decisions of parents about their fertility were unlikely to lead to good outcomes. [... ] the Bank dropped the issue after the report, and indeed the tide was turning against the international population control movement from the mid-1980s on. Yet much harm had already been done, as documented in Matthew Connelly's (2008) Fatal Misconceptions [...]. + The ***1990 poverty report*** is famous for introducing the international dollar-a-day poverty standard and the associated counts. These counts have continued to date, regularly updated by Martin Ravallion and his team, who were also the original authors. They have had an immense effect on development practice and on development debate, not least through the use of the dollar-a-day standard to define the first of the Millennium Development Goals (MDGs) and the appointment of the Bank as the subsequent scorekeeper. + The ***1993 WDR on health*** is also famous, mostly for its introduction of the disability-adjusted life year (DALY), although this concept and its subsequent sweeping of the world is attributable less to Bank researchers than to Chris Murray, who was a consultant to the WDR. The DALY, like the dollar-a-day standard, has become a central tool of health measurement around the world for computing the burden of disease associated with different conditions, for permitting a combination of mortality and morbidity, and for assigning priorities. But the 1993 WDR, more than any other Bank report, put the Bank on the map as a major player in global health. It is also famous for reputedly persuading Bill Gates that international health was important, certainly an excellent example of the WDR mobilizing global opinion and shaping strategy. [Angus Deaton in @yusuf_development_2008]
 
 ... the World Development Indicators (WDI), later spun off into an immensely successful stand-alone product.
 
@@ -78,11 +86,15 @@ According to Kemal Derviş, more than politics and political ideology what infl
 
 ## Is is more about ideas or facts?
 
-Something new in the 1970s (not inundated by facts as we are today), \>the World Bank used its resources and its access to data to generate a decent statistical picture of development. For the first time, many statements on the dynamics of development could be buttressed by facts. For the first time, readers were given a good sense of the magnitudes involved, and this insight was vital for determining the scale of problems and for calibrating policies. In effect, the WDRs helped to make development economics more numerate and altered the nature of discourse. [@yusuf_development_2008, p.37] Figure \@ref(fig:common_w_tit) shows ... 
+Something new in the 1970s (not inundated by facts as we are today),
+
+> the World Bank used its resources and its access to data to generate a decent statistical picture of development. For the first time, many statements on the dynamics of development could be buttressed by facts. For the first time, readers were given a good sense of the magnitudes involved, and this insight was vital for determining the scale of problems and for calibrating policies. In effect, the WDRs helped to make development economics more numerate and altered the nature of discourse. [@yusuf_development_2008, p.37]
+
+Figure \@ref(fig:CommonWordTit) shows ...
 
 # WDRs "winning ideas" over time
 
-```{r common_w_tit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
+```{r CommonWordTit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
 knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_in_title.png"))
 ```
 
@@ -146,11 +158,11 @@ knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_
 
 ## [viz x ] frequency of words within subsets of topics
 
-It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1]. 
-
-See figure \@ref(fig:gg_pov_tfidf) for poverty....
+It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1].
 
 [^1]: The TF-IDF basically finds the important words that distinguish a specific documents within a corpus of related ones. Technically, it is a word frequency that is weighted by decreasing the weight of common words that occur across all documents and increasing the weight for words that are more rare in the collection as a whole.
+
+See figure \@ref(fig:gg_pov_tfidf) for poverty....
 
 ```{r gg_pov_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about poverty", fig.topcaption=TRUE}
 knitr::include_graphics(here("analysis", "output", "figures", "gg_pov_tfidf.png"))

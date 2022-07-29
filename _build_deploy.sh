@@ -20,6 +20,8 @@ Rscript -e "rmarkdown::render_site(encoding = 'UTF-8')"
 # check
 git status
 # Stage
+git add .gitignore 01a_intro_text_analytics.Rmd  01b_WDR_data-exploration_abstracts.Rmd 01c_WDR_data-exploration_subjects.Rmd 02_descriptive-analysis.Rmd
+git add  docs/analysis/*  analysis/* img/phi.png
 git add -u # git add --all  # git add data/derived_data/
 # Commit (way 1)
 # git commit -m "worked on WRD from API" -m "Put work in _my_stuff/_01_data-overview.Rmd bc it exe But not knit  "

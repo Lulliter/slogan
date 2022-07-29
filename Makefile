@@ -1,8 +1,18 @@
+# ------------------ Recreate analysis using Mekafile ------------------ #
+# [REFERENCE:
+# ---- https://www.r-bloggers.com/2015/03/makefiles-and-rmarkdown/
+# ]
+
+
+
+
+
+
 # ------------------ Deploy Website using Mekafile ------------------ #
 # [devo capire e modificare ...]
-# [REFERENCE:  https://github.com/saskiaotto/bsh_r_kurs/blob/master/Makefile ]
-
-
+# [REFERENCE:
+# ---- https://www.r-bloggers.com/2015/03/makefiles-and-rmarkdown/
+# ]
 
 # ----- Define Makefile Variables  ----- #
 RMD_FILES = $(wildcard *.Rmd)
