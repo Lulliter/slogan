@@ -1,5 +1,5 @@
 ---
-title: "Process and merge data"
+title: "Process and merge data - WDR abstracts"
 author: "Luisa M. Mimmi"
 date: "Last run: `r format(Sys.time(), '%F')`"
 output: 
@@ -34,7 +34,7 @@ pacman::p_load(here,
                paint, 
                DT, # an R interface to the JavaScript library DataTables
                knitr,
-               kableExtra,
+               kableExtra, flextable,
                splitstackshape,  #Stack and Reshape Datasets After Splitting Concatenated Values
                tm, # Text Mining Package
                tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
@@ -48,7 +48,12 @@ pacman::p_load(here,
                SnowballC, # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
                HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis
                sentencepiece, # Text Tokenization using Byte Pair Encoding and Unigram Modelling
-               sysfonts
+               sysfonts, 
+               ggdendro,
+               network,
+               GGally,
+               FactoMineR,
+               factoextra
 )
 
 # Plot Theme(s) -------------------------------------
@@ -62,15 +67,16 @@ mycolors_contrast <- c("#E7B800", "#a19100", "#0084e6","#005ca1", "#e60066" )
 # Function(s) -------------------------------------
 
 # Data -------------------------------------
- 
-# Tables [AH knit setup when using kbl() ]------------------------------------
-knit_print.data.frame <- function(x, ...) {
-  res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
-  asis_output(res)
-}
 
-registerS3method("knit_print", "data.frame", knit_print.data.frame)
-registerS3method("knit_print", "grouped_df", knit_print.data.frame)
+# -------------------- {cut bc made too heavy} -------------------------------------
+# # Tables [AH knit setup when using kbl() ]------------------------------------
+# knit_print.data.frame <- function(x, ...) {
+#   res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
+#   asis_output(res)
+# }
+# 
+# registerS3method("knit_print", "data.frame", knit_print.data.frame)
+# registerS3method("knit_print", "grouped_df", knit_print.data.frame)
 ```
 
 
@@ -456,7 +462,7 @@ Here’s the general process for tagging (or “annotating”) text with the cle
 
 
 
-# III) -------------- [ ABSTRACTS ]  ------------------
+# III) ABSTRACTS
 
 ## III.i) Tokenization
 Where a word is more abstract, a **“type”** is a concrete term used in actual language, and a **“token”** is the particular instance we’re interested in (e.g. abstract things (‘wizards’) and individual instances of the thing (‘Harry Potter.’).
@@ -1132,6 +1138,7 @@ freq_by_rank %>%
 ## III.iv) Relationships between words: n-grams and correlations
 
 https://www.tidytextmining.com/ngrams.html
+https://bookdown.org/Maxine/tidy-text-mining/tokenizing-by-n-gram.html
 
 >The one-token-per-row framework can be extended from single words to n-grams and other meaningful units of text(e.g. to see which words tend to follow others immediately, or that tend to co-occur within the same documents.)
 
@@ -1175,17 +1182,19 @@ head(abs_all_bigram[c("date_issued","bigram")], 10)
 ```{r}
 bigrams_counts <- abs_all_bigram %>% 
    count(bigram, sort = TRUE)
+
+head(bigrams_counts)
 ```
 > Not surprisingly, a lot are pairs of stopwords  
 
-Here, I can use `tidyr’s separate()`, which splits a column into multiple based on a delimiter. This separate it into two columns, “word1” and “word2”, to _then remove cases where either is a stop-word_.
+Here, I can use `tidyr::separate()`, which splits a column into multiple based on a delimiter. This separate it into two columns, “word1” and “word2”, to _then remove cases where either is a stop-word_.
 
 In other analyses, we may want to work with the recombined words. `tidyr’s unite()` function is the inverse of `separate()`, and lets us recombine the columns into one. 
 
 ```{r bigram_op}
 # separate words 
 bigrams_separated <- abs_all_bigram %>% 
-  separate(bigram, c("word1", "word2"), sep = " ")
+  tidyr::separate(bigram, c("word1", "word2"), sep = " ")
 
 # since many are bigram with a stopword
 bigrams_filtered <- bigrams_separated %>% 
@@ -1224,12 +1233,10 @@ bigrams_counts_clean <- bigrams_filtered %>%
   # Count observations by group
   count(word1, word2, sort = TRUE)
 
-bigrams_counts_clean # cleaned up stopwords
-
-
+head(bigrams_counts_clean, 20) # cleaned up stopwords
 ```
 
-<i class="fa fa-exclamation-circle" style="color: blue"></i> ...Maybe some of these bigram with high tf_idf
+<i class="fa fa-exclamation-circle" style="color: blue"></i> ...Maybe some of these bigram with high tf-idf
 
 + external finance
 + gender equality
@@ -1291,7 +1298,7 @@ bigram_tf_idf <- abs_all_bigram %>%
   bind_tf_idf(bigram, date_issued, n) %>%
   arrange(desc(tf_idf))
 
-bigram_tf_idf
+head(bigram_tf_idf)
 ```
 
 
@@ -1378,185 +1385,13 @@ abs_bigram_graph %T>%
 ```
 
 
-##  III.iv) Concordances -> KWIC -> Collocation   
-{Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)}
-{Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)}
-https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html
-
-
-
-In the language sciences, ***concordancing*** refers to the extraction of words from a given text or texts. Concordances are commonly displayed in the form of ***keyword-in-context displays (KWICs)*** where the search term is shown in context, i.e. with preceding and following words. 
-
-Concordancing are central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. As concordances allow us to analyze the context in which a word or phrase occurs and provide frequency information about word use, they also enable us to analyze collocations or the collocational profiles of words and phrases (Stefanowitsch 2020, 50–51). Finally, concordances can also be used to extract examples and it is a very common procedure.
-
-#### --- Concordances
-<!-- + Concordances: [Libro Agnese - ITA](https://www.agnesevardanega.eu/books/analisi-testuale-2021/05-esplorazione.html#espl-quanteda) -->
-https://ladal.edu.au/textanalysis.html#Concordancing
-https://www.quantumjitter.com/project/deal/
-```{r}
-# I use again data = abs_words
-library(quanteda) # Quantitative Analysis of Textual Data
-
-abs_q_corpus <- quanteda::corpus(as.data.frame(abs_all), 
-                               docid_field = "title",
-                               text_field = "abstract",
-                               meta = list("id", "date_issued")
-)
-
-summary(abs_q_corpus)
-class(abs_q_corpus)
-
-# create kwic (keywords-in-context)
-# exe 1 --- 
-# Step 1) tokens
-abs_q_tokens <- tokens(x = abs_q_corpus,
-                       remove_punct = TRUE,
-                       remove_symbols = TRUE#,
-                       #remove_numbers = TRUE
- )
-# Step 2) kwic (exe )
-kwic_abs_data <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
-                                 # define pattern
-                                 pattern = phrase(c("data", "knowledge")),
-                                 # define window size
-                                 window = 5) %>%
-    # convert into a data frame
-    as_tibble() %>%
-    left_join(abs_all, by = c("docname" =  "title")) %>%  
-    # remove superfluous columns
-     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
-  #  slice_sample( n = 50) %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-kwic_abs_data
-class(kwic_abs_data)
-
-# exe 2 --- 
-kwic_abs_regul <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
-                                 # define pattern
-                                 pattern = "regulat*",
-                                 # define window size
-                                 window = 5) %>%
-    # convert into a data frame
-    as_tibble() %>%
-    left_join(abs_all, by = c("docname" =  "title")) %>%  
-    # remove superfluous columns
-     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
-  #  slice_sample( n = 50) %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-kwic_abs_regul
-
-# exe 3 --- 
-kwic_abs_genderequal <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
-                                 # define pattern
-                                 pattern = quanteda::phrase("gender equality"),
-                                 # define window size
-                                 window = 5) %>%
-    # convert into a data frame
-    as_tibble() %>%
-    left_join(abs_all, by = c("docname" =  "title")) %>%  
-    # remove superfluous columns
-     dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
-  #  slice_sample( n = 50) %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-kwic_abs_genderequal
-```
-
-
-
-
-
-Iterate `quanteda::kwic` over a vector of tokens
-```{r}
-keywords <- c("gap", "ODA", "globalization")
-keywords_reg <- c("sustainab*", "conditionalit*", "regulat*")
-keywords_phrase <- c("climate change", "investment climate", "pro-poor", "gender equality", "maximizing finance")
-
-# one by one.... 
-kwic_k_gap <- quanteda::kwic(x = abs_q_tokens, 
-               pattern =  "gap",
-               window = 5 )
-
-class(abs_q_tokens)
-class(kwic_k_gap)
-
-kwic_k_ODA <- quanteda::kwic(x = abs_q_tokens, 
-               pattern =  "ODA",
-               window = 5 )
-
-kwic_k_globalization <- quanteda::kwic(x = abs_q_tokens, 
-               pattern =  "globalization",
-               window = 5 )
-# # all togetha
-# map(keywords, 
-#      ~quanteda::kwic(abs_q_tokens,
-#                     pattern =  .x,
-#                     window = 5) %>% 
-#       as_tibble()  
-# )
-
-# all togetha  2
-outputs_key <- map(keywords, 
-               ~quanteda::kwic(abs_q_tokens,
-                               pattern =  .x,
-                               window = 5) %>% 
-                 as_tibble() %>%
-                 left_join(abs_all, by = c("docname" =  "title")) %>%  
-                 # remove superfluous columns
-                 dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) 
-)
-
-# all togetha 3
-n = length(keywords)
-
- 
-# print)
-outputs_key[[1]] %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-outputs_key[[2]] %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-outputs_key[[3]] %>% 
-   kbl(align = "c") %>% 
-    kable_styling()
-
-# walk(outputs_key,
-#      ~print)
- 
-```
-
-
-#### --------------  STOP ------------------
-
-
-#### --- keyword-in-context (KWIC) 
-
-
-#### --- Collocation
-<!-- + Collocation - words commonly appearing near each other As in [Computing for the Social Sciences](https://cfss.uchicago.edu/notes/text-analysis-workflow/)\ -->
-
-**Collocations** are words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries. Any word in any given language has collocations, i.e., others words that are attracted/attractive to that word. This allows us to anticipate what word comes next and collocations are context/text type specific. There are various different statistical measures are used to define the strength of the collocations, like the Mutual Information (MI) score and log-likelihood (see here for an over view of different association strengths measures).
-
-```{r}
-
-```
-
-
-
-
-
 #### --- Counting and correlating among sections
+[Notes for “Text Mining with R: A Tidy Approach”](https://bookdown.org/Maxine/tidy-text-mining/counting-and-correlating-pairs-of-words-with-widyr.html)
 
-The `widyr` package makes operations such as computing counts and correlations easy, by simplifying the pattern of “widen data, perform an operation, then re-tidy data”. We’ll focus on a set of functions that make pairwise comparisons between groups of observations (for example, between documents, or sections of text).
+The `widyr` package makes operations such as computing counts and correlations easy, by simplifying the pattern of _“widen data -> perform an operation -> then re-tidy data”_. We’ll focus on a set of functions that make pairwise comparisons between groups of observations (for example, between documents, or sections of text).
+
 ```{r}
+# divide abstracts into 5-line sections 
 abs_section_words <- abs_all %>%
   mutate(text = stringi::stri_split_lines(abstract, omit_empty = FALSE)
 ) %>% 
@@ -1566,10 +1401,664 @@ abs_section_words <- abs_all %>%
   unnest_tokens(output =  word,
                 input = abstract) %>%
   filter(!word %in% stop_words$word)
- 
+```
+
+`widyr::pairwise_counts()` counts the number of times each pair of _items_ (words) appear together within a group defined by _“feature”_ (section). 
+> note it still returns a tidy data frame, although the underlying computation took place in a matrix form :
+
+```{r}
+abs_section_words %>% 
+  widyr::pairwise_count(item = word, feature = section, sort = TRUE) %>% 
+# Since pairwise_count records both the counts of (word_A, word_B) and 
+#(word_B, word_B), it does not matter we filter at item1 or item2
+  filter(item1 == "developing")
+
+```
+
+#### --- Pairwise correlation
+We may want to examine correlation among words, which indicates how often they appear together relative to how often they appear separately.
+
+we compute the $\phi$ coefficient. Introduced by Karl Pearson, this measure is similar to the Pearson correlation coefficient in its interpretation. In fact, a Pearson correlation coefficient estimated for two binary variables will return the $\phi$ coefficient. The phi coefficient is related to the chi-squared statistic for a 2 × 2 contingency table 
+
+$$
+\phi = \sqrt{\frac{\chi^2}{n}}
+$$
+
+where $n$ denotes sample size. In the case of pairwise counts, $\phi$ is calculated by 
+```{r, echo = FALSE, out.width = "120%"}
+knitr::include_graphics("img/phi.png")
 ```
 
 
+$$
+\phi = \frac{n_{11}n_{00} - n_{10}n_{01}}{\sqrt{n_{1·}n_{0·}n_{·1}n_{·0}}}
+$$
+
+We see, from the above equation, that $\phi$ is "standardized" by individual counts, so various word pair with different individual frequency can be compared to each other:  
+
+The computation of $\phi$ can be simply done by `pairwise_cor` (other choice of correlation coefficients specified by `method`). The procedure can be somewhat computationally expensive, so we filter out uncommon words
+
+```{r}
+word_cors <- abs_section_words %>% 
+  add_count(word) %>% 
+  filter(n >= 20) %>% 
+  select(-n) %>%
+  pairwise_cor(word, section, sort = TRUE)
+
+```
+
+Which word is most correlated with "poor"? [health,people,governments, data ]
+
+```{r}
+word_cors %>% 
+  filter(item1 == "poor")
+```
+
+This lets us pick particular interesting words and find the other words most associated with them  
+
+```{r, fig.height = 10, fig.width = 10}
+source("R/f_facetted_bar_plot.R")
+
+word_cors %>%
+  filter(item1 %in% c( "institutions", "people", "governments", "markets")) %>%
+  group_by(item1) %>%
+  top_n(6) %>%
+  ungroup() %>%
+  facet_bar(y = item2, x = correlation, by = item1)
+```
+
+How about a network visualization to see the overall correlation pattern? 
+
+```{r, fig.height = 10, fig.width = 10}
+word_cors %>%
+  filter(correlation > .15) %>%
+  tidygraph::as_tbl_graph() %>%
+  ggraph(layout = "fr") +
+  geom_edge_link(aes(edge_alpha = correlation), show.legend = FALSE) +
+  geom_node_point(color = "lightblue", size = 5) +
+  geom_node_text(aes(label = name), repel = TRUE)
+```
+
+
+Note that unlike the bigram analysis, the relationships here are **symmetrical, rather than directional** (there are no arrows). 
+
+##  III.iv) Concordances -> KWIC -> Collocation   
+
++ {Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)}
++ {Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)}
++ https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html
+
+In the language sciences, ***concordancing*** refers to the extraction of words from a given text or texts. Concordances are commonly displayed in the form of ***keyword-in-context displays (KWICs)*** where the search term is shown in context, i.e. with preceding and following words. 
+
+Concordancing is central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. As concordances allow us to analyze the context in which a word or phrase occurs and provide frequency information about word use, they also enable us to analyze collocations or the collocational profiles of words and phrases (Stefanowitsch 2020, 50–51). Finally, concordances can also be used to extract examples and it is a very common procedure.
+
+#### --- Concordances
+<!-- + Concordances: [Libro Agnese - ITA](https://www.agnesevardanega.eu/books/analisi-testuale-2021/05-esplorazione.html#espl-quanteda) -->
++ https://ladal.edu.au/textanalysis.html#Concordancing
++ https://www.quantumjitter.com/project/deal/
+
+> Using `quanteda` 
+
+#### --- create kwic with individual keyword | purrr + print + save png
+```{r kwic-kyw}
+# I use again data = abs_words
+abs_q_corpus <- quanteda::corpus(as.data.frame(abs_all), 
+                               docid_field = "title",
+                               text_field = "abstract",
+                               meta = list("id", "date_issued")
+)
+ 
+# --- example with individual keyword 
+# Step 1) tokens
+abs_q_tokens <- tokens(x = abs_q_corpus,
+                       remove_punct = TRUE,
+                       remove_symbols = TRUE#,remove_numbers = TRUE
+ )
+# Step 2) kwic (individual exe )
+# kwic_abs_data <- quanteda::kwic(x = abs_q_tokens, # define text(s) 
+#                                  # define pattern
+#                                  pattern = phrase(c("data", "knowledge")),
+#                                  # define window size
+#                                  window = 5) %>%
+#     # convert into a data frame
+#     as_tibble() %>%
+#     left_join(abs_all, by = c("docname" =  "title")) %>%  
+#     # remove superfluous columns
+#      dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) %>%
+#   #  slice_sample( n = 50) %>% 
+#    kbl(align = "c") # %>% kable_styling()
+ 
+# Step 2) kwic (on vector)
+# Iterate `quanteda::kwic` over a vector of tokens | regex-modified-keywords
+keywords <- c("data", "globalization", "sustainab*", "conditionalit*", "regulat*", "ODA"  )
+
+# apply iteratively kwic over a vector of keywords
+outputs_key <-  map(keywords, 
+      ~quanteda::kwic(abs_q_tokens,
+                      pattern =  .x,
+                      window = 5) %>% 
+        as_tibble() %>%
+        left_join(abs_all, by = c("docname" =  "title")) %>%  
+        # remove superfluous columns
+        dplyr::select( 'Year' = date_issued, 'WDR title' = docname, pre, keyword, post) 
+  )
+
+# # all togetha 3
+n = length(keywords)
+  
+# outputs_key[[1]] %>% 
+#    kbl(align = "c") 
+
+# this list  has no element names 
+names(outputs_key)
+n = length(keywords)
+# set names for elements 
+outputs_key <- outputs_key %>% 
+  set_names(paste0("kwic_", keywords))
+
+# get rid of empty output dfs in list  
+outputs_key <- outputs_key[sapply(
+  outputs_key, function(x) dim(x)[1]) > 0] # 4 left!
+ 
+# -------------- print all 
+# Modo 1 - walk + print -
+walk(.x = outputs_key, .f = print)  
+
+# Modo 2 - walk + kbl -
+#walk(.x = outputs_key, .f = kbl)
+
+# # Modo 3 - imap??? + kbl -
+# purrr::imap(.x = outputs_key,
+#             .f = ~ {
+#               kbl(x = .x,
+#                   align = "c",
+#                   #format  = "html",
+#                   caption =.y
+#               ) # %>% kable_styling()
+#             }
+# )
+
+# MODO 4 -> create multiple tables from a single dataframe and save them as images
+# https://stackoverflow.com/questions/69323569/how-to-save-multiple-tables-as-images-using-kable-and-map/69323893#69323893
+outputs_key  %>%
+  imap(~save_kable(file = paste0('analysis/output/tables/', .y, '_.png'),
+                 # bs_theme = 'journal', 
+                  self_contained = T, 
+                  x = kbl(.x, booktabs = T, align = c('l','l', 'c')) %>%
+                    kable_styling() 
+                   )
+    )
+```
+
+#### --- create kwic with phrases | purrr + print + save png
+```{r}
+# Iterate `quanteda::kwic` over a vector of phrases/bigrams 
+keywords_phrase <- c("climate change", "investment climate", "pro-poor", 
+                     "gender equality", "maximizing finance", "digital revolution",
+                     "private finance")
+
+# Step 1) tokens
+# (done above) -> abs_q_tokens
+
+# Step 2) kwic 
+# apply iteratively kwic over a vector of bigrams
+outputs_bigrams <- map(keywords_phrase,
+                       ~quanteda::kwic(x = abs_q_tokens, # define text(s) 
+                                       # define pattern
+                                       pattern = quanteda::phrase(.x),
+                                       # define window size
+                                       window = 5) %>%
+                         # convert into a data frame
+                         as_tibble() %>%
+                         left_join(abs_all, by = c("docname" =  "title")) %>%  
+                         # remove superfluous columns
+                         dplyr::select( 'Year' = date_issued,
+                                        'WDR title' = docname, pre, keyword, post)
+                       )  
+
+#  number ofo cbigrams 
+n_bi = length(keywords_phrase)
+n_bi # 7
+# name this list's elements 
+outputs_bigrams <- outputs_bigrams %>% 
+  set_names(paste0("kwic_", keywords_phrase))  
+
+# get rid of empty output dfs in list  
+outputs_bigrams2 <- outputs_bigrams[sapply(
+  outputs_bigrams, function(x) dim(x)[1]) > 0] # 4 left!
+ 
+#or 
+outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
+
+# -------------- print all 
+#  walk + print -
+walk(.x = outputs_bigrams2, .f = print)  
+
+
+# -------------- save  all -> create multiple tables from a single dataframe and save them as images
+# https://stackoverflow.com/questions/69323569/how-to-save-multiple-tables-as-images-using-kable-and-map/69323893#69323893
+outputs_bigrams2  %>%
+  imap(~save_kable(file = paste0('analysis/output/tables/', .y, '_.png'),
+                   # bs_theme = 'journal', 
+                   self_contained = T, 
+                   x = kbl(.x, booktabs = T, align = c('l','l', 'c')) %>%
+                     kable_styling() 
+  )
+  )
+
+```
+
+#### --- Collocation
+<!-- + Collocation - words commonly appearing near each other As in [Computing for the Social Sciences](https://cfss.uchicago.edu/notes/text-analysis-workflow/)\ -->
+
++ https://ladal.edu.au/coll.html#2_Finding_Collocations
+
+**Collocations** are words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries. Any word in any given language has collocations, i.e., others words that are attracted/attractive to that word. This allows us to anticipate what word comes next and collocations are context/text type specific. There are various different statistical measures are used to define the strength of the collocations, like the Mutual Information (MI) score and log-likelihood (see here for an over view of different association strengths measures).
+
+##### --> EXE: Collocation for subset on poverty WDR
+1. In a first step, we will split the Abstract into individual sentences. 
+```{r}
+# reduce to just one long concatenated string 
+abs_pov <- abs_all %>% 
+  dplyr::filter(date_issued %in%  c("1978", "1980", "1990", "2001")) %>%  
+  select( abstract) %>%
+ summarize(text = str_c(abstract, collapse = ". ")) %>% 
+  as.character()
+  
+# read in and process text
+abs_pov_sentences <-  abs_pov %>%
+  stringr::str_squish() %>%
+  # divide into sentences
+  tokenizers::tokenize_sentences(.) %>%
+  unlist() %>%
+  stringr::str_remove_all("- ") %>%
+  stringr::str_replace_all("\\W", " ") %>%
+  stringr::str_squish()
+
+# inspect data
+head(abs_pov_sentences)
+ 
+```
+
+In a next step, we will create a matrix that shows how often each word co-occurred with each other word in the data.
+```{r}
+# convert into corpus
+abs_pov_corpus <- Corpus(VectorSource(abs_pov_sentences))
+
+# create vector with words to remove
+extrawords <- c("the", "can", "get", "got", "can", "one", 
+                "dont", "even", "may", "but", "will", 
+                "much", "first", "but", "see", "new", 
+                "many", "less", "now", "well", "like", 
+                "often", "every", "said", "two")
+
+# clean corpus
+abs_pov_corpus_clean <- abs_pov_corpus %>%
+  tm::tm_map(removePunctuation) %>%
+  tm::tm_map(removeNumbers) %>%
+  tm::tm_map(tolower) %>%
+  tm::tm_map(removeWords, stopwords()) %>%
+  tm::tm_map(removeWords, extrawords)
+
+# create document term matrix
+abs_pov_dtm <- DocumentTermMatrix(
+  abs_pov_corpus_clean, 
+  control=list(bounds = list(global=c(1, Inf)),
+               weighting = weightBin))
+
+# convert dtm into sparse matrix
+abs_pov_sdtm <- Matrix::sparseMatrix(i = abs_pov_dtm$i, j = abs_pov_dtm$j, 
+                           x = abs_pov_dtm$v, 
+                           dims = c(abs_pov_dtm$nrow, abs_pov_dtm$ncol),
+                           dimnames = dimnames(abs_pov_dtm))
+# calculate co-occurrence counts
+coocurrences <- t(abs_pov_sdtm) %*% abs_pov_sdtm
+# convert into matrix
+collocates <- as.matrix(coocurrences)
+```
+
+ 
+```{r coll4p, echo = F, message=FALSE, warning=FALSE}
+collocates[1:10, 1:10] %>%
+  as.data.frame() %>%
+   tibble::rownames_to_column("Word") %>%
+  flextable() %>%
+  flextable::set_table_properties(width = .5, layout = "autofit") %>%
+  flextable::theme_zebra() %>%
+  flextable::fontsize(size = 12) %>%
+  flextable::fontsize(size = 12, part = "header") %>%
+  flextable::align_text_col(align = "center") %>%
+  flextable::set_caption(caption = "")  %>%
+  flextable::bold(i = 1:10, j = 1, bold = TRUE, part = "body") %>%
+  flextable::border_outer()
+```
+ 
+We can inspect this **co-occurrence matrix** and check how many terms (words or elements) it represents using the `ncol` function from base R. 
+We can also check how often terms occur in the data using the `summary` function from base R. 
+
+```{r}
+# inspect size of matrix
+ncol(collocates) # 239
+summary(rowSums(collocates))
+```
+The ncol function reports that the data represents 239 words and that the most frequent word occurs 163 times in the text.
+
+The output of the summary function tells us that the minimum frequency of a word in the data is 5 with a maximum of 163. The difference between the median (18) and the mean (22) indicates that the frequencies are distributed non-normally - which is common for language data.
+
+##### --> (EXE) Visualizing Collocations
+We will now use an example of one individual word ( _development_ ) to show, how collocation strength for individual terms is calculated and how it can be visualized. 
+
+The function `calculateCoocStatistics` is taken from @wiedemann_hands-_nodate and applied to the `abs_pov_sdtm` **SPARSE DOCUMENT TEXT MATRIX**
+
+Visualizing Collocations
+```{r}
+# load function for co-occurrence calculation
+source("https://slcladal.github.io/rscripts/calculateCoocStatistics.R")
+# define term
+coocTerm <- "development"
+# calculate co-occurrence statistics
+coocs <- calculateCoocStatistics(coocTerm, abs_pov_sdtm, measure="LOGLIK")
+# inspect results
+coocs[1:20]
+
+# define term # 2 
+coocTerm2 <- "poverty"
+# calculate co-occurrence statistics
+coocs2 <- calculateCoocStatistics(coocTerm2, abs_pov_sdtm, measure="LOGLIK")
+# inspect results
+coocs2[1:20]
+```
+
+The output shows that the word most strongly associated with _development_ in the poverty WDR subset is _issues_ - here there is no substantive strength (a substantive strength of the association would indicate these term are definitely collocates and almost - if not already - a lexicalized construction)
+
+##### --> (EXE) Association Strength
+There are various _visualizations options for collocations_. Which visualization method is appropriate depends on what the visualizations should display.
+
+We start with the most basic and visualize the collocation strength using a **simple dot chart**. We use the vector of association strengths generated above and transform it into a table. Also, we exclude elements with an association strength lower than 30.
+
+```{r assocs01}
+coocdf <- coocs2 %>%
+  as.data.frame() %>%
+  dplyr::mutate(CollStrength = coocs2,
+                Term = names(coocs2)) %>%
+  dplyr::filter(CollStrength > 0.1) # this is kind of weak but for exe's sake
+```
+
+```{r assocs02, echo = F, message=F, warning=F}
+coocdf %>%
+  as.data.frame() %>%
+  dplyr::select(-.) %>%
+  dplyr::relocate(Term, CollStrength) %>%
+  head(15) %>%
+  flextable() %>%
+  flextable::set_table_properties(width = .5, layout = "autofit") %>%
+  flextable::theme_zebra() %>%
+  flextable::fontsize(size = 12) %>%
+  flextable::fontsize(size = 12, part = "header") %>%
+  flextable::align_text_col(align = "center") %>%
+  flextable::set_caption(caption = "")  %>%
+  flextable::border_outer()
+```
+
+We can now visualize the association strengths as shown in the code chunk below.
+
+```{r assocs03, message=F, warning=F}
+ggplot(coocdf, aes(x = reorder(Term, CollStrength, mean), y = CollStrength)) +
+  geom_point() +
+  coord_flip() +
+  #theme_void() +
+  labs(y = "")
+```
+
+The dot chart shows that *poverty* is collocating more strongly with *economic* compared to any other term.  
+
+##### --> (EXE) Dendrograms{-}
+
+Another method for visualizing collocations are `dendrograms.` Dendrograms (also called tree-diagrams) show how similar elements are based on one or many features. As such, dendrograms are used to indicate groupings as they show elements (words) that are notably similar or different with respect to their association strength. To use this method, we first need to generate a distance matrix from our co-occurrence matrix.
+
+```{r coll7,message=FALSE, warning=FALSE, paged.print=FALSE}
+coolocs <- c(coocdf$Term, "poverty")
+# remove non-collocating terms
+collocates_redux <- collocates[rownames(collocates) %in% coolocs, ]
+collocates_redux <- collocates_redux[, colnames(collocates_redux) %in% coolocs]
+# create distance matrix
+distmtx <- dist(collocates_redux)
+
+clustertexts <- hclust(    # hierarchical cluster object
+  distmtx,                 # use distance matrix as data
+  method="ward.D2")        # ward.D as linkage method
+
+ggdendrogram(clustertexts) +
+  ggtitle("Terms strongly collocating with *poverty*")
+```
+
+##### --> (EXE) Network Graphs{-}
+
+Network graphs are a very useful tool to show relationships (or the absence of relationships) between elements. Network graphs are highly useful when it comes to displaying the relationships that words have among each other and which properties these networks of words have.
+
+##### --> (EXE) Basic Network Graphs{-}
+
+In order to display a network, we need to create a network graph by using the `network` function from the `network` package. 
+
+```{r net1, warning=F, message=F}
+net = network::network(collocates_redux, 
+                       directed = FALSE,
+                       ignore.eval = FALSE,
+                       names.eval = "weights")
+# vertex names
+network.vertex.names(net) = rownames(collocates_redux)
+# inspect object
+net
+```
+
+Now that we have generated a network object, we visualize the network with `GGally::ggnet2`.
+
+```{r net2, warning=F, message=F}
+GGally::ggnet2(net, 
+       label = TRUE, 
+       label.size = 4,
+       alpha = 0.2,
+       size.cut = 3,
+       edge.alpha = 0.3) +
+  guides(color = FALSE, size = FALSE)
+```
+
+We can customize the network object so that the visualization becomes more appealing and informative. To add information, we create vector of words that contain different groups, e.g. terms that rarely, sometimes, and frequently collocate with *poverty* (I used the dendrogram which displayed the cluster analysis as the basis for  the categorization). 
+
+Based on these vectors, we can then change or adapt the default values of certain attributes or parameters of the network object (e.g. weights. linetypes, and colors).
+
+```{r net3}
+# create vectors with collocation occurrences as categories
+mid <- c("dimensions", "major", "developing", "social", "health")
+high <- c("economic", "countries")
+infreq <- colnames(collocates_redux)[!colnames(collocates_redux) %in% mid & !colnames(collocates_redux) %in% high]
+# add color by group
+net %v% "Collocation" = ifelse(network.vertex.names(net) %in% infreq, "weak", 
+                   ifelse(network.vertex.names(net) %in% mid, "medium", 
+                   ifelse(network.vertex.names(net) %in% high, "strong", "other")))
+# modify color
+net %v% "color" = ifelse(net %v% "Collocation" == "weak", "gray60", 
+                  ifelse(net %v% "Collocation" == "medium", "orange", 
+                  ifelse(net %v% "Collocation" == "strong", "indianred4", "gray60")))
+# rescale edge size
+network::set.edge.attribute(net, "weights", ifelse(net %e% "weights" < 1, 0.1, 
+                                   ifelse(net %e% "weights" <= 2, .5, 1)))
+# define line type
+network::set.edge.attribute(net, "lty", ifelse(net %e% "weights" <=.1, 3, 
+                               ifelse(net %e% "weights" <= .5, 2, 1)))
+```
+
+We can now display the network object and make use of the added information.
+
+```{r net4}
+GGally::ggnet2(net, 
+       color = "color", 
+       label = TRUE, 
+       label.size = 4,
+       alpha = 0.2,
+       size = "degree",
+       edge.size = "weights",
+       edge.lty = "lty",
+       edge.alpha = 0.2) +
+  guides(color = FALSE, size = FALSE)
+```
+
+##### --> (EXE) Biplots{-}
+
+An alternative way to display co-occurrence patterns are bi-plots which are used to display the results of Correspondence Analyses. They are useful, in particular, when one is not interested in one particular key term and its collocations but in the overall similarity of many terms. ***Semantic similarity*** in this case refers to a shared semantic and this distributional profile. As such, words can be deemed semantically similar if they have a similar co-occurrence profile - i.e. they co-occur with the same elements. Biplots can be used to visualize collocations because collocates co-occur and thus share semantic properties which renders then more similar to each other compared with other terms. 
+
+```{r coll8, eval=T, echo=T, message=FALSE, warning=FALSE, paged.print=FALSE}
+# perform correspondence analysis
+res.ca <- FactoMineR::CA(collocates_redux, graph = FALSE)
+# plot results
+factoextra::fviz_ca_row(res.ca, repel = TRUE, col.row = "gray20")
+```
+
+
+The bi-plot shows that *poverty* and *development* collocate as they are plotted in close proximity. The advantage of the biplot becomes apparent when we focus on other terms because the biplot also shows other collocates such as *issues* and *growth* 
+
+##### --> (EXE) Determining Significance
+In order to identify which words occur together significantly more frequently than would be expected by chance, we have to determine if their co-occurrence frequency is statistical significant. This can be done wither for specific key terms or it can be done for the entire data. In this example, we will continue to focus on the key word *selection*.
+
+To determine which terms collocate significantly with the key term (*selection*), we use multiple (or repeated) Fisher's Exact tests which require the following information:
+
+* a = Number of times `coocTerm` occurs with term j
+
+* b = Number of times `coocTerm` occurs without  term j
+
+* c = Number of times other terms occur with term j
+
+* d = Number of terms that are not `coocTerm` or term j
+
+In a first step, we create a table which holds these quantities.
+
+```{r coll_01_15, message=FALSE, warning=FALSE}
+# convert to data frame
+coocdf <- as.data.frame(as.matrix(collocates))
+# reduce data
+diag(coocdf) <- 0
+coocdf <- coocdf[which(rowSums(coocdf) > 10),]
+coocdf <- coocdf[, which(colSums(coocdf) > 10)]
+# extract stats
+cooctb <- coocdf %>%
+  dplyr::mutate(Term = rownames(coocdf)) %>%
+  tidyr::gather(CoocTerm, TermCoocFreq,
+                colnames(coocdf)[1]:colnames(coocdf)[ncol(coocdf)]) %>%
+  dplyr::mutate(Term = factor(Term),
+                CoocTerm = factor(CoocTerm)) %>%
+  dplyr::mutate(AllFreq = sum(TermCoocFreq)) %>%
+  dplyr::group_by(Term) %>%
+  dplyr::mutate(TermFreq = sum(TermCoocFreq)) %>%
+  dplyr::ungroup(Term) %>%
+  dplyr::group_by(CoocTerm) %>%
+  dplyr::mutate(CoocFreq = sum(TermCoocFreq)) %>%
+  dplyr::arrange(Term) %>%
+  dplyr::mutate(a = TermCoocFreq,
+                b = TermFreq - a,
+                c = CoocFreq - a, 
+                d = AllFreq - (a + b + c)) %>%
+  dplyr::mutate(NRows = nrow(coocdf))
+```
+
+```{r coll_01_15b, echo = F, message=FALSE, warning=FALSE}
+cooctb %>%
+  as.data.frame() %>%
+  head(15) %>%
+  flextable() %>%
+  flextable::set_table_properties(width = .5, layout = "autofit") %>%
+  flextable::theme_zebra() %>%
+  flextable::fontsize(size = 12) %>%
+  flextable::fontsize(size = 12, part = "header") %>%
+  flextable::align_text_col(align = "center") %>%
+  flextable::set_caption(caption = "")  %>%
+  flextable::border_outer()
+```
+
+We now select the key term (*poverty*). If we wanted to find all collocations that are present in the data, we would use the entire data rather than only the subset that contains  *poverty*. 
+
+```{r coll_01_23, message=FALSE, warning=FALSE}
+cooctb_redux <- cooctb %>%
+  dplyr::filter(Term == coocTerm2)
+```
+
+Next, we calculate which terms are (significantly) over- and under-proportionately used with *poverty*. It is important to note that this procedure informs about both: over- and under-use! This is especially crucial when analyzing if specific words are attracted o repelled by certain constructions. Of course, this approach is not restricted to analyses of constructions and it can easily be generalized across domains and has also been used in machine learning applications.
+
+```{r coll_01_25, message=FALSE, warning=FALSE}
+coocStatz <- cooctb_redux %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(p = as.vector(unlist(fisher.test(matrix(c(a, b, c, d), 
+                                                        ncol = 2, byrow = T))[1]))) %>%
+    dplyr::mutate(x2 = as.vector(unlist(chisq.test(matrix(c(a, b, c, d),                                                           ncol = 2, byrow = T))[1]))) %>%
+  dplyr::mutate(phi = sqrt((x2/(a + b + c + d)))) %>%
+      dplyr::mutate(expected = as.vector(unlist(chisq.test(matrix(c(a, b, c, d), ncol = 2, byrow = T))$expected[1]))) %>%
+  dplyr::mutate(Significance = dplyr::case_when(p <= .001 ~ "p<.001",
+                                                p <= .01 ~ "p<.01",
+                                                p <= .05 ~ "p<.05", 
+                                                FALSE ~ "n.s."))
+```
+
+```{r coll_01_25b, echo = F, message=FALSE, warning=FALSE}
+coocStatz %>%
+  as.data.frame() %>%
+  head(15) %>%
+  flextable() %>%
+  flextable::set_table_properties(width = .5, layout = "autofit") %>%
+  flextable::theme_zebra() %>%
+  flextable::fontsize(size = 12) %>%
+  flextable::fontsize(size = 12, part = "header") %>%
+  flextable::align_text_col(align = "center") %>%
+  flextable::set_caption(caption = "")  %>%
+  flextable::border_outer()
+```
+
+We now add information to the table and remove superfluous columns s that the table can be more easily parsed. 
+
+```{r coll_01_27, message=FALSE, warning=FALSE}
+coocStatz <- coocStatz %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(p) %>%
+  dplyr::mutate(j = 1:n()) %>%
+  # perform benjamini-hochberg correction
+  dplyr::mutate(corr05 = ((j/NRows)*0.05)) %>%
+  dplyr::mutate(corr01 = ((j/NRows)*0.01)) %>%
+  dplyr::mutate(corr001 = ((j/NRows)*0.001)) %>%
+  # calculate corrected significance status
+  dplyr::mutate(CorrSignificance = dplyr::case_when(p <= corr001 ~ "p<.001",
+                                                    p <= corr01 ~ "p<.01",
+                                                    p <= corr05 ~ "p<.05", 
+                                                    FALSE ~ "n.s.")) %>%
+  dplyr::mutate(p = round(p, 6)) %>%
+  dplyr::mutate(x2 = round(x2, 1)) %>%
+  dplyr::mutate(phi = round(phi, 2)) %>%
+  dplyr::arrange(p) %>%
+  dplyr::select(-a, -b, -c, -d, -j, -NRows, -corr05, -corr01, -corr001) %>%
+  dplyr::mutate(Type = ifelse(expected > TermCoocFreq, "Antitype", "Type"))
+```
+
+```{r coll_01_25f, echo = F, message=FALSE, warning=FALSE}
+coocStatz %>%
+  as.data.frame() %>%
+  head(15) %>%
+  flextable() %>%
+  flextable::set_table_properties(width = .5, layout = "autofit") %>%
+  flextable::theme_zebra() %>%
+  flextable::fontsize(size = 12) %>%
+  flextable::fontsize(size = 12, part = "header") %>%
+  flextable::align_text_col(align = "center") %>%
+  flextable::set_caption(caption = "")  %>%
+  flextable::border_outer()
+```
+The results show that *poverty* DOES NOT collocates significantly with anywords. 
+
+<!-- The results show that *poverty* collocates significantly with *poverty* (of course) but also, as expected, with *progress*.  -->
+<!-- The corrected p-values shows that after Benjamini-Hochberg correction for multiple/repeated testing these are the only significant collocates of *selection*. Corrections are necessary when performing multiple tests because otherwise, the reliability of the test result would be strongly impaired as repeated testing causes substantive $\alpha$-error inflation. The Benjamini-Hochberg correction that has been used here is preferable over the more popular Bonferroni correction because it is less conservative and therefore less likely to result in $\beta$-errors [see again @field2012discovering]. -->
+
+##### ~~--> (EXE) Changes in Collocation Strength~~
+##### ~~--> (EXE) Collostructional Analysis~~
+
+#### --------------  STOP ------------------
+
+ 
 
 
 ## > > III.vi) Sentiment Analysis 
@@ -1635,4 +2124,5 @@ we can now use machine learning models to classify text into specific sets of ca
   5. [Horror Movies 	2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package | Lasso regression
   6. [The Office 	2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel | glmnet package to run a cross-validated LASSO regression
   7. [Animal Crossing 	2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time | geom_text to visualize what words are associated with positive/negative reviews |topic modelling
+
 

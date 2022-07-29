@@ -40,10 +40,12 @@ navbar:
       - text: "Intro Text Analytics"
         href: 01a_intro_text_analytics.html
       - text: "---------"
-      - text: "WDR"
-        href: 01b_WDR_data-exploration.html
+      - text: "WDR - abstracts"
+        href: 01b_WDR_data-exploration_abstracts.html
+      - text: "WDR - subjects"
+        href: 01c_WDR_data-exploration_subjects.html
       - text: "WB operations"
-        href: 01c_WBoper_data-exploration.html
+        href: 01d_WBoper_data-exploration.html
   - text: Descriptive analysis
     icon: fas fa-chart-bar
     href: 02_descriptive-analysis.html

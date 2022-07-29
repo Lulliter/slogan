@@ -17,19 +17,31 @@ bibliography: slogan.bib
 
 # Intro
 
+## What is Text mining / analytics?
+Text Mining or Text Analytics is the rocess of deriving meaningful information from natural language text
+
 ### --- Some text analytics definitions
 
--   **Corpus** \~ a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
--   **Document-term matrix** \~ sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+-   **Corpus (pl. Corpora)** \~ a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
 -   **Document** \~ collection of sentences
+-   **String** \~ in computational approaches, a string is a specific type of data that represents text and is often encoded in specific format, e.g., Latin1 or UTF8. 
 -   **Token** \~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
 -   **Tokenization** \~ splitting text into tokens
 -   **Bigrams**/**n-gram** \~ sentence, or paragraph
+-   **Collocations** \~ words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries. 
 -   **Tidy text** \~ "a table with one-token-per-row"
--   **Stemming** \~ A *stem* is the base part of a word to which affixes can be attached for derivatives.
+-   **Stemming** \~ A *stem* is the base part of a word to which affixes can be attached for derivatives
+-   **Lemmatization** \~ Similar to *stem*, but incorporating the meaning (gone|going --> go) 
+-   **Document-term matrix (DTM)** \~ rows = documents | cols = words | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+-   **Term-Document matrix (TDM)** \~ rows = words | cols = documents | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+
+## What is NLP?
+A part of computer science and AI that deals with human languages
 
 ### --- Some commonly used NLP scenarios
 
+-  **Natural Language Processing (NLP)** \~ is an interdisciplinary field in computer science that has specialized on processing natural language data using computational and mathematical methods. 
+-  **Network Analysis** \~ the most common way to visualize relationships between entities. Networks, also called graphs, consist of nodes (typically represented as dots) and edges (typically represented as lines) and they can be directed or undirected networks. 
 -   **Text Classification** \~ a supervised learning method of learning and predicting the category or the class of a document given its text content.
 -   **Named Entity Recognition** \~ NER is the task of classifying words or key phrases of a text into predefined entities of interest.
 -   **Text Summarization** \~ a language generation task of summarizing the input text into a shorter paragraph of text.
@@ -37,7 +49,10 @@ bibliography: slogan.bib
 -   **Question Answering** \~ QA is the task of retrieving or generating a valid answer for a given query in natural language, provided with a passage related to the query.
 -   **Sentence Similarity** \~ the process of computing a similarity score given a pair of text documents.
 -   **Embeddings** \~ the process of converting a word or a piece of text to a continuous vector space of real number, usually, in low dimension.
--   **Sentiment Analysis** \~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect .
+-   **Sentiment Analysis** \~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect.
+-   **Semantic Analysis** \~ Allows to analyze the semantic (semantics) fo texts. Such analyses often rely on semantic tagsets that are based on word meaning or meaning families/categories.
+-   **Part-of-Speech (PoS)** \~ Tagging identifies the word classes of words (e.g., noun, adjective, verb, etc.) in a text and adds part-of-speech tags to each word.
+-   **Topic Modeling** \~ Topic Modeling is a machine learning method seeks to answer the question: given a collection of documents, can we identify what they are about? Topic model algorithms look for patterns of co-occurrences of words in documents. 
 
 ### --- Text processing in R
 
@@ -50,6 +65,7 @@ bibliography: slogan.bib
 -   {korPus}
 
 #### setup
+
 ```{r setup_inp, echo=FALSE}
 # Pckgs -------------------------------------
 if (!require ("pacman")) (install.packages("pacman"))
@@ -100,7 +116,6 @@ pacman::p_load(
 -   INSTRUCTIONS <https://documents.worldbank.org/en/publication/documents-reports/api>
 -   Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
 
-
 ### ----------------------------------------------------------------------------
 
 # B. World Bank Projects & Operations:
@@ -121,16 +136,22 @@ Following the example of [David Robinson on HN titles](http://varianceexplained.
 
 # Reference Tutorials
 
-@robinson_1_2022 [Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/) [Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+[@robinson_1_2022]
+[@ldal_tutorials_2022]
+[@edureka!2019]
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
+
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
 
 [Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)
 
 [tidyTuesday cast on tidytext](https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations)
 
-  1. ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
-  2. [TidyTuesday Tweets -  2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
-  3. [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression | sentiment lexicon,
-  4. [Simpsons Guest Stars 	2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
-  5. [Horror Movies 	2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package | Lasso regression
-  6. [The Office 	2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel | glmnet package to run a cross-validated LASSO regression
-  7. [Animal Crossing 	2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time | geom_text to visualize what words are associated with positive/negative reviews |topic modelling
+1.  ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
+2.  [TidyTuesday Tweets - 2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
+3.  [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression \| sentiment lexicon,
+4.  [Simpsons Guest Stars 2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
+5.  [Horror Movies 2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package \| Lasso regression
+6.  [The Office 2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel \| glmnet package to run a cross-validated LASSO regression
+7.  [Animal Crossing 2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time \| geom_text to visualize what words are associated with positive/negative reviews \|topic modelling

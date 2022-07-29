@@ -5,6 +5,9 @@ date: "Last run: `r format(Sys.time(), '%F')`"
 output: 
   html_document:
     code_folding: hide
+    toc: true
+    toc_float: true
+    toc_depth: 3
 editor_options: 
   chunk_output_type: console
 bibliography: slogan.bib
@@ -28,6 +31,21 @@ pacman::p_load(here, tidyverse, tibble, janitor,
 
 pacman::p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
 
+
+# Knitr options
+knitr::opts_chunk$set(
+  echo = FALSE, warning = FALSE, message = FALSE,
+  tidy.opts = list(width.cutoff = 120),  # Code width
+  #fig.retina = 3, dpi = conditional_dpi,
+  #fig.width = 7, fig.asp = 0.618,
+  #fig.align = conditional_align, out.width = "100%",
+  fig.path = "analysis/output/figures/",
+  cache.path = "analysis/output/_cache/"#,
+  # fig.process = function(x) {  # Remove "-1" from figure names
+  #   x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  #   if (file.rename(x, x2)) x2 else x
+  # }
+)
 ```
 
 # WHY FOCUS ON THE WDRs?
@@ -60,10 +78,9 @@ According to Kemal Derviş, more than politics and political ideology what infl
 
 ## Is is more about ideas or facts?
 
-Something new in the 1970s (not inundated by facts as we are today), \>the World Bank used its resources and its access to data to generate a decent statistical picture of development. For the first time, many statements on the dynamics of devel- opment could be buttressed by facts. For the first time, readers were given a good sense of the magnitudes involved, and this insight was vital for determining the scale of problems and for calibrating policies. In effect, the WDRs helped to make development economics more numerate and altered the nature of discourse. [@yusuf_development_2008, p.37]
+Something new in the 1970s (not inundated by facts as we are today), \>the World Bank used its resources and its access to data to generate a decent statistical picture of development. For the first time, many statements on the dynamics of development could be buttressed by facts. For the first time, readers were given a good sense of the magnitudes involved, and this insight was vital for determining the scale of problems and for calibrating policies. In effect, the WDRs helped to make development economics more numerate and altered the nature of discourse. [@yusuf_development_2008, p.37] Figure \@ref(fig:common_w_tit) shows ... 
 
 # WDRs "winning ideas" over time
-
 
 ```{r common_w_tit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
 knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_in_title.png"))
@@ -126,6 +143,30 @@ knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_
 -   institutions/regul / governance in ? ? ?
 -   state / government ? ? ?
 -   market \| finance \| PPPs \| liberalization & privatization ???
+
+## [viz x ] frequency of words within subsets of topics
+
+It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1]. 
+
+See figure \@ref(fig:gg_pov_tfidf) for poverty....
+
+[^1]: The TF-IDF basically finds the important words that distinguish a specific documents within a corpus of related ones. Technically, it is a word frequency that is weighted by decreasing the weight of common words that occur across all documents and increasing the weight for words that are more rare in the collection as a whole.
+
+```{r gg_pov_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about poverty", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_pov_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for environment/climate...
+
+```{r gg_env_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about environment/climate", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_env_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for knowledge/data...
+
+```{r gg_knowl_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about knowledge/data", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_knowl_tfidf.png"))
+```
 
 # WHAT EFFECTS (if any) HAVE THE WDRS' POLICY RECOMMENDATIONS HAD ON WORLD BANK LENDING DECISIONS?
 
