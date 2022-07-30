@@ -7,8 +7,9 @@ KNIT = Rscript -e "require(rmarkdown); render('$<')"
 
 # all: $(GATHER_OUT) $(PROCESS_OUT) $(ANALYSIS_OUT) $(PRESENTATION_OUT)
 
-
+################################################################################
 # ---------- STEP I.a) Gather data
+################################################################################
 # DATA_DIR = $(RDIR)/data
 # GATHER_DIR = $(DATA_DIR)/gather
 # GATHER_SOURCE = $(wildcard $(GATHER_DIR)/*.Rmd)
@@ -18,8 +19,9 @@ KNIT = Rscript -e "require(rmarkdown); render('$<')"
 # $(GATHER_DIR)/%.docx:$(GATHER_DIR)/%.Rmd
 # 	$(KNIT)
 
-
+################################################################################
 # ---------- STEP I.b) Process data {== all the files that start with "01..." and their dependencies}
+################################################################################
 PROCESS_DIR = $(RDIR)/_process
 PROCESS_SOURCE = $(wildcard 01*.Rmd)
 PROCESS_OUT = $(PROCESS_SOURCE:.Rmd=.html) 01b_WDR_data-exploration_abstracts_files 01c_WDR_data-exploration_subjects_files site_libs
@@ -53,11 +55,12 @@ render_process: 01a_intro_text_analytics.html 01b_WDR_data-exploration_abstracts
 clean_process:
 	rm -rf $(PROCESS_DIR)/*
 
-
+################################################################################
 # ---------- STEP I.c) Analyze data
-ANALYSIS_DIR = $(RDIR)/analysis
-ANALYSIS_SOURCE = $(wildcard $(ANALYSIS_DIR)/*.Rmd)
-ANALYSIS_OUT = $(ANALYSIS_SOURCE:.Rmd=.docx)
+################################################################################
+#ANALYSIS_DIR = $(RDIR)/analysis
+#ANALYSIS_SOURCE = $(wildcard $(ANALYSIS_DIR)/*.Rmd)
+#ANALYSIS_OUT = $(ANALYSIS_SOURCE:.Rmd=.docx)
 
 # $(ANALYSIS_DIR)/%.docx:$(ANALYSIS_DIR)/%.Rmd $(PROCESS_OUT)
 # 	$(KNIT)
@@ -65,7 +68,10 @@ ANALYSIS_OUT = $(ANALYSIS_SOURCE:.Rmd=.docx)
 
 
 # ------------------ II) Deploy Website using Mekafile ------------------ #
+
+################################################################################
 # ----- STEP II.a) Present data
+################################################################################
 #PRESENTATION_DIR = $(RDIR)/presentation
 #PRESENTATION_SOURCE = $(wildcard $(PRESENTATION_DIR)/*.Rmd)
 #PRESENTATION_OUT = $(PRESENTATION_SOURCE:.Rmd=.html)
@@ -108,6 +114,8 @@ print-%:
 # ----- Makefile RECIPES ----- #
 .PHONY: all_site
 all_site: clean_site build_site README.md git
+
+all_site_noclean: build_site README.md git
 
 # git add -> commit -> push
 git:
