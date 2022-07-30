@@ -16,7 +16,8 @@
 
 # --------------  My  STUFF (in prog etc)  -------------- #
 _my_stuff/*
-zzz_learning_exes/*
+_zzz_learning_exes/*
+
 # --------------  AH STUFF  -------------- #
 # R Environment Variables
 .Renviron

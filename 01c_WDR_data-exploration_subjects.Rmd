@@ -13,8 +13,8 @@ editor_options:
 bibliography: slogan.bib
 ---
 
-<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
 
 ```{r setup-libraries-data }

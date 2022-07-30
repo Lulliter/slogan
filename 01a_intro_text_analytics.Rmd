@@ -15,6 +15,7 @@ bibliography: slogan.bib
 
 <i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
+
 # Intro
 
 ## What is Text mining / analytics?
