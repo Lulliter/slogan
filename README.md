@@ -32,7 +32,7 @@ specified in the `_site.yml`)
 .
 ├── 00_home-lexicon.Rmd
 ├── 00_lexicon-gender.Rmd
-├── 00_lexicon-green.Rmd
+├── 00_lexicon-climatechange.Rmd
 ├── 01_data-overview.Rmd
 ├── 02_descriptive-analysis.Rmd
 ├── 03_model-details.Rmd

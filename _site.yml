@@ -32,8 +32,8 @@ navbar:
       - text: "---------"
       - text: "Lexicon: gender"
         href: 00_lexicon-gender.html
-      - text: "Lexicon: green"
-        href: 00_lexicon-green.html
+      - text: "Lexicon: climate change"
+        href: 00_lexicon-climatechange.html
   - text: Processing data
     icon: fas fa-table
     menu:
