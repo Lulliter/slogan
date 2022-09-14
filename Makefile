@@ -113,9 +113,9 @@ print-%:
 
 # ----- Makefile RECIPES ----- #
 .PHONY: all_site
-all_site: clean_site build_site README.md git
+all_site: clean_site build_site git
 
-all_site_noclean: build_site README.md git
+all_site_noclean: build_site  git
 
 # git add -> commit -> push
 git:
@@ -124,8 +124,8 @@ git:
 	git push -u origin master
 
 # Fix the weird thing that README.Rmd does not turn into README.md (for Github)
-README.md: README.Rmd README.html
-	Rscript -e "rmarkdown::render("README.Rmd", output_format =  "github_document")"  # "github_document"
+#README.md: README.Rmd
+#	Rscript -e "rmarkdown::render("README.Rmd")"  #  output_format =  "github_document"
 
 # Render the a collection of Rmarkdown files as website (if there are "index.Rmd" + "_site.yml")
 # [the implicit INPUT of render_site is ".", EXCLUDING what starts with "_" or ".", R source code (".Rmd", .R), or anything excluded in _site.yml]

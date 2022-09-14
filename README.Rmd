@@ -75,7 +75,8 @@ bla bla bla
 ## TO DO list 
 
 + In `./02_descriptive-analysis.Rmd`, Fig @ref doesn't work...
-+ 
++ Finire controllare `makefile` ... sometimes git is not tracking latest things...
+  + Error in rmarkdown::render(README.Rmd, output_format = github_document) :   object 'github_document' not found
 + 
 
 ## Data
