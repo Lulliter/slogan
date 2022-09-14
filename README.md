@@ -1,4 +1,7 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+🚧 *work in progress* 🚧
 
 # Follow the slogan
 
@@ -7,19 +10,16 @@
 ------------------------------------------------------------------------
 
 <!-- [![OSF DOI](https://img.shields.io/badge/OSF-10.17605%2FOSF.IO%2FMTR6X-blue)](https://dx.doi.org/10.17605/OSF.IO/MTR6X) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5715402.svg)](https://doi.org/10.5281/zenodo.5715402) -->
-
-> Luisa M. Mimmi. 2022. [“Follow the
-> slogan,”](https://doi.org/10.1177/0899764020971045) *Journal of
-> Human Rights* (forthcoming).
+<!-- > Luisa M. Mimmi. 2022. ["Follow the slogan,"](https://doi.org/10.1177/0899764020971045) *Journal of Human Rights* (forthcoming). -->
 
 **All this project’s materials are free and open:**
 
-- [Download the data](#data)
-- [See the analysis notebook
+-   [Download the data](#data)
+-   [See the analysis notebook
     website](https://lulliter.github.io/slogan/)
 
-<!-- ![Open data](img/data_large_color.png) 
-![Open](img/materials_large_color.png)  -->
+![Open data](img/data_large_color.png)  
+![Open](img/materials_large_color.png)
 
 ## How to build/deploy the site
 
@@ -28,58 +28,29 @@ accessible here <https://lulliter.github.io/slogan/>. The folder
 containing the html files of the website is `./docs/` (this was also
 specified in the `_site.yml`)
 
-```
-.
-├── 00_home-lexicon.Rmd
-├── 00_lexicon-gender.Rmd
-├── 00_lexicon-climatechange.Rmd
-├── 01_data-overview.Rmd
-├── 02_descriptive-analysis.Rmd
-├── 03_model-details.Rmd
-├── 03_modeling-choices.Rmd
-├── 04_predictions.Rmd
-├── Makefile
-├── R
-├── README.Rmd
-├── README.html
-├── README.md
-├── _build_deploy.sh
-├── _my_stuff
-├── _site.yml
-├── slogan.bib
-├── data
-├── docs
-├── html
-├── img
-├── index.Rmd
-├── site_libs
-└── slogan.Rproj
-```
-
 Upon making changes in the local folder, I have 2 ways in which I can
 commit and push changes to GitHub (as well as update public version of
 website on GitHub Pages)
 
-1. Pseudo manual **shell** commands in `_build_deploy.sh` file
+1.  Pseudo manual **shell** commands in `_build_deploy.sh` file
 
-- Here I can also decide whether to use `git add -u` (only stuff
+-   Here I can also decide whether to use `git add -u` (only stuff
     already tracked) or `git add --A` (also new stuff)
 
-2. Using automated **make** instructions in `Makefile`  
+2.  Using automated **make** instructions in `Makefile`  
 
-- Here I have set it up exclusively with `git add -u`
+-   Here I have set it up exclusively with `git add -u`
 
 ------------------------------------------------------------------------
 
 ## Acknowledgements
 
-**RMarkdown Website Instructions**
-[here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
-<https://gist.github.com/cobyism/4730490>
-
-**Gh pages from subtree 1**
-[here](https://gist.github.com/cobyism/4730490) **and 2**
-[here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
+-   RMarkdown Website Instructions:
+    [here](https://psyteachr.github.io/hack-your-data/rmarkdown_2.html)
+    <https://gist.github.com/cobyism/4730490>
+-   Gh pages from subtree 1:
+    [here](https://gist.github.com/cobyism/4730490) **and 2**
+    [here](https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-github-pages.html)
 
 ## Abstract
 
@@ -88,7 +59,13 @@ bla bla bla
 ------------------------------------------------------------------------
 
 <!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
-<!-- > Luisa M. Mimmi. 2022. "Follow the slogan"". Accessed April 11, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+<!-- > Luisa M. Mimmi. 2022. "Follow the slogan"". Accessed September 14, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+
+## TO DO list
+
+-   In `./02_descriptive-analysis.Rmd`, Fig @ref doesn’t work…
+-   
+-   
 
 ## Data
 
