@@ -17,8 +17,8 @@ bibliography: slogan.bib
 
 
 
-```{r setup-libraries-data }
-
+```{r setup-libraries-data, echo=FALSE}
+knitr::opts_chunk$set(include = FALSE, warning = FALSE)
 # Pckgs -------------------------------------
 if (!require ("pacman")) (install.packages("pacman"))
 
@@ -148,14 +148,14 @@ stop_words <- as_tibble(stop_words) %>% # in the tidytext dataset
   add_row(word = "2020", lexicon = NA_character_) %>%
   add_row(word = "2021", lexicon = NA_character_) %>%
   add_row(word = "2022", lexicon = NA_character_) %>% 
-  filter (word != "changes") %>% 
-   filter (word != "value") %>% 
+  # filter (word != "changes") %>% 
+   # filter (word != "value") %>% 
    filter (word != "member") %>% 
    filter (word != "part") %>% 
    filter (word != "possible") %>% 
    filter (word != "point") %>% 
    filter (word != "present") %>% 
-   filter (word != "zero") %>% 
+   # filter (word != "zero") %>% 
      filter (word != "young") %>% 
      filter (word != "old") %>% 
      filter (word != "trying") 
@@ -180,7 +180,7 @@ Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.
     + **doc_mt_description**  chr The World Development Report (WDR) ~ 
     + **doc_mt_set_spec**     chr oai:openknowledge.worldbank.org:109~ 
 
-Ingestion of WDR **lists of subjects** was available among metadata but presented issues (difficulty to extract, many records with repetition,apparently wrong) so I reconstructed them manually in `data/raw_data/WDR_subjects_corrected2010_2011.xlsx` taking them from site https://elibrary.worldbank.org/ which lists **keywords** correctly [Es 2022 WDR](https://elibrary.worldbank.org/doi/abs/10.1596/978-1-4648-1730-4)
+Ingestion of WDR **lists of subjects** was available among metadata but presented issues (difficulty to extract, many records with repetition,apparently wrong) so I reconstructed them manually in `data/raw_data/WDR_subjects_corrected2010_2011.xlsx` taking them from site https://elibrary.worldbank.org/ which lists **keywords** correctly [e.g. see 2022 WDR](https://elibrary.worldbank.org/doi/abs/10.1596/978-1-4648-1730-4)
 
 ```{r load}
 # WRD metadata taken with API get (issues) 
@@ -296,7 +296,7 @@ WDR_com$date_issued[WDR_com$id == "16092"] <- "2014"
 
 ```
 
-### II.i) Troubleshooting some obs
+### II.i) Troubleshooting some documents
 
 > PROBLEM: some of the subjects collections are evidently wrong (either they are the same of another WDR or the list is impossibly long)
 
@@ -464,6 +464,11 @@ Here’s the general process for tagging (or “annotating”) text with the cle
 
 # III) ABSTRACTS
 
+All the following tasks were performend on the ***abstracts*** of WDRs. Why? 
+
+    + becasue I needed to learn
+    + becasue abstracts tend to include the ***keywords***
+    
 ## III.i) Tokenization
 Where a word is more abstract, a **“type”** is a concrete term used in actual language, and a **“token”** is the particular instance we’re interested in (e.g. abstract things (‘wizards’) and individual instances of the thing (‘Harry Potter.’).
 Breaking a piece of text into words is thus called **“tokenization”**, and it can be done in many ways. 
@@ -751,7 +756,7 @@ gg_pov_tfidf <-  tf_idf_poverty %>%
   #my_theme() +
   scale_fill_manual(values = mycolors_contrast) + # my palette
   # labs(x = "tf-idf for ", y = NULL) +
-  labs(title="TF-IDF ranking in 4 WDRs dedicated to poverty topic", 
+  labs(title= bquote("TF-IDF ranking in 4 WDRs focused on "~bold("poverty topic")),  
      subtitle="(overall 50 tokens with highest TF-IDF)",
      #caption="Source: ????",
      x="TF-IDF values",
@@ -827,8 +832,8 @@ gg_env_tfidf <- tf_idf_env %>%
   #my_theme() +
   scale_fill_manual(values = mycolors_contrast) + # my palette
   # labs(x = "tf-idf for ", y = NULL) +
-  labs(title="TF-IDF ranking in 4 WDRs dedicated to environment/climate change topic", 
-     subtitle="(overall 50 tokens with highest TF-IDF)",
+  labs(title= bquote("TF-IDF ranking in 4 WDRs foucused on "~bold("environment/climate change")),      #title="TF-IDF ranking in 4 WDRs dedicated to environment/climate change topic", 
+    subtitle="(overall 50 tokens with highest TF-IDF)",
      #caption="Source: ????",
      x="TF-IDF values",
      y=""
@@ -902,7 +907,8 @@ gg_knowl_tfidf  <- tf_idf_knowl %>%
   #my_theme() +
   scale_fill_manual(values = mycolors_contrast) + # my palette
   # labs(x = "tf-idf for ", y = NULL) +
-  labs(title="TF-IDF ranking in 4 WDRs dedicated to knowledge/data change topic", 
+  labs(title= bquote("TF-IDF ranking in 4 WDRs foucused on "~bold("knowledge/data")),
+       #title="TF-IDF ranking in 4 WDRs dedicated to knowledge/data change topic", 
      subtitle="(overall 50 tokens with highest TF-IDF)",
      #caption="Source: ????",
      x="TF-IDF values",
@@ -1168,7 +1174,6 @@ head(abs_2022_bigrams)
 #   # exclude stopwords 
 #   anti_join(stop_words) # 109 obs
 
-
 abs_all_bigram <- abs_all %>% 
   unnest_tokens(., output = bigram, input = abstract, token = "ngrams", n=2 )  
 
@@ -1223,7 +1228,7 @@ trigram <- abs_all %>%
 ```
 
 
-#### --- Bigram ~ potential meaningful slogan? 
+#### --- Bigram ~ potential meaningful SLOGANs? 
 
 <i class="fa fa-question-circle" style="color: firebrick"></i> Which of this bigram might be a SLOGAN candidate? 
 
@@ -1459,12 +1464,25 @@ This lets us pick particular interesting words and find the other words most ass
 ```{r, fig.height = 10, fig.width = 10}
 source("R/f_facetted_bar_plot.R")
 
-word_cors %>%
-  filter(item1 %in% c( "institutions", "people", "governments", "markets")) %>%
+p_ass_words <- word_cors %>%
+  filter(item1 %in% c( "people", "governments", "markets", "institutions")) %>%
   group_by(item1) %>%
   top_n(6) %>%
   ungroup() %>%
-  facet_bar(y = item2, x = correlation, by = item1)
+  facet_bar(y = item2, x = correlation, by = item1) +
+  labs(title="Words most correlated to selected words of interest", 
+    subtitle="(Taken from WDRs' abstracts)",
+     #caption="Source: ????",
+     )   
+
+p_ass_words %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "p_ass_words.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "p_ass_words.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
 ```
 
 How about a network visualization to see the overall correlation pattern? 
@@ -1745,8 +1763,8 @@ The ncol function reports that the data represents 239 words and that the most f
 
 The output of the summary function tells us that the minimum frequency of a word in the data is 5 with a maximum of 163. The difference between the median (18) and the mean (22) indicates that the frequencies are distributed non-normally - which is common for language data.
 
-##### --> (EXE) Visualizing Collocations
-We will now use an example of one individual word ( _development_ ) to show, how collocation strength for individual terms is calculated and how it can be visualized. 
+##### --> (EXE) Visualizing Collocations EXE "poverty"
+We will now use an example of one individual word ( _poverty_ ) to show, how collocation strength for individual terms is calculated and how it can be visualized. 
 
 The function `calculateCoocStatistics` is taken from @wiedemann_hands-_nodate and applied to the `abs_pov_sdtm` **SPARSE DOCUMENT TEXT MATRIX**
 
@@ -1800,14 +1818,29 @@ coocdf %>%
   flextable::border_outer()
 ```
 
+#### ...[viz] association strengths
 We can now visualize the association strengths as shown in the code chunk below.
 
 ```{r assocs03, message=F, warning=F}
-ggplot(coocdf, aes(x = reorder(Term, CollStrength, mean), y = CollStrength)) +
+p_ass_words_poverty <- ggplot(coocdf, aes(x = reorder(Term, CollStrength, mean), y = CollStrength)) +
   geom_point() +
   coord_flip() +
   #theme_void() +
-  labs(y = "")
+  labs(title = "Association to word \"poverty\"",
+       subtitle = "Collocation strenght measured by log-likelihood",
+       caption = "Source: https://ladal.edu.au/coll.html#Association_Strength",
+       y = "", 
+       x = ""
+       )
+
+p_ass_words_poverty %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "p_ass_words_poverty.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "p_ass_words_poverty.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
 ```
 
 The dot chart shows that *poverty* is collocating more strongly with *economic* compared to any other term.  
@@ -1891,20 +1924,38 @@ network::set.edge.attribute(net, "lty", ifelse(net %e% "weights" <=.1, 3,
 We can now display the network object and make use of the added information.
 
 ```{r net4}
-GGally::ggnet2(net, 
-       color = "color", 
-       label = TRUE, 
-       label.size = 4,
-       alpha = 0.2,
-       size = "degree",
-       edge.size = "weights",
-       edge.lty = "lty",
-       edge.alpha = 0.2) +
-  guides(color = FALSE, size = FALSE)
+p_ggnet_poverty <- GGally::ggnet2(net, 
+                                color = "color", 
+                                label = TRUE, 
+                                label.size = 4,
+                                alpha = 0.2,
+                                size = "degree",
+                                edge.size = "weights",
+                                edge.lty = "lty",
+                                edge.alpha = 0.2) +
+  guides(color = FALSE, size = FALSE) +
+  #theme_void() +
+  labs(title = "Degrees of association to word \"poverty\"",
+       subtitle = "Weak (grey), medium (orange), strong (red)"#,
+       # caption = "Source: https://ladal.edu.au/coll.html#Association_Strength",
+       # y = "", 
+       # x = ""
+       )
+
+p_ggnet_poverty %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "p_ggnet_poverty.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "p_ggnet_poverty.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
+
+
 ```
 
 ##### --> (EXE) Biplots{-}
-
+  
 An alternative way to display co-occurrence patterns are bi-plots which are used to display the results of Correspondence Analyses. They are useful, in particular, when one is not interested in one particular key term and its collocations but in the overall similarity of many terms. ***Semantic similarity*** in this case refers to a shared semantic and this distributional profile. As such, words can be deemed semantically similar if they have a similar co-occurrence profile - i.e. they co-occur with the same elements. Biplots can be used to visualize collocations because collocates co-occur and thus share semantic properties which renders then more similar to each other compared with other terms. 
 
 ```{r coll8, eval=T, echo=T, message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -2058,12 +2109,8 @@ The results show that *poverty* DOES NOT collocates significantly with anywords.
 
 #### --------------  STOP ------------------
 
- 
-
-
 ## > > III.vi) Sentiment Analysis 
 https://cfss.uchicago.edu/notes/harry-potter-exercise/
-
 
 ## III.v) > >  Topic modeling
 + Robinson, Silge 

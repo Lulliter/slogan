@@ -94,9 +94,7 @@ Figure \@ref(fig:CommonWordTit) shows ...
 
 # WDRs "winning ideas" over time
 
-```{r CommonWordTit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
-knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_in_title.png"))
-```
+## Historical overview 
 
 ### [- 50s-70s - post-decolonization world: "growth"]{.underline}
 
@@ -140,45 +138,81 @@ knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_
 -   concern over **barriers to the entry and functioning of firms**, created in part by regulations that curtailed competition.
 -   ***investment climate***
 
+## Looking at titles:
+```{r CommonWordTit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_in_title.png"))
+```
+
+## >>> Looking at subjects 
+
+`01c_WDR_data-exploration_subjects.Rmd` .....
+
+
 # How have WDRs "winning ideas" prevailed over time?
+
+
+## viz x-> Frequency of words within subsets of topics
+
+It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1].
+
+[^1]: The TF-IDF basically finds the important words that distinguish a specific documents within a corpus of related ones. Technically, it is a word frequency that is weighted by decreasing the weight of common words that occur across all documents and increasing the weight for words that are more rare in the collection as a whole.
+
+See figure \@ref(fig:gg_pov_tfidf) for poverty (looking at abstracts) ....
+
+```{r gg_pov_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about poverty", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_pov_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for environment/climate (looking at abstracts)...
+
+```{r gg_env_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about environment/climate", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_env_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for knowledge/data (looking at abstracts)...
+
+```{r gg_knowl_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about knowledge/data", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_knowl_tfidf.png"))
+```
+
+## [viz?] Which words seem are attracted to each other? 
+**Collocations** are words that are attracted to each other (and that co-occur or co-locate together),
+
+```{r gg_colloc_abs, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "abs_bigram_graph.png"))
+```
+
+**Correlations**  
+
+```{r p_ass_words, fig.cap = "Words most correlated to selected words of interest", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ass_words.png"))
+```
+ 
+**Collocation stenght - poverty**  
+```{r p_ass_words_poverty, fig.cap = "Words most correlated to poverty (1/2)", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ass_words_poverty.png"))
+```
+
+**Collocation stenght - poverty**  different way
+```{r p_ggnet_poverty, fig.cap = "Words most correlated to poverty (2/2)", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ggnet_poverty.png"))
+```
 
 ## [viz?] groups by semantic meaning?
 
 -   can I use any WBG own taxonomy to classify keywords?
 
-## [viz?] frequency of words by time series
+## [viz?] frequency of words over time? 
 
-## [viz?] matching\|returning ideas
+  - time series ? 
+
+## [viz?] matching ideas
 
 -   such as poverty in ? ? ?
 -   environm / climate in ? ? ?
 -   institutions/regul / governance in ? ? ?
 -   state / government ? ? ?
 -   market \| finance \| PPPs \| liberalization & privatization ???
-
-## [viz x ] frequency of words within subsets of topics
-
-It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1].
-
-[^1]: The TF-IDF basically finds the important words that distinguish a specific documents within a corpus of related ones. Technically, it is a word frequency that is weighted by decreasing the weight of common words that occur across all documents and increasing the weight for words that are more rare in the collection as a whole.
-
-See figure \@ref(fig:gg_pov_tfidf) for poverty....
-
-```{r gg_pov_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about poverty", fig.topcaption=TRUE}
-knitr::include_graphics(here("analysis", "output", "figures", "gg_pov_tfidf.png"))
-```
-
-See figure \@ref(fig:gg_pov_tfidf) for environment/climate...
-
-```{r gg_env_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about environment/climate", fig.topcaption=TRUE}
-knitr::include_graphics(here("analysis", "output", "figures", "gg_env_tfidf.png"))
-```
-
-See figure \@ref(fig:gg_pov_tfidf) for knowledge/data...
-
-```{r gg_knowl_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about knowledge/data", fig.topcaption=TRUE}
-knitr::include_graphics(here("analysis", "output", "figures", "gg_knowl_tfidf.png"))
-```
 
 # WHAT EFFECTS (if any) HAVE THE WDRS' POLICY RECOMMENDATIONS HAD ON WORLD BANK LENDING DECISIONS?
 

@@ -72,6 +72,12 @@ bla bla bla
 <!-- > `r Authors`. `r Year`. "`r Title`"". Accessed `r format(Sys.time(), '%B %e, %Y')`. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
 
 
+## TO DO list 
+
++ In `./02_descriptive-analysis.Rmd`, Fig @ref doesn't work...
++ 
++ 
+
 ## Data
 
 <div style="color:#FF4136">
