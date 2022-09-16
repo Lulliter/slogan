@@ -53,7 +53,9 @@ pacman::p_load(here,
                network,
                GGally,
                FactoMineR,
-               factoextra
+               factoextra,
+               topicmodels
+               
 )
 
 # Plot Theme(s) -------------------------------------
@@ -615,18 +617,20 @@ paint(abs_words)
 [tm way](https://www.linkedin.com/learning/processing-text-with-r-essential-training/improving-term-frequency-matrix?autoSkip=true&autoplay=true&contextUrn=urn%3Ali%3AlearningCollection%3A6932688789001674752&resume=false)
 
 ```{r, eval=FALSE}
-# abs_words_freq <-  abs_words %>% 
-#   anti_join(stop_words, by= "word" )  %>% 
+# abs_words_freq <-  abs_words %>%
+#   anti_join(stop_words, by= "word" )  %>%
 #   tidyr::pivot_wider(names_from = word, values_from = n, values_fill = 0)
 # 
-# # skim(abs_words_freq) 
-#  
+# # skim(abs_words_freq)
+# 
 # #Generate the Document Term matrix
 # abs_words_freq_matrix <- as.matrix(abs_words_freq)
 # 
 # abs_words_freq_matrix[ , 'gender']
 # 
 # # .... uses {tm} 
+
+#str(abs_words_freq_matrix)
 ```
 
 ### modo II) {Julia Silge and David Robinson} tidytext::bind_tf_idf
@@ -2107,16 +2111,16 @@ The results show that *poverty* DOES NOT collocates significantly with anywords.
 ##### ~~--> (EXE) Changes in Collocation Strength~~
 ##### ~~--> (EXE) Collostructional Analysis~~
 
-#### --------------  STOP ------------------
-
-## > > III.vi) Sentiment Analysis 
+## III.vi) > > Sentiment Analysis 
 https://cfss.uchicago.edu/notes/harry-potter-exercise/
 
-## III.v) > >  Topic modeling
-+ Robinson, Silge 
+## III.v) Topic modeling
++ [Robinson, Silge](https://www.tidytextmining.com/topicmodeling.html) 
 + https://cfss.uchicago.edu/notes/topic-modeling/
 + https://m-clark.github.io/text-analysis-with-R/topic-modeling.html
 + AH: https://datavizf18.classes.andrewheiss.com/class/11-class/#topic-modeling
+
+> [not sure applicable, they are all same topic here!]
 
 Topic modeling is a method for unsupervised classification of documents (blog post, news articles), similar to clustering on numeric data, which **finds natural groups of items** even when we’re not sure what we’re looking for.
 
@@ -2124,23 +2128,151 @@ Methods:
 
 + **Latent Dirichlet allocation (LDA)** is a particularly popular method for fitting a topic model -> It treats each document as a mixture of topics, and each topic as a mixture of words. _The basic idea is that we’ll take a whole lot of features and boil them down to a few ‘topics’_. In this sense LDA is akin to discrete PCA.
 
-#### --- LDA with `topicmodels` package 
+
+#### --- LDA (Latent Dirichlet allocation) with `topicmodels` package 
+
+> NOTE: The `topicmodels` package takes a Document-Term Matrix as input and produces a model that can be tided by tidytext, such that it can be manipulated and visualized with dplyr and ggplot2. 
+
+Principles:
+
+1. imagine that each document may contain words from several topics in particular proportions
+2. Every topic is a mixture of words
+
+***LDA is a mathematical method for estimating both of these at the same time: finding the mixture of words that is associated with each topic, while also determining the mixture of topics that describes each document.*** 
+
+#### --- From abstracts tiditext 2 dtm with `tidytext` 
 ```{r}
+# starting from this 
+paint(abs_words2)
+
+# cast into a Document-Term Matrix (*)
+abs_words_dtm <- abs_words2 %>%
+  tidytext::cast_dtm(date_issued, word, n)
+abs_words_dtm
+
+# cast into a Term-Document Matrix
+abs_words_tdm <- abs_words2 %>%
+  tidytext::cast_tdm(date_issued, word, n)
+abs_words_tdm
+
+# cast into quanteda's dfm Document-feature matrix
+abs_words_dfm <- abs_words2 %>%
+    cast_dfm(date_issued, word, n)
+
+# cast into a Matrix object
+abs_words_m <-  abs_words2 %>%
+  cast_sparse(date_issued, word, n)
+class(abs_words_m)
 
 ```
  
- 
+#### --- ...from dtm 2 LDA document structure
+https://cfss.uchicago.edu/notes/topic-modeling/
+```{r}
+# from tidytext format (one-row-per-token)
+# ---- 1/2 cast into a Document-Term Matrix (*)
+abs_words_dtm <- abs_words2 %>%
+  tidytext::cast_dtm(date_issued, word, n)
+abs_words_dtm
+
+
+# ---- 2/2 using Document-Term Matrix (*)
+# set a seed so that the output of the model is predictable
+# k is the number of topic
+abs_lda <- LDA(abs_words_dtm, k = 2, control = list(seed = 1234))
+abs_lda
+```
+
+Fitting the model was the “easy part”: the rest of the analysis will involve exploring and interpreting the model using tidying functions from the tidytext package.
+
+> NOTE: What if k change? Several different values for may be plausible, but by increasing we sacrifice clarity. 
+
 #### ---  Word-topic probabilities
+The tidytext package uses `broom::tidy` for extracting the per-topic-per-word  probabilities, called β (“beta”), from the model.
+
+> NOTE: For each combination, the model computes the probability of that term being generated from that topic.
+
+```{r}
+# extract per-topic-per-word beta
+abs_topics <- tidytext::tidy(abs_lda, matrix = "beta")
+abs_topics # one-topic-per-term-per-row format
+
+#> For example, the term “data” has a 8.33×10−12 probability of being generated from topic 1, but a 1.1×10−3 probability of being generated from topic 2.
+```
+ 
+We could use dplyr’s slice_max() to find the 10 terms that are most common within each topic. As a tidy data frame, this lends itself well to a ggplot2 visualization 
+```{r}
+abs_top_terms <- abs_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+abs_top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  scale_y_reordered()
+```
+
+In alternative, we could consider the terms that had the *greatest difference* in $\beta$ between topic 1 and topic 2. This can be estimated based on the log ratio of the two: $\log_2(\frac{\beta_2}{\beta_1})$ (a log ratio is useful because it makes the difference symmetrical: $\beta_2$ being twice as large leads to a log ratio of 1, while $\beta_1$ being twice as large results in -1). To constrain it to a set of especially relevant words, we can filter for relatively common words, such as those that have a $\beta$ greater than 1/1000 in at least one topic.
+
+```{r}
+beta_wide <- abs_topics %>%
+  mutate(topic = paste0("topic", topic)) %>%
+  pivot_wider(names_from = topic, values_from = beta) %>% 
+  filter(topic1 > .001 | topic2 > .001) %>%
+  mutate(log_ratio = log2(topic2 / topic1))
+beta_wide
+```
+
+The words with the greatest differences between the two topics are visualized in Figure \@ref(fig:topiccompare).
+
+(ref:topiccap) Words with the greatest difference in $\beta$ between topic 2 and topic 1
+
+```{r topiccompare, dependson = "beta_wide", fig.cap = "(ref:topiccap)", echo = FALSE}
+beta_wide %>%
+  group_by(direction = log_ratio > 0) %>%
+  slice_max(abs(log_ratio), n = 10) %>% 
+  ungroup() %>%
+  mutate(term = reorder(term, log_ratio)) %>%
+  ggplot(aes(log_ratio, term)) +
+  geom_col() +
+  labs(x = "Log2 ratio of beta in topic 2 / topic 1", y = NULL)
+```
  
 #### ---  Document-topic probabilities
+Besides estimating each topic as a mixture of words, LDA also models each document as a mixture of topics. We can examine the per-document-per-topic probabilities, called $\gamma$ ("gamma"), with the `matrix = "gamma"` argument to `tidy()`.
+
+```{r ap_documents}
+abs_documents <- tidy(abs_lda, matrix = "gamma")
+abs_documents # 44 WDR x 2 topics = 88!
+```
+
+Each of these values is an estimated proportion of words from that document that are generated from that topic. For example, the model estimates that only about `r percent(abs_documents$gamma[1])` of the words in document 1 were generated from topic 1.
+
+We can see that many of these documents were drawn from a mix of the two topics, but that `document` *2014* was drawn almost entirely from topic 1, having a $\gamma$ from topic 2 close to zero. To check this answer, we could `tidy()` the document-term matrix (see Chapter \@ref(tidy-dtm)) and check what the most common words in that document were.
+
+```{r ap_document_6}
+tidy(abs_words_dtm) %>%
+  filter(document == 2014) %>%
+  arrange(desc(count))
+```
+
+Based on the most common words, this appears to be an article about the relationship between the American government and Panamanian dictator Manuel Noriega, which means the algorithm was right to place it in topic 2 (as political/national news).
+
+ 
+
+#### --------------  STOP ------------------
 
 #### ---  Alternative LDA implementations
 
-## > > III.vii) Supervised classification with text data
+## III.vii) > > Supervised classification with text data
 https://cfss.uchicago.edu/notes/supervised-text-classification/
 we can now use machine learning models to classify text into specific sets of categories. This is known as supervised learning.
 
-1. 
+ 
 
 
 # -------------- TO do \| To Rethink ------------------

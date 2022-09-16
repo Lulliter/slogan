@@ -1,0 +1,121 @@
+---
+title: "Lexicon: climate change"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+output: 
+  html_document:
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+bibliography: slogan.bib
+
+---
+
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(kableExtra)
+knit_print.data.frame <- function(x, ...) {
+  res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
+  asis_output(res)
+}
+
+registerS3method("knit_print", "data.frame", knit_print.data.frame)
+registerS3method("knit_print", "grouped_df", knit_print.data.frame)
+
+knitr::opts_chunk$set(fig.retina = 3,
+                      tidy.opts = list(width.cutoff = 120),  # For code
+                      options(width = 90),  # For output
+                      fig.asp = 0.618, fig.width = 7, 
+                      fig.align = "center", out.width = "85%")
+
+options(dplyr.summarise.inform = FALSE,
+        knitr.kable.NA = "")
+```
+
+```{r load-libraries-data, message=FALSE, warning=FALSE}
+# Load required packages
+if (!require("pacman")) install.packages('pacman' )
+library(pacman) # for loading packages
+p_load(here, tidyverse, tibble, janitor,
+       emo, readr, 
+       gt,
+       #captioner,
+       knitr, 
+       flextable, # better bc OK in html & word
+       officer, # to save flextable in word
+       shiny, 
+       stringi,
+       wordcountaddin # You may have to download this
+       )  
+p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
+#p_load_gh("benmarwick/wordcountaddin")
+
+# library(tidyverse)
+# library(targets)
+# library(yardstick)
+# library(broom)
+# library(patchwork)
+# library(scales)
+# library(here)
+
+# # Load data
+# # Need to use this withr thing because tar_read() and tar_load() need to see the
+# # _targets folder in the current directory, but this .Rmd file is in a subfolder
+# withr::with_dir(here::here(), {
+#   source(tar_read(plot_funs))
+#   
+#   canary_testing_lagged <- tar_read(panel_testing_lagged)
+#   
+#   # Load big list of models
+#   model_df <- tar_read(model_df) %>% 
+#     filter(str_detect(model, "baseline") | str_detect(model, "v2csreprss"))
+#   
+#   # Load actual model objects
+#   tar_load(c(m_pts_baseline_train, m_pts_v2csreprss_train,
+#              m_pts_total_train, m_pts_advocacy_train, 
+#              m_pts_entry_train, m_pts_funding_train,
+#              m_lhr_baseline_train, m_lhr_v2csreprss_train,
+#              m_lhr_total_train, m_lhr_advocacy_train, 
+#              m_lhr_entry_train, m_lhr_funding_train))
+# })
+# 
+# pts_levels <- levels(canary_testing_lagged$PTS_factor)
+# 
+# # Returns a data frame of predicted probabilities with actual = 1 
+# # when the response outcome happens
+# match_actual <- function(x, pred, actual) {
+#   pred %>% 
+#     select(fitted = {{x}}) %>% 
+#     mutate(actual = as.numeric(actual == colnames(pred[x])),
+#            plot_level = colnames(pred[x]))
+# }
+```
+
+
+
+
+# Definition
+
+
+# Etimology
+
+
+# Links
+
+
+
+# Reduction
+Making us think that the changing climate we are (undoubtedly) observing is something ***new*** or ***anomalous*** or ***especially fast occurring***, while we forget the small glaciation (two centuries around 1700) and the warm period around the middle age (three centuries around 1100) or the last big glaciation ("Younger Dryas" occurred 11000 years ago) from which the planet came back fairly rapidly (around 100 year as opposed to geological scale)
+
+Not to mention the accompanying, arbitrary and still unproven claim that such switch is of anthropic origins. 
+
+What if we simply called them "climate cycles"? WOULD IT GARNER THE SAME SENSE OF URGENCY? 
+
+
+
+
+### Main Inspiration
+[@garbini_uscire_2003]
+[@battaglia_il_2022]
