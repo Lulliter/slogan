@@ -18,7 +18,7 @@ bibliography: slogan.bib
 
 
 ```{r setup-libraries-data, echo=FALSE}
-knitr::opts_chunk$set(include = FALSE, warning = FALSE)
+knitr::opts_chunk$set(include = TRUE, warning = FALSE)
 # Pckgs -------------------------------------
 if (!require ("pacman")) (install.packages("pacman"))
 
@@ -162,6 +162,7 @@ stop_words <- as_tibble(stop_words) %>% # in the tidytext dataset
      filter (word != "old") %>% 
      filter (word != "trying") 
 
+
 # --- set up stop words stemmed
 stop_words_stem <- stop_words  %>% 
 mutate (word = SnowballC::wordStem(word ))
@@ -169,7 +170,7 @@ mutate (word = SnowballC::wordStem(word ))
 
 ## II) Data (ingestion), loading & cleaning
 
-Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.Rmd` and the result saved as `WDR.rds` \<-- (Being somewhat computational intensive, I only did it once.)
+Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.Rmd` and the result saved as `./data/raw_data/WDR.rds` \<-- (Being somewhat computational intensive, I only did it once.)
 
 > 
     + **WDR = tibble [45, 8]**
@@ -2272,17 +2273,6 @@ Based on the most common words, this appears to be an article about the relation
 https://cfss.uchicago.edu/notes/supervised-text-classification/
 we can now use machine learning models to classify text into specific sets of categories. This is known as supervised learning.
 
- 
-
-
-# -------------- TO do \| To Rethink ------------------
-
--   DAG graph of my research question
--   metadata $downloads? on WDRs ? (I am using "altmetrics" but I don't know how important it is)
--   create my own stop_words list (which excludes also "date_issued", "report", etc)
--   leggere [@yusuf_development_2008]
--   need to create groups "umbrella subjects"
-- Which of this bigram might be a SLOGAN?
 
 # Reference Tutorials
 

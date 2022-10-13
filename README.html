@@ -13,7 +13,7 @@
 
 <title>README.knit</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -142,11 +142,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -498,90 +502,22 @@ The folder containing the html files of the website is
 #&gt; ├── 04_predictions.Rmd
 #&gt; ├── Makefile
 #&gt; ├── R
-#&gt; │   ├── _BenSchmidt_Text-in-R.R
-#&gt; │   ├── f_count_bigrams.R
-#&gt; │   ├── f_facetted_bar_plot.R
-#&gt; │   ├── f_scrape_WB-OKR.R
-#&gt; │   ├── f_visualize_bigrams.R
-#&gt; │   ├── funs_data-cleaning.R
-#&gt; │   ├── funs_knitting.R
-#&gt; │   ├── funs_notebook.R
-#&gt; │   ├── ggplot_themes.R
-#&gt; │   ├── models_analysis.R
-#&gt; │   ├── models_details.R
-#&gt; │   ├── models_lhr.R
-#&gt; │   ├── models_pts.R
-#&gt; │   ├── psyteachr_setup.R
-#&gt; │   ├── purrr_attempt.R
-#&gt; │   ├── toy_nested_list.R
-#&gt; │   └── turn_list_to_tibble.R
 #&gt; ├── README.Rmd
 #&gt; ├── README.html
 #&gt; ├── README.md
 #&gt; ├── _build_deploy.sh
 #&gt; ├── _my_stuff
-#&gt; │   ├── WDR-data-ingestion.Rmd
-#&gt; │   ├── WDR_test.R
-#&gt; │   └── settings.json.js
 #&gt; ├── _process
-#&gt; │   ├── 01a_intro_text_analytics.html
-#&gt; │   ├── 01b_WDR_data-exploration_abstracts.html
-#&gt; │   ├── 01b_WDR_data-exploration_abstracts_files
-#&gt; │   ├── 01c_WDR_data-exploration_subjects.html
-#&gt; │   ├── 01c_WDR_data-exploration_subjects_files
-#&gt; │   ├── 01d_WBoper_data-exploration.html
-#&gt; │   └── site_libs
 #&gt; ├── _site.yml
 #&gt; ├── _zzz_learning_exes
-#&gt; │   ├── LADAL
-#&gt; │   ├── SOTUS
-#&gt; │   └── Text_R_EssT
 #&gt; ├── analysis
-#&gt; │   ├── files
-#&gt; │   └── output
 #&gt; ├── buzzwords.bib
 #&gt; ├── data
-#&gt; │   ├── DO-NOT-EDIT-ANY-FILES-IN-HERE-BY-HAND
-#&gt; │   ├── derived_data
-#&gt; │   └── raw_data
 #&gt; ├── docs
-#&gt; │   ├── 00_home-lexicon.html
-#&gt; │   ├── 00_lexicon-climatechange.html
-#&gt; │   ├── 00_lexicon-gender.html
-#&gt; │   ├── 01a_intro_text_analytics.html
-#&gt; │   ├── 01b_WDR_data-exploration_abstracts.html
-#&gt; │   ├── 01b_WDR_data-exploration_abstracts_files
-#&gt; │   ├── 01c_WDR_data-exploration_subjects.html
-#&gt; │   ├── 01c_WDR_data-exploration_subjects_files
-#&gt; │   ├── 01d_WBoper_data-exploration.html
-#&gt; │   ├── 02_descriptive-analysis.html
-#&gt; │   ├── 03_model-details.html
-#&gt; │   ├── 03_modeling-choices.html
-#&gt; │   ├── 04_predictions.html
-#&gt; │   ├── R
-#&gt; │   ├── README.html
-#&gt; │   ├── analysis
-#&gt; │   ├── data
-#&gt; │   ├── html
-#&gt; │   ├── img
-#&gt; │   ├── index.html
-#&gt; │   └── site_libs
 #&gt; ├── html
-#&gt; │   ├── fixes.css
-#&gt; │   └── footer.html
 #&gt; ├── img
-#&gt; │   ├── data_large_color.png
-#&gt; │   ├── materials_large_color.png
-#&gt; │   └── phi.png
 #&gt; ├── index.Rmd
 #&gt; ├── site_libs
-#&gt; │   ├── bootstrap-3.3.5
-#&gt; │   ├── font-awesome-5.1.0
-#&gt; │   ├── header-attrs-2.14
-#&gt; │   ├── jquery-3.6.0
-#&gt; │   ├── jqueryui-1.11.4
-#&gt; │   ├── navigation-1.1
-#&gt; │   └── tocify-1.9.1
 #&gt; ├── slogan.Rproj
 #&gt; └── slogan.bib</code></pre>
 <p>Upon making changes in the local folder, I have 2 ways in which I can
@@ -623,26 +559,74 @@ href="https://sangsoonam.github.io/2019/02/08/using-git-worktree-to-deploy-githu
 <p>bla bla bla</p>
 <hr />
 <!-- This repository contains the data and code for our paper. Our pre-print is online here: -->
-<!-- > Luisa M. Mimmi. 2022. "Follow the slogan"". Accessed September 14, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
+<!-- > Luisa M. Mimmi. 2022. "Follow the slogan"". Accessed October 13, 2022. Online at <https://dx.doi.org/10.17605/OSF.IO/MTR6X> -->
 </div>
-<div id="to-do-list" class="section level2">
-<h2>TO DO list</h2>
+<div id="to-do-list-to-rethink" class="section level2">
+<h2>TO DO list | To Rethink</h2>
 <ul>
-<li>In <code>./02_descriptive-analysis.Rmd</code>, Fig <span
-class="citation">@ref</span> doesn’t work…</li>
-<li>Finire controllare <code>makefile</code> … sometimes git is not
-tracking latest things…
+<li>In <code>./01b_WDR_data-exploration_abstracts.Rmd</code>…
 <ul>
+<li>metadata $downloads? on WDRs ? (I am using “altmetrics” but I don’t
+know how important it is)</li>
+<li>create my own stop_words list (which excludes also “date_issued”,
+“report”, etc)</li>
+<li>leggere <span class="citation">[@yusuf_development_2008]</span></li>
+</ul></li>
+<li>In <code>./01c_WDR_data-exploration_subjects.Rmd</code>,
+<ul>
+<li>need to create groups “umbrella subjects”</li>
+</ul></li>
+<li>In <code>./02_descriptive-analysis.Rmd</code>,
+<ul>
+<li>Fig <span class="citation">@ref</span> doesn’t work…</li>
+<li>DAG graph of my research question</li>
+</ul></li>
+<li>In <code>./01d_WBoper_data-exploration.Rmd</code>,
+<ul>
+<li>extract from PDO col something similar to abstract</li>
+<li>decide whether to compare it to abstract–&gt;bigrams | subjects(too
+formalized) | topics(too formalized)</li>
+<li>graph like timelines with vertical lines of WDR topic</li>
+</ul></li>
+</ul>
+<hr />
+<ul>
+<li>OVERALL <code>makefile</code> … something wrong in should probably
+figure out <code>targets</code>
+<ul>
+<li>sometimes git is not tracking latest things…</li>
 <li>Error in rmarkdown::render(README.Rmd, output_format =
 github_document) : object ‘github_document’ not found</li>
+<li>Eliminato README.Rmd</li>
+<li>Issue is that
+<code>rmarkdown::render_site(encoding = 'UTF-8')</code> also moves the
+files, so every single time make RE-RUN all</li>
 </ul></li>
-<li></li>
+<li>OVERALL <code>./01*</code> PROCESSING files… eliminate code
+<code>include = FALSE</code> to make website lighter …</li>
 </ul>
 </div>
 <div id="data" class="section level2">
 <h2>Data</h2>
+<div id="raw-data" class="section level3">
+<h3>Raw Data</h3>
 <div style="color:#FF4136">
-<p>cccccc</p>
+<ul>
+<li><strong><code>./data/raw_data/WDR.rds</code></strong> &lt;-
+constructed in <code>./_my_stuff/WDR-data-ingestion.Rmd</code></li>
+<li><strong><code>./data/raw_data/WDR_subjects_corrected2010_2011.xlsx</code></strong>
+&lt;- manually corrected as explained in constructed in
+<code>./01b_WDR_data-exploration_abstracts.Rmd</code></li>
+</ul>
+<div id="derived-data" class="section level3">
+<h3>Derived Data</h3>
+<ul>
+<li><strong><code>./data/derived_data/wdr.rds</code></strong> &lt;-
+constructed in
+<code>./01b_WDR_data-exploration_abstracts.Rmd</code></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 <div id="licenses" class="section level2">
@@ -658,7 +642,7 @@ href="LICENSE.md">MIT License</a>.</p>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgc2xvZ2FuIgpBdXRob3JzIDwtICJMdWlzYSBNLiBNaW1taSIKWWVhciA8LSAiMjAyMiIKYGBgCgrwn5qnIF93b3JrIGluIHByb2dyZXNzXyDwn5qnCgojIGByIFRpdGxlYAoKW0x1aXNhIE0uIE1pbW1pXShodHRwczovL2x1aXNhbWltbWkuY29tLykg4oCiIEluZGVwZW5kZW50IENvbnN1bHRhbnQgIAoKLS0tCgo8IS0tIFshW09TRiBET0ldKGh0dHBzOi8vaW1nLnNoaWVsZHMuaW8vYmFkZ2UvT1NGLTEwLjE3NjA1JTJGT1NGLklPJTJGTVRSNlgtYmx1ZSldKGh0dHBzOi8vZHguZG9pLm9yZy8xMC4xNzYwNS9PU0YuSU8vTVRSNlgpIFshW0RPSV0oaHR0cHM6Ly96ZW5vZG8ub3JnL2JhZGdlL0RPSS8xMC41MjgxL3plbm9kby41NzE1NDAyLnN2ZyldKGh0dHBzOi8vZG9pLm9yZy8xMC41MjgxL3plbm9kby41NzE1NDAyKSAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuIFsiYHIgVGl0bGVgLCJdKGh0dHBzOi8vZG9pLm9yZy8xMC4xMTc3LzA4OTk3NjQwMjA5NzEwNDUpICpKb3VybmFsIG9mIEh1bWFuIFJpZ2h0cyogKGZvcnRoY29taW5nKS4gLS0+CgoqKkFsbCB0aGlzIHByb2plY3QncyBtYXRlcmlhbHMgYXJlIGZyZWUgYW5kIG9wZW46KioKCi0gW0Rvd25sb2FkIHRoZSBkYXRhXSgjZGF0YSkKLSBbU2VlIHRoZSBhbmFseXNpcyBub3RlYm9vayB3ZWJzaXRlXShodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vKQoKIVtPcGVuIGRhdGFdKGltZy9kYXRhX2xhcmdlX2NvbG9yLnBuZykgJmVtc3A7ICFbT3Blbl0oaW1nL21hdGVyaWFsc19sYXJnZV9jb2xvci5wbmcpCgoKIyMgSG93IHRvIGJ1aWxkL2RlcGxveSB0aGUgc2l0ZSAKVGhpcyBwcm9qZWN0IGlzIGFuIGBSbWFya2Rvd25gIHdlYnNpdGVzIGhvc3RlZCBvbiBgR2l0aHViIFBhZ2VzYCBhbmQgYWNjZXNzaWJsZSBoZXJlIFtodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vXShodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vKS4gVGhlIGZvbGRlciBjb250YWluaW5nIHRoZSBodG1sIGZpbGVzIG9mIHRoZSB3ZWJzaXRlIGlzIGAuL2RvY3MvYCAodGhpcyB3YXMgYWxzbyBzcGVjaWZpZWQgaW4gdGhlIGBfc2l0ZS55bWxgKQogCmBgYHtyLCAgZWNobz1GQUxTRSB9CiMgYmFzaCB0cmVlIC1DIC1MIDEKCmZzOjpkaXJfdHJlZShwYXRoID0gIi4iLCByZWN1cnNlID0gMSApCmBgYAoKVXBvbiBtYWtpbmcgY2hhbmdlcyBpbiB0aGUgbG9jYWwgZm9sZGVyLCBJIGhhdmUgMiB3YXlzIGluIHdoaWNoIEkgY2FuIGNvbW1pdCBhbmQgcHVzaCBjaGFuZ2VzIHRvIEdpdEh1YiAoYXMgd2VsbCBhcyB1cGRhdGUgcHVibGljIHZlcnNpb24gb2Ygd2Vic2l0ZSBvbiBHaXRIdWIgUGFnZXMpCgoxLiBQc2V1ZG8gbWFudWFsICoqc2hlbGwqKiBjb21tYW5kcyBpbiBgX2J1aWxkX2RlcGxveS5zaGAgZmlsZSAKICArIEhlcmUgSSBjYW4gYWxzbyBkZWNpZGUgd2hldGhlciB0byB1c2UgYGdpdCBhZGQgLXVgIChvbmx5IHN0dWZmIGFscmVhZHkgdHJhY2tlZCkgb3IgYGdpdCBhZGQgLS1BYCAoYWxzbyBuZXcgc3R1ZmYpCjIuIFVzaW5nIGF1dG9tYXRlZCAqKm1ha2UqKiBpbnN0cnVjdGlvbnMgaW4gYE1ha2VmaWxlYCAgCiAgKyBIZXJlIEkgaGF2ZSBzZXQgaXQgdXAgZXhjbHVzaXZlbHkgd2l0aCBgZ2l0IGFkZCAtdWAKCi0tLSAKCiMjIEFja25vd2xlZGdlbWVudHMKIAorIFJNYXJrZG93biBXZWJzaXRlIEluc3RydWN0aW9uczogW2hlcmVdKGh0dHBzOi8vcHN5dGVhY2hyLmdpdGh1Yi5pby9oYWNrLXlvdXItZGF0YS9ybWFya2Rvd25fMi5odG1sKQpodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTAgCisgR2ggcGFnZXMgZnJvbSBzdWJ0cmVlIDE6IFtoZXJlXShodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTApICoqYW5kIDIqKiBbaGVyZV0oaHR0cHM6Ly9zYW5nc29vbmFtLmdpdGh1Yi5pby8yMDE5LzAyLzA4L3VzaW5nLWdpdC13b3JrdHJlZS10by1kZXBsb3ktZ2l0aHViLXBhZ2VzLmh0bWwpCgoKIyMgQWJzdHJhY3QKCmJsYSBibGEgYmxhIAoKLS0tCgo8IS0tIFRoaXMgcmVwb3NpdG9yeSBjb250YWlucyB0aGUgZGF0YSBhbmQgY29kZSBmb3Igb3VyIHBhcGVyLiBPdXIgcHJlLXByaW50IGlzIG9ubGluZSBoZXJlOiAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuICJgciBUaXRsZWAiIi4gQWNjZXNzZWQgYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiAlZSwgJVknKWAuIE9ubGluZSBhdCA8aHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WD4gLS0+CgoKIyMgVE8gRE8gbGlzdCAKCisgSW4gYC4vMDJfZGVzY3JpcHRpdmUtYW5hbHlzaXMuUm1kYCwgRmlnIEByZWYgZG9lc24ndCB3b3JrLi4uCisgRmluaXJlIGNvbnRyb2xsYXJlIGBtYWtlZmlsZWAgLi4uIHNvbWV0aW1lcyBnaXQgaXMgbm90IHRyYWNraW5nIGxhdGVzdCB0aGluZ3MuLi4KICArIEVycm9yIGluIHJtYXJrZG93bjo6cmVuZGVyKFJFQURNRS5SbWQsIG91dHB1dF9mb3JtYXQgPSBnaXRodWJfZG9jdW1lbnQpIDogICBvYmplY3QgJ2dpdGh1Yl9kb2N1bWVudCcgbm90IGZvdW5kCisgCgojIyBEYXRhCgo8ZGl2IHN0eWxlPSJjb2xvcjojRkY0MTM2Ij4KY2NjY2NjCjwvZGl2PgoKIAojIyBMaWNlbnNlcwoKKipUZXh0IGFuZCBmaWd1cmVzOioqIEFsbCBwcm9zZSBhbmQgaW1hZ2VzIGFyZSBsaWNlbnNlZCB1bmRlciBDcmVhdGl2ZSBDb21tb25zIChbQ0MtQlktNC4wXShodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvKSkKCioqQ29kZToqKiBBbGwgY29kZSBpcyBsaWNlbnNlZCB1bmRlciB0aGUgW01JVCBMaWNlbnNlXShMSUNFTlNFLm1kKS4KCiMjIENvbnRyaWJ1dGlvbnMKIAo=</div>
+<div id="rmd-source-code">LS0tCm91dHB1dDogZ2l0aHViX2RvY3VtZW50Ci0tLQoKPCEtLSBSRUFETUUubWQgaXMgZ2VuZXJhdGVkIGZyb20gUkVBRE1FLlJtZC4gUGxlYXNlIGVkaXQgdGhhdCBmaWxlIC0tPgoKYGBge3IsIGVjaG8gPSBGQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KAogIGNvbGxhcHNlID0gVFJVRSwKICBjb21tZW50ID0gIiM+IiwKICBmaWcucGF0aCA9ICJSRUFETUUtIgopCiMgUGxlYXNlIHB1dCB5b3VyIHRpdGxlIGhlcmUgdG8gaW5jbHVkZSBpdCBpbiB0aGUgZmlsZSBiZWxvdy4KVGl0bGUgPC0gIkZvbGxvdyB0aGUgc2xvZ2FuIgpBdXRob3JzIDwtICJMdWlzYSBNLiBNaW1taSIKWWVhciA8LSAiMjAyMiIKYGBgCgrwn5qnIF93b3JrIGluIHByb2dyZXNzXyDwn5qnCgojIGByIFRpdGxlYAoKW0x1aXNhIE0uIE1pbW1pXShodHRwczovL2x1aXNhbWltbWkuY29tLykg4oCiIEluZGVwZW5kZW50IENvbnN1bHRhbnQgIAoKLS0tCgo8IS0tIFshW09TRiBET0ldKGh0dHBzOi8vaW1nLnNoaWVsZHMuaW8vYmFkZ2UvT1NGLTEwLjE3NjA1JTJGT1NGLklPJTJGTVRSNlgtYmx1ZSldKGh0dHBzOi8vZHguZG9pLm9yZy8xMC4xNzYwNS9PU0YuSU8vTVRSNlgpIFshW0RPSV0oaHR0cHM6Ly96ZW5vZG8ub3JnL2JhZGdlL0RPSS8xMC41MjgxL3plbm9kby41NzE1NDAyLnN2ZyldKGh0dHBzOi8vZG9pLm9yZy8xMC41MjgxL3plbm9kby41NzE1NDAyKSAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuIFsiYHIgVGl0bGVgLCJdKGh0dHBzOi8vZG9pLm9yZy8xMC4xMTc3LzA4OTk3NjQwMjA5NzEwNDUpICpKb3VybmFsIG9mIEh1bWFuIFJpZ2h0cyogKGZvcnRoY29taW5nKS4gLS0+CgoqKkFsbCB0aGlzIHByb2plY3QncyBtYXRlcmlhbHMgYXJlIGZyZWUgYW5kIG9wZW46KioKCi0gW0Rvd25sb2FkIHRoZSBkYXRhXSgjZGF0YSkKLSBbU2VlIHRoZSBhbmFseXNpcyBub3RlYm9vayB3ZWJzaXRlXShodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vKQoKIVtPcGVuIGRhdGFdKGltZy9kYXRhX2xhcmdlX2NvbG9yLnBuZykgJmVtc3A7ICFbT3Blbl0oaW1nL21hdGVyaWFsc19sYXJnZV9jb2xvci5wbmcpCgoKIyMgSG93IHRvIGJ1aWxkL2RlcGxveSB0aGUgc2l0ZSAKVGhpcyBwcm9qZWN0IGlzIGFuIGBSbWFya2Rvd25gIHdlYnNpdGVzIGhvc3RlZCBvbiBgR2l0aHViIFBhZ2VzYCBhbmQgYWNjZXNzaWJsZSBoZXJlIFtodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vXShodHRwczovL2x1bGxpdGVyLmdpdGh1Yi5pby9zbG9nYW4vKS4gVGhlIGZvbGRlciBjb250YWluaW5nIHRoZSBodG1sIGZpbGVzIG9mIHRoZSB3ZWJzaXRlIGlzIGAuL2RvY3MvYCAodGhpcyB3YXMgYWxzbyBzcGVjaWZpZWQgaW4gdGhlIGBfc2l0ZS55bWxgKQogCmBgYHtyLCAgZWNobz1GQUxTRSB9CiMgYmFzaCB0cmVlIC1DIC1MIDEKCmZzOjpkaXJfdHJlZShwYXRoID0gIi4iLCByZWN1cnNlID0gMCApCmBgYAoKVXBvbiBtYWtpbmcgY2hhbmdlcyBpbiB0aGUgbG9jYWwgZm9sZGVyLCBJIGhhdmUgMiB3YXlzIGluIHdoaWNoIEkgY2FuIGNvbW1pdCBhbmQgcHVzaCBjaGFuZ2VzIHRvIEdpdEh1YiAoYXMgd2VsbCBhcyB1cGRhdGUgcHVibGljIHZlcnNpb24gb2Ygd2Vic2l0ZSBvbiBHaXRIdWIgUGFnZXMpCgoxLiBQc2V1ZG8gbWFudWFsICoqc2hlbGwqKiBjb21tYW5kcyBpbiBgX2J1aWxkX2RlcGxveS5zaGAgZmlsZSAKICArIEhlcmUgSSBjYW4gYWxzbyBkZWNpZGUgd2hldGhlciB0byB1c2UgYGdpdCBhZGQgLXVgIChvbmx5IHN0dWZmIGFscmVhZHkgdHJhY2tlZCkgb3IgYGdpdCBhZGQgLS1BYCAoYWxzbyBuZXcgc3R1ZmYpCjIuIFVzaW5nIGF1dG9tYXRlZCAqKm1ha2UqKiBpbnN0cnVjdGlvbnMgaW4gYE1ha2VmaWxlYCAgCiAgKyBIZXJlIEkgaGF2ZSBzZXQgaXQgdXAgZXhjbHVzaXZlbHkgd2l0aCBgZ2l0IGFkZCAtdWAKCi0tLSAKCiMjIEFja25vd2xlZGdlbWVudHMKIAorIFJNYXJrZG93biBXZWJzaXRlIEluc3RydWN0aW9uczogW2hlcmVdKGh0dHBzOi8vcHN5dGVhY2hyLmdpdGh1Yi5pby9oYWNrLXlvdXItZGF0YS9ybWFya2Rvd25fMi5odG1sKQpodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTAgCisgR2ggcGFnZXMgZnJvbSBzdWJ0cmVlIDE6IFtoZXJlXShodHRwczovL2dpc3QuZ2l0aHViLmNvbS9jb2J5aXNtLzQ3MzA0OTApICoqYW5kIDIqKiBbaGVyZV0oaHR0cHM6Ly9zYW5nc29vbmFtLmdpdGh1Yi5pby8yMDE5LzAyLzA4L3VzaW5nLWdpdC13b3JrdHJlZS10by1kZXBsb3ktZ2l0aHViLXBhZ2VzLmh0bWwpCgoKIyMgQWJzdHJhY3QKCmJsYSBibGEgYmxhIAoKLS0tCgo8IS0tIFRoaXMgcmVwb3NpdG9yeSBjb250YWlucyB0aGUgZGF0YSBhbmQgY29kZSBmb3Igb3VyIHBhcGVyLiBPdXIgcHJlLXByaW50IGlzIG9ubGluZSBoZXJlOiAtLT4KCjwhLS0gPiBgciBBdXRob3JzYC4gYHIgWWVhcmAuICJgciBUaXRsZWAiIi4gQWNjZXNzZWQgYHIgZm9ybWF0KFN5cy50aW1lKCksICclQiAlZSwgJVknKWAuIE9ubGluZSBhdCA8aHR0cHM6Ly9keC5kb2kub3JnLzEwLjE3NjA1L09TRi5JTy9NVFI2WD4gLS0+CgoKIyMgVE8gRE8gbGlzdCAgXHwgVG8gUmV0aGluawogCisgSW4gYC4vMDFiX1dEUl9kYXRhLWV4cGxvcmF0aW9uX2Fic3RyYWN0cy5SbWRgLi4uIAogICsgbWV0YWRhdGEgJGRvd25sb2Fkcz8gb24gV0RScyA/IChJIGFtIHVzaW5nICJhbHRtZXRyaWNzIiBidXQgSSBkb24ndCBrbm93IGhvdyBpbXBvcnRhbnQgaXQgaXMpCiAgKyBjcmVhdGUgbXkgb3duIHN0b3Bfd29yZHMgbGlzdCAod2hpY2ggZXhjbHVkZXMgYWxzbyAiZGF0ZV9pc3N1ZWQiLCAicmVwb3J0IiwgZXRjKQogICsgbGVnZ2VyZSBbQHl1c3VmX2RldmVsb3BtZW50XzIwMDhdIAoKKyBJbiBgLi8wMWNfV0RSX2RhdGEtZXhwbG9yYXRpb25fc3ViamVjdHMuUm1kYCwgIAogICsgbmVlZCB0byBjcmVhdGUgZ3JvdXBzICJ1bWJyZWxsYSBzdWJqZWN0cyIKCisgSW4gYC4vMDJfZGVzY3JpcHRpdmUtYW5hbHlzaXMuUm1kYCwgCiAgKyBGaWcgQHJlZiBkb2Vzbid0IHdvcmsuLi4KICArIERBRyBncmFwaCBvZiBteSByZXNlYXJjaCBxdWVzdGlvbgoKKyBJbiBgLi8wMWRfV0JvcGVyX2RhdGEtZXhwbG9yYXRpb24uUm1kYCwgIAogICsgZXh0cmFjdCBmcm9tIFBETyBjb2wgc29tZXRoaW5nIHNpbWlsYXIgdG8gYWJzdHJhY3QgCiAgKyBkZWNpZGUgd2hldGhlciB0byBjb21wYXJlIGl0IHRvIGFic3RyYWN0LS0+YmlncmFtcyB8IHN1YmplY3RzKHRvbyBmb3JtYWxpemVkKSB8IHRvcGljcyh0b28gZm9ybWFsaXplZCkgCiAgKyBncmFwaCBsaWtlIHRpbWVsaW5lcyB3aXRoIHZlcnRpY2FsIGxpbmVzIG9mIFdEUiB0b3BpYwoKLS0tIAorIE9WRVJBTEwgYG1ha2VmaWxlYCAuLi4gc29tZXRoaW5nIHdyb25nIGluICBzaG91bGQgcHJvYmFibHkgZmlndXJlIG91dCBgdGFyZ2V0c2AKICArIHNvbWV0aW1lcyBnaXQgaXMgbm90IHRyYWNraW5nIGxhdGVzdCB0aGluZ3MuLi4KICArIEVycm9yIGluIHJtYXJrZG93bjo6cmVuZGVyKFJFQURNRS5SbWQsIG91dHB1dF9mb3JtYXQgPSBnaXRodWJfZG9jdW1lbnQpIDogICBvYmplY3QgJ2dpdGh1Yl9kb2N1bWVudCcgbm90IGZvdW5kCiAgKyBFbGltaW5hdG8gUkVBRE1FLlJtZAogICsgSXNzdWUgaXMgdGhhdCBgcm1hcmtkb3duOjpyZW5kZXJfc2l0ZShlbmNvZGluZyA9ICdVVEYtOCcpYCBhbHNvIG1vdmVzIHRoZSBmaWxlcywgc28gZXZlcnkgc2luZ2xlIHRpbWUgbWFrZSBSRS1SVU4gYWxsCgorIE9WRVJBTEwgYC4vMDEqYCBQUk9DRVNTSU5HIGZpbGVzLi4uIGVsaW1pbmF0ZSBjb2RlIGBpbmNsdWRlID0gRkFMU0VgIHRvIG1ha2Ugd2Vic2l0ZSBsaWdodGVyIC4uLgoKCiMjIERhdGEKCiMjIyBSYXcgRGF0YSAKPGRpdiBzdHlsZT0iY29sb3I6I0ZGNDEzNiI+CisgKipgLi9kYXRhL3Jhd19kYXRhL1dEUi5yZHNgKiogPC0gY29uc3RydWN0ZWQgaW4gYC4vX215X3N0dWZmL1dEUi1kYXRhLWluZ2VzdGlvbi5SbWRgCisgKipgLi9kYXRhL3Jhd19kYXRhL1dEUl9zdWJqZWN0c19jb3JyZWN0ZWQyMDEwXzIwMTEueGxzeGAqKiA8LSBtYW51YWxseSBjb3JyZWN0ZWQgYXMgZXhwbGFpbmVkIGluIGNvbnN0cnVjdGVkIGluIGAuLzAxYl9XRFJfZGF0YS1leHBsb3JhdGlvbl9hYnN0cmFjdHMuUm1kYAoKCiMjIyBEZXJpdmVkIERhdGEgCisgKipgLi9kYXRhL2Rlcml2ZWRfZGF0YS93ZHIucmRzYCoqIDwtIGNvbnN0cnVjdGVkIGluIGAuLzAxYl9XRFJfZGF0YS1leHBsb3JhdGlvbl9hYnN0cmFjdHMuUm1kYAoKCgo8L2Rpdj4KCiAKIyMgTGljZW5zZXMKCioqVGV4dCBhbmQgZmlndXJlczoqKiBBbGwgcHJvc2UgYW5kIGltYWdlcyBhcmUgbGljZW5zZWQgdW5kZXIgQ3JlYXRpdmUgQ29tbW9ucyAoW0NDLUJZLTQuMF0oaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnkvNC4wLykpCgoqKkNvZGU6KiogQWxsIGNvZGUgaXMgbGljZW5zZWQgdW5kZXIgdGhlIFtNSVQgTGljZW5zZV0oTElDRU5TRS5tZCkuCgojIyBDb250cmlidXRpb25zCiAK</div>
 <p class="footer">Copyright &copy; 2022 <a href="https://www.luisamimmi.com/">Luisa M. Mimmi</a>. Licensed under the <a href="https://github.com/andrewheiss/cautioning-canary/blob/master/LICENSE.md">MIT License</a>. Code available on <a href="https://github.com/Lulliter/slogan">GitHub</a>.</p>
 
 

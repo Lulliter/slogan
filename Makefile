@@ -24,13 +24,14 @@ KNIT = Rscript -e "require(rmarkdown); render('$<')"
 ################################################################################
 PROCESS_DIR = $(RDIR)/_process
 PROCESS_SOURCE = $(wildcard 01*.Rmd)
-PROCESS_OUT = $(PROCESS_SOURCE:.Rmd=.html) 01b_WDR_data-exploration_abstracts_files 01c_WDR_data-exploration_subjects_files site_libs
+PROCESS_OUT = $(PROCESS_SOURCE:.Rmd=.html)
 
 # $(PROCESS_DIR)/%.docx:$(PROCESS_DIR)/%.Rmd $(GATHER_OUT)
 # 	$(KNIT)
 .PHONY: all_process
 all_process: clean_process render_process move_process
 
+# since all .html get dumped in root folder, I have to move them
 move_process:
 	mv $(PROCESS_OUT) $(PROCESS_DIR)
 

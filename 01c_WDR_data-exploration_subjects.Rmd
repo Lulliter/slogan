@@ -73,8 +73,6 @@ registerS3method("knit_print", "data.frame", knit_print.data.frame)
 registerS3method("knit_print", "grouped_df", knit_print.data.frame)
 ```
 
-
-
 # World Development Reports (WRDs)
 
 -   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
@@ -177,261 +175,79 @@ Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.
 Ingestion of WDR **lists of subjects** was available among metadata but presented issues (difficulty to extract, many records with repetition,apparently wrong) so I reconstructed them manually in `data/raw_data/WDR_subjects_corrected2010_2011.xlsx` taking them from site https://elibrary.worldbank.org/ which lists **keywords** correctly [Es 2022 WDR](https://elibrary.worldbank.org/doi/abs/10.1596/978-1-4648-1730-4)
 
 ```{r load}
-# WRD metadata taken with API get (issues) 
-WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
-  # Extract only the portion of string AFTER the backslash {/}
-  mutate(id = as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$"))) %>% 
-  dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
-  mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full"))  %>% 
- # eliminate NON WDR book
-  dplyr::filter(id != "2586") 
-
-# WRD subject/date_issued taken by manual review 
-WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", 
-                                              "WDR_subjects_corrected2010_2011.xlsx")) %>%
-  drop_na(id) %>% 
- # eliminate NON WDR book
-  dplyr::filter(id != "2586") 
-
-# delete empty cols 
-ColNums_NotAllMissing <- function(df){ # helper function
-  as.vector(which(colSums(is.na(df)) != nrow(df)))
-}
-
-WDR_subjects <- WDR_subjects  %>% 
-  select(ColNums_NotAllMissing(.))
- # # convert all columns that start with "subj_" to lowercase
- # WDR_subjects[3:218] <- sapply(WDR_subjects[3:218], function(x) tolower(x))
-
-# join
-WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>% 
-  dplyr::relocate(date_issued, .before = id ) %>% 
-  # drop useles clmns 
-  dplyr::select(#-doc_mt_identifier_1, 
-                -doc_mt_identifier_2, -doc_mt_date, 
-                -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
-  # dplyr::relocate(url_keys, .after = subj_216 ) %>% 
-  dplyr::rename(abstract = doc_mt_description) %>% 
-  # correct titles -> portion after {:}
-  dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
-  dplyr::relocate(title, .after = id)  %>% 
-  dplyr::rename(title_miss = doc_mt_title) %>% 
-  dplyr::mutate(title_miss = case_when(
-    str_starts(title, "World Development Report") ~ "Y",
-    TRUE ~ NA_character_) 
-  ) %>% 
-  dplyr::mutate(subject_miss = if_else(is.na(subj_1), 
-                                       "Y", 
-                                       NA_character_)) %>% 
-  dplyr::relocate(subject_miss, .after = title_miss)    %>% 
-  dplyr::relocate(ISBN, .after = id)    
-  
-#paint(WDR_com)
-
-# convert all columns that start with "subj_" to lowercase (maybe redundant)
-WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
-
-# combine all `subj_...` vars into a vector separated by comma
-col_subj <- names(WDR_com[, grep("^subj_", names(WDR_com))] )
-
-WDR_com <- WDR_com %>% tidyr::unite(
-  col = "all_subj", 
-  subj_1:subj_46, 
-  sep = ",",
-  remove = FALSE,
-  na.rm = TRUE) %>% 
-  arrange(date_issued)
-
-#paint(WDR_com)
-
-```
-
-#### -- Some manual correction of wrong metadata
-
-```{r meta_correct }
-# adding actual titles 
-#WDR_com[WDR_com$date_issued == "1978", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5961"] <- "Prospects for Growth and Alleviation of Poverty"
-
-#WDR_com[WDR_com$date_issued == "1979", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5962"] <- "Structural Change and Development Policy"
-
-#WDR_com[WDR_com$date_issued == "1980", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5963"] <- "Poverty and Human Development"
-
-#WDR_com[WDR_com$date_issued == "1981", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5964"] <- "National and International Adjustment"
-
-#WDR_com[WDR_com$date_issued == "1982", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5965"] <- "Agriculture and Economic Development"
-
-#WDR_com[WDR_com$date_issued == "1983", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5966"] <- "Management in Development"
-
-#WDR_com[WDR_com$date_issued == "1984", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5967"] <- "Population Change and Development"
-
-#WDR_com[WDR_com$date_issued == "1985", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5968"] <- "International Capital and Economic Development"
-
-#WDR_com[WDR_com$date_issued == "1986", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5969"] <- "Trade and Pricing Policies in World Agriculture"
-
-#WDR_com[WDR_com$date_issued == "1987", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5970"] <- "Industrialization and Foreign Trade"
-
-#WDR_com[WDR_com$date_issued == "1988", c("date_issued", "id", "title")]
-WDR_com$title[WDR_com$id == "5971"] <- "Public Finance in Development"
-
-# wrong year 
-#WDR_com[WDR_com$date_issued %in% c( "2011","2012","2013", "2014", "2015"), c("date_issued", "id", "title")]
-WDR_com$date_issued[WDR_com$id == "11843"] <- "2013"
-WDR_com$date_issued[WDR_com$id == "16092"] <- "2014"
-
-```
-
-### II.i) Troubleshooting some obs
-
-> PROBLEM: some of the subjects collections are evidently wrong (either they are the same of another WDR or the list is impossibly long)
-
-> MY SOLUTION #1: I took them manually from the website "elibrary" <https://elibrary.worldbank.org/action/showPublications?SeriesKey=b02>
-
-But, there still is WDR 2011 ("Conflict, Security, and Development") which misses keywords
-
-> MY SOLUTION #2: I take the abstract and I create my own "plausible list" of subjects
-
-#### --- Extrapolate subjects from abstracts - for record with missing subjects/keywords
-
-(\*) There will remain a problem: this corrected records have tokens and not bi\|n-grams (which make more sense)!
-
-```{r wrongWDRs}
-# --- identify wrong subject obs
-WDR_wr <- WDR_com %>% 
-  filter( subject_miss == "Y") 
-# names(WDR_com)
-```
-
-#### -- WDR caseid = 4389
-
-```{r fix4389}
-# --- tokenize abstract 
-WDR_4389 <- WDR_wr %>% 
-  filter(id =="4389") %>% 
-  select (abstract) %>% as_tibble() %>% 
-  tidytext::unnest_tokens(word, abstract) # -> 251 words 
-
-# --- remove stop words
-# --- isolate meaningful tokens
-WDR_4389 <- WDR_4389 %>% 
-  anti_join( stop_words , by = "word") %>%   # -> 131  words 
-  # Count observations by group
-  count(word, sort = T)  # -> 101  words 
-
-# rename column in result corrected   
-WDR_4389_w <- t(WDR_4389) %>% as_tibble()  
-names(WDR_4389_w) <- gsub(x = names(WDR_4389_w), pattern = "\\V", replacement = "subj_")
- # --- graph words
-  # p <- WDR_4389 %>% count(word, sort = TRUE) %>%
-  #   filter(n > 600) %>%
-  #   mutate(word = reorder(word, n)) %>%
-  #   ggplot(aes(n, word)) +
-  #   geom_col() +
-  #   labs(y = NULL)
-  # p  
-  #   
-
-# --- replace as subjects 
-WDR_4389_w  <- WDR_4389_w %>%  
-  filter(row_number() == 1 ) %>% 
-  mutate(id = 4389) %>% 
-  relocate(id, .before = subj_1)
-
-# names(WDR_4389_w)
-WDR_4389_w <- WDR_4389_w %>% 
-  tidyr::unite(
-    col = "all_subj", 
-    subj_1:subj_100, 
-    sep = ",",
-    remove = FALSE) 
-
-
-#names(WDR_com)
-WDR_com_2 <- WDR_com %>% 
-  relocate(subj_1 ,.after = all_subj)
-
-# # create a vector of column names to add to reach the n length(WDR_com)
-# col_names <-  as.vector(paste0('subj_', length(WDR_4389_w):105))
+# # WRD metadata taken with API get (issues) 
+# WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
+#   # Extract only the portion of string AFTER the backslash {/}
+#   mutate(id = as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$"))) %>% 
+#   dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
+#   mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full"))  %>% 
+#  # eliminate NON WDR book
+#   dplyr::filter(id != "2586") 
 # 
-# # make a df with those cols and 1 row made of Nas values 
-# to_add <- bind_rows(setNames(rep("", length(col_names)), col_names))[NA_character_, ]
+# # WRD subject/date_issued taken by manual review 
+# WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", 
+#                                               "WDR_subjects_corrected2010_2011.xlsx")) %>%
+#   drop_na(id) %>% 
+#  # eliminate NON WDR book
+#   dplyr::filter(id != "2586") 
 # 
-# # --- pad until subj_216 with nas.........  
-# WDR_4389_w_pad <- bind_cols(WDR_4389_w, to_add)
-
-#### -- NOW: replace corrected single WDR case into master df 
-  # # initial check ---
-  # WDR_com$subj_1[WDR_com$id == 4389] 
-  # WDR_com$subj_3[WDR_com$id == 4389] 
-  # #--- 
-
-#id <-  4389 
-col_subj_names <- names(WDR_4389_w)[-(1)] # without "id"  "all_subj"
-
-# pick the id 
-i <- 4389
-
-# # --- function --- NO JOY!
-# for (j in 1:length(col_subj_names)) {
-#   col <-  col_subj_names[j]
-#   # print(col) # nolint
-#   WDR_com %>%
-#     dplyr::filter (id == i) %>% 
-#     dplyr::mutate (., col = WDR_4389_w_pad$col) 
-#   WDR_com_2 <- WDR_com
+# # delete empty cols 
+# ColNums_NotAllMissing <- function(df){ # helper function
+#   as.vector(which(colSums(is.na(df)) != nrow(df)))
 # }
-
-# ---------# Solution from SO guy 
-# r is vectorized so 
-WDR_com_2[WDR_com_2$id %in% WDR_4389_w$id, 9:55] <- WDR_4389_w[, 2:48] 
-
+# 
+# WDR_subjects <- WDR_subjects  %>% 
+#   select(ColNums_NotAllMissing(.))
+#  # # convert all columns that start with "subj_" to lowercase
+#  # WDR_subjects[3:218] <- sapply(WDR_subjects[3:218], function(x) tolower(x))
+# 
+# # join
+# WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>% 
+#   dplyr::relocate(date_issued, .before = id ) %>% 
+#   # drop useles clmns 
+#   dplyr::select(#-doc_mt_identifier_1, 
+#                 -doc_mt_identifier_2, -doc_mt_date, 
+#                 -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
+#   # dplyr::relocate(url_keys, .after = subj_216 ) %>% 
+#   dplyr::rename(abstract = doc_mt_description) %>% 
+#   # correct titles -> portion after {:}
+#   dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
+#   dplyr::relocate(title, .after = id)  %>% 
+#   dplyr::rename(title_miss = doc_mt_title) %>% 
+#   dplyr::mutate(title_miss = case_when(
+#     str_starts(title, "World Development Report") ~ "Y",
+#     TRUE ~ NA_character_) 
+#   ) %>% 
+#   dplyr::mutate(subject_miss = if_else(is.na(subj_1), 
+#                                        "Y", 
+#                                        NA_character_)) %>% 
+#   dplyr::relocate(subject_miss, .after = title_miss)    %>% 
+#   dplyr::relocate(ISBN, .after = id)    
+#   
+# #paint(WDR_com)
+# 
+# # convert all columns that start with "subj_" to lowercase (maybe redundant)
+# WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
+# 
+# # combine all `subj_...` vars into a vector separated by comma
+# col_subj <- names(WDR_com[, grep("^subj_", names(WDR_com))] )
+# 
+# WDR_com <- WDR_com %>% tidyr::unite(
+#   col = "all_subj", 
+#   subj_1:subj_46, 
+#   sep = ",",
+#   remove = FALSE,
+#   na.rm = TRUE) %>% 
+#   arrange(date_issued)
+# 
+# #paint(WDR_com)
 
 ```
 
-\* I cut some ...so this record WDR_4389 will be incomplete
-
-<!-- #### -- WDR caseid = 2586 -->
-
-### II.ii)  -- SAVE wdr and cleanenv
-
-```{r cleanenv}
-wdr <- WDR_com_2 %>% 
-  select(-title_miss) %>% 
-  mutate(decade = case_when(
-    str_detect (string = date_issued, pattern = "^197") ~ "1970s", 
-    str_detect (string = date_issued, pattern = "^198") ~ "1980s", 
-    str_detect (string = date_issued, pattern = "^199") ~ "1990s", 
-    str_detect (string = date_issued, pattern = "^200") ~ "2000s", 
-    str_detect (string = date_issued, pattern = "^201") ~ "2010s", 
-    str_detect (string = date_issued, pattern = "^202") ~ "2020s"
-  )) %>% 
-  relocate(decade, .after = date_issued) %>% 
-# correct some datatype
-mutate_at(vars(date_issued, altmetric), as.numeric)  
-
-dataDir <- fs::path_abs(here::here("data","derived_data"))
-fileName <- "/wdr.rds"
-Dir_File <- paste0(dataDir, fileName)
-write_rds(x = wdr, file = Dir_File)
-
-# # ls objects
-# list_old_WDR <-  ls(# pattern = "^WDR", 
-#                     all.names = TRUE)
-# list_old_WDR
-# rm(list = setdiff(list_old_WDR, c("stop_words", "stop_words_stem")))
-```
 
 ```{r}
 wdr <- readr::read_rds(here::here("data", "derived_data", "wdr.rds" ))
+paint(wdr)
 ```
 
 
@@ -611,8 +427,8 @@ word_decade_counts %>%
   ggplot(aes(year, percent, color = word)) +
   geom_point() +
   scale_y_continuous(labels = percent_format()) +
-  labs(x = "Hour of day (EST)",
-       y = "% of tweets",
+  labs(x = "year",
+       y = "% of word in title per decade",
        color = "")
 ```
 #### -------------- {END: troppo difficile} ------------------
