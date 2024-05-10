@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>slogan</title>
+<title>slogan - Motivation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,16 +20,33 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
+<link href="./images/notepad.png" rel="icon" type="image/png">
 <script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -39,19 +56,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
-  "location": "navbar",
-  "copy-button": false,
-  "collapse-after": 3,
-  "panel-placement": "end",
-  "type": "overlay",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -68,10 +75,9 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="floating nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -82,20 +88,34 @@ ul.task-list li input[type="checkbox"] {
     <span class="navbar-title">slogan</span>
     </a>
   </div>
-            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link active" href="./index.html" aria-current="page"> <i class="bi bi-house-fill" role="img">
+</i> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About</span></a>
+    <a class="nav-link" href="./posts/index.html"> <i class="bi bi-cup-hot-fill" role="img">
+</i> 
+<span class="menu-text">Blog</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-text-analytics" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-terminal-fill" role="img">
+</i> 
+ <span class="menu-text">Text Analytics</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-text-analytics">    
+        <li>
+    <a class="dropdown-item" href="./analysis/00_text_data.html">
+ <span class="dropdown-text">00 Data Sources</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
           </div> <!-- /navcollapse -->
           <div class="quarto-navbar-tools">
@@ -106,16 +126,55 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#at-the-core-of-reduction" id="toc-at-the-core-of-reduction" class="nav-link active" data-scroll-target="#at-the-core-of-reduction">At the core of reduction</a>
+  <ul class="collapse">
+  <li><a href="#research-question-1" id="toc-research-question-1" class="nav-link" data-scroll-target="#research-question-1">Research question # 1</a></li>
+  <li><a href="#research-question-2" id="toc-research-question-2" class="nav-link" data-scroll-target="#research-question-2">Research question # 2</a></li>
+  </ul></li>
+  <li><a href="#methodological-notes" id="toc-methodological-notes" class="nav-link" data-scroll-target="#methodological-notes">Methodological notes</a>
+  <ul class="collapse">
+  <li><a href="#hermeneutics" id="toc-hermeneutics" class="nav-link" data-scroll-target="#hermeneutics">Hermeneutics</a></li>
+  <li><a href="#linguistics" id="toc-linguistics" class="nav-link" data-scroll-target="#linguistics">Linguistics</a></li>
+  <li><a href="#philology" id="toc-philology" class="nav-link" data-scroll-target="#philology">Philology</a></li>
+  </ul></li>
+  <li><a href="#essential-list-of-rhetorical-devices" id="toc-essential-list-of-rhetorical-devices" class="nav-link" data-scroll-target="#essential-list-of-rhetorical-devices">Essential list of rhetorical devices</a>
+  <ul class="collapse">
+  <li><a href="#adage" id="toc-adage" class="nav-link" data-scroll-target="#adage">Adage</a></li>
+  <li><a href="#slogan" id="toc-slogan" class="nav-link" data-scroll-target="#slogan">Slogan</a></li>
+  </ul></li>
+  <li><a href="#issues-of-modern-english" id="toc-issues-of-modern-english" class="nav-link" data-scroll-target="#issues-of-modern-english">Issues of modern English</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">_____</a></li>
+  <li><a href="#intro-to-text-analytics" id="toc-intro-to-text-analytics" class="nav-link" data-scroll-target="#intro-to-text-analytics">Intro to text analytics</a>
+  <ul class="collapse">
+  <li><a href="#what-is-text-mining-analytics" id="toc-what-is-text-mining-analytics" class="nav-link" data-scroll-target="#what-is-text-mining-analytics">What is Text mining / analytics?</a>
+  <ul class="collapse">
+  <li><a href="#some-text-analytics-definitions" id="toc-some-text-analytics-definitions" class="nav-link" data-scroll-target="#some-text-analytics-definitions">— Some text analytics definitions</a></li>
+  </ul></li>
+  <li><a href="#what-is-nlp" id="toc-what-is-nlp" class="nav-link" data-scroll-target="#what-is-nlp">What is NLP?</a>
+  <ul class="collapse">
+  <li><a href="#some-commonly-used-nlp-scenarios" id="toc-some-commonly-used-nlp-scenarios" class="nav-link" data-scroll-target="#some-commonly-used-nlp-scenarios">— Some commonly used NLP scenarios</a></li>
+  <li><a href="#text-processing-in-r" id="toc-text-processing-in-r" class="nav-link" data-scroll-target="#text-processing-in-r">— Text processing in R</a></li>
+  </ul></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">slogan</h1>
+<h1 class="title">Motivation</h1>
 </div>
 
 
@@ -123,6 +182,12 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Friday May 10, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -132,12 +197,164 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+<section id="at-the-core-of-reduction" class="level2">
+<h2 class="anchored" data-anchor-id="at-the-core-of-reduction">At the core of reduction</h2>
+<p>I was really struck the first time I realized how the Latin motto I had heard since childhood: <em>“Mens sana in corpore sano”</em>, was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: <em>“Orandum est ut sit mens sana in corpore sano”</em> (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it referred to prayer and not to sport.</p>
+<p>I have seen this same dynamic (the meaning of words/phrases progressively detaching from the reality they originally described) at work also in the field of public policy, so I decided to dig deeper.</p>
+<section id="research-question-1" class="level3">
+<h3 class="anchored" data-anchor-id="research-question-1">Research question # 1</h3>
+<p>The important question is <strong><em>“Why” such a deviation from the original meaning of a word/sentence may occur</em></strong>. Granted, languages evolve on their own, but it can also be subject to manipulation, as George Orwell’s “1984” so powerfully depicted illustrating the rules and purpose of fictional Oceania nation’s <em>newspeak</em>. The risks connected to this potential abuse of language are clearly laid out by Riccardo Garbini in his “Lessico - Uscire da Babele” <span class="citation" data-cites="garbini_uscire_2003">(<a href="#ref-garbini_uscire_2003" role="doc-biblioref">Garbini 2003</a>)</span> <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a><br>
+<!-- > In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'.  --></p>
+<blockquote class="blockquote">
+<p><strong><em>In some cases the deviation of the meaning is evidenced by the pure and simple suppression of the term (1984): in such cases, therefore, the analysis does not insist on the reductionist aspect. The deviations, where present, are dictated above all by ideological intentions, that is, by the superimposition of an interpretative grid with rather rigid meshes on the objective data of reality. The effect of the superimposition of this interpretative grid called ideology thus results in a reduction of the perceptive and interpretative field of reality. For this reason semantic deviations have been called ‘reductionisms’.</em></strong></p>
+</blockquote>
+</section>
+<section id="research-question-2" class="level3">
+<h3 class="anchored" data-anchor-id="research-question-2">Research question # 2</h3>
+<p>Besides investigating the origin, it would be equally important to <strong><em>understand the consequence of a lamented lessical approximation or reduction</em></strong>. In fact, quoting Giovanni Gentile’s “Sommario di pedagogia come scienza filosofica”: <em>“Language is not a garment of thought: it is its own body”</em> <span class="citation" data-cites="garbini_uscire_2003">(<a href="#ref-garbini_uscire_2003" role="doc-biblioref">Garbini 2003, p3</a>)</span>, that is language does not merely communicate our ideas to others, but it is also the tool of our thought, the wings for it to fly. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --></p>
+</section>
+</section>
+<section id="methodological-notes" class="level2">
+<h2 class="anchored" data-anchor-id="methodological-notes">Methodological notes</h2>
+<p>This goes back to Aristotle…… and it is beyond the scope …. let’s just recall</p>
+<section id="hermeneutics" class="level3">
+<h3 class="anchored" data-anchor-id="hermeneutics">Hermeneutics</h3>
+<p>Hermeneutics: from Greek <em>ἑρμηνεία, ας, ἡ</em> (hermēneia), deriving from the verb <em>ἑρμηνεύω</em> (hermēneuō) is the science and practice of interpretation. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches: 1. reconstructing the original intention of the authors 2. adapting the interpretation based on the person who receives the text</p>
+</section>
+<section id="linguistics" class="level3">
+<h3 class="anchored" data-anchor-id="linguistics">Linguistics</h3>
+<p>…</p>
+</section>
+<section id="philology" class="level3">
+<h3 class="anchored" data-anchor-id="philology">Philology</h3>
+<p>…</p>
+</section>
+</section>
+<section id="essential-list-of-rhetorical-devices" class="level2">
+<h2 class="anchored" data-anchor-id="essential-list-of-rhetorical-devices">Essential list of rhetorical devices</h2>
+<section id="adage" class="level3">
+<h3 class="anchored" data-anchor-id="adage">Adage</h3>
+<p>An <em>adage</em> is an ancient saying or maxim, brief and sometimes mysterious, that has become accepted as conventional wisdom. In classical rhetoric, an adage is also known as a <em>rhetorical proverb</em> or <em>paroemia</em>. Often it’s a type of metaphor. It can express the values of a culture. <span class="citation" data-cites="nordquist_words_2018">(<a href="#ref-nordquist_words_2018" role="doc-biblioref">Nordquist 2018</a>)</span></p>
+<blockquote class="blockquote">
+<p><strong>Example(s)</strong>: “The early bird gets the worm”, “Better late than never.”</p>
+</blockquote>
+</section>
+<section id="slogan" class="level3">
+<h3 class="anchored" data-anchor-id="slogan">Slogan</h3>
+<p>The English word <em>slogan</em> has a Scottish Gaelic origin and derives from the combination of <em>sluagh</em> (army) + <em>gairm</em> (shout), i.e.&nbsp;a “battle cry”. Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called <em>taglines</em> in the United States</p>
+<blockquote class="blockquote">
+<p><strong>Example(s)</strong>: “…”, “…”</p>
+</blockquote>
+</section>
+</section>
+<section id="issues-of-modern-english" class="level2">
+<h2 class="anchored" data-anchor-id="issues-of-modern-english">Issues of modern English</h2>
+<p>Below is the list of <em>red flags</em> detected in Orwell’s “Politics and the English Language”<span class="citation" data-cites="orwell_politics_1946">(<a href="#ref-orwell_politics_1946" role="doc-biblioref">Orwell 1946</a>)</span>:</p>
+<ul>
+<li><strong>Dying metaphors</strong>, or worn−out metaphors which have lost all evocative power and are merely used because they save people the trouble of inventing phrases for themselves. <!-- GGentile la prima e piu evidente originalita del genio e' la potenza plasmatrice che egli possiede di quel che si dice il materiale linguistico --></li>
+<li><strong>Operators, or verbal false limbs</strong>, which save the trouble of picking out appropriate verbs and nouns, and at the same time pad each sentence with extra syllables which give it an appearance of symmetry. Characteristic phrases are: render inoperative, militate against, prove unacceptable, make contact with, be subjected to, give rise to, give grounds for, having the effect of, play a leading part (role) in, make itself felt, take effect, exhibit a tendency to, serve the purpose of, etc.</li>
+<li><strong>Pretentious diction (used to dress up simple statements and give an air of scientific impartiality to biased judgments), foreign words and expressions, jargon</strong></li>
+<li><strong>Meaningless words</strong>, as in certain kinds of writing, particularly in art criticism and literary criticism, where they not only do not point to any discoverable object, but are hardly even expected to do so by the reader (like romantic, plastic, values, human, dead, sentimental, natural, vitality), it is normal to come across long passages which are almost completely lacking in meaning. Many political words are similarly abused: The words democracy, socialism, freedom, patriotic, realistic, justice, have each of them several different meanings which cannot be reconciled with one another. <strong><em>Words of this kind are often used in a consciously dishonest way. That is, the person who uses them has his own private definition, but allows his hearer to think he means something quite different.</em></strong></li>
+</ul>
+<blockquote class="blockquote">
+<p>Ma si possono riscontrare anche</p>
+<ul>
+<li><strong>statalismo</strong></li>
+<li><strong>burocraticismo</strong></li>
+</ul>
+</blockquote>
+<blockquote class="blockquote">
+<p>lo stesso linguaggio burocratico, che permea la scuola statale (impropriamente detta ‘pubblica’) italiana odierna, come diretta conseguenza dell’ideologia statalista presenta una forma che è «astratta, solenne, tecnicizzata, in funzione del prestigio e del potere che detiene il diffusore del messaggio. Da questa prassi consegue una sclerosi del pensiero che si sorregge sui trampoli di locuzioni fruste e cristallizzate. Ufficialità, reticenza e straniamento sono i caratteri che il messaggio assume nell’esercizio del potere. <span class="citation" data-cites="garbini_uscire_2003">(<a href="#ref-garbini_uscire_2003" role="doc-biblioref">Garbini 2003, p5</a>)</span></p>
+</blockquote>
+</section>
+<section id="section" class="level1">
+<h1>_____</h1>
+</section>
+<section id="intro-to-text-analytics" class="level1">
+<h1>Intro to text analytics</h1>
+<section id="what-is-text-mining-analytics" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-text-mining-analytics">What is Text mining / analytics?</h2>
+<p>Text Mining or Text Analytics is the rocess of deriving meaningful information from natural language text</p>
+<section id="some-text-analytics-definitions" class="level3">
+<h3 class="anchored" data-anchor-id="some-text-analytics-definitions">— Some text analytics definitions</h3>
+<ul>
+<li><strong>Corpus (pl. Corpora)</strong> ~ a collection of similar documents | objects that typically contain raw strings annotated with additional metadata and details</li>
+<li><strong>Document</strong> ~ collection of sentences</li>
+<li><strong>String</strong> ~ in computational approaches, a string is a specific type of data that represents text and is often encoded in specific format, e.g., Latin1 or UTF8.</li>
+<li><strong>Token</strong> ~ is a meaningful unit of text, such as a <em>word</em>, that we are interested in using for analysis</li>
+<li><strong>Tokenization</strong> ~ splitting text into tokens</li>
+<li><strong>Bigrams</strong>/<strong>n-gram</strong> ~ sentence, or paragraph</li>
+<li><strong>Collocations</strong> ~ words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries.</li>
+<li><strong>Tidy text</strong> ~ “a table with one-token-per-row”</li>
+<li><strong>Stemming</strong> ~ A <em>stem</em> is the base part of a word to which affixes can be attached for derivatives</li>
+<li><strong>Lemmatization</strong> ~ Similar to <em>stem</em>, but incorporating the meaning (gone|going –&gt; go)</li>
+<li><strong>Document-term matrix (DTM)</strong> ~ rows = documents | cols = words | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (<code>WDR_com</code>)</li>
+<li><strong>Term-Document matrix (TDM)</strong> ~ rows = words | cols = documents | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (<code>WDR_com</code>)</li>
+</ul>
+</section>
+</section>
+<section id="what-is-nlp" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-nlp">What is NLP?</h2>
+<p>A part of computer science and AI that deals with human languages</p>
+<section id="some-commonly-used-nlp-scenarios" class="level3">
+<h3 class="anchored" data-anchor-id="some-commonly-used-nlp-scenarios">— Some commonly used NLP scenarios</h3>
+<ul>
+<li><strong>Natural Language Processing (NLP)</strong> ~ is an interdisciplinary field in computer science that has specialized on processing natural language data using computational and mathematical methods.</li>
+<li><strong>Network Analysis</strong> ~ the most common way to visualize relationships between entities. Networks, also called graphs, consist of nodes (typically represented as dots) and edges (typically represented as lines) and they can be directed or undirected networks.</li>
+<li><strong>Text Classification</strong> ~ a supervised learning method of learning and predicting the category or the class of a document given its text content.</li>
+<li><strong>Named Entity Recognition</strong> ~ NER is the task of classifying words or key phrases of a text into predefined entities of interest.</li>
+<li><strong>Text Summarization</strong> ~ a language generation task of summarizing the input text into a shorter paragraph of text.</li>
+<li><strong>Entailment</strong> ~ the task of classifying the binary relation between two natural-language texts, text and hypothesis, to determine if the text agrees with the hypothesis or not.</li>
+<li><strong>Question Answering</strong> ~ QA is the task of retrieving or generating a valid answer for a given query in natural language, provided with a passage related to the query.</li>
+<li><strong>Sentence Similarity</strong> ~ the process of computing a similarity score given a pair of text documents.</li>
+<li><strong>Embeddings</strong> ~ the process of converting a word or a piece of text to a continuous vector space of real number, usually, in low dimension.</li>
+<li><strong>Sentiment Analysis</strong> ~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect.</li>
+<li><strong>Semantic Analysis</strong> ~ Allows to analyze the semantic (semantics) fo texts. Such analyses often rely on semantic tagsets that are based on word meaning or meaning families/categories.</li>
+<li><strong>Part-of-Speech (PoS)</strong> ~ Tagging identifies the word classes of words (e.g., noun, adjective, verb, etc.) in a text and adds part-of-speech tags to each word.</li>
+<li><strong>Topic Modeling</strong> ~ Topic Modeling is a machine learning method seeks to answer the question: given a collection of documents, can we identify what they are about? Topic model algorithms look for patterns of co-occurrences of words in documents.</li>
+</ul>
+</section>
+<section id="text-processing-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="text-processing-in-r">— Text processing in R</h3>
+<ul>
+<li>{tidytext}</li>
+<li>{tm} <!-- tm_map(corpus, FUN, ...) --></li>
+<li>{SnowballC} <!--4 stemming  --></li>
+<li>{OpenNLP}</li>
+<li>{RWeka}</li>
+<li>{languageR}</li>
+<li>{korPus}</li>
+</ul>
+</section>
+</section>
+<section id="reference" class="level2">
 
 
 
-</main> <!-- /main -->
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Reference</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-fioravanti_pedagogia_2006" class="csl-entry" role="listitem">
+Fioravanti, Giuseppe. 2006. <em>Pedagogia dello studio: considerazioni e spunti per una pedagogia del desiderio</em>. L’Aquila: Japadre.
+</div>
+<div id="ref-garbini_uscire_2003" class="csl-entry" role="listitem">
+Garbini, Riccardo. 2003. <em>Uscire da Babele - lessico per una pedagogia dello studio</em>. Japadre Editore. L’Aquila.
+</div>
+<div id="ref-nordquist_words_2018" class="csl-entry" role="listitem">
+Nordquist, Richard. 2018. <span>“Words of the <span>Wise</span>: <span>Examples</span> of <span>Adages</span>.”</span> ThoughtCo. February 14, 2018. <a href="https://www.thoughtco.com/what-is-adage-1688967">https://www.thoughtco.com/what-is-adage-1688967</a>.
+</div>
+<div id="ref-orwell_politics_1946" class="csl-entry" role="listitem">
+Orwell, George. 1946. <span>“Politics and the <span>English</span> Language.”</span> London, Great Britain. <a href="https://www.overdrive.com/search?q=17B95B5F-11C8-4665-B9EF-59C01245A329">https://www.overdrive.com/search?q=17B95B5F-11C8-4665-B9EF-59C01245A329</a>.
+</div>
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Annex to the Giuseppe Fioravanti’s book <span class="citation" data-cites="fioravanti_pedagogia_2006">(<a href="#ref-fioravanti_pedagogia_2006" role="doc-biblioref">Fioravanti 2006</a>)</span><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -526,6 +743,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p><i class="fa-brands fa-creative-commons" aria-label="creative-commons"></i> 2024 Luisa M. Mimmi <br> License <i class="fa-brands fa-creative-commons" aria-label="creative-commons"></i> <i class="fa-brands fa-creative-commons-by" aria-label="creative-commons-by"></i> <i class="fa-brands fa-creative-commons-nc" aria-label="creative-commons-nc"></i> <i class="fa-brands fa-creative-commons-sa" aria-label="creative-commons-sa"></i> <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Made with <i class="fa-brands fa-r-project" aria-label="r-project"></i> and <a href="https://quarto.org/">Quarto</a><br> <a href="https://github.com/Lulliter/slogan">Source code at <i class="fa-brands fa-github" aria-label="github"></i></a></p>
+</div>
+  </div>
+</footer>
 
 
 

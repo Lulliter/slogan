@@ -1,0 +1,822 @@
+---
+title: "Process and merge data - WDR subjects"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 3
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+
+```{r setup-libraries-data }
+#knitr::opts_chunk$set(include = TRUE, warning = FALSE)
+# Pckgs -------------------------------------
+#if (!require ("pacman")) (install.packages("pacman"))
+
+#p_install_gh("luisDVA/annotater")
+#p_install_gh("HumanitiesDataAnalysis/hathidy")
+# devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis") 
+library(here)
+library(fs)
+library(paint) 
+library(tidyverse) 
+library(magrittr)
+library(skimr)
+library(scales) 
+library(colorspace)
+library(httr)
+library(DT) # an R interface to the JavaScript library DataTables
+library(knitr)
+library(kableExtra) 
+library(flextable) 
+library(splitstackshape)  #Stack and Reshape Datasets After Splitting Concatenated Values
+library(tm) # Text Mining Package
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+# this requires pre-requirsites to install : https://github.com/quanteda/quanteda
+library(quanteda)
+library(igraph)
+library(sjmisc) # Data and Variable Transformation Functions
+library(ggraph) # An Implementation of Grammar of Graphics for Graphs and Networks
+library(widyr) # Widen, Process, then Re-Tidy Data
+library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
+# library(#HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis
+library(sentencepiece) # Text Tokenization using Byte Pair Encoding and Unigram Modelling
+library(sysfonts) 
+library(ggdendro)
+library(network)
+library(GGally)
+
+library(topicmodels)                #  with dep   FAILED !!!!!!
+
+# extra steo needed to install github version 
+#if (!require("devtools")) install.packages("devtools")
+#library(devtools)
+#install_github("husson/FactoMineR")     FAILED !!!!!!
+# library(FactoMineR)
+#library(factoextra)
+
+# Plot Theme(s) -------------------------------------
+#source(here("R", "ggplot_themes.R"))
+ggplot2::theme_set(theme_minimal())
+# color paletts -----
+mycolors_gradient <- c("#ccf6fa", "#80e8f3", "#33d9eb", "#00d0e6", "#0092a1")
+mycolors_contrast <- c("#E7B800", "#a19100", "#0084e6","#005ca1", "#e60066" )
+
+
+# Function(s) -------------------------------------
+
+# Data -------------------------------------
+
+# -------------------- {cut bc made too heavy} -------------------------------------
+# # Tables [AH knit setup when using kbl() ]------------------------------------
+# knit_print.data.frame <- function(x, ...) {
+#   res <- paste(c('', '', kable_styling(kable(x, booktabs = TRUE))), collapse = '\n')
+#   asis_output(res)
+# }
+# 
+# registerS3method("knit_print", "data.frame", knit_print.data.frame)
+# registerS3method("knit_print", "grouped_df", knit_print.data.frame)
+```
+
+# World Development Reports (WRDs)
+
+-   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
+-   INSTRUCTIONS <https://documents.worldbank.org/en/publication/documents-reports/api>
+-   Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+## I) Pre-processing 
+
+
+### I.ii) -- Set stopwords [more...]
+```{r stop}
+# --- alt stop words
+# mystopwords <- tibble(word = c("eq", "co", "rc", "ac", "ak", "bn", 
+#                                    "fig", "file", "cg", "cb", "cm",
+#                                "ab", "_k", "_k_", "_x"))
+
+# --- set up stop words
+stop_words <- as_tibble(stop_words) %>% # in the tidytext dataset 
+  add_row(word = "WDR", lexicon = NA_character_) %>%
+  # add_row(word = "world", lexicon = NA_character_) %>%
+  add_row(word = "report", lexicon = NA_character_) %>%
+  # add_row(word = "development", lexicon = NA_character_) %>%
+  add_row(word = "1978", lexicon = NA_character_) %>%
+  add_row(word = "1979", lexicon = NA_character_) %>%
+  add_row(word = "1980", lexicon = NA_character_) %>%
+  add_row(word = "1981", lexicon = NA_character_) %>%
+  add_row(word = "1982", lexicon = NA_character_) %>%
+  add_row(word = "1983", lexicon = NA_character_) %>%
+  add_row(word = "1984", lexicon = NA_character_) %>%
+  add_row(word = "1985", lexicon = NA_character_) %>%
+  add_row(word = "1986", lexicon = NA_character_) %>%
+  add_row(word = "1987", lexicon = NA_character_) %>%
+  add_row(word = "1988", lexicon = NA_character_) %>%
+  add_row(word = "1989", lexicon = NA_character_) %>%
+  add_row(word = "1990", lexicon = NA_character_) %>%
+  add_row(word = "1991", lexicon = NA_character_) %>%
+  add_row(word = "1992", lexicon = NA_character_) %>%
+  add_row(word = "1993", lexicon = NA_character_) %>%
+  add_row(word = "1994", lexicon = NA_character_) %>%
+  add_row(word = "1995", lexicon = NA_character_) %>%
+  add_row(word = "1996", lexicon = NA_character_) %>%
+  add_row(word = "1997", lexicon = NA_character_) %>%
+  add_row(word = "1998", lexicon = NA_character_) %>%
+  add_row(word = "1999", lexicon = NA_character_) %>%
+  add_row(word = "2000", lexicon = NA_character_) %>%
+  add_row(word = "2001", lexicon = NA_character_) %>%
+  add_row(word = "2002", lexicon = NA_character_) %>%
+  add_row(word = "2003", lexicon = NA_character_) %>%
+  add_row(word = "2004", lexicon = NA_character_) %>%
+  add_row(word = "2005", lexicon = NA_character_) %>%
+  add_row(word = "2006", lexicon = NA_character_) %>%
+  add_row(word = "2007", lexicon = NA_character_) %>%
+  add_row(word = "2008", lexicon = NA_character_) %>%
+  add_row(word = "2009", lexicon = NA_character_) %>%
+  add_row(word = "2010", lexicon = NA_character_) %>%
+  add_row(word = "2011", lexicon = NA_character_) %>%
+  add_row(word = "2012", lexicon = NA_character_) %>%
+  add_row(word = "2013", lexicon = NA_character_) %>%
+  add_row(word = "2014", lexicon = NA_character_) %>%
+  add_row(word = "2015", lexicon = NA_character_) %>%
+  add_row(word = "2016", lexicon = NA_character_) %>%
+  add_row(word = "2017", lexicon = NA_character_) %>%
+  add_row(word = "2018", lexicon = NA_character_) %>%
+  add_row(word = "2019", lexicon = NA_character_) %>%
+  add_row(word = "2020", lexicon = NA_character_) %>%
+  add_row(word = "2021", lexicon = NA_character_) %>%
+  add_row(word = "2022", lexicon = NA_character_) %>% 
+  filter (word != "changes") %>% 
+   filter (word != "value") %>% 
+   filter (word != "member") %>% 
+   filter (word != "part") %>% 
+   filter (word != "possible") %>% 
+   filter (word != "point") %>% 
+   filter (word != "present") %>% 
+   filter (word != "zero") %>% 
+     filter (word != "young") %>% 
+     filter (word != "old") %>% 
+     filter (word != "trying") 
+
+# --- set up stop words stemmed
+stop_words_stem <- stop_words  %>% 
+mutate (word = SnowballC::wordStem(word ))
+```
+
+## II) Data (ingestion), loading & cleaning
+
+Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.Rmd` and the result saved as `WDR.rds` \<-- (Being somewhat computational intensive, I only did it once.)
+
+> 
+    + **WDR = tibble [45, 8]**
+    + **doc_mt_identifier_1** chr oai:openknowledge.worldbank.org:109~ 
+    + **doc_mt_identifier_2** chr http://www-wds.worldbank.org/extern~ 
+    + **doc_mt_title**        chr Development Economics through the  ~ 
+    + **doc_mt_date   **      chr 2012-03-19T10:02:25Z 2012-03-19T19:~ 
+    + **doc_mt_creator **     chr Yusuf, Shahid World Bank World Bank~ 
+    + **doc_mt_subject**      chr ABSOLUTE POVERTY AGGLOMERATION BENE~ 
+    + **doc_mt_description**  chr The World Development Report (WDR) ~ 
+    + **doc_mt_set_spec**     chr oai:openknowledge.worldbank.org:109~ 
+
+Ingestion of WDR **lists of subjects** was available among metadata but presented issues (difficulty to extract, many records with repetition,apparently wrong) so I reconstructed them manually in `data/raw_data/WDR_subjects_corrected2010_2011.xlsx` taking them from site https://elibrary.worldbank.org/ which lists **keywords** correctly [Es 2022 WDR](https://elibrary.worldbank.org/doi/abs/10.1596/978-1-4648-1730-4)
+
+```{r load}
+# # WRD metadata taken with API get (issues) 
+# WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" )) %>% 
+#   # Extract only the portion of string AFTER the backslash {/}
+#   mutate(id = as.numeric(stringr::str_extract(doc_mt_identifier_1, "[^/]+$"))) %>% 
+#   dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
+#   mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full"))  %>% 
+#  # eliminate NON WDR book
+#   dplyr::filter(id != "2586") 
+# 
+# # WRD subject/date_issued taken by manual review 
+# WDR_subjects <- readxl::read_excel(here::here("data", "raw_data", 
+#                                               "WDR_subjects_corrected2010_2011.xlsx")) %>%
+#   drop_na(id) %>% 
+#  # eliminate NON WDR book
+#   dplyr::filter(id != "2586") 
+# 
+# # delete empty cols 
+# ColNums_NotAllMissing <- function(df){ # helper function
+#   as.vector(which(colSums(is.na(df)) != nrow(df)))
+# }
+# 
+# WDR_subjects <- WDR_subjects  %>% 
+#   select(ColNums_NotAllMissing(.))
+#  # # convert all columns that start with "subj_" to lowercase
+#  # WDR_subjects[3:218] <- sapply(WDR_subjects[3:218], function(x) tolower(x))
+# 
+# # join
+# WDR_com <- left_join(WDR, WDR_subjects, by = "id") %>% 
+#   dplyr::relocate(date_issued, .before = id ) %>% 
+#   # drop useles clmns 
+#   dplyr::select(#-doc_mt_identifier_1, 
+#                 -doc_mt_identifier_2, -doc_mt_date, 
+#                 -doc_mt_subject, -doc_mt_creator, -doc_mt_set_spec) %>% 
+#   # dplyr::relocate(url_keys, .after = subj_216 ) %>% 
+#   dplyr::rename(abstract = doc_mt_description) %>% 
+#   # correct titles -> portion after {:}
+#   dplyr::mutate(., title = str_extract(doc_mt_title,"[^:]+$")) %>% 
+#   dplyr::relocate(title, .after = id)  %>% 
+#   dplyr::rename(title_miss = doc_mt_title) %>% 
+#   dplyr::mutate(title_miss = case_when(
+#     str_starts(title, "World Development Report") ~ "Y",
+#     TRUE ~ NA_character_) 
+#   ) %>% 
+#   dplyr::mutate(subject_miss = if_else(is.na(subj_1), 
+#                                        "Y", 
+#                                        NA_character_)) %>% 
+#   dplyr::relocate(subject_miss, .after = title_miss)    %>% 
+#   dplyr::relocate(ISBN, .after = id)    
+#   
+# #paint(WDR_com)
+# 
+# # convert all columns that start with "subj_" to lowercase (maybe redundant)
+# WDR_com[, grep("^subj_", names(WDR_com))] <- sapply(WDR_com[, grep("^subj_", names(WDR_com))], function(x) tolower(x))
+# 
+# # combine all `subj_...` vars into a vector separated by comma
+# col_subj <- names(WDR_com[, grep("^subj_", names(WDR_com))] )
+# 
+# WDR_com <- WDR_com %>% tidyr::unite(
+#   col = "all_subj", 
+#   subj_1:subj_46, 
+#   sep = ",",
+#   remove = FALSE,
+#   na.rm = TRUE) %>% 
+#   arrange(date_issued)
+# 
+# #paint(WDR_com)
+
+```
+
+
+```{r}
+wdr <- readr::read_rds(here::here("data", "derived_data", "wdr.rds" ))
+paint(wdr)
+```
+
+
+### I.iii) > > Part of Speech Tagging 
+Tagging segments of speech for part-of-speech (nouns, verbs, adjectives, etc.) or entity recognition (person, place, company, etc.)
+https://m-clark.github.io/text-analysis-with-R/part-of-speech-tagging.html 
+
+
+#### -- tagging with `cleanNLP`
+AH: https://datavizs22.classes.andrewheiss.com/example/13-example/#sentiment-analysis
+
+Here’s the general process for tagging (or “annotating”) text with the cleanNLP package:
+
+   1. Make a dataset where one column is the id (line number, chapter number, book+chapter, etc.), and another column is the text itself.
+   2. Initialize the NLP tagger. You can use any of these:
+      + `cnlp_init_udpipe()`: Use an R-only tagger that should work without installing anything extra (a little slower than the others, but requires no extra steps!)
+      + `cnlp_init_spacy()`: Use spaCy (if you’ve installed it on your computer with Python)
+      + `cnlp_init_corenlp()`: Use Stanford’s NLP library (if you’ve installed it on your computer with Java)
+   3. Feed the data frame from step 1 into the cnlp_annotate() function and wait.
+   4. Save the tagged data on your computer so you don’t have to re-tag it every time.
+
+#### -------------- [TITLES ?]  ------------------
+
+## IV.i) Tokenization
+Following: http://varianceexplained.org/r/hn-trends/
+
+```{r}
+# unnest titles 
+title_words <- wdr %>%                           # 44 obs X 5 var 
+  mutate (year = date_issued) %>% 
+  # isolate necessary 
+  dplyr::select(id, year, decade, title, altmetric ) %>% # isolate titles
+  arrange(desc(year)) %>%
+  # (redundant) Select only unique/distinct rows from a data frame 
+  # dplyr::distinct(title, .keep_all = TRUE) %>%
+  # ----- tidytext’s unnest_tokens function = {turn titles in individual words}
+  unnest_tokens(output = word, 
+                input = title, 
+                drop = FALSE, # Whether original input column should get dropped
+                to_lower = T, # (implicit) otherwise cannot match the stop_words
+                strip_punc = TRUE) %>%            # 196 obs 
+   # ---- token processing
+  # [Optional] stems words
+  mutate(word = SnowballC::wordStem(word)) %>% # **
+  # [Optional] sometimes needed to graph 
+  mutate(title = factor(title, ordered = TRUE))  %>%
+  mutate(year = factor(year, ordered = TRUE)) %>% # 196 obs X 5 var 
+  # creates a data frame with one row per word per post!!!
+  # Select only unique/distinct rows from a data frame (if not unique keep first) | keep all vars
+  distinct(id, word, .keep_all = TRUE) %>% # (redundant, no repetition of words in title) 
+  # delete stop words (also previously stemmed)
+  anti_join(stop_words_stem, by = "word") %>% # ** # 101 obs | 95 if stemmed 
+  filter(str_detect(word, "[^\\d]")) %>%
+  # calculate totals by word across all titles (eg agricultur = in 3 WDR) 
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()  
+```
+
+#### --- Plot/save most common words in *ALL* 44 TITLES 
+```{r}
+# this is the same as title_words$word_total, but just the totals NO REPETITION
+word_counts <- title_words %>%
+  # Count observations by group(ed words)
+  count(word, sort = TRUE)
+
+# plot 
+p_most_common_word_in_title <- word_counts %>%
+   head(30) %>%
+  # filter ( n >1) %>% 
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n)) +
+  # geom_col() uses stat_identity(): it leaves the data as is.
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "50 most common words in 44 World Development Reports' titles",
+       subtitle = "[stemmed & stop words removed]" #, y = "# of uses"
+       )
+
+p_most_common_word_in_title %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "most_common_word_in_title.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "most_common_word_in_title.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
+```
+
+What are specific words that get a high altmetric ? 
+https://youtu.be/C69QyycHsgE
+
+```{r}
+alt_title_words <-  title_words %>%
+  # Count observations by group(ed words)
+  add_count(word ) %>% 
+  group_by(word) %>% 
+  summarise(median_alt = median (altmetric),
+            # compresses the scale and you go up by smaller increments 
+            geometric_mean_alt = exp(mean(log(altmetric + 1))) -1,
+            occurrences = n()) %>% 
+  arrange(desc(median_alt))  
+  
+alt_title_words
+```
+
+#### --- Plot/save most common words in ALL 44 TITLES - over time
+What words and topics have become more frequent, or less frequent, over time? These could give us a sense of the changing focus in dev econ, and let us predict what topics will continue to grow in relevance.
+
+To achieve this, we’ll first count the occurrences of words in titles by decades
+```{r}
+wdr_decade <- wdr %>% 
+  mutate (year = date_issued) %>% 
+  # isolate necessary 
+  dplyr::select(id, year, decade, title ) %>%  
+  arrange(desc(year))  
+  
+  
+# 1) obtain "decade_total"
+title_per_decade <- wdr_decade   %>%
+  group_by(decade) %>%
+  summarize(decade_total = n()) %>% 
+  ungroup()
+
+# 2) obtain count "n" <--  (group BY word*decade) 
+word_decade_counts <- title_words %>%
+  # filter(word_total >= 1000) %>%
+  count(word, decade) %>%
+  complete(word, decade, fill = list(n = 0)) %>% 
+  # join with 1)  
+  inner_join(title_per_decade, by = "decade") %>%
+  mutate(percent = n / decade_total) %>% 
+  # weird step to re-attach year 
+  inner_join(title_words, by = c("word", "decade")) %>% 
+  select (-id, -title,  word,  word_total, decade, n, decade_total, percent, year) %>% 
+  mutate (year =  as.character(year)) %>% 
+  mutate (year =  as.numeric(year))  
+  
+  paint(word_decade_counts)
+  
+
+```
+
+#### -------------- {START: troppo difficile} ------------------
+```{r}
+# library(broom)
+# 
+# mod <- ~ glm(cbind(n, decade_total - n) ~ decade, ., family = "binomial")
+# 
+# slopes <- word_decade_counts %>%
+#   nest(-word) %>%
+#   mutate(model = map(data, mod)) %>%
+#   unnest(map(model, tidy)) %>%
+#   filter(term == "year") %>%
+#   arrange(desc(estimate))
+# 
+# slopes
+```
+
+
+tibble [100, 7]
+word         chr 21st adjust ag agricultur agricultur agric~
+word_total   int 1 1 1 3 3 3                  = [how many times word appear in titles ]
+decade       chr 1990s 1980s 2020s 1980s 1980s 2000s
+n            int 1 1 1 2 2 1                  = [how many times word appear in titles ]
+decade_total int 10 10 3 10 10 9                = [how many doc per decade ]
+percent      dbl 0.1 0.1 0.333333 0.2 0.2 0.111111  = [% of doc per decade mentioning the word]
+year         dbl 1999 1981 2020 1986 1982 2008
+
+
+
+simple lineover time 
+```{r}
+word_decade_counts %>%
+ filter(word_total > 2) %>% 
+  ggplot(aes(year, percent, color = word)) +
+  geom_point() +
+  scale_y_continuous(labels = percent_format()) +
+  labs(x = "year",
+       y = "% of word in title per decade",
+       color = "")
+```
+#### -------------- {END: troppo difficile} ------------------
+
+## IV.ii) > >  Word and document frequency: TF-IDF
+
+## IV.iii) Relationships b/w words: Word clusters
+
+I want to consider clusters, but I don't want to guess them I want to draw them from the data
+```{r prep_clust}
+# hereI want to unstemm the title words 
+# unnest titles 
+title_words2 <- wdr %>%                           # 44 obs X 5 var 
+  mutate (year = date_issued) %>% 
+  # isolate necessary 
+  dplyr::select(id, year, decade, title, altmetric ) %>% # isolate titles
+  arrange(desc(year)) %>%
+  # (redundant) Select only unique/distinct rows from a data frame 
+  # dplyr::distinct(title, .keep_all = TRUE) %>%
+  # ----- tidytext’s unnest_tokens function = {turn titles in individual words}
+  unnest_tokens(output = word, 
+                input = title, 
+                drop = FALSE, # Whether original input column should get dropped
+                to_lower = T, # (implicit) otherwise cannot match the stop_words
+                strip_punc = TRUE) %>%            # 196 obs 
+   # ---- token processing
+  # [Optional] stems words
+  # mutate(word = SnowballC::wordStem(word)) %>% # **
+  # [Optional] sometimes needed to graph 
+  mutate(title = factor(title, ordered = TRUE))  %>%
+  mutate(year = factor(year, ordered = TRUE)) %>% # 196 obs X 5 var 
+  # creates a data frame with one row per word per post!!!
+  # Select only unique/distinct rows from a data frame (if not unique keep first) | keep all vars
+  distinct(id, word, .keep_all = TRUE) %>% # (redundant, no repetition of words in title) 
+  # delete stop words (also previously stemmed)
+  anti_join(stop_words_stem, by = "word") %>% # ** # 101 obs | 95 if stemmed 
+  filter(str_detect(word, "[^\\d]")) %>%
+  # calculate totals by word across all titles (eg agricultur = in 3 WDR) 
+  group_by(word) %>%
+  mutate(word_total = n()) %>%
+  ungroup()  
+
+# I will also make the alt alt_title_words2
+
+alt_title_words2 <-  title_words2 %>%
+  # Count observations by group(ed words)
+  add_count(word ) %>% 
+  group_by(word) %>% 
+  summarise(median_alt = median (altmetric),
+            # compresses the scale and you go up by smaller increments 
+            geometric_mean_alt = exp(mean(log(altmetric + 1))) -1,
+            occurrences = n()) %>% 
+  arrange(desc(median_alt))
+```
+
+### corr GRAPHS
+```{r clust}
+# get pairwise correlation with {widyr}
+top_corr <- title_words2 %>% 
+  select (id, word) %>% 
+  widyr::pairwise_cor(word, id, sort = TRUE) %>% 
+  head(150)
+ 
+#str(top_corr)
+
+set.seed(2022)
+# graph them 
+top_corr %>% 
+  graph_from_data_frame() %>% 
+  ggraph() +
+  geom_edge_link() +
+  geom_node_point() +
+  geom_node_text(aes(label = name), repel = TRUE) + theme_void()
+ 
+```
+
+Now I want to add some metrics to the graph, so I take `alt_title_words` which had some calculated things in it 
+
+```{r clust2}
+vertices <- alt_title_words2 %>%
+  # filter words that have correlation
+ filter(word %in% top_corr$item1 | 
+         word %in% top_corr$item2)
+
+set.seed(2022)
+# graph them 
+# here I add what clusters get more altmetric than others
+top_corr %>% 
+  graph_from_data_frame(vertices = vertices) %>%  # df !
+  ggraph() +
+  geom_edge_link() +
+  geom_node_point(aes(size = occurrences,
+                      color = geometric_mean_alt)) + # aes !
+  geom_node_text(aes(label = name), repel = TRUE) + 
+  scale_color_gradient2(low = "blue",
+                        high = "red",
+                        midpoint = 1000) +
+  theme_void() + 
+  labs(title = "what's hot in WDR titles?",
+       subtitle = "Color shows the geom mean of altmetric score on WDR titles containing this word",
+       size = "# of occurrences",
+       color = "Altmetric (mean)")   
+  
+
+
+```
+
+### ~~Predicting altmetric based on title + topic~~ 
+
+```{r}
+# some reshaping 
+title_word_matrix <- title_words2 %>% 
+  distinct(id, word, altmetric) %>% 
+  # turn into a sparse matrix 
+  cast_sparse(id, word)
+
+dim(title_word_matrix)
+
+# ... 
+```
+
+## IV.iv) > >  Relationships b/w words: n-grams and correlations Word clusters
+
+## IV.v) > >  Topic modeling
+
+
+
+#### -------------- [SUBJECTS & TOPICS  !!!]  ------------------
+ 
+must spread all_subj so that I have colum = "agric" row equal 0,1 thenn  
+```{r}
+#noquote(names(wdr))
+wdr_subj <- wdr %>% 
+  # delete subj_
+  select (date_issued, decade, title, abstract,
+          altmetric, all_topic, all_subj) 
+ 
+# rownames_to_column(wdr_subj, 'all_subj') %>%
+#         separate_rows(col) %>% 
+#         filter(col !="")  %>% 
+#         count( all_subj, col) %>%
+#         spread(col, n, fill = 0) %>%
+#         ungroup() %>% 
+#         select(-all_subj)
+
+# # base 
+# x   <- strsplit(as.character(wdr_subj$all_subj), ",\\s?") # split the strings
+# lvl <- unique(unlist(x))                         # get unique elements
+# x   <- lapply(x, factor, levels = lvl)           # convert to factor
+# subj_df <- as_tibble(t(sapply(x, table)) )      # count elements and transpose 
+
+
+# # data.table
+# library(data.table)
+# wdr_subj2 <- setDT(wdr_subj)[, tstrsplit(all_subj, ", |,")]
+# dcast(melt(wdr_subj2, measure = names(wdr_subj2)), rowid(variable) ~ value, length)
+
+library(splitstackshape)
+wdr_subj2 <- splitstackshape::cSplit_e(wdr_subj, "all_subj", ",", mode = "binary", type = "character", fill = 0)
+
+wdr_subj3 <- splitstackshape::cSplit_e(wdr_subj, "all_topic", ",", mode = "binary", type = "character", fill = 0)
+
+```
+
+### ---  which SUBJ are the most common?
+
+```{r}
+wdr_subj2 %>%
+  # summarise whole bunch of columns with sum
+  summarise_at(vars(starts_with("all_subj_")), sum)
+
+# most popular AFTER RESHAPING 
+wdr_subj_gathered <-  wdr_subj2 %>%
+  # summarise whole bunch of columns with sum
+  gather(subj, value,(starts_with("all_subj_"))) %>% 
+  mutate(subj = str_remove(subj, "all_subj_")) %>% 
+  filter (value ==1) 
+
+wdr_subj_gathered %>% 
+  count(subj, sort = TRUE)
+
+wdr_subj_gathered %>% 
+  group_by(decade) %>% 
+  count(subj, sort = TRUE) %>% 
+  arrange (desc(n) )-> subj_bydecade
+
+subj_bydecade %>% 
+  ggplot(aes(n)) + 
+  geom_histogram()   #  scale_x_log10() # when data is very skewed
+```
+
+### ---  which TOPICS are the most common?
+```{r}
+wdr_subj3 %>%
+  # summarise whole bunch of columns with sum
+  summarise_at(vars(starts_with("all_topic_")), sum)
+
+
+wdr_subj3 %>% 
+  ggplot(aes(altmetric)) +
+  geom_histogram() +
+  scale_x_log10(labels =scales::comma_format())
+  
+ 
+wdr_subj3 %>%   ggplot( aes(x=altmetric, fill=decade)) +
+    geom_histogram( color="#e9ecef", alpha=0.6, position = 'identity') +
+    #scale_fill_manual(values=c("#69b3a2", "#404080")) +
+    #theme_ipsum() +
+    labs(fill="") +
+    facet_wrap(~decade)
+# not super meaningful but is says that over the decades the altmetric have been moving to the right (i.e. getting higher)
+
+# most popular AFTER RESHAPING 
+wdr_top_gathered <-  wdr_subj3 %>%
+  # summarise whole bunch of columns with sum
+  gather(top, value,(starts_with("all_topic_"))) %>% 
+  mutate(top = str_remove(top, "all_topic_")) %>% 
+  filter (value ==1) 
+
+wdr_top_gathered %>% 
+  count(top, sort = TRUE)
+
+wdr_top_gathered %>% 
+  group_by(decade) %>% 
+  count(top, sort = TRUE) %>% 
+  arrange (desc(n) ) -> topic_bydecade
+
+ topic_bydecade %>% 
+   ggplot(aes(n))
+ 
+ 
+```
+
+### ---  plot most common TOPICS by decades
+```{r}
+# skimr::n_unique(topic_bydecade$top) # 26 
+# skimr::skim(topic_bydecade$n) # 26 
+
+# geom_col 
+p_topic_over_decades <-  topic_bydecade  %>%
+  # filter ( n >1) %>% 
+  # mutate(top = reorder(top, n)) %>%
+  # need reorder here or it won't stay 
+  ggplot(aes(x= reorder(top, n), y = n), fill = decade) +
+  # geom_col() uses stat_identity(): it leaves the data as is.
+  geom_col(fill = "lightblue") +
+    scale_y_continuous( breaks = seq(1,9,1),
+                        labels = c(seq(1,8,1), "9+" )
+                        ) +
+  # more readable
+  coord_flip() +
+  labs(title = "Most common topics in 44 WDRs over decades",
+       subtitle = "[High level topics covered = 26]",
+       y = "# of WDRs on topic per decade", x = ""
+       )  +  facet_wrap(~decade)
+
+p_topic_over_decades
+
+p_topic_over_decades %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "p_topic_over_decades.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "p_topic_over_decades.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
+```
+
+
+need to create groups "umbrella subjects"
+```{r}
+# ggplot(subj_bydecade, aes(n, fill = decade)) +
+#   geom_histogram(binwidth = 1,
+#                  color = "white") +
+#   scale_y_continuous(breaks= pretty_breaks()) +
+#   xlim(0, 20) +
+#   labs(#title = ~date_issued, 
+#     x = "frequency",
+#     y = "N of words @ that frequency") + 
+#   facet_wrap( ~decade ) #+ # , ncol = 2, scales = "free_y")
+#   #guides( fill = "none") # way to turn legend off
+# 
+
+# geom_col 
+p_most_common_word_in_subj <- subj_bydecade %>%
+  head(50) %>%
+  # filter ( n >1) %>% 
+  mutate(subj = reorder(subj, n)) %>%
+  ggplot(aes(subj, n), fill = decade) +
+  # geom_col() uses stat_identity(): it leaves the data as is.
+  geom_col(fill = "lightblue") +
+  scale_y_continuous(labels = comma_format()) +
+  coord_flip() +
+  labs(title = "50 most common subjects in 44 World Development Reports' titles",
+       subtitle = "[ ]" #, y = "# of uses"
+       ) +
+  facet_wrap(~decade)
+
+p_most_common_word_in_subj
+
+p_most_common_word_in_subj %T>% 
+  print() %T>%
+  ggsave(., filename = here("analysis", "output", "figures", "most_common_word_in_subj.pdf"),
+         #width = 4, height = 2.25, units = "in",
+         device = cairo_pdf) %>% 
+  ggsave(., filename = here("analysis", "output", "figures", "most_common_word_in_subj.png"),
+         #width = 4, height = 2.25, units = "in", 
+         type = "cairo", dpi = 300)  
+```
+
+### ---  [word clouds by decade ???]
+
+### ---  [CORRELATION GRAPHS ???]
+
+### ---  PREDICTION OF DOWNLOADS ???
+
+## A4. Tokenization by n-gram - ITERATIVELY]
+
+### -- using abstract?
+
+### -- using subjects?
+
+# ---
+
+
+# -------------- TO do \| To Rethink ------------------
+
+-   DAG graph of my research question
+-   metadata $downloads? on WDRs ? (I am using "altmetrics" but I don't know how important it is)
+-   create my own stop_words list (which excludes also "date_issued", "report", etc)
+-   leggere [@yusuf_development_2008]
+-   need to create groups "umbrella subjects"
+- Which of this bigram might be a SLOGAN?
+
+# Reference Tutorials
+
+@robinson_1_2022 
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)\ 
+
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)\
+
+[Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)\
+
+[TidyTuesday casts on tidytext](https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations)\
+
+  1. ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
+  2. ✔️ [TidyTuesday Tweets -  2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
+  3. [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression | sentiment lexicon,
+  4. [Simpsons Guest Stars 	2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
+  5. [Horror Movies 	2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package | Lasso regression
+  6. [The Office 	2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel | glmnet package to run a cross-validated LASSO regression
+  7. [Animal Crossing 	2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time | geom_text to visualize what words are associated with positive/negative reviews |topic modelling
+

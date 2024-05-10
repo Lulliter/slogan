@@ -1,21 +1,69 @@
 project:
   type: website
   output-dir: docs
+  # exclude by putting `_file_name.qmd` in analysis/*
 
+execute:
+  freeze: auto  # Re-render only when source changes
 
 website:
   title: "slogan"
+  description: "Instructions for R + git + AWS etc..."
+  site-url: https://lulliter.github.io/slogan # "{{< var website.site-url >}}" # "https://lulliter.github.io/nerd-help"
+  favicon: images/notepad.png
+  search: false # no magnifier on navbar
+  page-navigation: true
+  page-footer:
+    # left: |
+    #   {{< fa regular copyright >}} Luisa M. Mimmi 2024
+    left: |
+      {{< fa brands creative-commons >}} 2024 Luisa M. Mimmi <br>
+      License {{< fa brands creative-commons >}}
+      {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}} {{< fa brands creative-commons-sa >}}
+      [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+    right: |
+      Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
+      [Source code at {{< fa brands github >}}](https://github.com/Lulliter/slogan)
+    background: "#e3eff7"
   navbar:
     left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+      - text: "Home"
+        icon: house-fill # https://icons.getbootstrap.com/?q=home
+        href: index.html
+      - text: "Blog"
+        icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
+        href: posts/index.qmd
+      - text: "Text Analytics"
+        icon: terminal-fill #  archive-fill # https://icons.getbootstrap.com/?q=home
+        # href: analysis.qmd
+        menu:
+          - text: "00 Data Sources"
+            href: analysis/00_text_data.qmd
+          # - text: "01 WDR abstracts' exploration"
+          #   href: analysis/01_WDR_abstracs_explor.qmd
+          # - text: "02 WDR subjects exploration"
+          #   href: analysis/02_WB_operations_explor.qmd
+          # - text: "03 WB Operations exploration"
+          #   href: analysis/03_WB_operations_explor.qmd
+          # - text: "04 ?? DEscriptive Statistics"
+          #   href: analysis/04_desc_stats.qmd
 
 format:
   html:
-    theme: cosmo
-    css: styles.css
+    theme: theme/Lulas_theme.scss # cosmo
+    # css: theme/styles.css
     toc: true
+    toc-location: "left"
+    code-link: true
+    anchor-sections: true
+    fig-cap-location: margin
+    reference-location: document # margin
+    footnotes-hover: true
+    fontsize: 1em
+    ##----- code highlighting style
+    highlight-style: monokai # atom-one # github # dracula
+    mainfont: "Lato"
+    monofont: "Fira Mono"
 
 
 

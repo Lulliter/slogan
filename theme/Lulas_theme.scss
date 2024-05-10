@@ -1,0 +1,138 @@
+/*-- scss:defaults --*/
+
+
+/*--------------------- MY FONTS ---------------------*/
+// import google fonts
+@import url('https://fonts.googleapis.com/css2?family=Lato');
+@import url('https://fonts.googleapis.com/css2?family=Chivo');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Inconsolata:wght@200&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+// Andrew Heiss
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Fira+Sans+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/*-- Sass variables = you assign a value to a name that begins with `$var: XXXXX` and then refer to `$var`
+	you can tell a default is set if it ends with `!default`--*/
+
+// use litera as the base
+$theme: "litera" !default;
+
+// sans-serif font family: a lot in case reader don't have my font installed
+$font-family-sans-serif: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol","Cambria", "Georgia", "serif",  "Noto Color Emoji" !default;
+// monospace font family: a lot in case reader don't have my font installed
+$font-family-sans-serif: "Noto Sans Mono", "Source Code Pro", "mono-space" ;
+
+/*--------------------- MY COLORS ---------------------*/
+// Define Color variables `$var-name: value;`
+$darkblue: #163342;
+$darkred: #7f173d;
+$teal: #17717f;
+$cream: #FDFBF7;
+$lightgrey : #d3d3d3;
+$darkgray: #7a7a7a;
+
+$nav_head_bckg: #3881a5;   //    #b78a92	#72aed8
+$nav_foot_bckg: #BDD5E1;	//			  #e7d8da	#e3eff7
+
+$theme_main_dark: #0a222e;
+$theme_main: #23749b;
+$theme_main_light: #BDD5E1;
+$theme_main_extralight:#f6f9fb;
+
+$theme_related1: #3b7697;
+$theme_related2: #3d8085;
+
+$theme_link: #48973b;
+$theme_link_old: #76973B;
+$theme_link_light: #bacb9d;
+$theme_link_extralight: #e3ead7;
+
+$theme_comp1: #239b86;
+$theme_comp1_light: #bde1da;
+
+$theme_comp2: #A55C38;
+$theme_comp2_light: #e4cec3;
+
+$gold:#7f6b00;
+
+/*--------------------- RULES ---------------------*/
+// see https://quarto.org/docs/output-formats/html-themes.html#sass-variables
+// in realta non mi funzionano !?!?
+
+// The page text color.
+$body-color: $theme_main_dark;
+// The page background color.
+$body-bg: $theme_main_extralight;
+// The link color.
+$link-color: $theme_link;
+// The background color for HTML inputs.
+$input-bg: $theme_comp2_light;
+// The background color for popovers (for example, when a citation preview is shown).
+$popover-bg: $theme_comp1;
+
+// The background color of the navbar. (Defaults to the theme’s $primary color.)
+$navbar-bg: $theme_main;
+// The color of foreground elements (text and navigation) on the navbar. If not specified, a contrasting color is automatically computed.
+$navbar-fg: $theme_main_extralight;
+// The highlight color for links in the navbar. If not specified, the $link-color is used or a contrasting color is automatically computed.
+$navbar-hl: $darkblue;
+
+
+
+/*--------------------- BOOTSTRAP FONT VARIABLES ---------------------*/
+
+// litera is serif by default: revert to san-serif
+//p {
+//  font-family: $font-family-sans-serif;
+//}
+//
+//h1 {
+//  font-color: $theme_main_dark;
+//}
+
+
+// The base font size for the page;
+$font-size-base: 1rem;
+
+
+/*-- scss:rules --*/
+// nome sito
+.navbar-brand {
+  font-size: 2rem; //var(--bs-navbar-brand-font-size);
+  color: var(--bs-navbar-brand-color);
+  white-space: nowrap;
+  font-weight: 600; // + bold
+}
+
+
+h1, .h1 {
+  color: $theme_related1;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+h2, .h2 {
+  color: $theme_related2;
+  margin-top: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+body {
+    font-family:"Lucida Grande", serif;
+//    font-size: 12px;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.column-margin{
+  color: $darkgray;
+  font-size: .825rem;
+}
+.nav-footer a {
+  color: $theme_main;// #515c61;
+
+}
+

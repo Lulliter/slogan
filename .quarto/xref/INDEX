@@ -4,5 +4,29 @@
   },
   "about.qmd": {
     "about.html": "ac07a303"
+  },
+  "posts/index.qmd": {
+    "index.html": "094e829d"
+  },
+  "posts/2023-11-15-revisione-libro-il-sistema-invisibile/index.qmd": {
+    "index.html": "4051069f"
+  },
+  "analysis/00_intro_text_analytics.qmd": {
+    "00_intro_text_analytics.html": "c9d8fcba"
+  },
+  "analysis/01_WDR_abstracs_explor.qmd": {
+    "01_WDR_abstracs_explor.html": "40b4dd0e"
+  },
+  "analysis/02_WDR_subjects_explor.qmd": {
+    "02_WDR_subjects_explor.html": "3f527f9d"
+  },
+  "analysis/00_text_data.qmd": {
+    "00_text_data.html": "33841960"
+  },
+  "analysis/04_desc_stats.qmd": {
+    "04_desc_stats.html": "9a2ea5c5"
+  },
+  "analysis/03_WB_operations_explor.qmd": {
+    "03_WB_operations_explor.html": "38e9e667"
   }
 }

@@ -1,7 +1,130 @@
 ---
-title: "slogan"
+title: "Motivation"
+date: last-modified
+date-format: "dddd MMM D, YYYY"
+bibliography: bib/slogan.bib
 ---
 
-This is a Quarto website.
+ 
+## At the core of reduction
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+I was really struck the first time I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it referred to prayer and not to sport. 
+
+I have seen this same dynamic (the meaning of words/phrases progressively detaching from the reality they originally described) at work also in the field of public policy, so I decided to dig deeper. 
+
+### Research question # 1
+The important question is ***"Why" such a deviation from the original meaning of a word/sentence may occur***. Granted, languages evolve on their own, but it can also be subject to manipulation, as George Orwell's "1984" so powerfully depicted illustrating the rules and purpose of fictional Oceania nation's _newspeak_. The risks connected to this potential abuse of language are clearly laid out by Riccardo Garbini in his "Lessico - Uscire da Babele" [@garbini_uscire_2003] [^1]\
+<!-- > In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'.  -->
+
+> ***In some cases the deviation of the meaning is evidenced by the pure and simple suppression of the term (1984): in such cases, therefore, the analysis does not insist on the reductionist aspect. The deviations, where present, are dictated above all by ideological intentions, that is, by the superimposition of an interpretative grid with rather rigid meshes on the objective data of reality. The effect of the superimposition of this interpretative grid called ideology thus results in a reduction of the perceptive and interpretative field of reality. For this reason semantic deviations have been called 'reductionisms'.***
+
+
+[^1]: Annex to the Giuseppe Fioravanti's book [@fioravanti_pedagogia_2006]
+
+### Research question # 2
+
+Besides investigating the origin, it would be equally important to ***understand the consequence of a lamented lessical approximation or reduction***. In fact, quoting Giovanni Gentile's "Sommario di pedagogia come scienza filosofica": _"Language is not a garment of thought: it is its own body"_ [@garbini_uscire_2003, p3], that is language does not merely communicate our ideas to others, but it is also the tool of our thought, the wings for it to fly. 
+<!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) -->
+
+## Methodological notes
+
+This goes back to Aristotle...... and it is beyond the scope .... let's just recall 
+
+### Hermeneutics
+
+Hermeneutics: from Greek *ἑρμηνεία, ας, ἡ* (hermēneia), deriving from the verb *ἑρμηνεύω* (hermēneuō) is the science and practice of interpretation. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches: 1. reconstructing the original intention of the authors 2. adapting the interpretation based on the person who receives the text
+
+### Linguistics
+
+...
+
+### Philology
+
+...
+
+## Essential list of rhetorical devices
+
+
+### Adage
+
+An *adage* is an ancient saying or maxim, brief and sometimes mysterious, that has become accepted as conventional wisdom. In classical rhetoric, an adage is also known as a *rhetorical proverb* or *paroemia*. Often it's a type of metaphor. It can express the values of a culture. [@nordquist_words_2018]
+
+> **Example(s)**: "The early bird gets the worm", "Better late than never."
+
+### Slogan
+
+The English word *slogan* has a Scottish Gaelic origin and derives from the combination of *sluagh* (army) + *gairm* (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called *taglines* in the United States
+
+> **Example(s)**: "...", "..."
+
+## Issues of modern English 
+
+Below is the list of _red flags_ detected in Orwell's "Politics and the English Language"[@orwell_politics_1946]:
+
++ **Dying metaphors**, or worn−out metaphors which have lost all evocative power and are merely used because they save people the trouble of inventing phrases for themselves.
+<!-- GGentile la prima e piu evidente originalita del genio e' la potenza plasmatrice che egli possiede di quel che si dice il materiale linguistico -->
++ **Operators, or verbal false limbs**, which  save the trouble of picking out appropriate verbs and nouns, and at the same time pad each sentence with extra syllables which give it an appearance of symmetry. Characteristic phrases are: render inoperative, militate against, prove unacceptable, make contact with, be subjected to, give rise to, give grounds for, having the effect of, play a leading part (role) in, make itself felt, take effect, exhibit a tendency to, serve the purpose of, etc.
++ **Pretentious diction (used to dress up simple statements and give an air of scientific impartiality to biased judgments), foreign words and expressions, jargon**
++ **Meaningless words**, as in certain kinds of writing, particularly in art criticism and literary criticism, where they not only do not point to any discoverable object, but are hardly even expected to do so by the reader (like romantic, plastic, values, human, dead, sentimental, natural, vitality), it is normal to come across long passages which are almost completely lacking in meaning. Many political words are similarly abused: The words democracy, socialism, freedom, patriotic, realistic, justice, have each of them several different meanings which cannot be reconciled with one another. ***Words of this kind are often used in a consciously dishonest way. That is, the person who uses them has his own private definition, but allows his hearer to think he means something quite different.*** 
+
+> Ma si possono riscontrare anche 
+> 
+> + **statalismo** 
+> + **burocraticismo** 
+
+> lo stesso linguaggio burocratico, che permea la scuola statale (impropriamente detta ‘pubblica’) italiana odierna, come diretta conseguenza dell’ideologia statalista presenta una forma che è «astratta, solenne, tecnicizzata, in funzione del prestigio e del potere che detiene il diffusore del messaggio. Da questa prassi consegue una sclerosi del pensiero che si sorregge sui trampoli di locuzioni fruste e cristallizzate. Ufficialità, reticenza e straniamento sono i caratteri che il messaggio assume nell’esercizio del potere. [@garbini_uscire_2003, p5]
+
+# _____
+
+# Intro to text analytics 
+
+
+ 
+## What is Text mining / analytics?
+Text Mining or Text Analytics is the rocess of deriving meaningful information from natural language text
+
+### --- Some text analytics definitions
+
+-   **Corpus (pl. Corpora)** \~ a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
+-   **Document** \~ collection of sentences
+-   **String** \~ in computational approaches, a string is a specific type of data that represents text and is often encoded in specific format, e.g., Latin1 or UTF8. 
+-   **Token** \~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
+-   **Tokenization** \~ splitting text into tokens
+-   **Bigrams**/**n-gram** \~ sentence, or paragraph
+-   **Collocations** \~ words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries. 
+-   **Tidy text** \~ "a table with one-token-per-row"
+-   **Stemming** \~ A *stem* is the base part of a word to which affixes can be attached for derivatives
+-   **Lemmatization** \~ Similar to *stem*, but incorporating the meaning (gone|going --> go) 
+-   **Document-term matrix (DTM)** \~ rows = documents | cols = words | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+-   **Term-Document matrix (TDM)** \~ rows = words | cols = documents | cells = [0,1]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+
+## What is NLP?
+A part of computer science and AI that deals with human languages
+
+### --- Some commonly used NLP scenarios
+
+-  **Natural Language Processing (NLP)** \~ is an interdisciplinary field in computer science that has specialized on processing natural language data using computational and mathematical methods. 
+-  **Network Analysis** \~ the most common way to visualize relationships between entities. Networks, also called graphs, consist of nodes (typically represented as dots) and edges (typically represented as lines) and they can be directed or undirected networks. 
+-   **Text Classification** \~ a supervised learning method of learning and predicting the category or the class of a document given its text content.
+-   **Named Entity Recognition** \~ NER is the task of classifying words or key phrases of a text into predefined entities of interest.
+-   **Text Summarization** \~ a language generation task of summarizing the input text into a shorter paragraph of text.
+-   **Entailment** \~ the task of classifying the binary relation between two natural-language texts, text and hypothesis, to determine if the text agrees with the hypothesis or not.
+-   **Question Answering** \~ QA is the task of retrieving or generating a valid answer for a given query in natural language, provided with a passage related to the query.
+-   **Sentence Similarity** \~ the process of computing a similarity score given a pair of text documents.
+-   **Embeddings** \~ the process of converting a word or a piece of text to a continuous vector space of real number, usually, in low dimension.
+-   **Sentiment Analysis** \~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect.
+-   **Semantic Analysis** \~ Allows to analyze the semantic (semantics) fo texts. Such analyses often rely on semantic tagsets that are based on word meaning or meaning families/categories.
+-   **Part-of-Speech (PoS)** \~ Tagging identifies the word classes of words (e.g., noun, adjective, verb, etc.) in a text and adds part-of-speech tags to each word.
+-   **Topic Modeling** \~ Topic Modeling is a machine learning method seeks to answer the question: given a collection of documents, can we identify what they are about? Topic model algorithms look for patterns of co-occurrences of words in documents. 
+
+### --- Text processing in R
+
+-   {tidytext}
+-   {tm} <!-- tm_map(corpus, FUN, ...) -->
+-   {SnowballC} <!--4 stemming  -->
+-   {OpenNLP}
+-   {RWeka}
+-   {languageR}
+-   {korPus}
+
+## Reference

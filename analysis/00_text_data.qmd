@@ -1,0 +1,132 @@
+---
+title: "Text Data Sources"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 3
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+
+<!-- #### setup -->
+
+<!-- ```{r setup_inp, echo=FALSE} -->
+<!-- # Pckgs ------------------------------------- -->
+<!-- if (!require ("pacman")) (install.packages("pacman")) -->
+<!-- #p_install_gh("luisDVA/annotater") -->
+<!-- #p_install_gh("HumanitiesDataAnalysis/hathidy") -->
+<!-- # devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis")  -->
+<!-- pacman::p_load(here, -->
+<!--        annotater, -->
+<!--        tidyverse,  -->
+<!--        skimr, -->
+<!--        scales, -->
+<!--        httr,  -->
+<!--        citr, -->
+<!--        paint,  -->
+<!--        DT, # an R interface to the JavaScript library DataTables -->
+<!--        # jsonlite,  -->
+<!--        # XML,  -->
+<!--        # xml2,  -->
+<!--        # oai, # R client to work with OAI-PMH  -->
+<!--        splitstackshape #Stack and Reshape Datasets After Splitting Concatenated Values -->
+<!--        ) -->
+
+<!-- pacman::p_load( -->
+<!--   tm, # Text Mining Package -->
+<!--   tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools -->
+<!--   widyr, # pairwise ????   -->
+<!--   ggraph, -->
+<!--   igraph, -->
+<!--   sjmisc, # Data and Variable Transformation Functions -->
+<!--   ggraph, # An Implementation of Grammar of Graphics for Graphs and Networks -->
+<!--   widyr, # Widen, Process, then Re-Tidy Data -->
+<!--   SnowballC, # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library -->
+<!--   #HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis -->
+<!--   sentencepiece # Text Tokenization using Byte Pair Encoding and Unigram Modelling -->
+<!-- ) -->
+
+<!-- # Function(s) ------------------------------------- -->
+
+<!-- # Data ------------------------------------- -->
+
+<!-- ``` -->
+
+### ----------------------------------------------------------------------------
+
+# A. World Development Reports (WRDs)
+
+-   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
+-   INSTRUCTIONS <https://documents.worldbank.org/en/publication/documents-reports/api>
+-   Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+### ----------------------------------------------------------------------------
+
+# B. World Bank Projects & Operations:
+
+# Connections
+
+Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
+
+# Data sources:
+
+1.  World Bank Projects & Operations: <https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations>
+
+-   Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+
+2.  World Bank - World Development Reports
+
+-   Accessibility Classification:
+
+# Reference Tutorials
+
+[@robinson_1_2022]
+[@ldal_tutorials_2022]
+[@edureka!2019]
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
+
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+
+[Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)
+
+[tidyTuesday cast on tidytext](https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations)
+
+1.  ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
+2.  [TidyTuesday Tweets - 2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
+3.  [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression \| sentiment lexicon,
+4.  [Simpsons Guest Stars 2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
+5.  [Horror Movies 2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package \| Lasso regression
+6.  [The Office 2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel \| glmnet package to run a cross-validated LASSO regression
+7.  [Animal Crossing 2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time \| geom_text to visualize what words are associated with positive/negative reviews \|topic modelling
