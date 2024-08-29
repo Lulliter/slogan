@@ -28,5 +28,17 @@
   },
   "analysis/03_WB_operations_explor.qmd": {
     "03_WB_operations_explor.html": "38e9e667"
+  },
+  "posts/2024-05-29-sviluppo-sostenibile/index.qmd": {
+    "index.html": "342addea"
+  },
+  "posts.qmd": {
+    "posts.html": "7994d42d"
+  },
+  "analysis/00_intro_NLP.qmd": {
+    "00_intro_NLP.html": "f7c58897"
+  },
+  "analysis/01_text_data.qmd": {
+    "01_text_data.html": "59e454e6"
   }
 }

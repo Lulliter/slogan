@@ -1,0 +1,860 @@
+---
+title: "Text Data Sources"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 3
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+
+```{r setup_inp}
+# Pckgs -------------------------------------
+if (!require ("pacman")) (install.packages("pacman"))
+p_load(tidyverse, 
+       janitor, 
+       here,
+       repurrrsive, # examples of recursive lists
+       listviewer, # provides an interactive method for viewing the structure of a list.
+       httr, jsonlite, XML,xml2, 
+       oai, # R client to work with OAI-PMH 
+       citr,
+       fs)
+
+```
+
+<!-- #### setup -->
+
+<!-- ```{r setup_inp, echo=FALSE} -->
+<!-- # Pckgs ------------------------------------- -->
+<!-- if (!require ("pacman")) (install.packages("pacman")) -->
+<!-- #p_install_gh("luisDVA/annotater") -->
+<!-- #p_install_gh("HumanitiesDataAnalysis/hathidy") -->
+<!-- # devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis")  -->
+<!-- pacman::p_load(here, -->
+<!--        annotater, -->
+<!--        tidyverse,  -->
+<!--        skimr, -->
+<!--        scales, -->
+<!--        httr,  -->
+<!--        citr, -->
+<!--        paint,  -->
+<!--        DT, # an R interface to the JavaScript library DataTables -->
+<!--        # jsonlite,  -->
+<!--        # XML,  -->
+<!--        # xml2,  -->
+<!--        # oai, # R client to work with OAI-PMH  -->
+<!--        splitstackshape #Stack and Reshape Datasets After Splitting Concatenated Values -->
+<!--        ) -->
+
+<!-- pacman::p_load( -->
+<!--   tm, # Text Mining Package -->
+<!--   tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools -->
+<!--   widyr, # pairwise ????   -->
+<!--   ggraph, -->
+<!--   igraph, -->
+<!--   sjmisc, # Data and Variable Transformation Functions -->
+<!--   ggraph, # An Implementation of Grammar of Graphics for Graphs and Networks -->
+<!--   widyr, # Widen, Process, then Re-Tidy Data -->
+<!--   SnowballC, # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library -->
+<!--   #HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis -->
+<!--   sentencepiece # Text Tokenization using Byte Pair Encoding and Unigram Modelling -->
+<!-- ) -->
+
+<!-- # Function(s) ------------------------------------- -->
+
+<!-- # Data ------------------------------------- -->
+
+<!-- ``` -->
+
+
+### ----------------------------------------------------------------------------
+
+# Data sources
+
+# WB Projects & Operations
+**World Bank Projects & Operations**: [Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations)
+https://projects.worldbank.org/en/projects-operations/project-search 
+
+-   Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+
+- esempio <https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations>
+
+ 
+## Raw data
+I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 09/22/2022 (WDRs go from 1978-2022)
+using this [example url FY 1978/79](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved individual `.xlsx` files in `data/raw_data/`
+
+<!-- EXE  -->
+<!-- https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0 -->
+<!-- https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=2023&end_fiscalyear=2023&os=0 -->
+
+## Ingest Projects data
+
+I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 09/22/2022 (WDRs go from 1978-2022)
+using this [example url](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved individual `.xlsx` files in `data/raw_data/`
+
++ note the manual download is limited to # = 500
+
+### --- Load all `.xlsx` files separately 
+<!-- Following https://martinctc.github.io/blog/vignette-write-and-read-multiple-excel-files-with-purrr/ -->
+
+```{r eval=FALSE, include=FALSE}
+# --- define directory path
+file_path <- here("data","raw_data", "projects/")
+
+# --- get a character vector of the names of files
+file_path %>% list.files(. , 
+                         pattern = ".xlsx",
+                         full.names = FALSE) -> xlsx_file_names
+# # or 
+# file_path %>% list.files() %>% .[str_detect(., ".xlsx")] -> csv_file_names
+
+# check
+class(xlsx_file_names)
+
+# ---- Load everything into the Global Environment
+xlsx_file_names %>%
+  purrr::map(function(file_name){ # iterate through each file name
+  assign(x = str_remove(file_name, "_downloaded_9_22_2022.xlsx"), # Remove file extension 
+         value = readxl::read_excel(paste0(file_path, file_name), skip = 1),
+         envir = .GlobalEnv)
+})
+```
+
+### --- Save objs in folder as `.Rds` files separately 
+
+```{r eval=FALSE, include=FALSE}
+# [inputs] 2 write as .Rds 
+list_objects  <-  ls(pattern = "*WB_Projects*" ) # list newly created objects 
+list_objects
+rdsFilesFolder <- fs::path("./data/raw_data/projects")
+saveRDSobjects <- paste0(rdsFilesFolder, "/", list_objects, ".Rds")
+
+# [function] write as .Rds 
+for (i in seq_along(list_objects)) {
+  base::saveRDS(get(list_objects[i]), file = saveRDSobjects[i])
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### ---------------------------------------------------------------------------
+ 
+# World Development Reports (WRDs)
+
+-   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
+-   INSTRUCTIONS <https://documents.worldbank.org/en/publication/documents-reports/api>
+-   Following: [@kaye_ella_2019; @robinson_words_2017; @robinson_1_2022]
+
+
+```{r}
+# Function(s) -------------------------------------
+source(here::here ("R", "f_scrape_WB-OKR.R") )
+source(here::here ("R", "turn_list_to_tibble.R") )
+
+
+```
+
+
+## Raw data
+
+## OAI-PMH  
+
+**OAI-PMH** (Open Archives Initiative Protocol for Metadata Harvest-ing) services, a protocol developed by the Open Archives Initiative (https://en.wikipedia.org/wiki/Open_Archives_Initiative). OAI-PMH uses XML data format transported over HTTP.
+
++ packg: Package [`oai`](https://docs.ropensci.org/oai/) is built on xml2 and httr. 
++ paging: OAI-PMH uses (optionally) `resumptionTokens`, with an optional expiration date. These tokens can be used to continue on to the next chunk of data, if the first request did not get to the end.
+
+## 1. World Bank list of World Development Reports
+Genreal OKR link [https://openknowledge.worldbank.org/search?spc.page=1&query=%20&scope=3d9bbbf6-c007-5043-b655-04d8a1cfbfb2](https://openknowledge.worldbank.org/search?spc.page=1&query=%20&scope=3d9bbbf6-c007-5043-b655-04d8a1cfbfb2)
+
+https://openknowledge.worldbank.org/entities/publication/5e5ac9f1-71ee-4734-825e-60966658395f
+2023 | key takeaways | https://openknowledge.worldbank.org/server/api/core/bitstreams/54de9b54-dc23-43da-9a88-fe94dd5a3c24/content
+
+https://openknowledge.worldbank.org/server/api/core/bitstreams/e1e22749-80c3-50ea-b7e1-8bc332d0c2ff/content
+
+ + **World Development Report (WDR)**;  
+   + (in 2022) https://openknowledge.worldbank.org/handle/10986/2124
+   + (in 2024) https://openknowledge.worldbank.org/collections/3d9bbbf6-c007-5043-b655-04d8a1cfbfb2?spc.sf=dc.date.issued&spc.sd=DESC 
+   + (in 2024) https://openknowledge.worldbank.org/collections/3d9bbbf6-c007-5043-b655-04d8a1cfbfb2?spc.sf=dc.date.issued&spc.sd=DESC&f.supportedlanguage=en,equals&spc.page=1&spc.rpp=100
+
+
+
+# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
+### ---------------------------------------------------------------------------
+
+ 
+```{r}
+install.packages("rvest")
+library(rvest)
+```
+ 
+```{r}
+link2023 <- "https://openknowledge.worldbank.org/entities/publication/5e5ac9f1-71ee-4734-825e-60966658395f/full"
+WDR2023 <- read_html(link2023)
+
+WDR2023  %>%
+  html_elements(xpath = "")
+```
+
+ 
+
+## 1. World Bank list of World Development Reports
+
+Here I want to extract documents metadata from WBG OKR repository. 
+
+Which metadata:
+  +  collections: "Books"                    https://openknowledge.worldbank.org/handle/10986/4
+    + sub-collections: "Corporate Flagships" https://openknowledge.worldbank.org/handle/10986/2123
+      + **World Development Report (WDR)**;  https://openknowledge.worldbank.org/handle/10986/2124
+      https://openknowledge.worldbank.org/collections/3d9bbbf6-c007-5043-b655-04d8a1cfbfb2?spc.sf=dc.date.issued&spc.sd=DESC 
+      
+      + Global Economic Prospects (GEP), 
+      + Doing Business (DB), and 
+      + Poverty and Shared Prosperity (PSP).  
+      + ...
+
+I can search adding a keyword:           
+      + World Development Report (WDR);
+        + Keyword = _"economic development"_    
+... the url would become: `https://openknowledge.worldbank.org/handle/10986/2124/discover?filtertype=subject&filter_relational_operator=equals&filter=economic+development`
+ 
+# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
+### API response  
+
+
+```{r API-get}
+# DATA https://datacatalog.worldbank.org/search/dataset/0037800 
+# INSTRUCTIONS https://documents.worldbank.org/en/publication/documents-reports/api
+
+# VARIABLES ----------------------------------------------
+# base url for query
+base <- "https://openknowledge.worldbank.org/oai/request?verb=ListRecords&metadataPrefix=oai_dc&set=col_10986_"
+# base url with resumption token
+base0 <- "https://openknowledge.worldbank.org/oai/request?verb=ListRecords&resumptionToken=oai_dc///col_10986_"
+ 
+n <- 45 
+subid <-   2124 # WRD 
+
+temp_url <- paste0(base, subid)
+
+# response <- httr::GET(temp_url) # xml_document
+# response <- httr::content(response, as="parsed")
+response <- xml2::read_xml(x = temp_url, encoding = "",
+                           options = "NOBLANKS") # remove blank nodes
+class(response)
+ 
+# Parse a url into its component pieces.
+xml2::xml_name(response) # [1] "OAI-PMH"
+xml2::xml_name(xml_children(response)) # [1] "responseDate" "request"  "ListRecords" 
+
+# print the full path directory:
+response %>% xml_find_all( '//*') %>% xml_path()
+
+# check length of id
+#======# DON'T KNOW HOW SHE NEW THE NAME #======# 
+# "/*/*[3]/*[1]/*[2]/oai_dc:dc/dc:identifier[1]"  
+r_id <-  xml2::xml_find_all(response, ".//d1:identifier") %>% xml_text()
+l <- length(r_id)
+print(paste("length of total list:", l))
+
+# #======#  check length of subject ???  #======# 
+# "/*/*[3]/*[1]/*[2]/oai_dc:dc/dc:subject[216]" 
+r_subject <-  xml2::xml_find_all(response, ".//d1:subject") %>% xml_text() # empty 
+r_subject <-  xml2::xml_find_all(response, ".//subject") %>% xml_text() # empty 
+
+
+# START NAVIGATION
+r_root <- xml2::xml_root(response )   # Returns root node
+r_root
+r_cdr <- xml2::xml_children(response )   # Access the children nodes
+r_cdr
+str(r_cdr)
+
+# all records as a list of lists 
+r_cdr_l <- xml2::as_list(r_cdr)
+str(r_cdr_l)
+# only the info in record (l1-of - l45)
+r_cdr_l_records <-  r_cdr_l[3]
+
+# only records as a list of 45 
+records <-  r_cdr_l_records[[1]] 
+records[[1]][["metadata"]][["dc"]][["subject[1]"]]
+
+
+# name the records 
+names(records) <- paste0 ("WRD_", 1:length(records))
+records_names <- c(names(records))
+class(records_names)
+```
+
+### Parsing xml ONE INDICATOR AT A TIME (header)
+
+#### ... (form header) identifier
+```{r pars_one }
+# # # identifier of record 1 
+# # records[["WRD_1"]][["header"]][["identifier"]]
+# # # identifier of record 2 
+# # records[["WRD_2"]][["header"]][["identifier"]]
+# 
+# # all identifier 
+# 
+# # 1) Prepare empty vectors 
+# id_l <- vector(mode = "character", length = length(records))
+# id_v <- vector(mode = "character", length = length(records))
+# # 2) 
+# for(i in seq_along(records)) {
+#  # extract ALL identifier LIST LIST 
+#   id_l[[i]] <- records[[i]][["header"]][["identifier"]]
+#   # transform list in vector
+#    id_v[[i]] <- unlist(id_l[[i]])
+# }
+# 
+# # 3) 
+# id_v_t <- tibble::as_tibble_col(id_v, column_name ="WDR_hd_id")
+# df_header_identifier <- id_v_t 
+```
+
+#### ... (form header) setSpec
+```{r EXTRAPOLATE}
+# # 0) set variables 
+# meta_item <- "setSpec"
+# l <- records
+# 
+# # 1) Prepare empty output 
+# item_l <- list(mode = "character", length = length(l))
+# item_v <- vector(mode = "character", length = length(l))
+# 
+# # 2) ET loop 
+# for(i in seq_along(l)) {
+#  # extract ALL setSpec LIST LIST 
+#   item_l[[i]] <- l[[i]][["header"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WDR_hd_", meta_item)
+# 
+# # 4) make it a tibble   
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# 
+# # 5) rename result df 
+# # assign("new.name",old.name)
+# assign(paste0("df_header_", meta_item),item_v_t)
+# 
+# df_header_setSpec <- item_v_t # non so se serve a qlc 
+```
+
+### Parsing xml ONE INDICATOR AT A TIME (metadata)  
+ 
++ here I am going to list one level up `records[["WRD_1"]][["metadata"]][["dc"]][["item]]`
++ Problem: multiple repetition of some "items"   
+
+#### ... (form metadata) title
+```{r}
+# # EG all title(s)
+# # records[["WRD_1"]][["metadata"]][["dc"]][["title"]]
+# 
+# # 1) Prepare empty ouppt 
+# item_l <- list(mode = "character", length = length(records))
+# item_v <- vector(mode = "character", length = length(records))
+# # 2) 
+# for(i in seq_along(records)) {
+#  # extract ALL identifier LIST LIST 
+#   item_l[[i]] <- records[[i]][["metadata"]][["dc"]][["title"]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# column_name <- paste0("WRD_mt_", "title")  
+# 
+# # 3) 
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# df_meta_title <- item_v_t 
+```
+
+#### ... (form metadata) creator
+```{r}
+# # EG all creator(s)
+# # records[["WRD_1"]][["metadata"]][["dc"]][["creator"]]
+# 
+# # 0) choose metat_item
+# meta_item <- "creator"
+# 
+# # 1) Prepare empty ouppt 
+# item_l <- list(mode = "character", length = length(records))
+# item_v <- vector(mode = "character", length = length(records))
+# # 2) 
+# for(i in seq_along(records)) {
+#  # extract ALL identifier LIST LIST 
+#   item_l[[i]] <- records[[i]][["metadata"]][["dc"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WRD_mt_", meta_item)
+# 
+# # 3) 
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# df_meta_creator<- item_v_t 
+```
+
+#### ... (form metadata) identifier
+```{r}
+#  # 0) set variables 
+# meta_item <- "identifier"
+# l <- records
+# 
+# # 1) Prepare empty output 
+# item_l <- list(mode = "character", length = length(l))
+# item_l
+# item_v <- vector(mode = "character", length = length(l))
+# item_v
+# # 2) ET loop 
+# for(i in seq_along(l)) {
+#  # extract ALL identifier LIST LIST 
+#   item_l[[i]] <- l[[i]][["metadata"]][["dc"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WRD_mt_", meta_item)
+# 
+# # 4) make it a tibble   
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# 
+# # 5) rename result df 
+# # assign("new.name",old.name)
+# # assign(paste0("df_meta_", meta_item),item_v_t)
+# df_meta_identifier <- item_v_t
+```
+
+#### ... (form metadata) description 
+```{r}
+#  # 0) set variables 
+# meta_item <- "description"
+# l <- records
+# 
+# # 1) Prepare empty output 
+# item_l <- list(mode = "character", length = length(l))
+# item_l
+# item_v <- vector(mode = "character", length = length(l))
+# item_v
+# # 2) ET loop 
+# for(i in seq_along(l)) {
+#  # extract ALL description LIST LIST 
+#   item_l[[i]] <- l[[i]][["metadata"]][["dc"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WRD_mt_", meta_item)
+# 
+# # 4) make it a tibble   
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# 
+# # 5) rename result df 
+# # assign("new.name",old.name)
+# assign(paste0("df_meta_", meta_item),item_v_t)
+```
+
+#### ... (form metadata) date 
+
+```{r}
+#  # 0) set variables 
+# meta_item <- "date"
+# l <- records
+# 
+# # 1) Prepare empty output 
+# item_l <- list(mode = "character", length = length(l))
+# item_l
+# item_v <- vector(mode = "character", length = length(l))
+# item_v
+# # 2) ET loop 
+# for(i in seq_along(l)) {
+#  # extract ALL date LIST LIST 
+#   item_l[[i]] <- l[[i]][["metadata"]][["dc"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WRD_mt_", meta_item)
+# 
+# # 4) make it a tibble   
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# 
+# # 5) rename result df 
+# # assign("new.name",old.name)
+# assign(paste0("df_meta_", meta_item),item_v_t)
+```
+
+#### ... (form metadata) subject 
+
+```{r}
+#  # 0) set variables 
+# meta_item <- "subject"
+# l <- records
+# 
+# # 1) Prepare empty output 
+# item_l <- list(mode = "character", length = length(l))
+# item_l
+# item_v <- vector(mode = "character", length = length(l))
+# item_v
+# # 2) ET loop 
+# for(i in seq_along(l)) {
+#  # extract ALL subject LIST LIST 
+#   item_l[[i]] <- l[[i]][["metadata"]][["dc"]][[meta_item]]
+#   # transform list in vector
+#    item_v[[i]] <- unlist(item_l[[i]])
+# }
+# # 3) set column name 
+# column_name <- paste0("WRD_mt_", meta_item)
+# 
+# # 4) make it a tibble   
+# item_v_t <- as_tibble_col(item_v, column_name =column_name)
+# 
+# # 5) rename result df 
+# # assign("new.name",old.name)
+# assign(paste0("df_meta_", meta_item),item_v_t)
+```
+
+### same but as FUNCTION -> YEP!!!!!!!  
+
+####... ALL from header (func)
+```{r callfun_head}
+# ---------- FUNCTION to create a column of Titles --> DOES NOT Work! 
+# source(here::here ("R", "turn_list_to_tibble.R") )
+
+# ------------- USE FUNCTION  (called INSIDE THE `assign`)
+## 1) input: header --> identifier
+list <- records
+item_name <- "identifier"
+where <- "header" # or "header"
+
+df_name <- paste("col", item_name, sep = "_")
+
+## function call (that changes the name of output on the fly )
+assign(df_name, value = turn_list_to_tibble(list, where, item_name ))
+
+## 2) input: header --> setSpec
+list <- records
+item_name <- "setSpec"
+where <- "header" # or "header"
+
+df_name <- paste("col", item_name, sep = "_")
+
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col", item_name, sep = "_")
+assign(df_name, value = df)
+
+```
+
+####... ALL from meta (func)
+```{r callfun_meta}
+## ------- --------- 1) input: meta --> identifier
+list <- records
+item_name <- "identifier"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+
+## --------- 2) input: meta --> title
+list <- records
+item_name <- "title"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+
+## --------- 3) input: meta --> date
+list <- records
+item_name <- "date"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+
+## --------- 4) input: meta --> creator
+list <- records
+item_name <- "creator"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+
+## --------- 5) input: meta --> subject
+list <- records
+item_name <- "subject"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+
+## --------- 6)  input: meta --> description
+list <- records
+item_name <- "description"
+where <- "meta" # or "meta"
+## function call (that changes the name of output on the fly )
+df<- turn_list_to_tibble(list, where, item_name )
+# rename ouptut
+df_name <- paste("col_m", item_name, sep = "_")
+assign(df_name, value = df)
+```
+
+
+#### ... bind ALL - ALL cols into 1 tibble 
+```{r}
+list_col  <-  ls(pattern =  '^col_', all.names = TRUE)
+list_col
+ cat(noquote(list_col) )
+df_metadata <- bind_cols(col_identifier,
+                          col_m_identifier,
+                          col_m_title,
+                          col_m_date,
+                          col_m_creator,
+                          col_m_subject,
+                          col_m_description,
+                          col_setSpec, .name_repair = "unique"
+                          ) %>% 
+  janitor::clean_names()
+```
+
+# save in data/derived_data
+
+```{r}
+names(df_metadata)
+dataDir <- fs::path_abs(here::here("data","raw_data"))
+fileName <- "/WDR.rds"
+Dir_File <- paste0(dataDir, fileName)
+write_rds(x = df_metadata, file = Dir_File)
+```
+
+
+# Subject / keywords problem 
+
+Following [SO Rsponse](https://stackoverflow.com/questions/48476663/extract-text-from-xml-but-file-has-duplicated-node-names/48477966#48477966)
+
+---- DONT RUN ----- 
+```{r NONVIENE, eval=FALSE}
+xml_find_all(doc, ".//ArchivedIncident") %>% # iterate over each incident
+  map_df(~{
+    set_names(
+      xml_find_all(.x, ".//value/value") %>% xml_text(), # get entry values
+      xml_find_all(.x, ".//key") %>% xml_text()          # get entry keys (column names)
+    ) %>% 
+      as.list() %>%                                      # turn named vector to list
+      flatten_df() %>%                                   # and list to df
+      mutate(ID = xml_attr(.x, "ID"))                    # add id
+  }) %>%
+  type_convert() %>% # let R convert the values for you
+  select(ID, everything()) # get it in the order you likely want
+## # A tibble: 2 x 5
+##      ID TEST1 TEST2 TEST3 TEST4
+##   <int> <chr> <int> <chr> <chr>
+## 1   100  <NA>    12     A  <NA>
+## 2   101  BLAH    NA  <NA>  <NA>
+
+# ---- my try 
+child <-  xml_child(response, 3) 
+
+xml_find_all(child, ".//record") %>% # iterate over each incident
+  map_df(~{
+    set_names(
+      xml_find_all(.x, ".//subject/subject") %>% xml_text(), # get entry values
+      xml_find_all(.x, ".//metadata") %>% xml_text()          # get entry keys (column names)
+    ) %>% 
+      as.list() %>%                                      # turn named vector to list
+      flatten_df() %>%                                   # and list to df
+      mutate(ID = xml_attr(.x, "ID"))                    # add id
+  }) %>%
+  type_convert() %>% # let R convert the values for you
+  select(ID, everything()) # get it in the order you likely want
+
+```
+
+### Here I see keywords 
+
+2022:  https://openknowledge.worldbank.org/handle/10986/36883?show=full
+
+oai:openknowledge.worldbank.org:10986/2586
+
+```{r}
+# read WRD metadata
+WDR <- readr::read_rds(here::here("data", "raw_data", "WDR.rds" ))
+
+
+WDR <- WDR  %>% 
+   # Extract only the portion of string AFTER the backslash {/}
+   mutate(id =  stringr::str_extract(doc_mt_identifier_1, "[^/]+$") ) %>% 
+   dplyr::relocate(id, .before = doc_mt_identifier_1) %>% 
+   mutate(url_keys = paste0("https://openknowledge.worldbank.org/handle/10986/", id , "?show=full") )%>% 
+   dplyr::relocate(url_keys, .before =  doc_mt_identifier_1)
+
+WDR$id[1] 
+WDR$url_keys[1] 
+  
+WDR$id[45] 
+   
+for (i in 1:45){
+     print (WDR$url_keys[i] )
+   }
+```
+
+# REVIEW --- 
+### Go back and try to extract dates & keywords 
+
+# REVIEW --- 
+
+## 1. World Bank Projects & Operations:
+
+---- DONT RUN ----- 
+```{r API2-get, eval=FALSE, include=FALSE}
+# GET call to API --> raw Unicode in the res list, which ultimately needs to be converted into JSON format.
+# I added `?format=json&rows=150` to ask for 50 (if not the defauls is 10 obs)
+response <- httr::GET(url = "https://search.worldbank.org/api/v2/projects?format=json&rows=50") 
+httr::http_type(response)  
+
+# convert the raw Unicode into a character vector that resembles the JSON format 
+rawToChar(response$content)
+
+ 
+# =============
+# we can convert it into list data structure
+data <- jsonlite::fromJSON(rawToChar(response$content))
+head(data, n = 2)
+typeof(data)
+
+#make lists of list into df
+projects <- data$projects 
+
+projects$P178245$project_name
+
+## Compute maximum length
+max.length <- max(sapply(projects, length))
+## Add NA values to list elements
+projects <- lapply(projects, function(v) { c(v, rep(NA, max.length-length(v)))})
+## Rbind
+projects_df <- do.call(rbind, projects) %>% as_tibble()
+```
+  
+
+# Wrangling the text 
+Following: [@kaye_ella_2019; @robinson_words_2017]
+
+
+## Tokenization 
+
+* A _token_ is a meaningful unit of text, such as a word, that we are interested in using for analysis
+
+* bigrams 
+
+# connections 
+
+Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
+  
+# Data sources: 
+
+1. World Bank Projects & Operations: https://datacatalog.worldbank.org/search/dataset/0037800 
+ https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations
+
+  + Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+
+2. World Bank - World Development Reports
+
+  + Accessibility Classification:
+
+# Acknowledgements 
+
++ [Computing for Social Science Course](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
++ [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project who created the function `R/f_scrape_WB-OKR.R` 
++ [Renu Khandelwal](https://medium.com/geekculture/reading-xml-files-in-r-3122c3a2a8d9) tutorial 
+
+
+
+
+
+
+
+### ----------------------------------------------------------------------------
+
+# Reference Tutorials
+
+[@robinson_1_2022]
+[@ldal_tutorials_2022]
+[@edureka!2019]
+
+ 
+[David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
+
+[Benjamin Soltoff: Computing 4 Social Sciences - API](https://cfss.uchicago.edu/syllabus/getting-data-from-the-web-api-access/)
+
+[Benjamin Soltoff: Computing 4 Social Sciences - text analysis](https://cfss.uchicago.edu/syllabus/text-analysis-fundamentals-and-sentiment-analysis/)
+
+[Ben Schmidt Book Humanities Crurse](https://hdf.benschmidt.org/R/) [Ben Schmidt Book Humanities](http://benschmidt.org/HDA/texts-as-data.html)
+
+[tidyTuesday cast on tidytext](https://github.com/dgrtwo/data-screencasts/tree/master/screencast-annotations)
+
+1.  ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE)
+2.  [TidyTuesday Tweets - 2019-01-07](https://www.youtube.com/watch?v=KE9ItC3doEU)
+3.  [Wine Ratings - 2019-05-31](https://www.youtube.com/watch?v=AQzZNIyjyWM) Lasso regression \| sentiment lexicon,
+4.  [Simpsons Guest Stars 2019-08-30](https://www.youtube.com/watch?v=EYuuAGDeGrQ) geom_histogram
+5.  [Horror Movies 2019-10-22](https://www.youtube.com/watch?v=yFRSTlk3kRQ) explaining glmnet package \| Lasso regression
+6.  [The Office 2020-03-16](https://www.youtube.com/watch?v=_IvAubTDQME) geom_text_repel from ggrepel \| glmnet package to run a cross-validated LASSO regression
+7.  [Animal Crossing 2020-05-05](https://www.youtube.com/watch?v=Xt7ACiedRRI) Using geom_line and geom_point to graph ratings over time \| geom_text to visualize what words are associated with positive/negative reviews \|topic modelling

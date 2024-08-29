@@ -1,3 +1,17 @@
 
+# Quarto files
 /.quarto/
-.Rproj.user
+_freeze/  
+# might contain intermediate or output files.
+
+# Other files
+.Rproj.user/
+
+# RStudio files
+.Rhistory
+
+# Session Data files
+.RData
+
+# User-specific files
+.Ruserdata

@@ -32,13 +32,15 @@ website:
         href: index.html
       - text: "Blog"
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
-        href: posts/index.qmd
+        href: posts.qmd
       - text: "Text Analytics"
         icon: terminal-fill #  archive-fill # https://icons.getbootstrap.com/?q=home
         # href: analysis.qmd
         menu:
-          - text: "00 Data Sources"
-            href: analysis/00_text_data.qmd
+          - text: "00 Intro to NLP"
+            href: analysis/00_intro_NLP.qmd
+          - text: "01 Data Sources"
+            href: analysis/01_text_data.qmd
           # - text: "01 WDR abstracts' exploration"
           #   href: analysis/01_WDR_abstracs_explor.qmd
           # - text: "02 WDR subjects exploration"

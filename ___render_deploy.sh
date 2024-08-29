@@ -55,7 +55,7 @@ git commit -m "$msg"
 =======
 
 git commit -m "rid of writing page "
-git commit -m "added _variables.yml & cgd tools/01_git.qmd 🙌"
+git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 
 # Push local source (master branch) to remote reference (origin)

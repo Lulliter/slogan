@@ -48,26 +48,29 @@ bibliography: ../bib/slogan.bib
 #p_install_gh("luisDVA/annotater")
 #p_install_gh("HumanitiesDataAnalysis/hathidy")
 # devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis") 
-library(here)
-library(fs)
-library(paint) 
-library(tidyverse) 
-library(magrittr)
-library(skimr)
-library(scales) 
-library(colorspace)
-library(scales)
-library(httr)
+
+library(here) # A Simpler Way to Find Your Files
+library(fs) # Cross-Platform File System Operations Based on 'libuv'
+library(paint) # paint data.frames summaries in colour 
+library(tidyverse) # Easily Install and Load the 'Tidyverse' 
+library(magrittr) # A Forward-Pipe Operator for R
+library(skimr) # Compact and Flexible Summaries of Data
+library(scales) # Scale Functions for Visualization # Scale Functions for Visualization 
+
+library(colorspace) # A Toolbox for Manipulating and Assessing Colors and Palettes
+library(scales) # Scale Functions for Visualization # Scale Functions for Visualization
+library(httr) # Tools for Working with URLs and HTTP
 library(DT) # an R interface to the JavaScript library DataTables
-library(knitr)
-library(kableExtra) 
-library(flextable) 
+library(knitr) # A General-Purpose Package for Dynamic Report Generation in R
+library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax 
+library(flextable) # Functions for Tabular Reporting 
+
 library(splitstackshape)  #Stack and Reshape Datasets After Splitting Concatenated Values
 library(tm) # Text Mining Package
 library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
 # this requires pre-requirsites to install : https://github.com/quanteda/quanteda
-library(quanteda)
-library(igraph)
+library(quanteda) # Quantitative Analysis of Textual Data
+library(igraph) # Network Analysis and Visualization
 library(sjmisc) # Data and Variable Transformation Functions
 library(ggraph) # An Implementation of Grammar of Graphics for Graphs and Networks
 library(widyr) # Widen, Process, then Re-Tidy Data
@@ -371,4 +374,5 @@ proj_PDO <- proj %>%
 # Connections
 
 Following the example of [David Robinson on HN titles](http://varianceexplained.org/r/hn-trends/)
+
 

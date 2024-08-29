@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>slogan</title>
+<link>https://lulliter.github.io/slogan/posts.html#category=spunti</link>
+<atom:link href="https://lulliter.github.io/slogan/posts-spunti.xml" rel="self" type="application/rss+xml"/>
+<description>Instructions for R + git + AWS etc...</description>
+<generator>quarto-1.4.550</generator>
+<lastBuildDate>Tue, 14 Nov 2023 23:00:00 GMT</lastBuildDate>
+<item>
+  <title>Revisione libro: Il Sistema invisibile, di Marcello Foa del 15 Novembre 2023</title>
+  <dc:creator>Luisa M. Mimmi</dc:creator>
+  <dc:creator>Luisa M. Mimmi</dc:creator>
+  <link>https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/</link>
+  <description><![CDATA[ 
+
+
+
+
+<!-- # Tu chiamalo se vuoi... complottismo (e invece ti apre gli occhi!) -->
+<!-- # Spunti  -->
+<ul>
+<li>Da “4.4. Come disarticolare una società”</li>
+</ul>
+<blockquote class="blockquote">
+<p>Vladimis Volkoff (Il montaggio) “Quando si tratta di mobilitare le masse in realta non si ha che uno scopo: immobilizzarle” (…) tante volte la nostra rabbia e’ stata indirizzata verso bersagli di facile presa, il politico corrotto che abusa dell’auto blu, mentre i veri sprechi e gli scandali rilevanti erano altri, come nel caso di Autostrade Italiane. Tante, troppe volte l’indignazione delle masse e’ stata indirizzata contro bersagli fittizzi o sproporzionati, che non hanno prodotto altro effetto che generare sfiducia socaile verso le autorita costituite, i partiti e le istituzioni (p.&nbsp;104, 105)</p>
+</blockquote>
+
+
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citazione</h2><div><div class="quarto-appendix-secondary-label">BibTeX</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{m. mimmi2023,
+  author = {M. Mimmi, Luisa and M. Mimmi, Luisa},
+  title = {Revisione libro: Il Sistema invisibile, di Marcello Foa del
+    15 Novembre 2023},
+  date = {2023-11-15},
+  url = {https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile},
+  langid = {it}
+}
+</code></pre><div class="quarto-appendix-secondary-label">Per favore citare questo lavoro come:</div><div id="ref-m. mimmi2023" class="csl-entry quarto-appendix-citeas">
+M. Mimmi, Luisa, and Luisa M. Mimmi. 2023. <span>“Revisione libro: Il
+Sistema invisibile, di Marcello Foa del 15 Novembre 2023.”</span>
+November 15, 2023. <a href="https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile">https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile</a>.
+</div></div></section></div> ]]></description>
+  <category>spunti</category>
+  <category>🇮🇹</category>
+  <guid>https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/</guid>
+  <pubDate>Tue, 14 Nov 2023 23:00:00 GMT</pubDate>
+  <media:content url="https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/libro.jpg" medium="image" type="image/jpeg"/>
+</item>
+</channel>
+</rss>

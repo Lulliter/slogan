@@ -2,7 +2,7 @@
 title: "Revisione libro: Il Sistema invisibile, di Marcello Foa del 15 Novembre 2023"
 # subtitle: "test new post"
 description: |
-  libri
+  [libri]
 author: Luisa M. Mimmi
 date: 2023-11-15
 categories: [spunti, 🇮🇹] # [Quarto, R, MEDS]

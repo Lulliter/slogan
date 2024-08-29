@@ -1,7 +1,8 @@
 [
   {
-    "listing": "/posts/index.html",
+    "listing": "/posts.html",
     "items": [
+      "/posts/2024-05-29-sviluppo-sostenibile/index.html",
       "/posts/2023-11-15-revisione-libro-il-sistema-invisibile/index.html"
     ]
   }
