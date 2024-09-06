@@ -36,12 +36,11 @@ git status
 # Add changes to git Index.
 git add -A # ALL
 git add -u # tracked
-
 git add cv/*
 git add images/*
 git add docs/*
 git add posts/*
-git add writings/
+git add analysis/*
 git add README*
 git add _extensions/
 =======
@@ -57,6 +56,7 @@ git commit -m "$msg"
 git commit -m "rid of writing page "
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
+git commit -m "added analysis/00_intro_NLP.qmd analysis/01_text_data.qmd"
 
 # Push local source (master branch) to remote reference (origin)
 #cd .

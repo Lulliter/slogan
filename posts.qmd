@@ -1,5 +1,5 @@
 ---
-title: "Some ideas"
+title: "Some examples of \"domesticated lexicon\""
 subtitle: "... " 
 # generate the contents of a page  from a list of Quarto documents  
 listing:

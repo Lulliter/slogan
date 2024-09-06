@@ -1,0 +1,145 @@
+---
+title: "Intro to NLP"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 2
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: bib/slogan.bib
+---
+
+
+# Intro to text analytics
+
+## What is Text Mining / Text Analytics?
+
+**Text Mining** (or **Text Analytics**) is the process of deriving meaningful information from unstructured text data, which involves techniques that can identify patterns, trends, and correlations in text data. As a research method, it is versatile in its aplications and can be combined with different disciplines and techniques.
+
+- *Text analytics* often utilizes NLP techniques to process and analyze text.
+- A subfield of artificial intelligence (AI), **NLP** focuses on enabling computers to understand, interpret, and generate human language. 
+   - While *NLP* provides the tools and algorithms (like tokenization, parsing, and entity recognition), *text mining* applies these tools to extract specific information from large text corpora.
+- **Corpus Linguistics** is a branch of text analysis research applied to linguistics (e.g. the role of frequency and phonotactics in affix ordering in English, study of idiomatic expressions, geographic spread of neologisms, etc.) or where ***insight from language is sought***
+- Sometimes, *Text analytics* serves as a method to support other research methods.
+
+### --- Text analytics vocabulary
+- **Population** (in language) \~ Any (idealized) compendium of words that we are interested in analysing... (most) populations are amorphous moving targets.  
+- **Corpus (pl. Corpora)** \~ A language population is called a **corpus**, a collection of similar documents \| objects that typically contain raw strings annotated with additional metadata and details
+   - *reference corpora*, e.g. the American National Corpus
+   - *specialized corpora* 
+   - *parrallel and comparable corpora* 
+- **Unstructured Data** \~ data which does not have a machine-readable internal structure. This is the case for plain text files (.txt), which are simply a sequence of characters (as opposed to **structured data** that conforms to tabular format and is machine readable)
+   - `.json` format is somwhere in the middle /~ **semi-structured data** /~ which reflects the autho rpreferences 
+- **String** \~ in computational approaches, a string is a specific type of data that represents text and is often encoded in specific format, e.g., Latin1 or UTF8.
+- **Tidy text** \~ refers both to the structural (physical) and infor- mational (semantic) organization of the dataset. Physically, a tidy dataset is a tabular data structure, where each row is an observation (e.g. token) and each column is a variable that contains measures of a feature or attribute of each observation.
+   - **Token** \~ is a meaningful unit of text, such as a *word*, that we are interested in using for analysis
+   - **Types** \~ refers to the unique tokens in a term variable (< of tokens if repetition)
+- **Bigrams**/**n-gram** \~ Sequential groupings of characters and words (e.g.sentence, or paragraph)
+- **Collocations** \~ words that are attracted to each other (and that co-occur or co-locate together), e.g., Merry Christmas, Good Morning, No worries.
+
+### Text data transformations vocabulary
+
+- **Text normalization** \~ standardizing text to convert the text into a uniform format and reduce unwanted variation and noise. (e.g. eliminating missing, redundant, or anoma- lous observations, changing the case of the text, removing punctuation, stan- dardizing forms, etc.)
+- **Text Tokenization** \~ splitting text into tokens, i.e. adapting the text so it reflects the target lin- guistic unit that will be used in the analysis. (involves expanding or reducing the number of rows depending on the linguistic unit of analysis) 
+- **Enrichment transformations** \~ to add new attributes to the dataset (e.g. generation, recoding, and integration of observations and/or variables.)
+- **Stemming** \~ is the process of reducing inflected words to their word stem, base, or root form. E.g.: `believe --\> believ`
+   - A **stem** is the base part of a word to which affixes can be attached for derivatives
+- **Lemmatization** \~ is the process of reducing inflected words to their dictionary form, or lemma. E.g.: `gone\|going --\> go`
+- **Document-term matrix (DTM)** \~ rows = documents \| cols = words \| cells = \[0,1\]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+- **Term-Document matrix (TDM)** \~ rows = words \| cols = documents \| cells = \[0,1\]/frequencies. A sparse matrix describing a collection (i.e., a corpus) of documents with one row for each document and one column for each term. (`WDR_com`)
+
+
+## What is Natural Language Processing (NLP)?
+
+A part of computer science and AI that deals with human languages, **Natural Language Processing (NLP)** has evolved significantly over the past few decades, driven by advances in computational power, machine learning, and the availability of large datasets. 
+
+Broadly speaking, these were some key steps in its evolution: 
+
+1. Early Years (1950s - 1980s) - **Rule-based Systems** (Early NLP systems were based on rule-based methods, which relied on handcrafted rules for tasks like translation, parsing, and information retrieval). 
+
+2. 1970s - 1980s: **Statistical Methods and Linguistic Models** (The introduction of the *Chomskyan Linguistic Models* influenced NLP research, focusing on syntax and grammar, while statistical methods began to emerge, laying the groundwork for more data-driven approaches) 
+
+3. 1990s: **Statistical NLP** (significant shift towards statistical approaches due to the availability of larger text corpora and more powerful computers, *Hidden Markov Models (HMMs)* and *n-grams* became popular for tasks such as part-of-speech tagging, speech recognition, and machine translation) 
+     
+3. 2000s: **Machine Learning and Data-Driven Methods** (rise of machine learning in NLP, particularly supervised learning methods: *Support Vector Machines (SVMs)*, *Maximum Entropy models*, etc. The development of large annotated corpora and platforms fueled progress in areas such as parsing, word sense disambiguation, and sentiment analysis.)
+
+4. 2010s: **Deep Learning Revolution** (Neural networks, particularly *recurrent neural networks (RNNs)* and later *long short-term memory (LSTM) networks*, became the standard for many NLP tasks. The introduction of *word embeddings* allowed words to be represented as continuous vectors in a high-dimensional space, capturing semantic relationships between them. *Convolutional Neural Networks (CNNs)* were applied to text classification and other tasks, although they were more commonly used in computer vision. The development of *sequence-to-sequence (Seq2Seq) models* enabled advancements in machine translation, summarization, and other sequence generation tasks. *Transformers* outperformed RNNs on many tasks and led to the development of large-scale pre-trained language models.)
+
+5. Late 2010s - Present: **Pre-trained Language Models and NLP at Scale** (Pre-trained language models like *BERT (2018)* by Google and *GPT (Generative Pre-trained Transformer)* by OpenAI revolutionized NLP by providing powerful, general-purpose models that could be fine-tuned for specific tasks with minimal training data. The concept of *transfer learning* became central, where models trained on massive datasets could be adapted to specific tasks. ChatGPT, BERT, T5, and FLAN-T5 continue to push the boundaries of what NLP can achieve, leading to increasingly sophisticated and human-like interactions.)
+
+6. 2020s - **Future Directions** Multimodal models: *Integrating NLP with other forms of data*, such as images and audio, to create more comprehensive models. *Explainability and interpretability*: As models grow in complexity, understanding their decision-making processes becomes more important. 
+ 
+
+### --- Some commonly used NLP scenarios
+
+-   **Natural Language Processing (NLP)** \~ is an interdisciplinary field in computer science that has specialized on processing natural language data using computational and mathematical methods.
+-   **Network Analysis** \~ the most common way to visualize relationships between entities. Networks, also called graphs, consist of nodes (typically represented as dots) and edges (typically represented as lines) and they can be directed or undirected networks.
+-   **Text Classification** \~ a supervised learning method of learning and predicting the category or the class of a document given its text content.
+-   **Named Entity Recognition** \~ NER is the task of classifying words or key phrases of a text into predefined entities of interest.
+-   **Text Summarization** \~ a language generation task of summarizing the input text into a shorter paragraph of text.
+-   **Entailment** \~ the task of classifying the binary relation between two natural-language texts, text and hypothesis, to determine if the text agrees with the hypothesis or not.
+-   **Question Answering** \~ QA is the task of retrieving or generating a valid answer for a given query in natural language, provided with a passage related to the query.
+-   **Sentence Similarity** \~ the process of computing a similarity score given a pair of text documents.
+-   **Embeddings** \~ the process of converting a word or a piece of text to a continuous vector space of real number, usually, in low dimension.
+-   **Sentiment Analysis** \~ Provides an example of train and use Aspect Based Sentiment Analysis with Azure ML and Intel NLP Architect.
+-   **Semantic Analysis** \~ Allows to analyze the semantic (semantics) fo texts. Such analyses often rely on semantic tagsets that are based on word meaning or meaning families/categories.
+-   **Part-of-Speech (PoS)** \~ Tagging identifies the word classes of words (e.g., noun, adjective, verb, etc.) in a text and adds part-of-speech tags to each word.
+-   **Topic Modeling** \~ Topic Modeling is a machine learning method seeks to answer the question: given a collection of documents, can we identify what they are about? Topic model algorithms look for patterns of co-occurrences of words in documents.
+
+## Methodological notes
+
+This goes beyond my scope, but just to lay out some important elements ust recall
+
+-   **Hermeneutics**: from Greek $ἑρμηνευτική (τέχνη)$ - hermeneutikè (téchne), deriving from the verb $ἑρμηνεύ$ (hermēneuō) - is the science and practice of ***interpretation***. Over history, it has been mainly applied to sacred or juridical texts. Two are the main approaches: 1. reconstructing the original intention of the authors 2. adapting the interpretation based on the person who receives the text
+
+-   **exegesis**: from Greek $ἐξήγησις$ - *exégesis* - deriving from the verb $ἐξηγέομαι$ (*exegéomai, \~ bring out*) - indicates "studying to explain", but referring to the maximum level of depth is seeked (hence it is referred to sacred or normaitive texts for which every nuance can be poignant).
+
+-   **philology**: from Greek $ϕιλολογία$ - *philologĭa* - composed from $φίλος$- *phìlos* and $λόγος$ - *lògos* - indicates literally interest/love for the word/reason. The term indicates the study of texts and their history, but changed a little with the Latin *philologia*, and later embraced the sense of 'love of literature'.
+
+-   **linguistics**
+
+...
+
+## Essential list of rhetorical devices
+
+### Adage
+
+An *adage* is an ancient saying or maxim, brief and sometimes mysterious, that has become accepted as conventional wisdom. In classical rhetoric, an adage is also known as a *rhetorical proverb* or *paroemia*. Often it's a type of metaphor. It can express the values of a culture. [@nordquist_words_2018]
+
+> **Example(s)**: "The early bird gets the worm", "Better late than never."
+
+### Slogan
+
+The English word *slogan* has a Scottish Gaelic origin and derives from the combination of *sluagh* (army) + *gairm* (shout), i.e. a "battle cry". Nowadays, it signifies a short, memorable and concise phrase used for marketing or political campaigns. Marketing slogans are often called *taglines* in the United States
+
+> **Example(s)**: "...", "..."
+
+...
+

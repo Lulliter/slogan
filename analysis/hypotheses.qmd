@@ -1,0 +1,98 @@
+---
+title: "Research Questions & Hypotheses"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 2
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+# Research questions
+
+The **research question** depends (in terms of its nature) on the type of analysis we intend to carry out [See fig 3.9 in @francom_introduction_2024]: 
+
+
+::: {#tbl-analysis-analysis-types tbl-colwidths="[15, 19, 22, 22, 22]"}
+
+| Type | Aims | Approach | Methods | Evaluation |
+|------|------|----------|---------|------------|
+| **Exploratory** | Explore: gain insight | Inductive, data-driven, and iterative | Descriptive, pattern detection with machine learning (unsupervised) | Associative |
+| **Predictive** | Predict: validate associations | Semi-deductive, data-/ theory-driven, and iterative | Predictive modeling with machine learning (supervised) | Model performance, feature importance, and associative |
+| **Inferential** | Explain: test hypotheses | Deductive, theory-driven, and non-iterative | Hypothesis testing with statistical tests | Causal |
+
+Overview of analysis types
+:::
+
+
+### Research question's area \# 1 "EXLORATION"
+
+1. ***Is there a pattern in the WBG project document corpus[^1] that shows non random variation in the incidence of certain policy *concepts*[^2] over time?*** 
+
+[^1]: *WBG project document* observed in this case are Project Development Objectives (PDO) descriptive short texts. 
+[^2]: *concepts* means ....
+
+2. ***Could the WDR [^3] "explain" or at least have a correlation to the appearance-prevalence of said concepts?***  
+
+For the moment, the present study's research aim (See @tbl-analysis-analysis-types) is mainly TO EXPLORE (trends over time in concepts use), and possibly to PREDICT (conjecture about WRD traction effect).
+
+[^3]: *WDRs* are the flagship reports of the World Bank group...
+
+
+# Hypotheses
+
+## RQ \#1.1
+
+The launch of a "policy slogan" carries intrinsic motivations to shift the PDO in a certain direction. 
+
++ **H1**: if WDR mentions a certain concept, I expect it will appear more frequently in the PDO of the subsequne few FY. 
+
+___ 
+
+# Possible (interesting) follow-up
+### Research question's area \# 2 "WHY" 
+
+The important question is ***"WHY" does such a deviation from the original meaning of a word/sentence occur?***. Granted, languages evolve on their own, but it can also be subject to manipulation, as George Orwell's "1984" so powerfully depicted illustrating the rules and purpose of fictional Oceania nation's *newspeak*. The risks connected to this potential abuse of language are clearly laid out by Riccardo Garbini in his "Lessico - Uscire da Babele" [@garbini_uscire_2003, p.4] [^4]\
+<!-- > In alcuni casi la deviazione del significato si evidenzia mediante la soppressione pura e semplice del termine (1984): in tali casi dunque l'analisi non insiste sull'aspetto riduzionista. Le deviazioni, laddove presenti, sono dettate soprattutto da intenti ideologici, ossia dalla sovrapposizione di una griglia interpretativa con maglie piuttosto rigide sui dati oggettivi della realtà. L'effetto della sovrapposizione di questa griglia interpretativa chiamata ideologia risulta in tal modo una riduzione del campo percettivo ed interpretativo della realtà. Per questa ragione le deviazioni semantiche sono state denominate 'riduzionismi'.  -->
+
+[^4]: Annex to the Giuseppe Fioravanti's book [@fioravanti_pedagogia_2006]
+
+> *In some cases the deviation of the meaning is evidenced by the pure and simple suppression of the term (1984): in such cases, therefore, the analysis does not insist on the reductionist aspect. **The deviations, where present, are dictated above all by ideological intentions, that is, by the superimposition of an interpretative grid with rather rigid meshes on the objective data of reality.** The effect of the superimposition of this interpretative grid called ideology thus results in a reduction of the perceptive and interpretative field of reality. For this reason semantic deviations have been called 'reductionisms'.*
+
+### Research question's area \# 3 "HOW" 
+
+Assuming that we may, at least, form hypotheses on why this "reduction" occurs, **"HOW does the the deviation from reality (in the language common use) sparkle and then spread?"** Can we detect the mechanisms? 
+
+### Research question's area \# 4 "WHAT CONSEQUENCES" 
+
+Besides investigating the origin, it would be equally important to ***understand the consequences of a lamented lessical approximation or reduction***.
+
+

@@ -25,22 +25,23 @@ website:
       Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
       [Source code at {{< fa brands github >}}](https://github.com/Lulliter/slogan)
     background: "#e3eff7"
+
   navbar:
     left:
       - text: "Home"
         icon: house-fill # https://icons.getbootstrap.com/?q=home
-        href: index.html
+        href: index.qmd
       - text: "Blog"
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
         href: posts.qmd
       - text: "Text Analytics"
         icon: terminal-fill #  archive-fill # https://icons.getbootstrap.com/?q=home
-        # href: analysis.qmd
+        href: intro_NLP.qmd
+      - text: "WB case study"
+        icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
-          - text: "00 Intro to NLP"
-            href: analysis/00_intro_NLP.qmd
-          - text: "01 Data Sources"
-            href: analysis/01_text_data.qmd
+          - text: "Data form WB case"
+            href: analysis/01_WB_project_data.qmd
           # - text: "01 WDR abstracts' exploration"
           #   href: analysis/01_WDR_abstracs_explor.qmd
           # - text: "02 WDR subjects exploration"
@@ -49,6 +50,35 @@ website:
           #   href: analysis/03_WB_operations_explor.qmd
           # - text: "04 ?? DEscriptive Statistics"
           #   href: analysis/04_desc_stats.qmd
+      - text: "Analysis"
+        icon: clipboard-data-fill
+        file: analysis/hypotheses.qmd
+
+
+  sidebar:
+    - title: "Data"
+      style: docked
+      # background: dark
+      contents:
+        - section: "WB Projects"
+          contents:
+            - analysis/01_WB_project_data.qmd
+        - section: "WB WDR"
+          contents:
+            # - analysis/02_WDR_subjects_explor.qmd
+            # - analysis/03_WDR_abstracs_explor.qmd
+
+    - title: "Analysis"
+      contents:
+        - section: "Questions"
+          contents:
+            - analysis/hypotheses.qmd
+        - section: "Text analysis EDA"
+          contents:
+            - analysis/descr-stats.qmd
+        - section: "Models"
+          contents:
+            - analysis/model-idea.qmd
 
 format:
   html:

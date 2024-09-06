@@ -1,0 +1,248 @@
+---
+title: "?? DEscriptive Statistics"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 2
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+```{r load-libraries-data, message=FALSE, warning=FALSE}
+# Load required packages 
+if (!require("pacman")) install.packages('pacman' )
+pacman::p_load(here, tidyverse, tibble, janitor,
+      #  emo, 
+       readr, 
+       gt,
+       #captioner,
+       knitr, 
+       flextable, # better bc OK in html & word
+       officer, # to save flextable in word
+       shiny, 
+       stringi,
+       wordcountaddin # You may have to download this
+       )  
+
+#pacman::p_load_gh("crsh/citr") # not on CRAN (as of Nov 2021!)
+
+
+# Knitr options
+knitr::opts_chunk$set(
+  echo = FALSE, warning = FALSE, message = FALSE,
+  tidy.opts = list(width.cutoff = 120)#,  # Code width
+  #fig.retina = 3, dpi = conditional_dpi,
+  #fig.width = 7, fig.asp = 0.618,
+  #fig.align = conditional_align, out.width = "100%",
+  #fig.path = "analysis/output/figures/",
+  #cache.path = "analysis/output/_cache/"#,
+  # fig.process = function(x) {  # Remove "-1" from figure names
+  #   x2 = sub('-\\d+([.][a-z]+)$', '\\1', x)
+  #   if (file.rename(x, x2)) x2 else x
+  # }
+)
+```
+# WHY FOCUS ON THE WDRs?
+
+> The yearly World Bank's publication ("World Development Report") has served as one of the principal and most widely read vehicles for encapsulating the Bank's knowledge of and policy recommendations on key development trends." ---Justin Lin, Senior Vice President and Chief Economist, The World Bank [@yusuf_development_2008]
+
+> The intense interest aroused by a paper on global trends and the prospects for developing countries issued in 1974 by Hollis Chenery, the Bank's chief economist, encouraged McNamara to pursue the idea of an annual publication that took the pulse of the international economy, that stimulated the search for answers, and that synthesized the "truth" as it was revealed. Such a book could become a vehicle for the Bank to lead, to propagate its ideas, to mobilize official development assistance, and to win adherence for a renewed push to develop. [@yusuf_development_2008]
+
+# OVERARCHING RESEARCH QUESTION
+
+## What is the purpose of WDRs?
+
+-   
+
+    a)  a trend-follower ("synthesizing the "truth" as it was revealed")? or
+
+-   
+
+    b)  a policy trend-maker ("vehicle for the Bank to lead")
+
+## Is it an observation of what is emerging as important?
+
+> The topics not only provide a window on the Bank's perception of what mattered or matters in the sphere of development at a particular time, but also give an indicator of the current fashions in development econom- ics that are attracting a significant amount of attention from researchers. [@yusuf_development_2008, p.35]
+
+## Or is it a vehicle to push an agenda?
+
+> With the publication of the first of an annual series, the Bank took it upon itself to try to filter and systematize the knowledge on development so as to enhance the operational utility of such knowledge. In producing the WDR, the Bank was not seeking intellectual leadership or attempting to break new ground in the development field. Instead, the WDR was seen as a vehicle for persuading the Bank's member governments to broadly unite behind a strategy and to cooperate in making it succeed. [@yusuf_development_2008, p.34]
+
+> The three best remembered WDRs are those on fertility, on poverty, and on health. + The ***1984 fertility report*** took the previously standard, though even then rapidly fading, view that population growth was indeed a problem for economic development, that more mouths meant less for each (the lump fallacy), and that the "tragedy of the commons" meant that the individual decisions of parents about their fertility were unlikely to lead to good outcomes. [... ] the Bank dropped the issue after the report, and indeed the tide was turning against the international population control movement from the mid-1980s on. Yet much harm had already been done, as documented in Matthew Connelly's (2008) Fatal Misconceptions [...]. + The ***1990 poverty report*** is famous for introducing the international dollar-a-day poverty standard and the associated counts. These counts have continued to date, regularly updated by Martin Ravallion and his team, who were also the original authors. They have had an immense effect on development practice and on development debate, not least through the use of the dollar-a-day standard to define the first of the Millennium Development Goals (MDGs) and the appointment of the Bank as the subsequent scorekeeper. + The ***1993 WDR on health*** is also famous, mostly for its introduction of the disability-adjusted life year (DALY), although this concept and its subsequent sweeping of the world is attributable less to Bank researchers than to Chris Murray, who was a consultant to the WDR. The DALY, like the dollar-a-day standard, has become a central tool of health measurement around the world for computing the burden of disease associated with different conditions, for permitting a combination of mortality and morbidity, and for assigning priorities. But the 1993 WDR, more than any other Bank report, put the Bank on the map as a major player in global health. It is also famous for reputedly persuading Bill Gates that international health was important, certainly an excellent example of the WDR mobilizing global opinion and shaping strategy. [Angus Deaton in @yusuf_development_2008]
+
+... the World Development Indicators (WDI), later spun off into an immensely successful stand-alone product.
+
+## Or both? (or one then the other at different points?)
+
+Both
+
+According to Kemal Derviş, more than politics and political ideology what influenced a lot the WRDs shifting emphasis over time has been academic thinking. [Kemal Derviş in @yusuf_development_2008]
+
+## Is is more about ideas or facts?
+
+Something new in the 1970s (not inundated by facts as we are today),
+
+> the World Bank used its resources and its access to data to generate a decent statistical picture of development. For the first time, many statements on the dynamics of development could be buttressed by facts. For the first time, readers were given a good sense of the magnitudes involved, and this insight was vital for determining the scale of problems and for calibrating policies. In effect, the WDRs helped to make development economics more numerate and altered the nature of discourse. [@yusuf_development_2008, p.37]
+
+Figure \@ref(fig:CommonWordTit) shows ...
+
+# WDRs "winning ideas" over time
+
+## Historical overview 
+
+### [- 50s-70s - post-decolonization world: "growth"]{.underline}
+
+    -   ***industrialization***
+    -   ***capital-output ratio***. How much growth a country derives from each incremental unit of capital is a function of this conversion factor.
+    -   ***two-gap model*****.** it soon became apparent that growth would be constrained not only by the scarcity of domestic capital but also by the paucity of foreign exchange to finance purchases of capital goods and other needed intermediate and consumption goods.
+    -   ***I-O models, turnpike models, "golden rule" models*****,** and other dynamic optimizing models employing mathematical techniques that were borrowed from the engineering sciences
+
+### [- 70s-early80s - economic stagnation in the 1970s and the interrelated oil, financial, and adjustment crises of the early 1980s: "war on poverty"]{.underline}
+
+    -   embedding of ***poverty in the idea of development*****,** making poverty alleviation an inextricable, if not prime, objective of development.
+        -   (poverty became tangible and measured)
+    -   McNamara (1973: 10) warned that "growth is not ***equitably reaching the poor***. And the poor are not significantly contributing to growth." McNamara called for an eradication of absolute poverty by the end of the 20th century, and he indicated that essential to accomplishing this goal would be an *increase in the productivity of **small-scale agriculture***.
+    -   ***basic needs***
+    -   ***pro-poor policies*** (1980 WDR---the Bank's first report on poverty, stressed the importance of managing health, education, and population growth)
+    -   (after second energy shock) ***macroeconomic stability and resource equilibrium***
+    -   ***structural adjustments*** was seen as vital to ridding the economy of many distorting regulatory encrustations, shrinking the state, and (most important) optimizing the allocation of resources by getting the prices right---one of the enduring mantras of the 1980s and emblematic of the notorious "Washington Consensus"
+
+### [- 1980s - pendulum shifts to market-based system that scaled down the role of the state in a globalizing environment]{.underline}
+
+    -   ***market-based economics*** began to dominate, echoing a similar change in mindset among mainstream American academics. *Anne Krueger*, who replaced Hollis Chenery, was a staunch advocate of market solutions, and by prevailing over the views of her peers in the manage- ment group, she hitched the Bank's approach to development firmly to market forces.
+    -   ***Tax and public sector reform*** **and *privatization***, quite suddenly, became immensely popular with policy makers,13 not the least because public sector deficits in some industrial countries made greater revenue effort a matter of urgency.
+    -   ***Freer trade***---already promoted by the Kennedy and Tokyo Rounds and the creation of the General Agreement on Tariffs and Trade---was boosted by the ambitious Uruguay Round launched in 1986
+    -   ***ODA, private resources, FDI***
+
+### [- 1990s - growth and poverty, analyzing them from microeconomic, institutional, and sectoral perspectives]{.underline}
+
+    -   redefining the role of the ***state*** , identifying missing institutions, proposing blueprints for these institutions
+    -   ***regulatory*** responsibilities
+    -   "***50 years is enough***," protests against the Bretton Woods Institutions, civil society
+    _ emphasis shifted to ***micro*** issues (framing and testing of narrow hypotheses and are greatly preoccupied with the minutiae of economic plumbing)
+    -   ***access to knowledge*** ( Stiglitz) - In a globalizing world, information, information technologies, the Internet, and institutions that were transforming the sharing of information had become as intrinsic to growth as physical capital, opening a whole new range of opportunities for developing countries and at the same time bringing them face to face with a fresh sheaf of policy issues.
+    -   1999/00 four major forces---***globalization*** arising from flows of trade, capital, people and ideas; ***climate and environmental changes***; localization stemming from the combined effects of ***fiscal and administrative decentralization***; and ***rapid urbanization***
+    -   PPPs
+    - growth could be made ***environmentally friendly*** (WDRs 1992, 2003, )
+
+### [- 2000s - emphasis on institutions that affect market functioning and the entry, innovativeness, and growth of firms]{.underline}
+
+-   ***governance*** of regulatory bodies
+-   ***information gaps and asymmetries***---the cause of market failures and countless economic ills.
+-   concern over **barriers to the entry and functioning of firms**, created in part by regulations that curtailed competition.
+-   ***investment climate***
+
+## Looking at titles:
+```{r CommonWordTit, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "most_common_word_in_title.png"))
+```
+
+## >>> Looking at subjects 
+
+`01c_WDR_data-exploration_subjects.Rmd` .....
+
+
+# How have WDRs "winning ideas" prevailed over time?
+
+
+## viz x-> Frequency of words within subsets of topics
+
+It could be interesting to verify whether among those WDRs that focused on the same general topic, the choice of words has changed. This seems a perfect application of the "TF-IDF" metrics[^1].
+
+[^1]: The TF-IDF basically finds the important words that distinguish a specific documents within a corpus of related ones. Technically, it is a word frequency that is weighted by decreasing the weight of common words that occur across all documents and increasing the weight for words that are more rare in the collection as a whole.
+
+See figure \@ref(fig:gg_pov_tfidf) for poverty (looking at abstracts) ....
+
+```{r gg_pov_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about poverty", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_pov_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for environment/climate (looking at abstracts)...
+
+```{r gg_env_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about environment/climate", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_env_tfidf.png"))
+```
+
+See figure \@ref(fig:gg_pov_tfidf) for knowledge/data (looking at abstracts)...
+
+```{r gg_knowl_tfidf, fig.cap = "50 highest tf-idf ranked words in WDRs about knowledge/data", fig.topcaption=TRUE}
+knitr::include_graphics(here("analysis", "output", "figures", "gg_knowl_tfidf.png"))
+```
+
+## [viz?] Which words seem are attracted to each other? 
+**Collocations** are words that are attracted to each other (and that co-occur or co-locate together),
+
+```{r gg_colloc_abs, fig.cap = "50 Most most common words in WDR titles", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "abs_bigram_graph.png"))
+```
+
+**Correlations**  
+
+```{r p_ass_words, fig.cap = "Words most correlated to selected words of interest", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ass_words.png"))
+```
+ 
+**Collocation stenght - poverty**  
+```{r p_ass_words_poverty, fig.cap = "Words most correlated to poverty (1/2)", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ass_words_poverty.png"))
+```
+
+**Collocation stenght - poverty**  different way
+```{r p_ggnet_poverty, fig.cap = "Words most correlated to poverty (2/2)", echo=FALSE}
+knitr::include_graphics(here("analysis", "output", "figures", "p_ggnet_poverty.png"))
+```
+
+## [viz?] groups by semantic meaning?
+
+-   can I use any WBG own taxonomy to classify keywords?
+
+## [viz?] frequency of words over time? 
+
+  - time series ? 
+
+## [viz?] matching ideas
+
+-   such as poverty in ? ? ?
+-   environm / climate in ? ? ?
+-   institutions/regul / governance in ? ? ?
+-   state / government ? ? ?
+-   market \| finance \| PPPs \| liberalization & privatization ???
+
+# WHAT EFFECTS (if any) HAVE THE WDRS' POLICY RECOMMENDATIONS HAD ON WORLD BANK LENDING DECISIONS?
+
+## Is there an increaased appearance of certain policies among subsequent years' projects PDOs?
+
+## If yes, for how long? \| With what level of priority?
+
+## When observed is it really something genuine of "xxx-washing"?

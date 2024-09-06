@@ -40,5 +40,23 @@
   },
   "analysis/01_text_data.qmd": {
     "01_text_data.html": "59e454e6"
+  },
+  "analysis/01_WB_project_data.qmd": {
+    "01_WB_project_data.html": "6ebfb158"
+  },
+  "analysis/03_WDR_abstracs_explor.qmd": {
+    "03_WDR_abstracs_explor.html": "f56c233c"
+  },
+  "intro_NLP.qmd": {
+    "intro_NLP.html": "fa0f7b5c"
+  },
+  "analysis/hypotheses.qmd": {
+    "hypotheses.html": "8647fbb4"
+  },
+  "analysis/model-idea.qmd": {
+    "model-idea.html": "d37b92d8"
+  },
+  "analysis/descr-stats.qmd": {
+    "descr-stats.html": "6c5f5cfc"
   }
 }

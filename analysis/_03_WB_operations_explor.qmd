@@ -21,7 +21,7 @@ format:
   html:
     # theme: flatly #spacelab
     code-fold: false # redundant bc echo false 
-    toc-depth: 3
+    toc-depth: 2
     toc_float: true
     toc-location: left
     toc-title: Outline
