@@ -40,34 +40,18 @@ website:
       - text: "WB case study"
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
-          - text: "Data form WB case"
+          - text: "WB projects' PDO data"
             href: analysis/01_WB_project_data.qmd
-          # - text: "01 WDR abstracts' exploration"
-          #   href: analysis/01_WDR_abstracs_explor.qmd
-          # - text: "02 WDR subjects exploration"
-          #   href: analysis/02_WB_operations_explor.qmd
-          # - text: "03 WB Operations exploration"
-          #   href: analysis/03_WB_operations_explor.qmd
-          # - text: "04 ?? DEscriptive Statistics"
-          #   href: analysis/04_desc_stats.qmd
+          # - text: "WDR subjects' data"
+          #   href: analysis/02_WDR_subjects_explor.qmd
+          # - text: "WDR abstracts' data"
+          #   href: analysis/03_WDR_abstracs_explor.qmd
       - text: "Analysis"
         icon: clipboard-data-fill
         file: analysis/hypotheses.qmd
 
 
   sidebar:
-    - title: "Data"
-      style: docked
-      # background: dark
-      contents:
-        - section: "WB Projects"
-          contents:
-            - analysis/01_WB_project_data.qmd
-        - section: "WB WDR"
-          contents:
-            # - analysis/02_WDR_subjects_explor.qmd
-            # - analysis/03_WDR_abstracs_explor.qmd
-
     - title: "Analysis"
       contents:
         - section: "Questions"

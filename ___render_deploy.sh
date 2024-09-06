@@ -40,7 +40,7 @@ git add cv/*
 git add images/*
 git add docs/*
 git add posts/*
-git add analysis/*
+git add data/raw_data/project2/
 git add README*
 git add _extensions/
 =======
@@ -53,7 +53,7 @@ fi
 git commit -m "$msg"
 =======
 
-git commit -m "rid of writing page "
+git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "added analysis/00_intro_NLP.qmd analysis/01_text_data.qmd"

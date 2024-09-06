@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lulliter.github.io/slogan/posts.html</loc>
-    <lastmod>2024-09-06T13:21:57.578Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/data/raw_data/project2/all_projects_as_of29ago2024descr-stats.html</loc>
+    <lastmod>2024-09-06T15:16:39.669Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/index.html</loc>
-    <lastmod>2024-09-06T13:28:28.864Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/01_WB_project_data.html</loc>
-    <lastmod>2024-09-06T14:50:16.027Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/descr-stats.html</loc>
-    <lastmod>2024-09-06T13:24:40.177Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/02_WDR_subjects_explor.html</loc>
-    <lastmod>2024-09-06T13:19:26.590Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/index.html</loc>
-    <lastmod>2024-05-29T10:50:08.025Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/intro_NLP.html</loc>
-    <lastmod>2024-09-06T13:29:44.024Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts/2024-05-29-sviluppo-sostenibile/index.html</loc>
-    <lastmod>2024-08-28T19:06:28.213Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/03_WDR_abstracs_explor.html</loc>
-    <lastmod>2024-09-06T13:19:26.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/04_desc_stats.html</loc>
-    <lastmod>2024-09-06T13:19:26.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/model-idea.html</loc>
-    <lastmod>2024-09-06T13:19:26.596Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/about.html</loc>
+    <lastmod>2024-05-10T09:58:56.620Z</lastmod>
   </url>
   <url>
     <loc>https://lulliter.github.io/slogan/analysis/hypotheses.html</loc>
     <lastmod>2024-09-06T14:56:30.498Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/about.html</loc>
-    <lastmod>2024-05-10T09:58:56.620Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/analysis/model-idea.html</loc>
+    <lastmod>2024-09-06T13:19:26.596Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/04_desc_stats.html</loc>
+    <lastmod>2024-09-06T13:19:26.592Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/03_WDR_abstracs_explor.html</loc>
+    <lastmod>2024-09-06T13:19:26.592Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/posts/2024-05-29-sviluppo-sostenibile/index.html</loc>
+    <lastmod>2024-08-28T19:06:28.213Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/intro_NLP.html</loc>
+    <lastmod>2024-09-06T20:56:21.240Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/index.html</loc>
+    <lastmod>2024-05-29T10:50:08.025Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/02_WDR_subjects_explor.html</loc>
+    <lastmod>2024-09-06T13:19:26.590Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/descr-stats.html</loc>
+    <lastmod>2024-09-06T13:24:40.177Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/01_WB_project_data.html</loc>
+    <lastmod>2024-09-06T15:20:38.795Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/index.html</loc>
+    <lastmod>2024-09-06T13:28:28.864Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/posts.html</loc>
+    <lastmod>2024-09-06T13:21:57.578Z</lastmod>
   </url>
 </urlset>
