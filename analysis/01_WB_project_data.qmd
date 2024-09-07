@@ -54,58 +54,17 @@ p_load(tidyverse,
        fs)
 ```
 
-<!-- #### setup -->
-
-<!-- ```{r setup_inp, echo=FALSE} -->
-<!-- # Pckgs ------------------------------------- -->
-<!-- if (!require ("pacman")) (install.packages("pacman")) -->
-<!-- #p_install_gh("luisDVA/annotater") -->
-<!-- #p_install_gh("HumanitiesDataAnalysis/hathidy") -->
-<!-- # devtools::install_github("HumanitiesDataAnalysis/HumanitiesDataAnalysis")  -->
-<!-- pacman::p_load(here, -->
-<!--        annotater, -->
-<!--        tidyverse,  -->
-<!--        skimr, -->
-<!--        scales, -->
-<!--        httr,  -->
-<!--        citr, -->
-<!--        paint,  -->
-<!--        DT, # an R interface to the JavaScript library DataTables -->
-<!--        # jsonlite,  -->
-<!--        # XML,  -->
-<!--        # xml2,  -->
-<!--        # oai, # R client to work with OAI-PMH  -->
-<!--        splitstackshape #Stack and Reshape Datasets After Splitting Concatenated Values -->
-<!--        ) -->
-
-<!-- pacman::p_load( -->
-<!--   tm, # Text Mining Package -->
-<!--   tidytext, # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools -->
-<!--   widyr, # pairwise ????   -->
-<!--   ggraph, -->
-<!--   igraph, -->
-<!--   sjmisc, # Data and Variable Transformation Functions -->
-<!--   ggraph, # An Implementation of Grammar of Graphics for Graphs and Networks -->
-<!--   widyr, # Widen, Process, then Re-Tidy Data -->
-<!--   SnowballC, # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library -->
-<!--   #HumanitiesDataAnalysis, # Data and Code for Teaching Humanities Data Analysis -->
-<!--   sentencepiece # Text Tokenization using Byte Pair Encoding and Unigram Modelling -->
-<!-- ) -->
-
-<!-- # Function(s) ------------------------------------- -->
-
-<!-- # Data ------------------------------------- -->
-
-<!-- ``` -->
-
-
 ### ----------------------------------------------------------------------------
 
 # Data sources
 
 # WB Projects & Operations
-**World Bank Projects & Operations**: [Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations)
-https://projects.worldbank.org/en/projects-operations/project-search 
+**World Bank Projects & Operations** can be explored at: 
+
+1. [Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations). From which 
+  + [API for projects](https://search.worldbank.org/api/v3/projects) 
+
+2. [Advanced Search](https://projects.worldbank.org/en/projects-operations/project-search) 
 
 -   Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
 
@@ -113,8 +72,7 @@ https://projects.worldbank.org/en/projects-operations/project-search
 
  
 ## Raw data
-I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 09/22/2022 (WDRs go from 1978-2022)
-using this [example url FY 1978/79](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved individual `.xlsx` files in `data/raw_data/projects`
+
 
 <!-- EXE  -->
 <!-- https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0 -->
@@ -122,8 +80,8 @@ using this [example url FY 1978/79](https://projects.worldbank.org/en/projects-o
 
 ### ---------------------------------------------------------------------------
 
-## {Ingest Projects data (via API)}
-
+## Attempt # 1 {Ingest Projects data (via API)}
+ 
 > DOESN'T WORK! 
 
 ```{r}
@@ -189,7 +147,7 @@ lapply(start_year:end_year, function(year) {
  
 
 
-## 1/2 Ingest Projects data (manually split)
+## Attempt # 2.a {Ingest Projects data (manually split)}
 
 I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 09/22/2022 (WDRs go from 1978-2022)
 using this [example url](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved individual `.xlsx` files in `data/raw_data/project`
@@ -249,9 +207,12 @@ str(object = '1973_WB_Projects_1_500')
 ```
 
 
-## 2/2 Ingest Projects data (manually all together)
+## Attempt # 2.b Ingest Projects data (manually all together)!
 
-I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 31/08/2024 using simply the `Excel button` on this page this [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved HUUUGE `.xlsx` files in `data/raw_data/project2/all_projects_as_of29ago2024.xls`
++ I retrieved manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
+
++ then saved HUUUGE `.xls` files in `data/raw_data/project2/all_projects_as_of29ago2024.xls`
+  + (plus a `Rdata` copy of the original file )
 
 ```{r}
 all_projects_as_of29ago2024   <- read_excel("data/raw_data/project2/all_projects_as_of29ago2024.xls", 
@@ -269,6 +230,7 @@ all_proj <- read_excel("data/raw_data/project2/all_projects_as_of29ago2024.xls",
 
 save(all_proj, file = "data/raw_data/project2/all_projects_as_of29ago2024.Rdata")  
 
+rm(all_projects_as_of29ago2024)
 ```
  
 
@@ -284,6 +246,8 @@ skimr::skim(all_proj$closingdate) # complete_rate 0.707
 ```
 
 # Clean all_proj
+
+This data set has a lot of blank values, probably also bc some information was not collected way back in 1947... (e.g. PDO) 
 
 ```{r}
 # Mess of data format weird in different ways in 2 cols: 
@@ -352,6 +316,7 @@ missing_pdo <- all_proj_t %>%
    #select(id, pdo, countryname, projectstatusdisplay, lendinginstr, boardapprovalFY, projectfinancialtype) %>% 
    filter(is.na(pdo))
 
+# Now I compare to get a sense of distribution in all_proj_t v. missing_pdo... 
 tabyl(all_proj_t$projectstatusdisplay) %>%  adorn_pct_formatting()
 tabyl(missing_pdo$projectstatusdisplay) %>%  adorn_pct_formatting()
 
@@ -383,8 +348,8 @@ tabyl(missing_pdo$lendinginstr)  %>% adorn_pct_formatting()  # Specific Investme
 
 Based on some "critical" category, I would say that even if many projects are missing PDO the incidence seems to happen at random, except maybe for `lendinginstr` **specific Investment Loan** are missing PDO in 4928 pr (43.9%). Why? 
 
+https://stackoverflow.com/questions/71608612/how-to-add-keybindings-in-visual-studio-code-for-the-r-terminal
 
-# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
 
 # REDUCED DATASET of PROJECTS 
 For my purposes it is safe to drop all the projects with missing PDO !
@@ -395,14 +360,26 @@ For my purposes it is safe to drop all the projects with missing PDO !
 projs <- all_proj_t %>% 
    filter(!is.na(pdo)) %>% 
    filter(!is.na(projectstatusdisplay)) %>% 
-   filter(boardapprovalFY < 2024 & boardapprovalFY >1972)
+   filter(boardapprovalFY < 2024 & boardapprovalFY >1972)  %>% 
+   select(id, pr_name = project_name, pdo, boardapprovalFY, closingdateFY,status = projectstatusdisplay, regionname, countryname, sector1, theme1 ,
+   lendinginstr,env_cat = envassesmentcategorycode, ESrisk = esrc_ovrl_risk_rate ,curr_total_commitment  )   
 
 
 tabyl(projs$boardapprovalFY)  %>% adorn_pct_formatting() # most NA
-```
 
-### ---------------------------------------------------------------------------
+nrow(projs) # 8836 
+paint(cnames) 
+paint(projs) 
+```
  
+
+# _______ 
+# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
+rivedere cos'avevo fatto x pulire in `analysis//03_WDR_abstracs_explor.qmd` 
+
+
+# _______ 
+
 # World Development Reports (WRDs)
 
 -   DATA <https://datacatalog.worldbank.org/search/dataset/0037800>
