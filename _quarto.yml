@@ -41,11 +41,7 @@ website:
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
           - text: "WB projects' PDO data"
-            href: analysis/01a_WB_project_data.qmd
-          # - text: "WDR subjects' data"
-          #   href: analysis/02_WDR_subjects_explor.qmd
-          # - text: "WDR abstracts' data"
-          #   href: analysis/03_WDR_abstracs_explor.qmd
+            href: analysis/01_WB_project_data.qmd
       - text: "Analysis"
         icon: clipboard-data-fill
         file: analysis/hypotheses.qmd

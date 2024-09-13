@@ -43,6 +43,12 @@ git add posts/*
 git add data/raw_data/project2/
 git add README*
 git add _extensions/
+
+
+git add analysis/01a_WB_project_data.qmd
+        analysis/01b_WB_WDR_data.qmd
+ git add       docs/analysis/01a_WB_project_data.html
+        docs/analysis/01b_WB_WDR_data.html
 =======
 # Create Std commit "message"....
 msg="rebuilt on `date`"
@@ -81,4 +87,5 @@ Rscript R/salvo_output_li.R
 # add .env file to .gitignore
 echo "accident.txt" >> .gitignore
 # tell Git NOT to track this file (it gets removed from the index, but stays local system)
-git rm --writings/zzzz_old/
+git rm --cached ./analysis/01b_WB_WDR_data.qmd
+git rm analysis/01b_WB_WDR_data.qmd
