@@ -61,5 +61,11 @@
   },
   "data/raw_data/project2/all_projects_as_of29ago2024descr-stats.md": {
     "all_projects_as_of29ago2024descr-stats.html": "0a4cbf54"
+  },
+  "analysis/01a_WB_project_data.qmd": {
+    "01a_WB_project_data.html": "ad98fd65"
+  },
+  "analysis/01b_WB_WDR_data.qmd": {
+    "01b_WB_WDR_data.html": "5741adbc"
   }
 }

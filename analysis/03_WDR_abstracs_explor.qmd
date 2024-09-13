@@ -199,6 +199,8 @@ mutate (word = SnowballC::wordStem(word ))
 
 ## II) Data (ingestion), loading & cleaning
 
+<!-- AS OF 2024 THIS DOESN'T WORK ANYMORE !!!! (BROKEN WBG LINKS ) -->
+
 Ingestion of WDR **basic metadata** was done in `./_my_stuff/WDR-data-ingestion.Rmd` and the result saved as `./data/raw_data/WDR.rds` \<-- (Being somewhat computational intensive, I only did it once.)
 
 > 
@@ -490,8 +492,6 @@ Here’s the general process for tagging (or “annotating”) text with the cle
       + `cnlp_init_corenlp()`: Use Stanford’s NLP library (if you’ve installed it on your computer with Java)
    3. Feed the data frame from step 1 into the cnlp_annotate() function and wait.
    4. Save the tagged data on your computer so you don’t have to re-tag it every time.
-
-
 
 
 # III) ABSTRACTS
