@@ -76,7 +76,6 @@ quarto publish quarto-pub 10_Validazione.qmd   # Published at https://lulliter.q
 # PRIMA CHIUDO TUTTO WORD
 Rscript R/salvo_output_li.R
 
-
 #=========================================== (IGNORE a file accidentally committed in the past) ================================================#
 # add .env file to .gitignore
 echo "accident.txt" >> .gitignore
