@@ -135,6 +135,15 @@ cnlp_init_udpipe(model_name = "english")
 pdo_train_t <- readRDS(here::here("data" , "derived_data", "pdo_train_t.rds"))
 ```
 
+### Important mod
+```{r}
+# Ensure token_id is numeric
+pdo_train_t <- pdo_train_t %>% 
+  mutate(tid = as.numeric(tid))  # Convert token_id to numeric
+
+```
+
+
 ## Explain Tokenization and PoS Tagging
 
 ### i) Tokenization
@@ -320,6 +329,10 @@ f_save_plot <- function(plot_name, plot_object) {
 
 ```
  
+
+## Term frequency
+
+ 
 ### [FIG] Overall `token` freq ggplot
 + Without "project" "develop","objective"  
  
@@ -362,7 +375,7 @@ f_save_plot("proj_wrd_freq", proj_wrd_freq)
 
 # Evaluate the title with glue first
 title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$boardapprovalFY)} and {max(pdo_train_t$boardapprovalFY)}") 
-
+# Plot
 proj_stem_freq <- pdo_train_t %>%   # 256,632
    filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
    filter (!(relation %in% c("nummod" ))) %>% # 173,686 
@@ -385,76 +398,71 @@ f_save_plot("proj_stem_freq", proj_stem_freq)
 ```
 Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800.
 
-# _______ 
-
-# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
-Main ref https://www.nlpdemystified.org/course/advanced-preprocessing 
-rivedere cos'avevo fatto x pulire in `analysis//03_WDR_pdotracs_explor.qmd` 
-https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns
-https://guides.library.upenn.edu/penntdm/r
-https://smltar.com/stemming#how-to-stem-text-in-r `BOOK STEMMING`
-
-# _______ 
-
+## Sector-related term frequency
 
 
 ### Isolate SECTOR words and see frequency over years
 
 To try and make it a bit more meaningful, we can look at the frequency of the most common words in related to SECTORs. 
 
-I also create a "boad sector" variable to group the sectors in broader definitions:
+I also created a *"broad sector" variable* to group the sectors in broader definitions:
 
-+ water = water, wastewater, sanitation
-+ transport = transport, railway, road, airport, port
-+ energy = energy, electricity, hydroelectric, hydropower, renewable, transmission
-+ health = health, hospital, medicine, drugs, epidemic, pandemic, covid-19, vaccine
++ **WATER** = water, wastewater, sanitation
++ **TRANSPORT** = transport, railway, road, airport, port
++ **URBAN** = urban
++ **ENERGY** = energy, electricity, hydroelectric, hydropower, renewable, transmission
++ **HEALTH** = health, hospital, medicine, drugs, epidemic, pandemic, covid-19, vaccine
++ **EDUCATION** = education, school, vocational, teach, university, student, literacy, training, curricul 
  
-... P123322
-
 ```{r}
 pdo_train_t <- pdo_train_t %>%
    # dealing with water/watershed/waterway
-   mutate(token_l_broad = case_when(
-      str_detect(token_l, "water|wastewater|sanitat") ~ "water",
-      str_detect(token_l, "transport|railway|road|airport") ~ "transport",
-      token_l == "port" ~ "transport",
-      str_detect(token_l, "urban") ~ "urban",
-      str_detect(token_l, "energ|electri|hydroele|hydropow|renewable|transmis") ~ "energy",  # Matches either "energy" or "power"
-      str_detect(token_l, "health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin") ~ "health",
+   mutate(tok_sector_broad = case_when(
+      str_detect(token_l, "water|wastewater|sanitat") ~ "WATER",
+      str_detect(token_l, "transport|railway|road|airport") ~ "TRANSPORT",
+      token_l == "port" ~ "TRANSPORT",
+      str_detect(token_l, "urban") ~ "URBAN",
+      str_detect(token_l, "energ|electri|hydroele|hydropow|renewable|transmis") ~ "ENERGY",  # Matches either "energy" or "power"
+      str_detect(token_l, "health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin") ~ "HEALTH",
+      str_detect(token_l, "educat|school|vocat|teach|univers|student|literacy|training|curricul") ~ "EDUCATION",
       TRUE ~ NA_character_)) %>% 
-   relocate(token_l_broad, .after = token_l) # move the new column to the right of token_l
+   relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
 ```
 
-
+#### [FIG] By sector (`tok_sector_broad`) freq ggplot
 ```{r}
 #| output: TRUE
 
-# prepare data for plotting
+# prepare data for plotting (count)
 sector_broad <- pdo_train_t %>% 
-   filter(!is.na(token_l_broad)) %>% 
-   count(FY_appr, token_l_broad) %>% 
+   filter(!is.na(tok_sector_broad)) %>% 
+   count(FY_appr, tok_sector_broad) %>% 
    filter(n > 0) %>% 
-   mutate(token_l_broad = factor(token_l_broad, levels = c("water", "transport", "urban", "energy", "health"))) # reorder values by frequency
+   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c("WATER", "TRANSPORT", "URBAN", "ENERGY", "HEALTH", "EDUCATION"))) # reorder values by frequency
 #df$FY
+
+# Evaluate the title with glue first
+title_text <- glue::glue("Sector words frequency in PDO over Fiscal Years between FY {min(pdo_train_t$boardapprovalFY)} and {max(pdo_train_t$boardapprovalFY)}") 
+# Plot
 
 # plot
 proj_sect_broad_fr <-  ggplot(data = sector_broad, 
                               aes(x = FY_appr, y = n, 
-                                  group = token_l_broad, color = token_l_broad)) +
+                                  group = tok_sector_broad, color = tok_sector_broad)) +
    geom_line() +
    geom_point() +
-   scale_x_continuous(breaks =  seq(2001, 2023, by=  2)) +
+   scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
    scale_color_viridis_d(option = "magma", end = 0.9) + 
-   facet_wrap(~token_l_broad, ncol = 2, scales = "free")+   guides(color = FALSE) +
+   facet_wrap(~tok_sector_broad, ncol = 2, scales = "free")+   guides(color = FALSE) +
    theme_bw()+
    theme(# Adjust angle and alignment of x labels
       axis.text.x = element_text(angle = 45, hjust = 1)) + 
    labs(title = "Sector words frequency in PDO over Fiscal Years",
         subtitle = "[Using \"custom\" broad sector definition]",
-        x =   "Board approval FY", y = "Counts of 'sector' word (token_l_broad)") + 
-   geom_vline(data = subset(sector_broad, token_l_broad == "health"), aes(xintercept = 2020), 
+        x =   "Board approval FY", y = "Counts of 'sector' word (tok_sector_broad)") + 
+   geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), aes(xintercept = 2020), 
               linetype = "dashed", color = "#9b6723") +
-   geom_text(data = subset(sector_broad, token_l_broad == "health"), 
+   geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
              aes(x = 2020, y = max(sector_broad$n)*0.75, label = "Covid"), 
              angle = 90, vjust = -0.5, color = "#9b6723")
 
@@ -466,44 +474,103 @@ proj_sect_broad_fr
 f_save_plot("proj_sect_broad_fr", proj_sect_broad_fr)
 ```
 
-### Isolate INSTITUTIONAL words and see frequency over years
+#### [...] Check (by sector) why peaks. 
+
+For the (broadly defined) health sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. What about the other sectors? (they all seem to have at least 1 evident peak)
+  
+#### --- I could see if corresponds to sector flags
+
+#### --- I could see if corresponds to any WDR publications
+
+## Institution-related BIGRAM frequency
+
+### Isolate INSTITUTIONs words and see frequency over years
+
+Things to keep in mind: 
+
++ "government" may be referred to the subject/counterpart of the project (e.g. "government of Mozambique")
++ "private" is not necessarily referred to the "private sector" (e.g. "private households")
++ "public" is not necessarily referred to the "public sector" (e.g. "public health")
+
+So, I will try to find consecutive bigrams "public sector" and "private sector" to get an indicative frequency of these terms. 
+
+#### Create bigrams 
+
+> Here I use [`clnp_annotate()` output + ] `dplyr` to combine consecutive tokens into bigrams.
+
+```{r}
+# Create bigrams by pairing consecutive tokens by sentence ID and their token IDs
+bigrams <- pdo_train_t %>%
+   # keeping FY with tokens
+   group_by(FY_appr, proj_id, pdo, sid ) %>%
+   arrange(tid) %>%
+   # Using mutate() and lead(), we create bigrams from consecutive tokens 
+   mutate(next_token = lead(token), 
+          bigram = paste(token, next_token)) %>%
+   # only includes the rows where valid bigrams are formed
+   filter(!is.na(next_token)) %>%
+   ungroup() %>%
+   arrange(FY_appr, proj_id, sid, tid) %>%
+   select(FY_appr,proj_id, pdo,sid, tid, token, bigram) 
+```
+
+```{r}
+# most frequent bigrams 
+count_bigram <- bigrams %>% 
+   count(bigram, sort = TRUE)  
+
+```
+
+
+#### [FIG] Bigrams ("public sector", "private sector") freq ggplot
+```{r}
+
+# Filter for the specific bigrams "public sector" and "private sector"
+bigrams_pub_priv_sec <- bigrams %>%
+   filter(bigram %in% c("public sector", "private sector"))
+
+# Display the result
+#bigrams_pub_priv_sec
+
+# prepare data for plotting (count)
+sector_bigr_df <- bigrams_pub_priv_sec %>% 
+   count(FY_appr, bigram) %>% 
+   # reorder values by frequency
+   mutate(bigram = factor(bigram, levels = c("public sector", "private sector")))
+```
 
 
 ```{r}
-#| eval: false
-#| output: false
-#| echo: true
+#| output: true
 
-df <- pdo_train_t %>%
-   mutate (stem = if_else (stem == "sme" | stem ==  "msme" , "sme-msme", stem)) %>%
-   filter (stem %in% c( "public","privat", "govern","ngo", "enterpris", "sme-msme")) %>%
-   mutate (FY = boardapprovalFY) %>%
-   # group_by(FY) %>% 
-   #summarize (n_rep = length(stem)) %>%
-   count(FY,  stem)  
-   
+# ---- Prepare data for plotting
+# Evaluate the title with glue first
+title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over Fiscal Years between FY {min(sector_bigr_df$FY_appr)} and {max(sector_bigr_df$FY_appr)}") 
 
-#df$FY
+two_col_contrast <- c( "#005ca1",  "#e60066" )
 
-proj_inst_stem_fr <-  ggplot(data = df, aes(x = FY, y = n, group = stem, color = stem)) +
+# Create a named vector for the legend labels with totals in a single pipeline
+legend_labels <- sector_bigr_df %>%
+   group_by(bigram) %>%
+   # Calculate total counts for each bigram
+   summarize(total_n = sum(n)) %>% 
+   # Append totals to bigram names
+   mutate(label = paste0(bigram, " (", total_n, ")")) %>%  
+   # Create a named vector with bigram as names and labels as values
+   {setNames(.$label, .$bigram)} # curly braces {} in a dplyr pipeline using . as ouptu from previous..
+
+# ---- Plot
+inst_bigr_fr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bigram, color = bigram)) +
    geom_line() +
    geom_point() +
-   scale_x_continuous(breaks =  seq(2001, 2023, by=  2)) +
-   scale_color_viridis_d(option = "magma", end = 0.9) + 
-   # Reorders the stem variable based on the total count (n), with .desc = TRUE to order from highest to lowest
-   facet_wrap(~ fct_reorder(stem, n, .fun = sum, .desc = TRUE), ncol = 2, scales = "free_y") +
-   guides(color = FALSE) +
-   theme_bw()+
-   theme(# Adjust angle and alignment of x labels
-      axis.text.x = element_text(angle = 45, hjust = 1)) + 
-   labs(title = "Sector words frequency in PDO over Fiscal Years",x =   "Board approval FY", y = "Counts of 'sector' word (stem)")  # + 
-# geom_vline(data = subset(df, stem == "health"), aes(xintercept = 2020), 
-#            linetype = "dashed", color = "#9b6723") +
-# geom_text(data = subset(df, stem == "health"), aes(x = 2020, y = max(df$n)*0.85, label = "Covid"), 
-#           angle = 90, vjust = -0.5, color = "#9b6723")
+   scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+   scale_color_manual(values = two_col_contrast, 
+                      labels = legend_labels) +  # Use modified labels
+   theme_bw() +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+   labs(title = title_text, x = "Board approval FY", y = "Counts of bigrams", color = "bigram")
 
-
-proj_inst_stem_fr
+inst_bigr_fr
 ```
 
 ```{r}
@@ -511,17 +578,42 @@ proj_inst_stem_fr
 #| output: false
 #| echo: true
 
-
-f_save_plot("proj_inst_stem_fr", proj_inst_stem_fr)
+# Save the plot
+f_save_plot("inst_bigr_fr", inst_bigr_fr)
 ```
 
 
+> Note: these are much less common than the single words.
 
 
+# _______ 
+# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
+Main ref https://www.nlpdemystified.org/course/advanced-preprocessing 
+rivedere cos'avevo fatto x pulire in `analysis//03_WDR_pdotracs_explor.qmd` 
+https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns
+https://guides.library.upenn.edu/penntdm/r
+https://smltar.com/stemming#how-to-stem-text-in-r `BOOK STEMMING`
+# _______ 
 
-## Term frequency
 
+#### ... [FIG] Most frequent bigrams ggplot
+ 
++ development objective
++ development objectives
++ Project Development
++ private sector ~ 200 
++ institutional capacity
++ service delivery
++ improve access
++ Development Objectives
++ water supply
++ proposed project
++ public sector ~ 150 
++ climate change
++ investment climate
 
+#### ... [FIG] Notable bigrams (climate change)!
+ 
 
 
  

@@ -39,8 +39,9 @@ git add -u # tracked
 git add cv/*
 git add images/*
 git add docs/*
-git add posts/*
+git add analysis/*
 git add data/raw_data/project2/
+git add data/derived_data/*
 git add README*
 git add _extensions/
 =======
@@ -52,7 +53,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-
+git commit -m "chgd analysis/01b_WB_project_pdo_anal.qmd & _NO Q RENDER!_ analysis/_01a_WB_project_pdo_prep.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

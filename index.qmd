@@ -1,26 +1,70 @@
 ---
-title: "Motivation"
-date: last-modified
-date-format: "dddd MMM D, YYYY"
+#title: "Motivation"
+#date: last-modified
+#date-format: "dddd MMM D, YYYY"
 bibliography: bib/slogan.bib
 ---
 
-## At the core of reduction
+# Motivation
 
-I was really struck the first time I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it revolved around prayer and not fitness!
+Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the power of **phrases** and **slogans**, and observed how they suddenly appear in the policy discourse, and -- at least for some time -- take the center stage.  
+Furthermore, in the institutions I have worked for (World Bank, Inter-American Development Bank, G20, the EU, and the Italian Government), catch-phrases and slogans end up mobilizing sizable funding decisions, thus determining which policies or programs will get prioritized.  
 
-I have seen this same dynamic (the meaning of words/phrases progressively detaching from the reality or from their originally intended purpose) at work also in the field of public policy, so I decided to dig deeper.
+## Examples of slogans ins the development economics arena
 
-In fact, quoting Giovanni Gentile's "Sommario di pedagogia come scienza filosofica": *"Language is not a garment of thought: it is its own body"* [@garbini_uscire_2003, p3], i.e. language does not merely communicate our ideas to others, but it is also the tool of our thought, the wings for it to fly. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --> D'Auria put it in another way [@dauria_tua_2024], asserting that language is *"performative"*, in that it colors, deforms, produces reality. For this reason, it is necessarily a divisive instrument because, as soon as it is able to categorize, it is also capable of separating (good from bad, truth from lie, etc.). Knowledge itself, as much as it may scare the proponents of political correctness, lives on categories and categories, including linguistic ones, must precisely distinguish and correctly identify the ontological characteristics of what we are talking about.
+Just to stick to a sector I am familiar with, in the field of development economics, we have seen the rise of slogans such as:
 
-## Issues of modern English
+**FUNDING AID** 
 
-Below is the list of *red flags* detected in Orwell's "Politics and the English Language"[@orwell_politics_1946]:
++ Boost shared prosperity
++ Maximizing Finance for Development (MFD)
++ Program for Results (PforR)
++ Results-Based Financing (RBF) / Results-Based Aid (RBA)
+<!-- + Cash on Delivery Aid -->
+<!-- + Evidence-based policy -->
+<!-- + Private sector engagement -->
+<!-- + Public-Private Partnerships (PPPs) -->
+<!-- + Blended finance -->
 
--   **Dying metaphors**, or worn−out metaphors which have lost all evocative power and are merely used because they save people the trouble of inventing phrases for themselves. <!-- GGentile la prima e piu evidente originalita del genio e' la potenza plasmatrice che egli possiede di quel che si dice il materiale linguistico -->
--   **Operators, or verbal false limbs**, which save the trouble of picking out appropriate verbs and nouns, and at the same time pad each sentence with extra syllables which give it an appearance of symmetry. Characteristic phrases are: render inoperative, militate against, prove unacceptable, make contact with, be subjected to, give rise to, give grounds for, having the effect of, play a leading part (role) in, make itself felt, take effect, exhibit a tendency to, serve the purpose of, etc.
--   **Pretentious diction** (used to dress up simple statements and give an air of scientific impartiality to biased judgments), foreign words and expressions, jargon 
--   **Meaningless words**, as in certain kinds of writing, particularly in art criticism and literary criticism, where they not only do not point to any discoverable object, but are hardly even expected to do so by the reader (like romantic, plastic, values, human, dead, sentimental, natural, vitality), it is normal to come across long passages which are almost completely lacking in meaning. Many political words are similarly abused: The words democracy, socialism, freedom, patriotic, realistic, justice, have each of them several different meanings which cannot be reconciled with one another. ***Words of this kind are often used in a consciously dishonest way. That is, the person who uses them has his own private definition, but allows his hearer to think he means something quite different.***
+**INCLUSION** 
+
++ South-South Cooperation
++ Gender Mainstreaming
++ Leave No One Behind (EU)
+<!-- + Inclusive Growth -->
+<!-- + Focus on the "bottom billion" -->
+<!-- + End extreme poverty -->
+
+**SUSTAINABILITY, ENVIRONMENT** 
+
++ Sustainable Development / Sustainable Development Goals (SDGs)
++ Environmental, social, and governance (ESG)
++ Mainstreaming climate action
++ 3 zeros (0 poverty, 0 net carbon emissions, 0 net loss of natural capital)
++ Green, Resilient, and Inclusive Development (GRID)
++ Build Back Better
+<!-- + Green growth / Green economy -->
+<!-- + Blue Economy -->
+<!-- + Green, Digital, and Fair  -->
+<!-- + Green and grey infrastructure -->
+<!-- + Circular Economy -->
+
+
+## The curious case of lexical reduction/modification/domestication
+
+Another element that makes this investigation even more intriguing (as it occurs also in the field of public policy) is that, often, the meaning of words/phrases progressively detaches from reality and/or from their originally intended meaning, where some "revised meaning" (more or less explicit) starts to live journey of its own.  
+For example, I was really struck the first time I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation used in 1861 by the Englishman John Hulley, as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the statement has quite a different meaning than its widely used shortened version: for one thing, it revolved around prayer and not fitness!
+
+This phenomenon is clearly relevant and consequence-ridden if, as Giovanni Gentile pointed out in "Sommario di pedagogia come scienza filosofica", *"Language is not a garment of thought: it is thought's own body"* [@garbini_uscire_2003, p3], i.e. language does not merely communicate our ideas to others, but it is also the tool of our thought, it provides wings for it to fly. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --> D'Auria put it in another way [@dauria_tua_2024], asserting that language is *"performative"*, in that it colors, deforms, produces reality. For this reason, it is necessarily a divisive instrument because, as soon as it is able to categorize, it is also capable of separating (good from bad, truth from lie, etc.). Knowledge itself, as much as it may scare the proponents of political correctness, lives on categories and categories, including linguistic ones, must precisely distinguish and correctly identify the ontological characteristics of what we are talking about.
+
+<!-- ## Issues of modern English -->
+
+<!-- Below is the list of *red flags* detected in Orwell's "Politics and the English Language"[@orwell_politics_1946]: -->
+
+<!-- -   **Dying metaphors**, or worn−out metaphors which have lost all evocative power and are merely used because they save people the trouble of inventing phrases for themselves. <!-- GGentile la prima e piu evidente originalita del genio e' la potenza plasmatrice che egli possiede di quel che si dice il materiale linguistico --> 
+<!-- -   **Operators, or verbal false limbs**, which save the trouble of picking out appropriate verbs and nouns, and at the same time pad each sentence with extra syllables which give it an appearance of symmetry. Characteristic phrases are: render inoperative, militate against, prove unacceptable, make contact with, be subjected to, give rise to, give grounds for, having the effect of, play a leading part (role) in, make itself felt, take effect, exhibit a tendency to, serve the purpose of, etc. -->
+<!-- -   **Pretentious diction** (used to dress up simple statements and give an air of scientific impartiality to biased judgments), foreign words and expressions, jargon  -->
+<!-- -   **Meaningless words**, as in certain kinds of writing, particularly in art criticism and literary criticism, where they not only do not point to any discoverable object, but are hardly even expected to do so by the reader (like romantic, plastic, values, human, dead, sentimental, natural, vitality), it is normal to come across long passages which are almost completely lacking in meaning. Many political words are similarly abused: The words democracy, socialism, freedom, patriotic, realistic, justice, have each of them several different meanings which cannot be reconciled with one another. ***Words of this kind are often used in a consciously dishonest way. That is, the person who uses them has his own private definition, but allows his hearer to think he means something quite different.*** -->
 
 <!-- > Ma si possono riscontrare anche -->
 <!-- > -->
@@ -29,3 +73,15 @@ Below is the list of *red flags* detected in Orwell's "Politics and the English 
 
 <!-- > lo stesso linguaggio burocratico, che permea la scuola statale (impropriamente detta 'pubblica') italiana odierna, come diretta conseguenza dell'ideologia statalista presenta una forma che è «astratta, solenne, tecnicizzata, in funzione del prestigio e del potere che detiene il diffusore del messaggio. Da questa prassi consegue una sclerosi del pensiero che si sorregge sui trampoli di locuzioni fruste e cristallizzate. Ufficialità, reticenza e straniamento sono i caratteri che il messaggio assume nell'esercizio del potere. [@garbini_uscire_2003, p5] -->
 
+## So what?
+
+In sum, for a while now I have wondered *why* and *by which mechanisms* such phrases/slogans/acronyms become so prevalent in a given forum at some specific point in time. The problem is that if you are (as I always was) just a small cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process. Therefore, I decided to investigate this phenomenon with a "reverse engineering" approach, starting from the *corpora* of documents themselves to see if I could identify some patterns or trends over time.
+
+### Why focus on the World Bank?
+
+The World Bank simply represents a convenient "learning case" for me because:
+
+1. Its documents (related to lending projects and other publications) are widely available and openly accessible.
+2. The Bank has a long history and a vast amount of public digitized documents, which allows for a longitudinal analysis.
+3. The Bank's sectorial and thematic coverage is very broad, which allows for an interesting analysis.
+4. I am familiar with the Bank's documents' nature, structure and jargon, having worked there for several years.
