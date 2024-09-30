@@ -758,6 +758,16 @@ pdo_train_t <- pdo_train_t %>%
 
 ```
 
+### Important mod
+```{r}
+# Ensure token_id is numeric
+pdo_train_t <- pdo_train_t %>% 
+  mutate(tid = as.numeric(tid))  # Convert token_id to numeric
+
+```
+
+
+
 # Save clean Proj PDO train dataset `pdo_train_t`
 
 ```{r}

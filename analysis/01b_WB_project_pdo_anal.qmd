@@ -38,6 +38,11 @@ bibliography: ../bib/slogan.bib
 
 <i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
 
+<!-- In this file I address the **research question 1.1.**, which is exploratory in nature. The hypothesis being tested here is that the WBG project document corpus shows a non-random variation in the incidence of certain policy concepts over time.  -->
+
+<!-- + This question will be handled in a data-driven way, i.e. starting from the data and not from preconceived ideas...  -->
+<!--    + (i.e. I see that after 2020, the word "pandemic" and "vaccine" peaks within PDOs' texts, so I will look for a correlation with the COVID-19 pandemic shock, instead of the other way around). -->
+
 # Set up
 ```{r}
 # Pckgs -------------------------------------
@@ -56,8 +61,8 @@ library(cleanNLP) # A Tidy Data Model for Natural Language Processing
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
 ```
 
+::: {.callout-note collapse='true'}
 #### --- Note on `cleanNLP` package
-
 `cleanNLP` supports multiple *backends for processing text*, such as `CoreNLP`, `spaCy`, `udpipe`, and `stanza.` Each of these backends has different capabilities and might require different initialization procedures.
 
 + `CoreNLP` ~ powerful Java-based NLP toolkit developed by Stanford, which includes many linguistic tools like tokenization, part-of-speech tagging, and named entity recognition. 
@@ -97,11 +102,17 @@ cnlp_init_udpipe(model_name = "english")
 
 ```
 
+
+:::
+
+
+
+
 ### ----------------------------------------------------------------------------
 
 # Data sources
 
-# WB Projects & Operations
+# WB Projects & Operations [CHECK 🔴]
 **World Bank Projects & Operations** can be explored at: 
 
 1. [Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations). From which 
@@ -116,6 +127,7 @@ cnlp_init_udpipe(model_name = "english")
 ### ---------------------------------------------------------------------------
  
 # Load pre-processed Projs' PDO dataset `pdo_train_t`
+Syntactic annotation is a computationally expensive operation, so I don't want to repeat it every time I restart the session.  
 
 ## [Saved file `projs_train_t` ]
 
@@ -140,15 +152,16 @@ pdo_train_t <- readRDS(here::here("data" , "derived_data", "pdo_train_t.rds"))
 # Ensure token_id is numeric
 pdo_train_t <- pdo_train_t %>% 
   mutate(tid = as.numeric(tid))  # Convert token_id to numeric
-
 ```
 
 
 ## Explain Tokenization and PoS Tagging
 
 ### i) Tokenization
-Where a word is more abstract, a **“type”** is a concrete term used in actual language, and a **“token”** is the particular instance we’re interested in (e.g. abstract things (‘wizards’) and individual instances of the thing (‘Harry Potter.’).
-Breaking a piece of text into words is thus called **“tokenization”**, and it can be done in many ways. 
+Breaking units of language into components relevant for the research question into components relevant for the research question is called **“tokenization”**. 
+Components can be `words`, `ngrams`, `sentences`, etc. or combining smaller units into larger units.
+
++ Tokenization is a `row-wise` operation: it changes the number of rows in the dataset.
 
 ###  The choices of tokenization
 
@@ -164,10 +177,11 @@ Breaking a piece of text into words is thus called **“tokenization”**, and i
 > for the moment I keep all as conservatively as possible 
 
 ### ii) Pos Tagging
-Classifying noun, verb, adjective, etc. can help discover *intent* or *action* in a sentence, or scanning "verb-noun" *patterns.*
-Here I have a training dataset file with:
- 
+Linguistic annotation is a common for of **enriching** text data, i.e. adding information about the text that is not directly present in the text itself.
 
+Upon this, e.g. classifying noun, verb, adjective, etc., one can discover *intent* or *action* in a sentence, or scanning "verb-noun" *patterns.*
+
+Here I have a training dataset file with:
 ```{r}
 #| eval: true
 #| output: true
@@ -234,6 +248,9 @@ upos_t <- tabyl(pdo_train_t, upos) %>%
 kableExtra::kable(upos_t)
 ```
 
+::: {.callout-warning collapse='true'}
+On random visual check, these are not always correct, but they are a good starting point for now.
+::: 
 
 ### iii) Make low case 
 ```{r}
@@ -243,28 +260,136 @@ pdo_train_t <- pdo_train_t %>%
    select(-token_with_ws) %>%
   #Replace variations of "hyphenword" with "-"
   mutate(
-    lemma = str_replace_all(lemma, regex("hyphenword|hyphenwor", ignore_case = TRUE), "-")
-  ) %>%
-   mutate(stem = wordStem(token_l)) %>%
-   relocate(stem, .after = lemma)
+    lemma = str_replace_all(lemma, regex("hyphenword|hyphenwor", 
+                                         ignore_case = TRUE), "-")
+  )
 ```
 
 
 
-#### iv) Stemming 
+### iv) Stemming 
+Using `SnowballC::wordStem` to stem the words. e.g.
+
+```{r}
+pdo_train_t <- pdo_train_t %>% 
+   mutate(stem = SnowballC::wordStem(token_l)) %>%
+   relocate(stem, .after = lemma)
+```
+
+***Why Stemming?***: For example, in topic modeling, *stemming* reduces noise by making it easier for the model to identify core topics without being distracted by grammatical variations. (*Lemmatization* is more computationally intensive as it requires linguistic context and dictionaries, making it slower, especially on large datasets)
+
+| **Token**       | **Lemma**                              | **Stem**|
+|-----------------|----------------------------------------|---------|
+| development     | development                            | develop |
+| quality         | quality                                | qualiti |
+| high-quality    | high-quality                           | high-qual|
+| include         | include                                | includ  |
+| logistics       | logistic                               | logist  |
+| government/governance | Governemnt/government/governance | govern  |
+
+> NOTE: Among `word` / `stems` encountered in PDOs, there are a lot of acronyms which may refer to World Bank lingo, or local agencies, etc... Especially when looked at in low case form they don't make much sense... 
 
 
+### v) Document-term matrix or TF-IDF
+
+> The tf-idf is the product of the term frequency and the inverse document frequency::
+
+$$
+\begin{aligned}
+tf(\text{term}) &= \frac{n_{\text{term}}}{n_{\text{terms in document}}} \\
+idf(\text{term}) &= \ln{\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)} \\
+tf\text{-}idf(\text{term}) &= tf(\text{term}) \times idf(\text{term})
+\end{aligned}
+$$
+
+### --- My own `custom_stop_words` |
+Remove stop words, which are the most common words in a language. 
+
++ but I don't want to remove any *meaningful* word for now
+
+```{r}
+# Custom list of articles, prepositions, and pronouns
+custom_stop_words <- c(
+   # Articles
+   "the", "a", "an",   
+   "and", "but", "or", "yet", "so", "for", "nor", "as", "at", "by", "per",  
+   # Prepositions
+   "of", "in", "on", "at", "by", "with", "about", "against", "between", "into", "through", 
+   "during", "before", "after", "above", "below", "to", "from", "up", "down", "under",
+   "over", "again", "further", "then", "once",  
+   # Pronouns
+   "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
+   "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", 
+   "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves" ,
+   "this", "that", "these", "those", "which", "who", "whom", "whose", "what", "where",
+   "when", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other",
+   # "some", "such", "no",  "not", 
+   # "too", "very",   
+   # verbs
+   "is", "are", "would", "could", "will", "be"
+)
+
+# Convert to a data frame if needed for consistency with tidytext
+custom_stop_words_df <- tibble(word = custom_stop_words)
+```
+
+### --- TF-IDF matrix on train pdo 
+```{r}
+# reduce size 
+
+pdo_train_4_tf_idf <- pdo_train_t %>% # 255964
+   # Keep only content words [very restrictive for now]
+   # normally c("NOUN", "VERB", "ADJ", "ADV")
+   filter(upos %in% c("NOUN")) %>% #    72,668 
+   filter(!token_l %in% c("development", "objective", "project")) %>%   #  66,741
+   # get rid of stop words (from default list)   
+   filter(!token_l %in% custom_stop_words_df$word) %>%   #  66,704
+   # Optional: Remove lemmas of length 1 or shorter
+   filter(nchar(lemma) > 1)  #  66,350
+```
+
+Now, count the occurrences of each `lemma` for each document. (This is the term frequency or `tf`)
+
+```{r}
+# This is the term frequency or `tf`
+
+# Count lemmas per document
+lemma_counts <- pdo_train_4_tf_idf %>%
+  count(proj_id, lemma, sort = TRUE)
+# Preview the result
+head(lemma_counts) 
+```
+
+With the lemma counts prepared, the `bind_tf_idf()` function from the tidytext package computes the TF-IDF scores.
+```{r}
+# Compute the TF-IDF scores
+lemma_tf_idf <- lemma_counts %>%
+  bind_tf_idf(lemma, proj_id, n) %>%
+  arrange(desc(tf_idf))
+```
+
+
+::: {.callout-note collapse='true'}
+What to use: token, lemma, or stem?
+
+General Preference in Real-World NLP:
+
++ `Tokens` for analyses where word forms matter or for sentiment analysis.
++ `Lemmas` (*)  for most general-purpose NLP tasks where you want to reduce dimensionality while maintaining accuracy and clarity of meaning.
++ `Stems` for very large datasets, search engines, and applications where speed and simplicity are more important than linguistic precision.
+
+(*) I use lemma, after "aggressively" reducing the number of words to consider, and removing stop words (at least for now). 
+::: 
 
 # _______ 
 # TEXT ANALYSIS/SUMMARY
 # _______ 
-
-NOTE: Among `word` / `stems` encountered in PDOs, there are a lot of acronyms which may refer to World Bank lingo, or local agencies, etc... Especially when looked at in low case form they don't make much sense... 
-
-see https://cengel.github.io/R-text-analysis/textanalysis.html 
+<!-- see https://cengel.github.io/R-text-analysis/textanalysis.html  -->
 
 ## Frequencies of documents/words/stems
 ```{r}
+#| echo: false
+
 # Count words
 counts_pdo <- pdo_train_t %>%
      count(pdo, sort = TRUE)  # 4,071
@@ -282,10 +407,7 @@ counts_stem <- pdo_train_t %>%
   count(stem, sort = TRUE)   # 8,812
 ```
 
-We are looking at `pdo_train_t` which has 134,858 rows and 7 columns.
-
-+ PDOs = `r nrow(counts_pdo)` in projects  
-   + ranging from `r min(pdo_train_t$FY_appr)`   to `r max(pdo_train_t$FY_appr)`
+We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo_train_t)` rows and `r ncol(pdo_train_t)` columns obtained from `r n_distinct(pdo_train_t$pdo)` PDOs of `r n_distinct(pdo_train_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train_t$FY_appr)` to `r max(pdo_train_t$FY_appr)`. 
    
 ```{r}
 #| eval: true
@@ -294,8 +416,8 @@ We are looking at `pdo_train_t` which has 134,858 rows and 7 columns.
 
 # Create a tibble
 train_recap <- tibble(
-  Column1 = c("N proj", "N PDOs", "N words","N token", "N lemma", "N stem"),
-  Column2 = c(n_distinct(pdo_train_t$proj_id),
+  entity = c("N proj", "N PDOs", "N words","N token", "N lemma", "N stem"),
+  counts = c(n_distinct(pdo_train_t$proj_id),
               n_distinct(pdo_train_t$pdo),
               n_distinct(pdo_train_t$word_original),
               n_distinct(pdo_train_t$token_l),
@@ -308,20 +430,21 @@ train_recap %>%
   kableExtra::kable()
 ```
 
-We are looking at `pdo_train_t` which has 134,858 rows and 7 columns.
-
+ 
 #### [FUNC] save plots 
 ```{r}
+#| echo: false
+
 f_save_plot <- function(plot_name, plot_object) {
-  # Print the plot, save as PDF and PNG
-  plot_object %T>%
-    print() %T>%
-    ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
-           # width = 4, height = 2.25, units = "in",
-           device = cairo_pdf) %>%
-    ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
-           # width = 4, height = 2.25, units = "in",
-           type = "cairo", dpi = 300)
+   # Print the plot, save as PDF and PNG
+   plot_object %T>%
+      print() %T>%
+      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
+             # width = 4, height = 2.25, units = "in",
+             device = cairo_pdf) %>%
+      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
+             # width = 4, height = 2.25, units = "in",
+             type = "cairo", dpi = 300)
 }
 
 # Example of using the function
@@ -332,18 +455,24 @@ f_save_plot <- function(plot_name, plot_object) {
 
 ## Term frequency
 
+Note: normally, the most frequent words are *function words* (e.g. determiners, prepositions, pronouns, and auxiliary verbs), which are not very informative. Moreover, even *content words* (e.g. nouns, verbs, adjectives, and adverbs) can often be quite generic semantically speaking (e.g. "good" may be used for many different things). 
  
+In this analysis, Ido not use the **STOPWORD** approach, but  use the **POS tags** to reduce our dataset to just the content words, that is nouns, verbs, adjectives, and adverbs
+
 ### [FIG] Overall `token` freq ggplot
-+ Without "project" "develop","objective"  
- 
++ Excluding "project" "develop","objective"  
++ Including only "content words" (NOUN, VERB, ADJ, ADV)
+
 ```{r}
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$boardapprovalFY)} and {max(pdo_train_t$boardapprovalFY)}") 
+title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
-proj_wrd_freq <- pdo_train_t %>%   # 256,632
-   filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
+proj_wrd_freq <- pdo_train_t %>%   # 123,927
+   # include only content words
+   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+   #filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
    filter (!(relation %in% c("nummod" ))) %>% # 173,686 
  filter (!(token_l %in% c("pdo","project", "development", "objective","objectives", "i", "ii", "iii",
                           "is"))) %>% # whne it is VERB
@@ -355,29 +484,31 @@ proj_wrd_freq <- pdo_train_t %>%   # 256,632
    geom_col(fill = "gray") +
    coord_flip() + # flip x and y coordinates so we can read the words better
    labs(title = title_text,
-        subtitle = "[token_l count > 800]", y = "", x = "")
+        subtitle = "[token_l count > 800]", y = "", x = "")+
+  theme(plot.title.position = "plot")
 
 proj_wrd_freq
 ```
 
-
-
 ```{r}
+#| echo: false
 f_save_plot("proj_wrd_freq", proj_wrd_freq)
 ```
 
 
 ### [FIG] Overall `stem` freq ggplot
 + Without "project" "develop","objective"  
- 
++ Including only "content words" (NOUN, VERB, ADJ, ADV)
+
 ```{r}
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$boardapprovalFY)} and {max(pdo_train_t$boardapprovalFY)}") 
+title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 # Plot
 proj_stem_freq <- pdo_train_t %>%   # 256,632
-   filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
+   # include only content words
+   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
    filter (!(relation %in% c("nummod" ))) %>% # 173,686 
  filter (!(stem %in% c("pdo","project", "develop", "object", "i", "ii", "iii"))) %>%
    count(stem) %>% 
@@ -388,24 +519,27 @@ proj_stem_freq <- pdo_train_t %>%   # 256,632
    geom_col(fill = "gray") +
    coord_flip() + # flip x and y coordinates so we can read the words better
    labs(title = title_text,
-        subtitle = "[stem count > 800]", y = "", x = "")
+        subtitle = "[stem count > 800]", y = "", x = "") +
+  theme(plot.title.position = "plot")
 
 proj_stem_freq
 ```
 
 ```{r}
+#| echo: false
 f_save_plot("proj_stem_freq", proj_stem_freq)
 ```
+
 Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800.
+# _______ 
 
-## Sector-related term frequency
-
+## SECTOR-related term frequency
 
 ### Isolate SECTOR words and see frequency over years
 
-To try and make it a bit more meaningful, we can look at the frequency of the most common words in related to SECTORs. 
+To try and make it a bit more meaningful, let's focus on the frequency of the most common words related to SECTORS. 
 
-I also created a *"broad sector" variable* to group the sectors in broader definitions:
+From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
 
 + **WATER** = water, wastewater, sanitation
 + **TRANSPORT** = transport, railway, road, airport, port
@@ -442,10 +576,9 @@ sector_broad <- pdo_train_t %>%
 #df$FY
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Sector words frequency in PDO over Fiscal Years between FY {min(pdo_train_t$boardapprovalFY)} and {max(pdo_train_t$boardapprovalFY)}") 
-# Plot
+title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
-# plot
+# Plot
 proj_sect_broad_fr <-  ggplot(data = sector_broad, 
                               aes(x = FY_appr, y = n, 
                                   group = tok_sector_broad, color = tok_sector_broad)) +
@@ -453,7 +586,8 @@ proj_sect_broad_fr <-  ggplot(data = sector_broad,
    geom_point() +
    scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
    scale_color_viridis_d(option = "magma", end = 0.9) + 
-   facet_wrap(~tok_sector_broad, ncol = 2, scales = "free")+   guides(color = FALSE) +
+   facet_wrap(~tok_sector_broad, ncol = 2, scales = "free")+ 
+   guides(color = FALSE) +
    theme_bw()+
    theme(# Adjust angle and alignment of x labels
       axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -471,35 +605,28 @@ proj_sect_broad_fr
 ```
 
 ```{r}
+#| echo: false
 f_save_plot("proj_sect_broad_fr", proj_sect_broad_fr)
 ```
 
-#### [...] Check (by sector) why peaks. 
+### Check (by sector) why peaks [CMPL 🟠]  
 
 For the (broadly defined) health sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. What about the other sectors? (they all seem to have at least 1 evident peak)
   
-#### --- I could see if corresponds to sector flags
+### --- I could see if corresponds to any WDR publications
 
-#### --- I could see if corresponds to any WDR publications
+### Qualify: peak or trend (by sector) [CMPL 🟠]  
 
-## Institution-related BIGRAM frequency
+... capire come si stabilisce che c'e' un trend ... magari vedere google search trend... 
 
-### Isolate INSTITUTIONs words and see frequency over years
 
-Things to keep in mind: 
-
-+ "government" may be referred to the subject/counterpart of the project (e.g. "government of Mozambique")
-+ "private" is not necessarily referred to the "private sector" (e.g. "private households")
-+ "public" is not necessarily referred to the "public sector" (e.g. "public health")
-
-So, I will try to find consecutive bigrams "public sector" and "private sector" to get an indicative frequency of these terms. 
-
-#### Create bigrams 
+# _______ 
+## Create bigrams 
 
 > Here I use [`clnp_annotate()` output + ] `dplyr` to combine consecutive tokens into bigrams.
 
 ```{r}
-# Create bigrams by pairing consecutive tokens by sentence ID and their token IDs
+# Create bigrams by pairing consecutive tokens by sentence ID and token IDs
 bigrams <- pdo_train_t %>%
    # keeping FY with tokens
    group_by(FY_appr, proj_id, pdo, sid ) %>%
@@ -507,6 +634,8 @@ bigrams <- pdo_train_t %>%
    # Using mutate() and lead(), we create bigrams from consecutive tokens 
    mutate(next_token = lead(token), 
           bigram = paste(token, next_token)) %>%
+   # make bigram low case
+   mutate(bigram = tolower(bigram)) %>%
    # only includes the rows where valid bigrams are formed
    filter(!is.na(next_token)) %>%
    ungroup() %>%
@@ -518,11 +647,99 @@ bigrams <- pdo_train_t %>%
 # most frequent bigrams 
 count_bigram <- bigrams %>% 
    count(bigram, sort = TRUE)  
+```
+
+## Clean bigrams
+```{r}
+# Separate the bigram column into two words
+bigrams_cleaned <- bigrams %>%
+  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ")
+
+# Remove stopwords and bigrams containing punctuation
+bigrams_cleaned <- bigrams_cleaned %>%
+   # custom stop words
+   filter(!word1 %in% custom_stop_words_df$word, !word2 %in% custom_stop_words_df$word) %>% 
+   # Remove punctuation   
+   filter(!str_detect(word1, "[[:punct:]]"), !str_detect(word2, "[[:punct:]]"))  
+
+# Reunite the cleaned words into the bigram column
+bigrams_cleaned <- bigrams_cleaned %>%
+   unite(bigram, word1, word2, sep = " ") %>% 
+   # Remove too obvious bigrams 
+   filter(!bigram %in% c("development objective", "development objectives", 
+                         "proposed project", "project development"))
+
+# View the cleaned dataframe
+bigrams_cleaned
+
+# Count the frequency of each bigram
+bigram_freq <- bigrams_cleaned %>%
+  count(bigram, sort = TRUE)
+
 
 ```
 
+### [FIG] most frequent bigrams in PDOs
++ Excluding "development objective", "development objectives", "proposed project"
++ Excluding stopwords and bigrams containing punctuation
+ 
+```{r}
+#| output: true
 
-#### [FIG] Bigrams ("public sector", "private sector") freq ggplot
+# ---- Prepare data for plotting
+# Evaluate the title with glue first
+title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+# Define the bigrams you want to highlight
+bigrams_to_highlight <- c("public sector", "private sector")   
+
+ 
+# Plot the most frequent bigrams
+pdo_bigr_freq <- bigram_freq %>%
+   slice_max(n, n = 25) %>%
+   ggplot(aes(x = reorder(bigram, n), y = n,
+              fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+   geom_col() +
+  scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", "Other" = "grey")) +
+   guides(fill = "none") +
+   coord_flip() +
+   labs(title = title_text,x = "Bigram", y = "Frequency", 
+        subtitle = "ranking first 20" ) +
+   theme(plot.title.position = "plot")  
+
+pdo_bigr_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+```
+ 
+> I wasn't expecting "eligible crisis"?!
+I was expecting education to appear!?!?
+
+#### [FIG] Changes over time ? [CMPL 🟠] 
+ 
+
+# _______ 
+## Explore bigrams
+
+
+## INSTITUTION-related words and see frequency over years 
+
+A first aspect to explore could be whether WB project are more focused on public or private sectors. However, it is not easy to capture this information from the text.
+
+### Isolate sector BIGRAM frequency
+
+Things to keep in mind: 
+
++ "government" may be referred to the subject/counterpart of the project (e.g. "government of Mozambique")
++ "private" is not necessarily referred to the "private sector" (e.g. "private households")
++ "public" is not necessarily referred to the "public sector" (e.g. "public health")
+
+So, I narrow down to consecutive *bigrams* **"public sector"** and **"private sector"** to get an indicative frequency of these terms. 
+
+
+#### [FIG] Bigrams ("public sector", "private sector") freq plot
 ```{r}
 
 # Filter for the specific bigrams "public sector" and "private sector"
@@ -545,7 +762,7 @@ sector_bigr_df <- bigrams_pub_priv_sec %>%
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
-title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over Fiscal Years between FY {min(sector_bigr_df$FY_appr)} and {max(sector_bigr_df$FY_appr)}") 
+title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over FY {min(sector_bigr_df$FY_appr)}-{max(sector_bigr_df$FY_appr)}") 
 
 two_col_contrast <- c( "#005ca1",  "#e60066" )
 
@@ -568,7 +785,8 @@ inst_bigr_fr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bi
                       labels = legend_labels) +  # Use modified labels
    theme_bw() +
    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = title_text, x = "Board approval FY", y = "Counts of bigrams", color = "bigram")
+   labs(title = title_text, x = "Board approval FY", y = "Counts of bigrams", color = "bigram")+
+  theme(plot.title.position = "plot")
 
 inst_bigr_fr
 ```
@@ -595,23 +813,42 @@ https://guides.library.upenn.edu/penntdm/r
 https://smltar.com/stemming#how-to-stem-text-in-r `BOOK STEMMING`
 # _______ 
 
+### Isolate other BIGRAM frequency...
 
-#### ... [FIG] Most frequent bigrams ggplot
+#### [FIG] Most frequent bigrams 
+
+```{r}
+#| output: TRUE
+# Evaluate the title with glue first
+title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+
+pdo_bigr_freq <- pdo_train_t %>%   # 123,927
+   # include only content words
+   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+   #filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
+   filter (!(relation %in% c("nummod" ))) %>% # 173,686 
+ filter (!(token_l %in% c("pdo","project", "development", "objective","objectives", "i", "ii", "iii",
+                          "is"))) %>% # whne it is VERB
+   count(token_l) %>% 
+   filter(n > 800) %>% 
+   mutate(token_l = reorder(token_l, n)) %>%  # reorder values by frequency
+   # plot 
+   ggplot(aes(token_l, n)) +
+   geom_col(fill = "gray") +
+   coord_flip() + # flip x and y coordinates so we can read the words better
+   labs(title = title_text,
+        subtitle = "[token_l count > 800]", y = "", x = "")+
+  theme(plot.title.position = "plot")
+
+proj_wrd_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("proj_wrd_freq", proj_wrd_freq)
+```
+
  
-+ development objective
-+ development objectives
-+ Project Development
-+ private sector ~ 200 
-+ institutional capacity
-+ service delivery
-+ improve access
-+ Development Objectives
-+ water supply
-+ proposed project
-+ public sector ~ 150 
-+ climate change
-+ investment climate
-
 #### ... [FIG] Notable bigrams (climate change)!
  
 
@@ -627,7 +864,6 @@ The goal is to quantify what a document is about. What is the document about?
 -   term's **inverse document frequency (idf)** = decreases the weight for commonly used words and increases the weight for words that are not used very much in a collection of documents.
 -   **statistic tf-idf (= tf*-*idf)** = an alternative to using stopwords is *the frequency of a term adjusted for how rarely it is used*. [It measures how important a word is to a document in a collection (or corpus) of documents, but it is still a rule-of-thumb or heuristic quantity]
 
-> The tf-idf is the product of the term frequency and the inverse document frequency::
 
 ## N-Grams
 ...
@@ -637,15 +873,104 @@ The goal is to quantify what a document is about. What is the document about?
 
 
 # _______ 
-
-# >>>>>> NEXT <<<<<<<<<<<<<<<<<< 
+# TOPIC MODELING w ML
 # _______ 
+### Compare PDO text v. project METADATA  [CMPL 🟠]
+Using NLP models trained on document metadata and structure can be combined with text analysis to improve classification accuracy.
 
 
+STEPS 
+
+1. Use document text (abstracts) as features to train a supervised machine learning model. The labeled data (documents with sector tags) will serve as training data, and the model can predict the missing sector tags for unlabeled documents.
+2. TEXT preprocessing (e.g. tokenization, lemmatization, stopword removal, *TF-IDF*) 
+   + Convert the processed text into a numerical format using Term Frequency-Inverse Document Frequency (TF-IDF), which gives more weight to terms that are unique to a document but less frequent across the entire corpus.
+3. Define data features, e.g.
+   + Document Length: Public sector documents might be longer, more formal.
+   + Presence of Certain Keywords: Use specific keywords that correlate with either the public or private sector.
+   + Sector Tags: In documents where the "sector tag" is present, you can use it as a feature for training.
+4. Predicting Missing Sector Tags (Classification):
+   + Use models like: Logistic Regression: For a binary classification (e.g., public vs. private). Random Forest or XGBoost: If you have a more complex tagging scheme (e.g., multiple sector categories).
+   + Cross-validation: Ensure the model generalizes well by validating with the documents that already have the sector tag filled in.
+   + Evaluate the model: Use metrics like accuracy, precision, recall, and F1 score to evaluate the model's performance.
+
+
+```{r}
+#| eval: FALSE
+#| echo: FALSE
+library(tidytext)
+library(dplyr)
+library(tidyr)
+library(caret)
+
+# ----- 1. Tokenization and stopwords removal using tidytext.
+# Assuming df is your dataframe with "abstract" and "sector_tag"
+# Tokenize the text and remove stopwords
+tidy_abstracts <- df %>%
+  unnest_tokens(word, abstract) %>%
+  anti_join(stop_words)  # Remove stopwords
+
+# Optional: Apply stemming (you can also use `SnowballC` if you prefer)
+tidy_abstracts <- tidy_abstracts %>%
+  mutate(word = SnowballC::wordStem(word))
+
+# ----- 2. Document-term matrix or TF-IDF calculation using bind_tf_idf().
+# Create a term-frequency matrix
+abstract_dtm <- tidy_abstracts %>%
+  count(document_id = row_number(), word) %>%  # Assuming each row is a document
+  cast_dtm(document_id, word, n)
+
+# Alternatively, use TF-IDF weighting
+abstract_tfidf <- tidy_abstracts %>%
+  count(document_id = row_number(), word) %>%
+  bind_tf_idf(word, document_id, n)
+
+# ----- 3. Model training using caret (Random Forest, Logistic Regression, etc.).
+# Split data into training (with sector tags) and testing (missing sector tags)
+train_data <- df[!is.na(df$sector_tag), ]
+test_data  <- df[is.na(df$sector_tag), ]
+
+# Combine the DFM or TF-IDF with the training dataset
+train_tfidf <- abstract_tfidf %>%
+  filter(document_id %in% train_data$row_number()) %>%
+  spread(word, tf_idf, fill = 0)
+
+# Merge with sector tags
+train_tfidf <- left_join(train_tfidf, train_data, by = c("document_id" = "row_number"))
+
+# Prepare for machine learning by ensuring you have sector tags in the final dataset
+
+# ----- 4. Prediction of missing sector tags based on the trained model.
+# Random Forest Model
+model <- train(sector_tag ~ ., data = train_tfidf, method = "rf")
+
+# Predict missing sector tags for the test data
+test_tfidf <- abstract_tfidf %>%
+  filter(document_id %in% test_data$row_number()) %>%
+  spread(word, tf_idf, fill = 0)
+
+# Predict sector tags for the missing observations
+predicted_tags <- predict(model, newdata = test_tfidf)
+
+# Add the predicted sector tags to the original dataset
+df$sector_tag[is.na(df$sector_tag)] <- predicted_tags
+
+# ----- 5. Evaluate and Refine the Model
+confusionMatrix(predicted_tags, test_data$sector_tag)
+```
+
+
+### --- I could see if corresponds to sector flags in the project metadata
+more missing but more objective!
+
+
+# Topic modeling algorithms with Latent Dirichlet Allocation (LDA) 
+
+Topic modeling algorithms like Latent Dirichlet Allocation (LDA) can be applied to automatically uncover underlying themes within a corpus. The detected topics may highlight key terms or subject areas that are strongly associated with either the public or private sector.
  
-## Named Entity Recognition using CleanNLP and spaCy
+# Named Entity Recognition using CleanNLP and spaCy
 NER is especially useful for analyzing unstructured text. 
 
+NER can identify key entities (organizations, people, locations) mentioned in the text. By tracking which entities appear frequently (e.g., government agencies vs. corporations), it’s possible to categorize a document as more focused on the public or private sector.
 
 ### ---  Summarise the tokens by parts of speech
   

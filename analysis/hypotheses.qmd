@@ -36,9 +36,9 @@ format-links: false
 bibliography: ../bib/slogan.bib
 ---
 
-# Research questions
+# Research questions{#sec-RQ}
 
-The **research question** depends (in terms of its nature) on the type of analysis we intend to carry out [See fig 3.9 in @francom_introduction_2024]: 
+In general, a **research question's** nature depends on the goal and type of the pursued analysis [See fig 3.9 in @francom_introduction_2024]: 
 
 
 ::: {#tbl-analysis-analysis-types tbl-colwidths="[15, 19, 22, 22, 22]"}
