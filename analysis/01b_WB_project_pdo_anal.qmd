@@ -21,7 +21,7 @@ format:
   html:
     # theme: flatly #spacelab
     code-fold: false # redundant bc echo false 
-    toc-depth: 2
+    toc-depth: 3
     toc_float: true
     toc-location: left
     toc-title: Outline
@@ -147,12 +147,12 @@ Syntactic annotation is a computationally expensive operation, so I don't want t
 pdo_train_t <- readRDS(here::here("data" , "derived_data", "pdo_train_t.rds"))
 ```
 
-### Important mod
-```{r}
-# Ensure token_id is numeric
-pdo_train_t <- pdo_train_t %>% 
-  mutate(tid = as.numeric(tid))  # Convert token_id to numeric
-```
+<!-- ### Important mod -->
+<!-- ```{r} -->
+<!-- # Ensure token_id is numeric -->
+<!-- pdo_train_t <- pdo_train_t %>%  -->
+<!--   mutate(tid = as.numeric(tid))  # Convert token_id to numeric -->
+<!-- ``` -->
 
 
 ## Explain Tokenization and PoS Tagging
@@ -469,7 +469,7 @@ In this analysis, Ido not use the **STOPWORD** approach, but  use the **POS tags
 # Evaluate the title with glue first
 title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
-proj_wrd_freq <- pdo_train_t %>%   # 123,927
+pdo_wrd_freq <- pdo_train_t %>%   # 123,927
    # include only content words
    filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
    #filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
@@ -487,12 +487,12 @@ proj_wrd_freq <- pdo_train_t %>%   # 123,927
         subtitle = "[token_l count > 800]", y = "", x = "")+
   theme(plot.title.position = "plot")
 
-proj_wrd_freq
+pdo_wrd_freq
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("proj_wrd_freq", proj_wrd_freq)
+f_save_plot("pdo_wrd_freq", pdo_wrd_freq)
 ```
 
 
@@ -506,7 +506,7 @@ f_save_plot("proj_wrd_freq", proj_wrd_freq)
 # Evaluate the title with glue first
 title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 # Plot
-proj_stem_freq <- pdo_train_t %>%   # 256,632
+pdo_stem_freq <- pdo_train_t %>%   # 256,632
    # include only content words
    filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
    filter (!(relation %in% c("nummod" ))) %>% # 173,686 
@@ -522,15 +522,16 @@ proj_stem_freq <- pdo_train_t %>%   # 256,632
         subtitle = "[stem count > 800]", y = "", x = "") +
   theme(plot.title.position = "plot")
 
-proj_stem_freq
+pdo_stem_freq
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("proj_stem_freq", proj_stem_freq)
+f_save_plot("pdo_stem_freq", pdo_stem_freq)
 ```
 
 Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800.
+
 # _______ 
 
 ## SECTOR-related term frequency
@@ -579,9 +580,9 @@ sector_broad <- pdo_train_t %>%
 title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
 # Plot
-proj_sect_broad_fr <-  ggplot(data = sector_broad, 
-                              aes(x = FY_appr, y = n, 
-                                  group = tok_sector_broad, color = tok_sector_broad)) +
+pdo_sect_broad_freq <-  ggplot(data = sector_broad, 
+                               aes(x = FY_appr, y = n, 
+                                   group = tok_sector_broad, color = tok_sector_broad)) +
    geom_line() +
    geom_point() +
    scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
@@ -593,20 +594,22 @@ proj_sect_broad_fr <-  ggplot(data = sector_broad,
       axis.text.x = element_text(angle = 45, hjust = 1)) + 
    labs(title = "Sector words frequency in PDO over Fiscal Years",
         subtitle = "[Using \"custom\" broad sector definition]",
-        x =   "Board approval FY", y = "Counts of 'sector' word (tok_sector_broad)") + 
-   geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), aes(xintercept = 2020), 
+        x =   "Board approval FY", 
+        y = "Counts of 'sector' word (tok_sector_broad)") + 
+   geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
+              aes(xintercept = 2020), 
               linetype = "dashed", color = "#9b6723") +
    geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
              aes(x = 2020, y = max(sector_broad$n)*0.75, label = "Covid"), 
              angle = 90, vjust = -0.5, color = "#9b6723")
 
 
-proj_sect_broad_fr
+pdo_sect_broad_freq
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("proj_sect_broad_fr", proj_sect_broad_fr)
+f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
 ```
 
 ### Check (by sector) why peaks [CMPL 🟠]  
@@ -650,24 +653,26 @@ count_bigram <- bigrams %>%
 ```
 
 ## Clean bigrams
+
+The issue here is to clean but without separating consecutive words... so I do this split-reunite process to remove stopwords and punctuation. Basically only keeping bigrams made of 2 nouns or ADJ+noun.
 ```{r}
 # Separate the bigram column into two words
 bigrams_cleaned <- bigrams %>%
   tidyr::separate(bigram, into = c("word1", "word2"), sep = " ")
 
-# Remove stopwords and bigrams containing punctuation
+# Remove stopwords and bigrams in EACH component word containing punctuation
 bigrams_cleaned <- bigrams_cleaned %>%
    # custom stop words
    filter(!word1 %in% custom_stop_words_df$word, !word2 %in% custom_stop_words_df$word) %>% 
    # Remove punctuation   
    filter(!str_detect(word1, "[[:punct:]]"), !str_detect(word2, "[[:punct:]]"))  
 
-# Reunite the cleaned words into the bigram column
+# Reunite the component cleaned words into the bigram column
 bigrams_cleaned <- bigrams_cleaned %>%
    unite(bigram, word1, word2, sep = " ") %>% 
    # Remove too obvious bigrams 
    filter(!bigram %in% c("development objective", "development objectives", 
-                         "proposed project", "project development"))
+                         "proposed project", "project development", "program development"))
 
 # View the cleaned dataframe
 bigrams_cleaned
@@ -675,14 +680,12 @@ bigrams_cleaned
 # Count the frequency of each bigram
 bigram_freq <- bigrams_cleaned %>%
   count(bigram, sort = TRUE)
-
-
 ```
 
 ### [FIG] most frequent bigrams in PDOs
-+ Excluding "development objective", "development objectives", "proposed project"
-+ Excluding stopwords and bigrams containing punctuation
- 
++ Excluding bigrams where 1 word is among stopwords or a punctuation sign
++ Excluding *"development objective/s"*, *"proposed project"*, *"program development"* because not very informative
+
 ```{r}
 #| output: true
 
@@ -690,36 +693,296 @@ bigram_freq <- bigrams_cleaned %>%
 # Evaluate the title with glue first
 title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 # Define the bigrams you want to highlight
-bigrams_to_highlight <- c("public sector", "private sector")   
+bigrams_to_highlight <- c("public sector", "private sector", "eligible crisis")   
 
  
-# Plot the most frequent bigrams
+# ---- Plot the most frequent bigrams
 pdo_bigr_freq <- bigram_freq %>%
    slice_max(n, n = 25) %>%
    ggplot(aes(x = reorder(bigram, n), y = n,
               fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
    geom_col() +
-  scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", "Other" = "grey")) +
+   # coord flipped so n is Y axis
+   scale_y_continuous(breaks = seq(min(bigram_freq$n)-1, max(bigram_freq$n), by = 50)) +
+   scale_fill_manual(values = c("public sector" = "#005ca1", 
+                                "private sector" = "#9b2339", 
+                                "eligible crisis"= "#8e550a", "Other" = "grey")) +
    guides(fill = "none") +
    coord_flip() +
-   labs(title = title_text,x = "Bigram", y = "Frequency", 
-        subtitle = "ranking first 20" ) +
-   theme(plot.title.position = "plot")  
+   labs(title = title_text, subtitle = "(ranking top 25 bigrams)",
+        x = "", y = "") +
+   theme(plot.title.position = "plot",
+         axis.text.y = element_text(
+            # obtain vector of colors 2 match x axis labels color to fill
+            color = bigram_freq %>%
+               slice_max(n, n = 25) %>%
+               # mutate(color = ifelse(bigram %in% bigrams_to_highlight,
+               #                       ifelse(bigram == "public sector", "#005ca1",
+               #                              ifelse(bigram == "private sector", "#9b2339", "#8e550a")),
+               #                       "#4c4c4c")) 
+               mutate(color = case_when (
+                  bigram == "public sector" ~ "#005ca1",
+                  bigram == "private sector" ~ "#9b2339",
+                  bigram == "eligible crisis" ~ "#8e550a",
+                  TRUE ~ "#4c4c4c")) %>%
+               # Ensure the order matches the reordered bigrams (AS BINS)
+               arrange(reorder(bigram, n)) %>%  
+               # Extract the color column in bin order as vector to be passed to element_text()
+               pull(color)
+            )
+         )
 
 pdo_bigr_freq
 ```
+
+
 
 ```{r}
 #| echo: false
 f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
 ```
  
-> I wasn't expecting "eligible crisis"?!
-I was expecting education to appear!?!?
+> Results are not surprising in terms of frequent combinations like "increase access", " institutional capacity", "poverty reduction". Although, while *"health"* recurred in several bigrams (e.g. "health services", "public health", "health care") among the top 25, *"education"* did not appear at all.
 
-#### [FIG] Changes over time ? [CMPL 🟠] 
+> A bit misterious is perhaps *"eligible crisis"* (> 100 mentions)?!
+
+
+### [FIG] Changes over time BY 1FY 
+On the other hand, *"climate change"* appears in the top 25 (ranking above "financial sector" and "capacity building") which begs the question of whether the frequency of these bigrams has changed over time. 
+```{r}
+#| output: false
+
+## too busy to be useful
+# Step 1: Count the frequency of each bigram by year
+top_bigrams_FY <- bigrams_cleaned %>%
+   group_by(FY_appr, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_appr, desc(count)) %>%
+   # ---  +/- top 10  
+   group_by(FY_appr) %>%
+   top_n(10, count) %>%
+   ungroup()
+   # # ---  STRICT  top 10  
+   # mutate(rank = dense_rank(desc(count))) %>%  # Rank bigrams by frequency
+   # filter(rank <= 10) %>%  # Keep only the top 10 by rank
+   # ungroup()
+
+  
+# Add specific bigrams to highlight, if any
+bigrams_to_highlight <- c("climate change",  "climate resilience", "public sector", "private sector")
+
+# Step 2: Plot the top bigrams by frequency over time   
+pdo_bigr_FY_freq  <-  top_bigrams_FY %>% 
+ ggplot(aes(x = reorder(bigram, count), 
+             y = count,
+             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+  geom_col() +
+  scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", 
+                               "climate change" = "#399B23", "climate resilience" = "#d8e600",
+                               "Other" = "grey")) +
+  guides(fill = "none") +
+  coord_flip() +
+  facet_wrap(~ FY_appr, scales = "free_y") +
+  labs(title = "Top 10 Bigrams by Frequency Over Time",
+       subtitle = "(Faceted by Fiscal Year Approval)",
+       x = "Bigrams",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title.position = "plot",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+pdo_bigr_FY_freq
+```
+
+### [FIG] Changes over time BY 3FY 
+
+```{r}
+# generate FY group 
+f_generate_year_groups <- function(years, interval) {
+  breaks <- seq(floor(min(years, na.rm = TRUE) / interval) * interval, 
+                ceiling(max(years, na.rm = TRUE) / interval) * interval, 
+                by = interval)
+  
+  labels <- paste(breaks[-length(breaks)], "-", breaks[-1] - 1)
+  
+  return(list(breaks = breaks, labels = labels))
+}
+
+```
+
+```{r}
+#| output: true
+
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 3 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_FY <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+
+# --- Step 3: Add specific bigrams to highlight, if any
+bigrams_to_highlight <- c("climate change",  "climate resilience", 
+                          "eligible crisis",  
+                          "public sector", "private sector")
+
+# --- Step 4: Plot the top bigrams by frequency over n-year periods
+pdo_bigr_FY_freq  <-  top_bigrams_FY %>% 
+ ggplot(aes(x = reorder(bigram, count), 
+             y = count,
+             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+  geom_col() +
+  scale_fill_manual(values = c("public sector" = "#005ca1", 
+                               "private sector" = "#e60066", 
+                               "climate change" = "#399B23", 
+                               "climate resilience" = "#d8e600",
+                               "eligible crisis" = "#e68000",  
+                               "Other" = "grey")) +
+  guides(fill = "none") +
+  coord_flip() +
+  facet_wrap(~ FY_group, ncol = 3 , scales = "free_y" )+ 
+              #strip.position = "top") +  # Facet wrap with columns
+  labs(title = "Top 10 Bigrams by Frequency Over n-Year Periods",
+       subtitle = glue::glue("(Faceted by {interval_i}-Year Groups)"),
+       x = "Bigrams",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title.position = "plot") 
+
+# print the plot
+pdo_bigr_FY_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
+```
+
+> Frequency observed over FY intervals is very revealing. For example *"private sector"* and *"public sector"* loose importance over time (around mid 2010s), while *"climate change"* and *"climate resilience"* gain relevance from the same point on.
+
+> Still quite surprising the bigram *"eligible crisis"*, which actually appears in the top 12 bigrams starting in FY 2013-2015!
+  
+### 🤔 Which are the most frequent and persistent Bigrams Over Time? 
+
+> For this, I am looking for a ranking that considers Mean frequency across periods `arrange(desc(mean_count))` + Stability (low standard deviation) across periods [this is hard bc of NAs], and *NOT* total count overall...
+
++ Using `top_bigrams_FY` which had breaks of 3FY 
+```{r}
+#| eval: FALSE
+
+# [REPEATED just to see the table]
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 3 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_FY <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+```
  
+```{r}
+# Calculate the mean frequency and standard deviation of the counts for each bigram across periods
+stable_and_frequent_bigrams <- top_bigrams_FY %>%
+   group_by( bigram) %>%
+   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
+             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
+             total_count = sum(count)) %>%               # Total count across all periods (optional)
+   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
+   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+   # Focus on the top 25% most frequent bigrams
+   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
+   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
+   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+```
 
+#### [TBL] Bigrams Over Time [3FY]
+```{r}
+#| output: TRUE
+
+# View the most frequent and stable bigrams
+stable_and_frequent_bigrams %>% 
+   slice_head(n = 15)  %>% kableExtra::kable()
+```
+
++ Using `top_bigrams_FY2` which had breaks of 1FY 
+
+```{r}
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 1 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_FY2 <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+```
+
+```{r}
+# Calculate the mean frequency and standard deviation of the counts for each bigram across periods
+stable_and_frequent_bigrams2 <- top_bigrams_FY2 %>%
+   group_by( bigram) %>%
+   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
+             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
+             total_count = sum(count)) %>%               # Total count across all periods (optional)
+   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
+   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+   # Focus on the top 25% most frequent bigrams
+   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
+   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
+   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+```
+
+#### [TBL] Bigrams Over Time [1FY]
+
+```{r}
+#| output: TRUE
+
+# View the most frequent and stable bigrams
+stable_and_frequent_bigrams2 %>% 
+   slice_head(n = 15)   %>% kableExtra::kable()
+```
+  
 # _______ 
 ## Explore bigrams
 
@@ -840,12 +1103,12 @@ pdo_bigr_freq <- pdo_train_t %>%   # 123,927
         subtitle = "[token_l count > 800]", y = "", x = "")+
   theme(plot.title.position = "plot")
 
-proj_wrd_freq
+pdo_bigr_freq
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("proj_wrd_freq", proj_wrd_freq)
+f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
 ```
 
  

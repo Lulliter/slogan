@@ -26,12 +26,11 @@ format:
     toc-location: left
     toc-title: Outline
     embed-resources: true # external dependencies embedded (Not in ..._files/)
-  # pdf:
-  #   toc-depth: 2
-  #   toc-title: Indice
-  #   highlight-style: github
-  #   #lang: it
-  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+    self-contained-math: true # to fix warning (greek letters) ?
+# # to fix warning (greek letters) ?
+#     html-math-method:
+#       method: mathjax
+#       url: ./mathjax.js
 format-links: false
 bibliography: bib/slogan.bib
 ---
