@@ -2,7 +2,7 @@
 # Navbar (just for referenc e) ----------------------------------------------
 nav_foot_backg <- "#BDD5E1" # "#e7d8da" #  "#e3eff7"
 nav_backg: "#3881a5" # #23749b" # "#b78a92"
- 
+
 
 # Colori --------------------------------------------------------------------
 gold <- "#77501a"
@@ -53,40 +53,62 @@ arancio <- "#bd710e" # "#866445FF" (alpha = 1) OR rgb(134/255, 100/255, 69/255, 
 arancio_light <- "#f0a441"
 arancio_extralight <- "#fbe8cf"
 
-rv_dark <-"#7c1c2d" 
+rv_dark <-"#7c1c2d"
 compl_gr <- "#1c7c6b"
 rosso_val <- "#9b2339"
 rv_light <-"#d02e4c"
 rv_lighter <-"#e28293"
- 
+
 rv_marr <-"#9b4923"
 
 # col2rgb( "#854442")
 rv_blue <- "#23749b" # "#4f90af"
-rv_green <- "#239b49" 
+rv_green <- "#239b49"
 rv_light_green <- "#749b23"
 rv_teal <- "#239b85"
-rv_purple <- "#49239b" 
+rv_purple <- "#49239b"
 rv_gold <- "#9b6723" # "#af854f"
 compl <-  "#9b2356" # "#af4f78"
 rv_blue <-"#23399b"
 
-# Color palettes -------------------------------------------------------------- 
+# Color palettes --------------------------------------------------------------
 
 #palette_g20 <- c("#455A8B", "#854442", "#285E60", "#BD8723", "#866445", "#A6A6A6")
 #mycolors_gradient <- c("#ccf6fa", "#80e8f3", "#33d9eb", "#00d0e6", "#0092a1")
+# SDGS colors
+sector_colors <- c(
+   "POVERTY" = "#E5243B", # 1
+   "ZERO_HUNGER" = "#DDA63A", # 2
+   "HEALTH" = "#4C9F38", # 3
+   "EDUCATION" = "#C5192D", # 4
+   "GENDER_EQUAL" = "#FF3A21", # 5
+   "WATER_SANIT" = "#26BDE2", # 6
+   "ENERGY" = "#FCC30B", # 7
+   "WORK" = "#A21942", # 8
+   "INDUSTRY" = "#FD9D24", # 9
+   "INEQUALITY" =  "#DD1367", # 10
+   "CITIES" = "#FD9D24", # 11
+   "CONSUMPTION" = "#BF8B2E", # 12
+   "CLIMATE" = "#3F7E44", # 13
+   "OCEANS" = "#0A97D9", # 14
+   "BIODIVERSITY" = "#56C02B", # 15
+   "PEACE" = "#00689D", # 16
+   "PARTNERSHIP" = "#19486A", # 17
+   # MINE
+   "TRANSPORT" =  "#A6A6A6"
+   )
 
 #                   fat gold  |Romaine Green| Blue ColaD |directoire Blue| Bourgeois  | Aztec Turquoise | Fulvous
 mycolors_contrast <- c("#9b2339", "#E7B800","#239b85", "#85239b", "#9b8523","#23399b", "#d8e600", "#0084e6","#399B23",  "#e60066" , "#00d8e6",  "#005ca1", "#e68000")
-#theme_col <-  c("#00d7e6", "#0065e6",  "#10069f")  
-three_col <- c("#d8e600", "#e68000",  "#e60c00")     
+#theme_col <-  c("#00d7e6", "#0065e6",  "#10069f")
+three_col <- c("#d8e600", "#e68000",  "#e60c00")
 two_col <- c( "#009E73","#E69F00")
 
 two_col_contrast <- c( "#399B23",  "#e60066" )
 
 
 blu_contrast <- c(
-  "#0f7184", 
+  "#0f7184",
   "#56adbf",
   "#5bd6ef",
   "#025b6d",
@@ -100,7 +122,7 @@ blu_contrast <- c(
   "#c6e7ff",
   "#013d68"
   )
-  
+
 # # -- Add custom fonts & make custom theme for ggplot2 -----
 # # -- da google
 # sysfonts::font_add_google(name = "Roboto Condensed", family =  "Condensed")
@@ -108,17 +130,17 @@ blu_contrast <- c(
 # # -- da web
 # sysfonts::font_add(family = "Inconsolata", regular = "~/Applications/Inconsolata/static/Inconsolata_Expanded#.ttf")
 # sysfonts::font_families()
-# 
+#
 # # install.packages("extrafont")
 # library(extrafont)
 # # -- quali ho nel sistema
 # fonts()
 # # -- Import all the .ttf files from your system
- 
+
 # Themes -----------------------------------------------------------------------------------
 # #Define gppr_theme() function
-# 
-# theme_cohesion <- function(){ 
+#
+# theme_cohesion <- function(){
 #   font <- "Roboto"   #assign font family up front
 #   #theme_minimal() %+replace%    #replace elements we want to change
 #   theme(
@@ -127,7 +149,7 @@ blu_contrast <- c(
 #     axis.ticks = element_line(color = "grey85"),
 #     # inclinato
 #     axis.text.x = element_text(angle = 45, hjust = 1),# size = 9,
-#     # axis.text.y = element_text(size = 9, face = "bold"),  
+#     # axis.text.y = element_text(size = 9, face = "bold"),
 #     panel.grid.major = element_line(color = "grey95", size = 0.2),
 #     panel.grid.minor = element_line(color = "grey95", size = 0.2),
 #     #strip.text = element_text(face = "bold"),
@@ -140,12 +162,12 @@ blu_contrast <- c(
 #     legend.key = element_blank()
 #   )
 # }
-# 
+#
 # # ggplot theme
 # theme_edb <- function(base_size = 9, base_family = "Clear Sans Light") {
 #   update_geom_defaults("label", list(family = "Clear Sans Light"))
 #   update_geom_defaults("text", list(family = "Clear Sans Light"))
-#   ret <- theme_bw(base_size, base_family) + 
+#   ret <- theme_bw(base_size, base_family) +
 #     theme(panel.background = element_rect(fill = "#ffffff", colour = NA),
 #           axis.title.y = element_text(margin = margin(r = 10)),
 #           axis.title.x = element_text(margin = margin(t = 10)),
@@ -153,10 +175,10 @@ blu_contrast <- c(
 #           plot.subtitle = element_text(family = "Clear Sans Light"),
 #           plot.caption = element_text(family = "Clear Sans Light",
 #                                       size = rel(0.8), colour = "grey70"),
-#           panel.border = element_blank(), 
+#           panel.border = element_blank(),
 #           axis.line = element_blank(),
 #           axis.ticks = element_blank(),
-#           legend.position = "bottom", 
+#           legend.position = "bottom",
 #           legend.title = element_text(size = rel(0.8)),
 #           axis.title = element_text(size = rel(0.8), family = "Clear Sans", face = "bold"),
 #           strip.text = element_text(size = rel(1), family = "Clear Sans", face = "bold"),
@@ -164,7 +186,7 @@ blu_contrast <- c(
 #           panel.spacing.y = unit(1.5, "lines"),
 #           legend.key = element_blank(),
 #           legend.spacing = unit(0.2, "lines"))
-#   
+#
 #   ret
 # }
-# 
+#
