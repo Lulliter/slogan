@@ -1,0 +1,1466 @@
+---
+title: "WB Project PDO features classification"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: true    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 3
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+<!-- In this file I address the **research question 1.2**, which is also to learn ML, IS IT POSSIBLE TO IMPROVE THE QUALITY OF THE DATA (E.G. MISSING FEATURES IN METADATA) BY USING TOPIC MODELING?  -->
+
+I experiment predicting the `environmental risk category` (e.g., `A`, `B`, `C`, `D`) based on the available features in the dataset.
+
+# Set up
+```{r}
+# Pckgs -------------------------------------
+library(fs) # Cross-Platform File System Operations Based on 'libuv'
+library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(skimr) # Compact and Flexible Summaries of Data
+library(here) # A Simpler Way to Find Your Files
+library(paint) # paint data.frames summaries in colour
+library(readxl) # Read Excel Files
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
+library(rsample) # General Resampling Infrastructure
+library(rvest) # Easily Harvest (Scrape) Web Pages
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing  
+library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
+library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages # Easily Install and Load the 'Tidymodels' Packages
+library(textrecipes) # Extra 'Recipes' for Text Processing # Extra 'Recipes' for Text Processing
+
+set.seed(123) # for reproducibility
+```
+
+# Load data
+```{r}
+# Load Proj train dataset `projs_train_t`
+projs_train <- readRDS(here("data","derived_data", "projs_train.rds"))  
+custom_stop_words_df  <-  readRDS(here("data","derived_data", "custom_stop_words_df.rds")) 
+```
+
+# _______ 
+# PREDICT MISSING FEATUREs
+# _______ 
+
+
+## What ML models work with text? 
+
+> Remember that text data is SPARSE!
+
+To predict a missing feature (e.g., sector) based on available features from text data, several supervised machine learning algorithms can be applied. Given that you have a mixture of text and structured data, here are some suitable algorithms:
+
++ **Logistic Regression / Multinomial Logistic Regression**: If you're predicting a categorical variable like "sector", logistic regression can work well, especially with appropriate feature engineering for text (e.g., converting text data into numeric features using TF-IDF or word embeddings).
++ **Decision Trees / Random Forests**: These algorithms handle both numeric and categorical data efficiently and can manage missing values quite well. You can input text-based features as well, though you might need to preprocess the text into numeric form (e.g., using embeddings).
++ **Naive Bayes**: Naive Bayes is a simple and efficient algorithm for text classification. It assumes feature independence, which may not always hold, but it's often a good baseline, particularly with short texts.
++ **Support Vector Machines (SVMs)**: SVMs are useful when you have high-dimensional data, which is common with text after feature extraction (like TF-IDF). They can perform well with a mix of structured and unstructured data.
+<!-- + **Gradient Boosting Machines (GBM)**: Models like XGBoost or LightGBM can be highly effective, especially when you have structured data alongside text features. These models can also handle missing data naturally in the training process. -->
+<!-- + **Neural Networks (MLP or LSTM)**: If you have a larger dataset, neural networks could be useful. A multilayer perceptron (MLP) is good for mixed feature types, while LSTM (Long Short-Term Memory) networks can work for sequential text data, especially if you want to capture contextual information from the abstracts. -->
+
+All available models are listed at [parsnip](https://tidymodels.org/find/parsnip)
+
+Some model parameters can be learned from data during fitting/training. Some CANNOT 😱. These are **hyperparameters of a model**, and we estimate them by training lots of models with different hyperparameters and comparing them
+
+
+
+### --- Check missing feature
+```{r}
+sum(!is.na(projs_train$pdo))
+sum(!is.na(projs_train$sector1)) /4403# 99
+sum(!is.na(projs_train$regionname)) / 4403  # 100%
+sum(!is.na(projs_train$countryname)) / 4403  # 100%
+sum(!is.na(projs_train$status)) / 4403  # 100%
+sum(!is.na(projs_train$lendinginstr)) / 4403  # 99% 
+sum(!is.na(projs_train$ESrisk)) / 4403  # 96% 
+sum(!is.na(projs_train$curr_total_commitment)) / 4403  # 100% 
+
+sum(!is.na(projs_train$theme1)) /4403 # 71% 
+table(projs_train$theme1, useNA = "ifany") # 71 levels
+sum(!is.na(projs_train$env_cat)) / 4403  # 73% 
+table(projs_train$env_cat , useNA = "ifany") # 7 levels
+```
+
+# TEXT CLASSIFICATION  for Environmental Assessment Category
+ 
+[Francom](chap 9.2.1 Text classification, p. 2018-)
+[text Classification (in R)](https://burtmonroe.github.io/TextAsDataCourse/Tutorials/TADA-ClassificationV2.nb.html)
+[Stanford slide](https://web.stanford.edu/class/cs124/lec/naivebayes2021.pdf)
+
+## 1) Select and engineer the features [using `projs_train`]
+
+### Recode `env_cat` 
+```{r}
+projs_train <- projs_train %>% 
+   # useful for later 
+   rename(., proj_id = "id") %>%
+   # env risk category
+   mutate(env_cat_f = fct_na_value_to_level(env_cat, level = "Unknown"  )) %>% 
+   mutate(env_cat_f = fct_recode(env_cat_f, 
+                              "A_high risk" = "A", 
+                              "B_med risk" = "B", 
+                              "C_low risk" = "C", 
+                              "F_fin expos" = "F", 
+                              "Other" = "H", 
+                              "Other" = "M", 
+                              "Other" = "U", 
+                              "Unknown" = "Unknown" )) %>% 
+   relocate(env_cat_f , .after = env_cat) %>% 
+   # collaapse env_cat_f into binary factor 
+   mutate(env_cat_f2 = fct_collapse(env_cat_f, 
+                                    "High-Med-risk" = c("A_high risk", "B_med risk"),
+                                    "Low-risk_Othr" = c("C_low risk", "F_fin expos", "Other", "Unknown")
+   )) %>% 
+   relocate(env_cat_f2, .after = env_cat_f)
+
+tabyl(projs_train, env_cat, show_na = TRUE) # 2 levels
+tabyl(projs_train, env_cat_f, show_na = TRUE) # 2 levels
+tabyl(projs_train, env_cat_f2, show_na = TRUE) # 2 levels
+```
+
+## 2) Split sample 
+### --- [1/2] Proportional sub-set `dplyr::slice_sample`
+```{r}
+#| eval: false
+
+# # Calculate proportions of missing and non-missing values in env_cat
+# proportion_missing <- projs_train %>%
+#   mutate(class_status = ifelse(is.na(env_cat), "Missing", "Not Missing")) %>%
+#   count(class_status) %>%
+#   mutate(prop = n / sum(n))
+# 
+# # Ensure the number of samples adds up to 500
+# set.seed(123)  # For reproducibility
+# 
+# # Define the number of samples for each group (rounding and adjusting for total = 500)
+# n_samples <- round(500 * proportion_missing$prop)
+# n_samples[1] <- 500 - sum(n_samples[-1])  # Adjust to ensure total is exactly 500
+# 
+# # Split the data into missing and non-missing groups
+# missing_group <- projs_train %>%
+#   filter(is.na(theme1)) %>%
+#   slice_sample(n = n_samples[proportion_missing$class_status == "Missing"])
+# 
+# not_missing_group <- projs_train %>%
+#   filter(!is.na(theme1)) %>%
+#   slice_sample(n = n_samples[proportion_missing$class_status == "Not Missing"])
+# 
+# # Combine the two groups
+# projs_train_smpl <- bind_rows(missing_group, not_missing_group)
+# 
+# # View the sample
+# print(projs_train_smpl)
+```
+
+### --- [2/2] Proportional sub-set `rsample::initial_split`
+Based on availability of `env_cat_f`. 
+
+We will use the `strata` argument to stratify the data by the outcome variable (`env_cat_f`). This will ensure that the *training* and *validation* sets have the same proportion.
+```{r}
+# Create a stratified split based on missing vs non-missing env_cat
+projs_train <- projs_train %>%
+  mutate(class_status = ifelse(env_cat_f == "Unknown", "Missing", "Not Missing"))
+
+table(projs_train$class_status, useNA = "ifany")
+
+# Create the split BUT ONLY OF THE NON MISSING env_cat_f 
+
+## --- 0) THIS WILL BE 4 TRAINING & VALIDATION 
+env_cat_ok <- projs_train %>% 
+  filter(class_status == "Not Missing") # 3236 proj 
+
+# SPLIT INTO TRAINING, VALIDATION 
+set.seed(123)  # Ensure reproducibility
+env_split <- initial_split(env_cat_ok, prop = 0.7, # 70% training, 30% testing
+                       strata = env_cat_f) # stratify by OUTCOME 
+
+## -- 1) for training (labelled `env_cat_f`)
+env_cat_train <- training(env_split) # 2265 proj
+
+## -- 2) for validation (labelled `env_cat_f`)
+env_cat_val <- testing(env_split) # 971 proj
+
+# # UNLABELLED PORTION 
+## -- 3) for actual test (UNlabelled `env_cat_f`)
+env_cat_missing <- projs_train %>% 
+  filter(class_status == "Missing") # 1167 proj 
+
+# check ditribution of `env_cat_f` in training and validation
+tabyl(env_cat_train, env_cat_f) |> adorn_totals("row") |> adorn_pct_formatting(digits = 1)# 
+tabyl(env_cat_val, env_cat_f)|> adorn_totals("row") |> adorn_pct_formatting(digits = 1)# 
+```
+
+```{r}
+rm( env_cat_ok)
+```
+
+#### Identify features for classification
+
+These could be: 
+
++ *features derived from raw text* (e.g. characters, words, ngrams, etc.), 
++ *feature vectors* (e.g. word embeddings), or 
++ *meta-linguistic features* (e.g. part-of-speech tags, syntactic parses, or semantic features) 
+
+```{r}
+paint(env_cat_train)
+```
+
+How do we use them? 
+
++ Do we use raw token counts?  
++ Do we use normalized frequencies?
++ Do we use some type of weighting scheme? ✅
+   + yes, we use `tf-idf` (a weighting scheme, which will downweight words that are common across all documents and upweight words that are unique to a document)
++ Do we use some type of dimensionality reduction? ✅
+
+## 3) Define preprocessing steps 
+### Prep recipe [`base_recipe` -> `env_recipe`]
+```{r}
+# create a recipe
+base_rec <- recipes::recipe (
+   formula = env_cat_f2 ~ pdo,
+   data = env_cat_train
+)
+# preview the recipe
+base_rec
+```
+
+###  Add steps to the recipe
+
+{`textrecipes`} provides a number of step functions for pre-processing text data. These include functions to tokenize (e.g. `step_tokenize()`), remove stop words (e.g. step_stopwords()), and to derive meta-features (e.g. `step_lemma()`, `step_stem()`, etc.)1. Furthermore, there are functions to engineer features in ways that are particularly relevant to text data, such as feature frequencies and weights (e.g. `step_tf()`, `step_tfidf()`, etc.) and token filtering (e.g. `step_tokenfilter()`).
+
++ `step_tokenize()`
++ `step_tfidf()` 
+   + `smooth_idf = FALSE` (terms that appear in many (or all) documents will not be downweighted as much as they would be if the smoothing term was not added)
+ 
+```{r}
+# add step to recipe
+env_recipe <- recipes::recipe (
+   formula = env_cat_f2 ~ pdo,
+   data = env_cat_train) %>%
+   step_tokenize(pdo) %>%   # tokenize
+   step_tfidf(pdo, smooth_idf = FALSE)     # tf-idf  creates matrix of term frequencies weighted by inverse document frequency 
+
+# Review the recipe   
+env_recipe
+
+# Run the recipe 
+env_recipe_bake <-  env_recipe %>% 
+   # chooses the parameters for the recipe based on the data
+   prep(training = NULL) %>% 
+   # applies the recipe to the data
+   bake(new_data = NULL)
+
+# preview the baked recipe -- TOO SPARSE 
+dim(env_recipe_bake)
+#[1] 2264 7516
+```
+
+The resulting engineered features data frame has `2264` observations and `7516` variables!!! 
+I.e. for each writing sample, only a small subset of them will actually appear, most of our cells will be filled with zeros. This is what is known as a **sparse matrix**. Furthermore, the more features we have, the more chance these features will capture the nuances of these particular writing samples increasing the likelihood we **overfit the model**. 
+
+### Improve recipe [`env_recipe`]
+
++ We can filter out features by stopword list or 
++ Filter by frequency of occurrence
+
+```{r}
+# -- Rebuild recipe with tokenfilter step
+env_recipe <- base_rec %>%
+   # tokenize
+   step_tokenize(pdo) %>%   
+   # filter by frequency of occurrence
+   step_tokenfilter(pdo, max_tokens = 100) %>%  
+   # tf-idf  creates matrix of weighted term frequencies  
+   step_tfidf(pdo, smooth_idf = FALSE)      
+
+# -- Run the recipe 
+env_recipe_bake <-  env_recipe %>% 
+   # chooses the parameters for the recipe based on the data
+   prep(training = NULL) %>% 
+   # applies the recipe to the data
+   bake(new_data = NULL)
+
+# -- preview the baked recipe
+dim(env_recipe_bake)
+#[1] 2264 7516 --> #[1] 2264 101
+
+# subset check
+env_recipe_bake[1:5, 1:10 ]
+```
+
+## 4) Select classification model
+
+### Logistic Regr Model [`env_spec`]
+
+Let's start with a simple logistic regression model to see how well we can classify the texts in the training set with the features we have engineered. We will use the `logistic_reg()` function from {`parsnip`} to specify the logistic regression model. We then select the implementation engine (`glmnet` General Linear Model) and the mode of the model (`classification`). 
+
+
+### --- Model specification 
+
+```{r}
+# Create a model specification
+env_spec <-
+   # generalized linear model for binary outcomes
+   parsnip::logistic_reg(
+      # A non-negative number representing the total amount of regularization
+      penalty = tune(),  # 0 = no penalty, 1 = max
+      #A number between zero and one (inclusive) 
+      mixture = 1 # pecifies a pure lasso model,
+   ) %>%
+   set_engine("glmnet")
+
+# Preview 
+env_spec
+```
+
+### Create workflow [`env_wf`]
+
+Check the resulting workflow (*a container object that aggregates information required to fit and predict from a model*) by adding the recipe and model to it.
+```{r}
+# Create a workflow
+env_wf <- workflows::workflow() %>%
+   add_recipe(env_recipe) %>%
+   add_model(env_spec)
+
+# Preview
+env_wf
+```
+
+## 5) Tuning hyperparameters
+
+Different algorithms will have different parameters that can be adjusted which can affect the performance of the model (**hyperparameters**) ≠ **parameters** (features) --> **hyperparameters tuning** which is topically done during fitting the model to the training set and evaluating its performance
+
+
+### --- Penalty tuning [`env_grid`]
+
+In logistic regression, the penalty hyperparameter is like a control that helps prevent the model from becoming too complex and overfitting to the training data. There are two common types of penalties:
+
++ **L1 (Lasso)**: Encourages the model to *use fewer features* by making some of the coefficients exactly zero. This can simplify the model.
++ **L2 (Ridge)**: Tries to keep all the coefficients small but not exactly zero, which can help stabilize the model and avoid overfitting.
+
++ the logistic regression model using `glmnet` can be tuned to prevent *overfitting* by adjusting the `penalty` and `mixture` (combination of L1 and L2) hyperparameters
+   + In our `env_spec` model, `tune()` was a **placeholder for a range of values** for the penalty hyperparameter.
+   + To tune the *penalty hyperparameter*, we use the` grid_regular()` function from {`dials`} to specify a grid of values to try.
++ The package `dials` contains infrastructure to create and manage values of tuning parameters for the `tidymodels` packages. 
+
+```{r}
+# Create a grid of values for the penalty hyperparameter (random set of 10 values)
+env_grid <- dials::grid_regular(
+  penalty(), levels = 10)
+
+# Preview
+env_grid 
+# 0 no penalty
+# ... 
+# 1 max penalty
+```
+
+### --- K-fold cross-validation (for penalty optimal #) [ `env_fold`, `env_tune`]
+
+Now to perform the tuning and choose an optimal value for penalty we need to create a **tuning workflow**. We use the strategy of resampling (splitting `env_cat_train` in multiple training/testing sets) called **k-fold cross-validation** to arrive at the *optimal value for the penalty hyperparameter*. 
+```{r}
+# Create a resampling object
+env_vfold <- rsample::vfold_cv(env_cat_train, v = 10)
+
+# Create a tuning workflow
+env_tune <- tune::tune_grid(
+  object = env_wf,
+  resamples = env_vfold,
+  grid = env_grid,
+  control = control_grid(save_pred = TRUE)
+)
+
+# preview
+env_tune
+```
+
+The `env_tune` object contains the results of the tuning for each fold. We can see the results of the tuning for each fold by calling the `collect_metrics()` function on the `cls_tune` object
+```{r}
+# Collect the results of the tuning
+env_tune_metrics <- tune::collect_metrics(env_tune)
+
+# visualize the results
+autoplot(env_tune)
+
+# in roc_auc: many many of the penalty values performed similarly, with a drop-off in performance at the higher val- ues
+```
+
+The most common metrics for model performance in classification are *accuracy* and the area under the *receiver operating characteristic area under the curve* (`ROC-AUC`). Accuracy is simply the proportion of correct predictions. The `ROC-AUC` provides a single score which summarizes how well the model can distinguish between classes. The closer to 1 the more discriminative power the model has.
+
+Conveniently, the `show_best()` function from {`tune`} takes a `tune_grid` object and returns the *best performing hyperparameter values*.
+
+```{r}
+# Show the best hyperparameter values
+show_best(env_tune, metric = "roc_auc")
+
+# Make selection programmatically
+env_best <- select_best(env_tune, metric ="roc_auc")
+env_best
+
+env_best_acc <- select_best(env_tune, metric ="accuracy")
+env_best_acc
+
+env_best_brier <- select_best(env_tune, metric ="brier_class")
+env_best_brier
+
+```
+
+## 6) Update model specification and workflow with best HP
+### Update workflow [`env_wf_lasso`]
+
+Now we can update the model specification and workflow with the best performing hyperparameter value using the previous `cls_wf_tune` workflow and the `finalize_workflow()` function.
+
+```{r}
+# Update the workflow/model specification
+env_wf_lasso <- env_wf %>% 
+   tune::finalize_workflow(env_best)
+
+# Preview updated workflow object (with defined penalty paramv  0.00599)
+env_wf_lasso
+```
+
+## 7) Assess the model performance on training set
+
+### --- Assess the model  w cross-valid [`env_lasso_cv`]
+The next step is to assess the performance of the model (in wf `env_wf_lasso`) on the training set given the features we have engineered, the algorithm we have selected, and the hyperparameters we have tuned. 
+
+Instead of evaluating the model on the training set directly, we will use *cross-validation on the training set* to gauge the variability of the model (as the model’s performance on the entire training set at once is not a reliable indicator of the model’s performance on new data). In fact:
+   + **Cross-validation** is a technique that allows us to estimate the model’s performance on new data by simulating the process of training and testing the model *on different subsets of the training data* (from `env_vfold`.
+   + the function `tune::fit_resamples()` fits the model to the training data and evaluate its performance.
+
+```{r}
+# (this is similar to env_tune) 
+
+# Cross validate the (optimized) workflow
+env_lasso_cv <- env_wf_lasso %>%
+   tune::fit_resamples(
+      # 10 fold cross validation splits
+      resamples = env_vfold,
+      # save predictions for confusion matrix
+      control = control_resamples(save_pred = TRUE)
+   )
+```
+
+We want to aggregate the metrics across the folds to get a sense of the variability of the model. The `collect_metrics()` function takes the results of a cross-validation and returns a data frame with the metrics.
+```{r}
+env_lasso_cv[[3]][[1]] # 1st split 
+env_lasso_cv[[3]][[3]] # 3rd split
+
+# Collect the results of the cross-validation (this is the average from the 10 splits!)
+collect_metrics(env_lasso_cv)
+```
+
+From the accuracy and ROC-AUC metrics it appears we have a decent candidate model, but there is room for potential improvement. A good next step is to evaluate the model errors and see if there are any patterns that can be addressed before considering what approach to take to improve the model.
+
+### --- Visualize the confusion matrix
+The **confusion matrix** is a table that shows the number of true positives, true negatives, false positives, and false negatives. It is a useful tool for understanding the model’s errors and can help identify patterns that can be addressed to improve the model.
+
++ The `conf_mat_resampled()` function takes a `fit_resamples` object (with predictions saved) and returns a table `(tidy = FALSE)` with the confusion matrix for the aggregated folds. We can pass this to the `autoplot()` function to plot
+    +this is done on the cross-valid results `env_lasso_cv` (?!)
+
+```{r}
+# Plot the confusion matrix
+env_lasso_cv %>%
+   tune::conf_mat_resampled(tidy = FALSE) %>%
+   autoplot(type = "heatmap")
+
+
+# 137.2 = true positives 
+# 33.6 = true negatives
+
+# 40.5 = false positives
+# 15.1 = false negatives
+```
+
+There are more false positives (*low risk predicted to be high risk*) than false negatives. (This is a common issue in imbalanced datasets and can be addressed by adjusting the decision threshold of the model.)
+
+### --- [FIG] Assessing performance [`env_lasso_fit`] on training set
+```{r}
+# Fit the model to the training set
+env_lasso_fit <- env_wf_lasso %>%
+   fit(data = env_cat_train)
+
+# Example of a data frame containing actual and predicted values
+pred_long  <- predict(env_lasso_fit, new_data = env_cat_train , type = "prob")|>
+   bind_cols(env_cat_train) %>% 
+   select(env_cat_f2,  pred_high_risk = '.pred_High-Med-risk', pred_low_risk = '.pred_Low-risk_Othr')   %>%
+   pivot_longer(cols = c(pred_high_risk, pred_low_risk),
+                names_to = "risk_type", values_to = "risk_value")
+
+# Plot the predictions with boxplots and jittered points without duplicate legends
+ggplot(pred_long, aes(x = env_cat_f2, y = risk_value, fill = risk_type)) +
+  geom_boxplot(alpha = 0.4, position = position_dodge(width = 0.8)) +
+  #geom_jitter(alpha = 0.6, position = position_dodge(width = 0.8)) +  # Remove width and use position_dodge
+   labs(title = "Predicted High and Low Risk Distribution by Env Category",
+        subtitle = "Model: Lasso Regression fitted on training data",
+       x = "ACTUAL",
+       y = "PREDICTED",
+       fill = "Risk Type") +  # Set label for fill legend
+  theme_minimal() +
+  guides(color = "none")  # Suppress the color legend
+```
+
+# ___
+# OTHER ATTEMPS to improve model 
+# ___
+
+## Improved supervised learning models
+To improve supervised learning models, consider:
+
+1. **Engineering the features differently**
+   + we set a token filter to limit the number of features to 100, which we could adjust (`max_tokens`)
+2. Selecting different (or additional) features
+3. Changing the algorithm
+4. Tuning the hyperparameters differently
+
+```{r}
+env_wf_lasso
+```
+
+
+
+# ___ 
+
+## [🤞🏻] Add stopwords exclusion to the recipe
+
+### 1) Select and engineer the features (same)
+```{r}
+# (same)
+# projs_train <- projs_train %>%
+#    mutate(class_status = ifelse(env_cat_f == "Unknown", "Missing", "Not Missing"))
+# 
+# table(projs_train$class_status, useNA = "ifany")
+```
+
+### 2) Split sample (same)
+```{r}
+# # (LABELLED) NON MISSING env_cat_f
+# ## --- 0) THIS WILL BE 4 TRAINING & VALIDATION
+# env_cat_ok <- projs_train %>%
+#    filter(class_status == "Not Missing") # 3236 proj
+# # SPLIT INTO TRAINING, VALIDATION
+# set.seed(123)  # Ensure reproducibility
+# env_split <- initial_split(env_cat_ok, prop = 0.7, # 70% training, 30% testing
+#                            strata = env_cat_f) # stratify by OUTCOME
+# ## -- 1) for training (labelled `env_cat_f`)
+# env_cat_train <- training(env_split) # 2265 proj
+# ## -- 2) for validation (labelled `env_cat_f`)
+# env_cat_val <- testing(env_split) # 971 proj
+# # UNLABELLED PORTION
+# ## -- 3) for actual test (UNlabelled `env_cat_f`)
+# env_cat_missing <- projs_train %>%
+#    filter(class_status == "Missing") # 1167 proj
+# # check ditribution of `env_cat_f` in training and validation
+# tabyl(env_cat_train, env_cat_f) |> adorn_totals("row") |> adorn_pct_formatting(digits = 1)#
+# tabyl(env_cat_val, env_cat_f)|> adorn_totals("row") |> adorn_pct_formatting(digits = 1)#
+```
+
+### 3) Define preprocessing steps (NEW!)
+```{r}
+# Create a custom stopword list
+stop_vector <- custom_stop_words_df %>%  pull(word)
+```
+
+### --- Improve recipe [`env_stop_recipe`]
+```{r}
+# ---  Create a recipe with a token filter step that excludes stopwords
+# Rebuild recipe with tokenfilter step
+env_stop_recipe <- recipes::recipe (
+   formula = env_cat_f2 ~ pdo,
+   data = env_cat_train) %>%
+   step_tokenize(pdo) %>%   # tokenize
+   # remove CUSTOM stopwords
+   step_stopwords(pdo, custom_stopword_source = stop_vector) %>%  
+   step_tokenfilter(pdo, max_tokens = 100) %>%  # filter by frequency of occurrence
+   step_tfidf(pdo, smooth_idf = FALSE)      # tf-idf  creates matrix of weighted term frequencies  
+
+# prep and bake the recipe
+env_stop_recipe_bake <-  env_stop_recipe %>% 
+  prep() %>% 
+   bake(new_data = NULL)
+
+# preview the baked recipe
+dim(env_stop_recipe_bake)
+#[1] 2264 101
+env_recipe_bake[1:5, 1:10]
+env_stop_recipe_bake[1:5, 1:10]
+```
+
+### 4) Select a classification algorithm (same)
+ 
+### --- Model specification 
+```{r}
+# Create a model specification
+env_spec <-
+   # generalized linear model for binary outcomes
+   parsnip::logistic_reg(
+      # A non-negative number representing the total amount of regularization
+      penalty = tune(),  # 0 = no penalty, 1 = max
+      #A number between zero and one (inclusive)
+      mixture = 1 # pecifies a pure lasso model,
+   ) %>%
+   set_engine("glmnet")
+                           ##### tune() IS A PLACEHOLDER
+# Preview
+env_spec
+```
+
+### --- Create workflow [`env_stop_wf`]
+
+`env_stop_recipe` is actually the part that changed in this workflow adding `step_stopwords()`.
+```{r}
+# Create a workflow
+env_stop_wf <- workflows::workflow() %>%
+   add_recipe(env_stop_recipe) %>%  # NEW RECIPE
+   add_model(env_spec)
+# Preview
+env_stop_wf
+```
+
+## 4) Tuning hyperparameters (same)
+### --- Penalty tuning [`env_grid`] (same)
+
+```{r}
+# Create a grid of values for the penalty hyperparameter (random set of 10 values)
+env_grid <- dials::grid_regular(
+  penalty(), levels = 10
+  )
+# Preview
+env_grid 
+```
+
+### --- K-fold cross-val  [`env_fold`, `env_stop_tune`] (same/NEW)
+```{r}
+# Create a resampling object
+env_vfold <- rsample::vfold_cv(env_cat_train, v = 10)
+
+# Create a tuning workflow
+env_stop_tune <- tune::tune_grid(
+  object = env_stop_wf, # changed ! 
+  resamples = env_vfold,
+  grid = env_grid,
+  control = control_grid(save_pred = TRUE)
+)
+# preview
+env_stop_tune
+```
+
+The `env_stop_tune` object contains the results of the tuning for each fold. We can see the results of the tuning for each fold by calling the `collect_metrics()` function on the `env_stop_tune` object
+```{r}
+# Collect the results of the tuning
+env_stop_tune_metrics <- tune::collect_metrics(env_stop_tune)
+
+# visualize the results
+autoplot(env_stop_tune)
+
+# in roc_auc: many many of the penalty values performed similarly, with a drop-off in performance at the higher val- ues
+```
+
+Conveniently, the `tune::show_best()` function takes a `tune_grid` object and returns the *best performing hyperparameter values*.
+
+```{r}
+# Show the best hyperparameter values
+show_best(env_stop_tune, metric = "roc_auc")
+
+# Make selection programmatically
+env_stop_best <- select_best(env_stop_tune, metric ="roc_auc")
+env_stop_best
+
+env_stop_best_acc <- select_best(env_stop_tune, metric ="accuracy")
+env_stop_best_acc
+
+env_stop_best_brier <- select_best(env_stop_tune, metric ="brier_class")
+env_stop_best_brier
+```
+
+## 5) Update model specification and workflow with best HP (NEW)
+### Update workflow [`env_stop_wf_lasso`]
+
+Now we can update the model specification and workflow with the best performing hyperparameter value using the previous `cls_wf_tune` workflow and the `finalize_workflow()` function.
+
+```{r}
+# Update the model specification
+env_stop_wf_lasso <- env_stop_wf %>% 
+   tune::finalize_workflow(env_stop_best)
+
+# Preview updated workflow object (with defined penalty paramv  0.00599)
+env_stop_wf_lasso
+```
+
+## 6) Assess the model performance on training set
+
+### --- Assess the model  w cross-valid [`env_stop_lasso_cv`]
+```{r}
+# (this is similar to env_tune) 
+
+# Cross validate the (optimized) workflow
+env_stop_lasso_cv <- env_stop_wf_lasso %>%
+   tune::fit_resamples(
+      # 10 fold cross validation splits
+      resamples = env_vfold,
+      # save predictions for confusion matrix
+      control = control_resamples(save_pred = TRUE)
+   )
+```
+
+We want to aggregate the metrics across the folds to get a sense of the variability of the model. The `collect_metrics()` function takes the results of a cross-validation and returns a data frame with the metrics.
+```{r}
+env_stop_lasso_cv[[3]][[1]] # 1st split 
+env_stop_lasso_cv[[3]][[3]] # 3rd split
+
+# Collect the results of the cross-validation (this is the average from the 10 splits!)
+collect_metrics(env_stop_lasso_cv)
+# 1 accuracy    binary     0.749    10 0.0118  Preprocessor1_Model1
+# 2 brier_class binary     0.171    10 0.00503 Preprocessor1_Model1
+# 3 roc_auc     binary     0.783    10 0.0101  Preprocessor1_Model1
+
+# OLD 
+collect_metrics(env_lasso_cv)
+#1 accuracy    binary     0.754    10 0.00997 Preprocessor1_Model1
+#2 brier_class binary     0.174    10 0.00371 Preprocessor1_Model1
+#3 roc_auc     binary     0.776    10 0.00813 Preprocessor1_Model1
+```
+
+Improved a little `roc_auc` but with a slight decrease in `accuracy` and `brier_class` compared to the previous model!  
+
+### --- Visualize the confusion matrix
+```{r}
+# BTW 
+collect_predictions(env_stop_lasso_cv)
+```
+
+This is done on the cross-valid results `env_stop_lasso_cv` (?!)
+
+```{r}
+# Plot the confusion matrix
+env_stop_lasso_cv %>%
+   tune::conf_mat_resampled(tidy = FALSE) %>%
+   autoplot(type = "heatmap")
+
+# 137.2 = true positives  --> 136.4 
+# 33.6 = true negatives  --> 33.1
+
+# 40.5 = false positives  --> 40.8
+# 15.1 = false negatives  --> 16.1
+```
+
+There are more false positives (*low risk predicted to be high risk*) than false negatives. (This is a common issue in imbalanced datasets and can be addressed by adjusting the decision threshold of the model.)
+
+### --- [FIG] Assessing performance [`env_stop_lasso_fit`] on training set
+```{r}
+# Fit the model on the training set
+env_stop_lasso_fit <- env_stop_wf_lasso %>% # NEW
+   fit(data = env_cat_train)
+
+# Example of a data frame containing actual and predicted values
+pred_stop_long  <- predict(env_stop_lasso_fit, new_data = env_cat_train , type = "prob")|>
+   bind_cols(env_cat_train) %>% 
+   select(env_cat_f2,  pred_high_risk = '.pred_High-Med-risk', pred_low_risk = '.pred_Low-risk_Othr')   %>%
+   pivot_longer(cols = c(pred_high_risk, pred_low_risk),
+                names_to = "risk_type", values_to = "risk_value")
+
+# Plot the predictions with boxplots and jittered points without duplicate legends
+ggplot(pred_stop_long, aes(x = env_cat_f2, y = risk_value, fill = risk_type)) +
+  geom_boxplot(alpha = 0.4, position = position_dodge(width = 0.8)) +
+  #geom_jitter(alpha = 0.6, position = position_dodge(width = 0.8)) +  # Remove width and use position_dodge
+   labs(title = "Predicted High and Low Risk Distribution by Env Category",
+        subtitle = "Model: Lasso Regression fitted on training data",
+       x = "ACTUAL",
+       y = "PREDICTED",
+       fill = "Risk Type") +  # Set label for fill legend
+  theme_minimal() +
+  guides(color = "none")  # Suppress the color legend
+```
+This model did not improve much! 
+
+## 7) Evaluate the best model on the validation/test set
+
+<!-- FRAMCOM p [264 -271]  -->
+To do this we need to fit the tuned workflow to the training set, which is the actual training phase. We will use the `last_fit()` function from {`workflows`}
+
+Le's use the updated workflow `env_stop_wf_lasso`  
+
+RECALL I DID 
+
+1. for training (labelled `env_cat_f`)
+`env_cat_train <- training(env_split)` # 2265 proj
+
+2. for validation (labelled `env_cat_f`)
+`env_cat_val <- testing(env_split)` # 971 proj
+
+
+### --- Fit the model to the training set and evaluate on the validation set
+```{r}
+# fit the model to the training set and evaluate on the validation set
+env_stop_lasso_final_fit <- last_fit(
+   env_stop_wf_lasso, 
+   split = env_split)
+
+# Evaluate the model on the validation set (in my case)
+collect_metrics(env_stop_lasso_final_fit)
+
+# 1 accuracy    binary         0.762 Preprocessor1_Model1
+# 2 roc_auc     binary         0.807 Preprocessor1_Model1
+# 3 brier_class binary         0.163 Preprocessor1_Model1
+```
+The performance metrics are very close to those we achieved on the training set -->  good sign that the model is robust as it performs well on both training and ~~test~~ (validation) sets. 
+ 
+### --- Visualize the confusion matrix
+
+```{r}
+# Plot the confusion matrix
+env_stop_lasso_final_fit %>%
+   collect_predictions() %>%
+   conf_mat(truth = env_cat_f2, estimate = .pred_class) %>%
+   autoplot(type = "heatmap")
+```
+Still (on the validation set) imbalanced false positives (174) and false negatives (74).
+
+##  [🚫] Change `max_tokens` in the recipe
+<!-- To help select the optimal number of tokens, we again can use the tuning process we explored for the hyperparameters. This time, however, the `tune()` placeholder will be included as the argument to the `max_tokens` argument in the `step_tokenfilter()` function. -->
+
+<!-- ```{r} -->
+<!-- # --- original  -->
+<!-- # env_recipe <- base_rec %>% -->
+<!-- #   step_tokenize(pdo) %>%   # tokenize -->
+<!-- #   step_tokenfilter(pdo, max_tokens = 100) %>%  # filter by frequency of occurrence -->
+<!-- #   step_tfidf(pdo, smooth_idf = FALSE)      # tf-idf  creates matrix of weighted term frequencies   -->
+
+<!-- # ---  Create a recipe with a token filter step -->
+<!-- env_recipe <- recipe( -->
+<!--    formula = env_cat_f2 ~ pdo,  -->
+<!--    data = env_cat_train) %>% -->
+<!--    step_tokenize(pdo) %>% -->
+<!--    # step_tokenfilter(pdo, max_tokens = 100) %>% -->
+<!--    step_tokenfilter(pdo, max_tokens = tune()) %>% -->
+<!--    step_tfidf(pdo)   -->
+
+<!-- env_recipe -->
+<!-- ``` -->
+
+<!-- #### --- Update the workflow with the new recipe [`env_wf_lasso`] -->
+<!-- With the updated recipe, we can update the `env_wf_lasso` and tune the max_tokens hyperparameter.  -->
+<!-- ```{r} -->
+<!-- # Update the workflow with token filter tuning -->
+<!-- env_wf_lasso <- env_wf_lasso %>%  -->
+<!--    update_recipe(env_recipe) -->
+
+<!-- env_wf_lasso -->
+<!-- ``` -->
+
+<!-- #### --- Update the grid of values for the max tokens hyperparameter [`env_grid`] -->
+<!-- We will want to consider what values of max_tokens we want to use to tune the hyperparameter. So instead of only specifying the levels in the `grid_regular()` function, we are best off to provide a reasonable *range of values* [100 and 2,000 to start].  -->
+<!-- ```{r} -->
+<!-- # Create a grid of values for the max tokens hyperparameter -->
+<!-- env_grid <- grid_regular( -->
+<!--   max_tokens(range = c(100, 2000)), levels = 5 -->
+<!-- ) -->
+
+<!-- # Preview the grid -->
+<!-- env_grid -->
+<!-- ``` -->
+
+<!-- #### --- re-Tune the hyperparameter [`env_tune`] -->
+<!-- Now we can re-tune the hyperparameter with the updated grid of values (Steps 9.15 -- 9.19)  -->
+
+<!-- The `env_tune` object contains the results of the tuning for each fold. We can see the results of the tuning for each fold by calling the `collect_metrics()` function on the `cls_tune` object -->
+
+<!-- ```{r} -->
+
+<!-- # SAME PROCESS AS BEFORE TO tune the max_tokens HP, select the best value, finalized the workflow -->
+<!-- # --- 9.15  -->
+<!-- set.seed(123) -->
+
+<!-- # Create a resampling object -->
+<!-- env_vfold <- vfold_cv(env_cat_train, v = 10) -->
+
+<!-- # Tune the model with the updated grid -->
+<!-- env_tune <- tune_grid( -->
+<!--   object = env_wf_lasso, -->
+<!--   resamples = env_vfold, -->
+<!--   grid = env_grid  -->
+<!-- ) -->
+
+<!-- # --- 9.16  -->
+<!-- # Collect the results of the tuning -->
+<!-- env_tune_metrics <- collect_metrics(env_tune) -->
+
+<!-- # visualize the results -->
+<!-- autoplot(env_tune) -->
+
+<!-- # --- 9.17  -->
+<!-- # Show the best hyperparameters -->
+<!-- env_tune %>%  -->
+<!--    show_best(metric = "roc_auc")  -->
+
+<!-- # --- 9.18 -->
+<!-- # Select the best hyperparameter -->
+<!-- env_best <- env_tune %>% select_best(metric ="roc_auc") -->
+<!-- env_best -->
+
+<!-- # --- 9.19  -->
+<!-- # Update model  -->
+<!-- env_wf_lasso <- finalize_workflow(env_wf_lasso, env_best) -->
+<!-- env_wf_lasso -->
+<!-- ``` -->
+
+
+<!-- #### --- re-Assess the model performance w cross-valid [`env_lasso_tokens_cv`] -->
+<!-- <!-- p. 263  -->  
+<!-- After tuning the `max_tokens` hyperparameter, the best performing value is 2000. We now used the updated `cls_wf_lasso_tokens` workflow to cross- validate the model and collect the metrics.  -->
+
+<!-- ```{r} -->
+<!-- # Cross-validate the workflow with the updated recipe -->
+<!-- env_lasso_tokens_cv  <- env_wf_lasso %>% -->
+<!--    fit_resamples( -->
+<!--       resamples = env_vfold, -->
+<!--       # save predictions for confusion matrix -->
+<!--       control = control_resamples(save_pred = TRUE) -->
+<!--    ) -->
+
+<!-- # Collect metrics -->
+<!-- collect_metrics(env_lasso_tokens_cv) -->
+
+<!-- #   .metric     .estimator  mean     n std_err .config              -->
+<!-- #   <chr>       <chr>      <dbl> <int>   <dbl> <chr>                -->
+<!-- # 1 accuracy    binary     0.779    10 0.00906 Preprocessor1_Model1 -->
+<!-- # 2 brier_class binary     0.154    10 0.00395 Preprocessor1_Model1 -->
+<!-- # 3 roc_auc     binary     0.826    10 0.00633 Preprocessor1_Model1 -->
+<!-- ``` -->
+
+<!-- Didn't improve much from the previous model. -->
+
+<!-- #### --- re-plot confusion matrix [`env_lasso_tokens_cv`] -->
+
+<!-- ```{r} -->
+<!-- # Create a confusion matrix -->
+<!-- env_lasso_tokens_cv %>% -->
+<!--   conf_mat_resampled(tidy = FALSE) |> -->
+<!--   autoplot(type = "heatmap") -->
+<!-- ``` -->
+
+
+
+
+
+
+ 
+# >>>>>> QUI <<<<<<<<<<<<<<<<<< 
+ 
+
+
+# _________________________________________________________
+# NEXT model options ...  
+
+.... follow the grid in `analysis/_zz_old_files/classific_steps.R`
+
+
+## [🤞🏻] Logistic with text and `sector1` and `regionname` as predictors
++ can I add non text features? [smltar 7.7](https://smltar.com/mlclassification#case-study-including-non-text-data)
+
+## [🤞🏻] Naive bayes classific with text and `sector1` and `regionname` as predictors
++ can I use a different model? [eg Naive bayes]
+
+## [🤞🏻] ??? classific with multiclass outcome? 
++ What if Y is multi-class?  [smltar 7.6](https://smltar.com/mlclassification#mlmulticlass)
+
+
+# _________________________________________________________
+# NEXT QUESTIONS 
+# _________________________________________________________
+
+### --- Inspecting what features are most important for predicting 
+
++ Which risk levels are more difficult to predict/ classify?
++ Which features are most important for predicting risk levels?
+
+```{r}
+# collect the predictions from the final model
+env_stop_lasso_fit_preds_valid <- env_stop_lasso_final_fit %>%
+   collect_predictions() %>%
+   bind_cols(env_cat_val)  %>%
+   rename(env_cat_f2 = 'env_cat_f2...6') %>% 
+   select ( -'env_cat_f2...21')
+
+#preview the predictions
+glimpse(env_stop_lasso_fit_preds_valid)
+```
+
+I will then select the columns with the actual outcome, the predicted outcome, the proficiency level, and the text and separate the predicted outcome to in- spect them separately, as seen in
+
+```{r}
+env_stop_lasso_fit_preds_valid %>%
+    filter(env_cat_f2 != .pred_class ) %>%  
+   select(env_cat_f2, .pred_class,  env_cat_f, pdo, proj_id) 
+
+```
+
+### --- Inspect proj falsely predicted to be natives
+```{r}
+env_stop_lasso_fit_preds_valid %>%
+   filter(env_cat_f2 == 'High-Med-risk' & .pred_class == 'Low-risk_Othr') %>%  
+   select(env_cat_f2, .pred_class,  env_cat_f, pdo, proj_id) %>% 
+   count(env_cat_f )
+```
+
+ <!-- EXAMPLE 9.32  ( 268 - 271)  -->
+
+# Naive Bayes (🟢rivedere seguendo FRANCOM)
+
++ **Naive Bayes** on:
+   + `env_cat` is the "CLASS" I am interested in predicting 
+   + *Environmental Assessment Category*     |envassesmentcategorycode
+
+<!-- #### [NOPE🚫] Tokenization and Stopword Removal from `theme1` -->
+```{r}
+#| eval: FALSE
+
+# names(projs_train_smpl)
+# all_stopwords <- custom_stop_words_df
+# 
+# # --- Step 1: Tokenization and Stopword Removal from `theme1` ---
+# # Tokenize and remove stopwords from the `theme1` variable
+# tokenized_theme1 <- projs_train_smpl %>%
+#   select(id, theme1) %>%
+#   unnest_tokens(word, theme1) %>%  # Tokenize `theme1` into words
+#   anti_join(all_stopwords, by = "word")  # Remove stopwords
+# 
+# # Check intermediate result for `theme1` tokenization
+# print(tokenized_theme1)
+# 
+# # --- Step 2: Identify Most Frequent Tokens in `theme1` ---
+# # Find the most frequent tokens in `theme1`
+# frequent_theme1_tokens <- tokenized_theme1 %>%
+#   count(word, sort = TRUE) %>%
+#   top_n(20)  # Select top 20 most frequent words
+# 
+# # Check the most frequent tokens in `theme1`
+# print(frequent_theme1_tokens)
+```
+
+#### Tokenization and Stopword Removal from `pdo`
+```{r}
+#| eval: FALSE
+
+
+names(projs_train_smpl)
+all_stopwords <- custom_stop_words_df
+# 
+# --- Tokenization and Stopword Removal from `pdo` ---
+# Tokenize and remove stopwords using tidytext for the `pdo` variable
+tokenized_pdo <- projs_train_smpl %>%
+  select(id, pdo) %>%
+  unnest_tokens(word, pdo) %>%
+  anti_join(all_stopwords, by = "word")
+
+# Check intermediate result after tokenization and stopword removal in `pdo`
+print(tokenized_pdo)
+
+# --- Filter `pdo` Tokens Based on Frequent Tokens in `theme1` ---
+# Keep only the tokens in `pdo` that are among the most frequent tokens in `theme1`
+tokenized_pdo <- tokenized_pdo #%>%
+  #filter(word %in% frequent_theme1_tokens$word)
+
+# Check the filtered tokens in `pdo`
+print(tokenized_pdo)
+```
+
+#### Select the Top 20 TF-IDF Features 
+```{r}
+#| eval: FALSE
+
+
+# --- Step 5: Calculate TF-IDF for `pdo` Tokens ---
+# Calculate TF-IDF for the filtered `pdo` tokens
+tfidf_pdo <- tokenized_pdo %>%
+  count(id, word, sort = TRUE) %>%
+    # Calculate TF-IDF
+   bind_tf_idf(word, id, n) 
+
+# Check intermediate result after TF-IDF calculation
+print(tfidf_pdo)
+
+# Take only the top 15 words (by largest tf_idf value) per id
+tfidf_pdo_top15 <- tfidf_pdo %>%
+  group_by(id) %>%
+  slice_max(order_by = tf_idf, n = 15) %>%
+  ungroup()
+
+# --- Step 6: Pivot TF-IDF to Wide Format and Add Prefix ---
+# Create a wide format of the TF-IDF matrix (one row per project)
+tfidf_pdo_top15_wide <- tfidf_pdo_top15 %>%
+  select( id, word, tf_idf) %>%
+  pivot_wider(id_cols =  c("id"),
+              names_from = word, 
+              values_from = tf_idf, 
+              values_fill = 0,
+              names_repair = "unique")  
+
+# Add "tfidf_" prefix to the column names (excluding "id")
+colnames(tfidf_pdo_top15_wide)[-1] <- paste0("tfidf_", colnames(tfidf_pdo_top15_wide)[-1])
+
+# Check the wide TF-IDF matrix
+print(tfidf_pdo_top15_wide)
+
+# Filter the wide TF-IDF matrix to keep only these top 20 terms
+tfidf_pdo_top15_wide <-  tfidf_pdo_top15_wide %>%
+  select(id = `id...1`, all_of(paste0("tfidf_", top_tfidf_words)))
+
+# n_distinct(tfidf_pdo_top15_wide$id)
+
+```
+
+#### Merge Top TF-IDF Features Back into Original Dataset
+```{r}
+#| eval: FALSE
+
+
+# Merge the top 20 TF-IDF matrix with the original dataset
+projs_train_smpl_with_tfidf <- projs_train_smpl %>%
+  left_join(tfidf_pdo_top15_wide, by = "id")
+
+# Check the dataset after merging TF-IDF features
+paint(projs_train_smpl_with_tfidf)
+```
+
+
+```{r}
+#| eval: FALSE
+
+
+# --- Step 8: Prepare Data for NB ---
+# Convert categorical variables to factors (including theme1)
+projs_train_smpl_with_tfidf <- projs_train_smpl_with_tfidf %>%
+  mutate(across(c(theme1, countryname, sector1, env_cat, ESrisk), as.factor)) %>% 
+   select(id, pr_name, pdo, boardapprovalFY, countryname, sector1,  theme1,env_cat, ESrisk, starts_with("tfidf_"))
+
+# --- Step 9: Separate Training and Test Data ---
+# Training data: where env_cat is not missing
+train_data_all <- projs_train_smpl_with_tfidf %>%
+   filter(!is.na(env_cat)) %>%
+  mutate(env_cat = factor(env_cat))  # Ensure env_cat is a factor
+
+# Split the training data into ACTUAL training and validation sets
+split_for_valid <- rsample::initial_split(data = train_data_all, prop = 0.7, breaks = 1)
+
+# Questi HANNO env_cat
+train_data <- rsample::training(split_for_valid) %>%
+  mutate(env_cat = as.factor(env_cat))
+valid_data <- rsample::testing(split_for_valid) %>%
+  mutate(env_cat = as.factor(env_cat))
+# Questi NON HANNO env_cat
+test_data <- projs_train_smpl_with_tfidf %>%
+  filter(is.na(env_cat))
+
+paint(train_data)
+paint(valid_data)
+paint(test_data)
+
+```
+
+#### Naive Bayes Model Fitting
+```{r}
+#| eval: FALSE
+
+
+# --- Step 10: Fit the Naive Bayes model, including TF-IDF columns
+# install.packages("e1071")
+library(e1071)
+
+# Select the columns starting with "tfidf_" and get their names
+tfidf_columns <- colnames(train_data)[grepl("^tfidf_", colnames(train_data))]
+
+# Create the formula dynamically
+equat <- as.formula(paste("env_cat ~ boardapprovalFY + countryname + sector1 + ESrisk +", paste(tfidf_columns, collapse = " + ")))
+
+# Fit the Naive Bayes model, including TF-IDF columns
+nb_model <- e1071::naiveBayes(env_cat ~ boardapprovalFY + countryname + sector1 + 
+                                 ESrisk + tfidf_project + tfidf_development + tfidf_objective +
+                                 tfidf_improve + tfidf_services + tfidf_management +
+                                 tfidf_support + tfidf_sector + tfidf_capacity + tfidf_access +
+                                 tfidf_increase + tfidf_strengthen + tfidf_public +  tfidf_ii +
+                                 tfidf_objectives + tfidf_health + tfidf_program +
+                                 tfidf_quality + tfidf_areas + tfidf_national,
+                              data = train_data)
+
+# Print the model summary
+print("Fitted the Naive Bayes Model with TF-IDF Columns:")
+print(nb_model)
+
+```
+
+#### Predict on New Data (With TF-IDF Columns)
+
+When predicting on the test data, make sure the test dataset also includes the TF-IDF columns.
+```{r}
+#| eval: FALSE
+
+
+# Assuming you have a test dataset where env_cat is missing
+
+# Make predictions using the Naive Bayes model
+nb_predictions <- predict(nb_model, newdata = valid_data) 
+
+# Check the predictions
+valid_data <- valid_data %>%
+   # Remove the missing env_cat column if necessary
+  mutate(env_cat_pred = nb_predictions,
+         pred_OK = if_else(env_cat == env_cat_pred, "OK", "WRONG"))   %>% 
+   relocate(env_cat_pred , pred_OK, .after = env_cat) 
+
+```
+
+#### Evaluate the Model Performance
+```{r}
+#| eval: FALSE
+
+
+# Evaluate the model performance
+caret::confusionMatrix(data = nb_predictions, reference = valid_data$env_cat)
+```
+
++ **K-Nearest Neighbors (KNN)**: KNN can be a straightforward method to classify based on proximity to similar examples. It may require vectorization of text features and might not scale well to large datasets but can still be an easy-to-interpret model.
+
+# _______ 
+# TOPIC MODELING w ML
+# _______ 
+
+Topic modeling is an **unsupervised machine learning** technique  used to hat exploratively identifies latent topics based on frequently co-occurring words. 
+
+It can identify topics or themes that occur in a collection of documents, allowing hidden patterns and relationships within text data to be discovered. It is widely applied in fields such as social sciences and humanities.
+
+https://bookdown.org/valerie_hase/TextasData_HS2021/tutorial-13-topic-modeling.html
+
+https://m-clark.github.io/text-analysis-with-R/topic-modeling.html
+
+https://sicss.io/2020/materials/day3-text-analysis/topic-modeling/rmarkdown/Topic_Modeling.html
+
+## Document-Term Matrix
+...
+
+
+
+## /include independent variables in my topic model?
+https://bookdown.org/valerie_hase/TextasData_HS2021/tutorial-13-topic-modeling.html#how-do-i-include-independent-variables-in-my-topic-model
+
+### Compare PDO text v. project METADATA  [CMPL 🟠]
+Using NLP models trained on document metadata and structure can be combined with text analysis to improve classification accuracy.
+
+
+STEPS 
+
+1. Use document text (abstracts) as features to train a supervised machine learning model. The labeled data (documents with sector tags) will serve as training data, and the model can predict the missing sector tags for unlabeled documents.
+2. TEXT preprocessing (e.g. tokenization, lemmatization, stopword removal, *TF-IDF*) 
+   + Convert the processed text into a numerical format using Term Frequency-Inverse Document Frequency (TF-IDF), which gives more weight to terms that are unique to a document but less frequent across the entire corpus.
+3. Define data features, e.g.
+   + Document Length: Public sector documents might be longer, more formal.
+   + Presence of Certain Keywords: Use specific keywords that correlate with either the public or private sector.
+   + Sector Tags: In documents where the "sector tag" is present, you can use it as a feature for training.
+4. Predicting Missing Sector Tags (Classification):
+   + Use models like: Logistic Regression: For a binary classification (e.g., public vs. private). Random Forest or XGBoost: If you have a more complex tagging scheme (e.g., multiple sector categories).
+   + Cross-validation: Ensure the model generalizes well by validating with the documents that already have the sector tag filled in.
+   + Evaluate the model: Use metrics like accuracy, precision, recall, and F1 score to evaluate the model's performance.
+
+
+```{r}
+#| eval: FALSE
+#| echo: FALSE
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+library(dplyr) # A Grammar of Data Manipulation
+library(tidyr) # Tidy Messy Data
+library(caret) # Classification and Regression Training # Classification and Regression Training
+
+# ----- 1. Tokenization and stopwords removal using tidytext.
+# Assuming df is your dataframe with "abstract" and "sector_tag"
+# Tokenize the text and remove stopwords
+tidy_abstracts <- df %>%
+  unnest_tokens(word, abstract) %>%
+  anti_join(stop_words)  # Remove stopwords
+
+# Optional: Apply stemming (you can also use `SnowballC` if you prefer)
+tidy_abstracts <- tidy_abstracts %>%
+  mutate(word = SnowballC::wordStem(word))
+
+# ----- 2. Document-term matrix or TF-IDF calculation using bind_tf_idf().
+# Create a term-frequency matrix
+abstract_dtm <- tidy_abstracts %>%
+  count(document_id = row_number(), word) %>%  # Assuming each row is a document
+  cast_dtm(document_id, word, n)
+
+# Alternatively, use TF-IDF weighting
+abstract_tfidf <- tidy_abstracts %>%
+  count(document_id = row_number(), word) %>%
+  bind_tf_idf(word, document_id, n)
+
+# ----- 3. Model training using caret (Random Forest, Logistic Regression, etc.).
+# Split data into training (with sector tags) and testing (missing sector tags)
+train_data <- df[!is.na(df$sector_tag), ]
+test_data  <- df[is.na(df$sector_tag), ]
+
+# Combine the DFM or TF-IDF with the training dataset
+train_tfidf <- abstract_tfidf %>%
+  filter(document_id %in% train_data$row_number()) %>%
+  spread(word, tf_idf, fill = 0)
+
+# Merge with sector tags
+train_tfidf <- left_join(train_tfidf, train_data, by = c("document_id" = "row_number"))
+
+# Prepare for machine learning by ensuring you have sector tags in the final dataset
+
+# ----- 4. Prediction of missing sector tags based on the trained model.
+# Random Forest Model
+model <- train(sector_tag ~ ., data = train_tfidf, method = "rf")
+
+# Predict missing sector tags for the test data
+test_tfidf <- abstract_tfidf %>%
+  filter(document_id %in% test_data$row_number()) %>%
+  spread(word, tf_idf, fill = 0)
+
+# Predict sector tags for the missing observations
+predicted_tags <- predict(model, newdata = test_tfidf)
+
+# Add the predicted sector tags to the original dataset
+df$sector_tag[is.na(df$sector_tag)] <- predicted_tags
+
+# ----- 5. Evaluate and Refine the Model
+confusionMatrix(predicted_tags, test_data$sector_tag)
+```
+
+
+### --- I could see if corresponds to sector flags in the project metadata
+more missing but more objective!
+
+
+# Topic modeling with LDA  (Latent Dirichlet Allocation)  
+<!-- https://www.nlpdemystified.org/course/topic-modelling -->
+
+
+Topic modeling algorithms like Latent Dirichlet Allocation (LDA) can be applied to automatically uncover underlying themes within a corpus. The detected topics may highlight key terms or subject areas that are strongly associated with either the public or private sector.
+ 
+# Named Entity Recognition using CleanNLP and spaCy
+NER is especially useful for analyzing unstructured text. 
+
+NER can identify key entities (organizations, people, locations) mentioned in the text. By tracking which entities appear frequently (e.g., government agencies vs. corporations), it’s possible to categorize a document as more focused on the public or private sector.
+
+### ---  Summarise the tokens by parts of speech
+  
+```{r}
+#| eval: false
+#| output: false
+#| echo: true
+
+
+# Initialize the spacy backend
+cnlp_init_spacy() 
+```
+
+
+
+
+
+# _______ 
+# STRUCTURAL TOPIC MODELING (STM)
+# _______ 
+
+The Structural Topic Model is a general framework for topic modeling with document-level covariate information. The covariates can improve inference and qualitative interpretability and are allowed to affect topical prevalence, topical content or both. 
+
+
+MAIN REFERENCE `stm` R package  http://www.structuraltopicmodel.com/
+EXAMPLE UN corpus https://content-analysis-with-r.com/6-topic_models.html 
+STM 1/2  https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-i-2da2b353d362
+STM 2/2 https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-ii-462e6e07328
+
+
+# BERTopic
+Developed by Maarten Grootendorst, BERTopic enhances the process of discovering topics by using document embeddings and a class-based variation of Term Frequency-Inverse Document Frequency (TF-IDF).
+
+
+https://medium.com/@supunicgn/a-beginners-guide-to-bertopic-5c8d3af281e8 
+
+
+# _______ 
+# (dYnamic) TOPIC MODELING OVER TIME 
+# _______ 
+
+Example: [An analysis of Peter Pan using the R package koRpus](https://irhuru.github.io/blog/korpus-peterpan/)
+https://ladal.edu.au/topicmodels.html#Topic_proportions_over_time 
+
+
+
+
+
+
+
+
+# RENDER this
+
+```{bash}
+#| eval: false
+quarto render analysis/01b_WB_project_pdo_EDA.qmd --to html
+open ./docs/analysis/01b_WB_project_pdo_anal.html
+```
+
+# Conclusions and Next Steps
+
++ Evidently my approach here was that of a learning / proof of concept exercise, not so much concerned with the evaluating models' performance, nor with in-depth analysis of the data.
+
++ Still, even this exploratory stage has shown many relevant insights that can be derived from NLP techniques applied to unstructured text data, such as WB project documents, including:
+   + detecting sector-specific language and themes over time,
+   + improving documents classification and metadata tagging, via ML models,
+   + uncovering surprising patterns and relationships in the data, e.g. recurring phrases or topics,
+   + and more.
+
++ Next steps could include: dig deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements)
+   + Also, it would be interesting to explore more advanced NLP techniques, such as Named Entity Recognition, Structural Topic Modeling, or BERTopic, to further enhance the analysis and insights derived from the WB project documents.
+   
++ Thinking of the input data source, it unfortunate the WB is still lacking reliable and accessible API that could ease the programmatic access to its vast text data resources (unlike the much more open and accessible WDI data).  
+
+# Acknowledgements
+
+Below are some invaluable resources that I used to learn and implement the NLP techniques in this analysis:
++ [NLP demystified ](https://www.nlpdemystified.org/course/advanced-preprocessing)
++ [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/)
++ [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)
++ [Emil....text recipes](https://emilhvitfeldt.com/blog#category=textrecipes)
+
++ [Text Mining with R](https://www.tidytextmining.com/)
++ [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns)
+
++ [Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
++ [Guidef from Penn Libraries](https://guides.library.upenn.edu/penntdm/r)
+
+

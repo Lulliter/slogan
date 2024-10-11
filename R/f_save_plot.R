@@ -4,7 +4,7 @@ library(here)
 
 
 # Function to save a plot as PDF and PNG
-# --- creaded in `./analysis/01b_WB_project_pdo_anal.qmd`
+# --- creaded in `./analysis/01b_WB_project_pdo_EDA.qmd`
 f_save_plot <- function(plot_name, plot_object) {
    # --- plot_object: ggplot object, previously created
    # --- plot_name: character, name of the plot to save

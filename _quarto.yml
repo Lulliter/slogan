@@ -43,7 +43,7 @@ website:
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
           - text: "WB projects' PDO data"
-            href: analysis/01b_WB_project_pdo_anal.qmd
+            href: analysis/01b_WB_project_pdo_EDA.qmd
       - text: "Analysis"
         icon: clipboard-data-fill
         file: analysis/hypotheses.qmd

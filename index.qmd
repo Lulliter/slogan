@@ -7,12 +7,12 @@ bibliography: bib/slogan.bib
 
 # Motivation
 
-Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of **buzzwords**, **catchphrases** and **slogans**, and observed how they suddenly appear in the policy discourse, and -- at least for some time -- take center stage in strategic planning.\
-Notably, in the institutions I have worked for (World Bank, Inter-American Development Bank, G20, EU, and Italian Government), catchphrases and slogans might translate into sizable funding allocations, thus guiding which policies or programs would get prioritized.
+Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of **buzzwords**, **catchphrases** and **slogans** that suddenly emerge in policy discussions, and -- at least for some time -- take center stage in strategic planning.\
+Notably, n the organizations I've worked with (including the World Bank, Inter-American Development Bank, G20, EU, and the Italian Government) these catchphrases and slogans often translate into significant funding allocations, ultimately influencing which policies and programs are prioritized. 
 
 ## Examples of slogans in the development economics arena
 
-Just sticking to a sector I am familiar with, the field of development economics has seen the rise in popularity of phrases such as:
+Drawing from a sector I am familiar with, the field of development economics has witnessed the growing popularity of phrases such as: 
 
 **FUNDING AID**
 
@@ -37,7 +37,7 @@ Just sticking to a sector I am familiar with, the field of development economics
 -   Green, Resilient, and Inclusive Development (GRID)
 -   Build Back Better <!-- + Green growth / Green economy --> <!-- + Blue Economy --> <!-- + Green, Digital, and Fair  --> <!-- + Green and grey infrastructure --> <!-- + Circular Economy -->
 
-I have observed how these formulaic expressions happen to ease their way into the projects' documentation and policy papers, becoming very popular (at time almost hammering) in a given professional or academic forum. I wondered, though, how much thought is given to the intentional choice of such expressions when used, or to what extent they are just "en vogue" and used as a shortcut to convey a complex concept.
+I've observed how these formulaic expressions often find their way into project documentation and policy papers, quickly gaining traction—-sometimes becoming quite pervasive-—within a given professional or academic forum. This has led me to wonder how much consideration is given to the deliberate selection of such terms, or if, at times, they are simply 'in vogue,' used as a convenient shorthand for more complex ideas.
 
 ## The curious case of lexical reduction/modification/domestication
 
@@ -70,13 +70,13 @@ This phenomenon is clearly relevant and consequence-ridden if, as Giovanni Genti
 
 ## So what?
 
-For a while now I have wondered *why* and *by which mechanisms* certain catchphrases/slogans/acronyms become so prevalent in a given public policy context at some specific point in time.\
+For a while now I have wondered *why* and *by which mechanisms* certain catchphrases/slogans/buzzwords become so prevalent in a given public policy context at some specific point in time.\
 The problem is that if you are (as I was) just a small cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process.\
 Therefore, I decided to investigate this phenomenon with a "reverse engineering" approach, starting from the *corpora* of documents themselves to see if I could identify some patterns or trends over time. Hop on to [this page](https://lulliter.github.io/slogan/analysis/hypotheses.html#sec-RQ) to see my specific research questions. 
 
 ### Why focus on the World Bank?
 
-The World Bank simply presents a convenient "learning case" because:
+The World Bank simply presented, from my point of view, a convenient "learning case" because:
 
 1.  Its documents (related to lending projects and other publications) are widely available and openly accessible.
 2.  The Bank has a long history and a vast amount of public digitized documents, which allows for a longitudinal analysis.

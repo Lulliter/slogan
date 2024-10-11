@@ -1,0 +1,1357 @@
+---
+title: "WB Project PDO text EDA"
+author: "Luisa M. Mimmi"
+date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: true    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 3
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+bibliography: ../bib/slogan.bib
+---
+
+<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+<!-- In this file I address the **research question 1.1.**, which is exploratory in nature. The hypothesis being tested here is that the WBG project document corpus shows a non-random variation in the incidence of certain policy concepts over time.  -->
+
+<!-- + This question will be handled in a data-driven way, i.e. starting from the data and not from preconceived ideas...  -->
+<!--    + (i.e. I see that after 2020, the word "pandemic" and "vaccine" peaks within PDOs' texts, so I will look for a correlation with the COVID-19 pandemic shock, instead of the other way around). -->
+
+
+# TO DO [COMPL🟠🟡] list 
+
++ check if the peaks in sector words correspond to peak in sector (the feature) 
++ add vertical lines with relevant WDR over the years 
++ do bigram plots on "*climate change*" and "*climate resilient*"
+
+# Set up
+```{r}
+# Pckgs -------------------------------------
+library(fs) # Cross-Platform File System Operations Based on 'libuv'
+library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(skimr) # Compact and Flexible Summaries of Data
+library(here) # A Simpler Way to Find Your Files
+library(paint) # paint data.frames summaries in colour
+library(readxl) # Read Excel Files
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
+library(rsample) # General Resampling Infrastructure
+library(rvest) # Easily Harvest (Scrape) Web Pages
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing  
+library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
+library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
+library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages # Easily Install and Load the 'Tidymodels' Packages
+library(textrecipes) # Extra 'Recipes' for Text Processing # Extra 'Recipes' for Text Processing
+
+set.seed(123) # for reproducibility
+```
+
+::: {.callout-note collapse='true'}
+#### --- Note on `cleanNLP` package
+`cleanNLP` supports multiple *backends for processing text*, such as `CoreNLP`, `spaCy`, `udpipe`, and `stanza.` Each of these backends has different capabilities and might require different initialization procedures.
+
++ `CoreNLP` ~ powerful Java-based NLP toolkit developed by Stanford, which includes many linguistic tools like tokenization, part-of-speech tagging, and named entity recognition. 
+   + ❕❗️ NEEDS EXTERNAL INSTALLATION (must be installed in Java with `cnlp_install_corenlp()` which installs the Java JAR files and models)
++ `spaCy` ~ fast and modern NLP library written in *Python.* It provides advanced features like dependency parsing, named entity recognition, and tokenization. 
+   + ❕❗️ NEEDS EXTERNAL INSTALLATION (fust be installed in Python (with `spacy_install()` which installs both `spaCy` and necessary Python dependencies) and the `spacyr` R package must be installed to interface with it.
++ `udpipe` ~ R package that provides bindings to the `UDPipe` NLP toolkit. Fast, lightweight and language-agnostic NLP library for tokenization, part-of-speech tagging, lemmatization, and dependency parsing.
++ `stanza`~ another modern NLP library from Stanford, similar to CoreNLP but built on PyTorch and supports over 66 languages...
+
+when you initialize a back-end (like CoreNLP) in `cleanNLP`, it stays active for the entire session unless you reinitialize or explicitly change it. 
+```{r}
+#| eval: false
+#| echo: true
+
+# ---- 1) Initialize the CoreNLP backend
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+cnlp_init_corenlp()
+# If you want to specify a language or model path:
+cnlp_init_corenlp(language = "en", 
+                  # model_path = "/path/to/corenlp-models"
+                  )
+
+# ---- 2) Initialize the spaCy backend 
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library
+# Initialize spaCy in cleanNLP
+cnlp_init_spacy()
+# Optional: specify language model
+cnlp_init_spacy(model_name = "en_core_web_sm")
+
+# ---- 3) Initialize the udpipe backend
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+# Initialize udpipe backend
+cnlp_init_udpipe(model_name = "english")
+
+# ---- 4) Initialize the stanza backend
+
+```
+:::
+
+
+### ----------------------------------------------------------------------------
+
+# Data sources
+The data used in this analysis comes from the World Bank's Projects & Operations database.
+
+Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/_01a_WB_project_pdo_prep.qmd`), WHERE:  
+
+1. I retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
+   + Of these, ~50% projects have a "viable" **Project Development Objective (PDO)** text in the dataset (i.e., not "TBD").
+   + There are no **Project Development Objectives** available in projects approved before FY2001
+   + However, other than approval year, based on some tests on available projects' features, PDO texts' missingness seems to happen at random.
+2. Dropped from the analysis: projects with no PDO text, those approved before FY2001, and projects with missing status --> **8,814 projects** selected.
+3. Split the dataset into training / validation / test subsets (proportional to FY and regional distribution). 
+   + Here I work only on ***training set*** (~50% of usable ones, i.e. **4,403 PDOs**).
+3. Clean the dataset (parse dates, recode variables, etc.), fix some typos, unwanted special characters, and other unimportant issues in PDOs.
+4. Obtain **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned train dataset).
+
+## [TBL] Illustrative PDOs text in Projects' documents
+```{r}
+#| eval: true
+#| echo: false
+#| output: true
+
+tibble::tribble(
+   ~Project_ID, ~Project_Name, ~Project_Development_Objective,
+   "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
+   
+   "P069934", "PERNAMBUCO INTEGRATED DEVELOPMENT: EDUCATION QUALITY IMPROVEMENT PROJECT", "The development objectives of the Pernambuco Integrated Development: Education Quality Improvement Project are to (a) improve the quality, efficiency, and inclusiveness of the public education system; (b) modernize and strengthen the managerial, financial, and administrative capacity of the Secretariat of Education to set policies and guidelines for the sector and deliver public education efficiently; and (c) support the overall state modernization effort through interventions to be carried out in the Secretariat of Education and to be replicated in other state institutions.") %>% 
+   kable()
+```
+
+
+# Notes on PDO text data quality 
+
+1. **PDO text length**: The PDO text is quite short, with a median of 2 sentences and a maximum of 9 sentences.
+<!-- From 22,659 Proj -->
+<!-- all_proj_t %>% filter(pdo %in% c(".","-","NA", "N/A")) %>% nrow() -->
+2. **PDO text missingness**: Of the 11,353 NON-MISSING PDOs (50.1% of projects), 
+   + **11,216** have PDO as blank text (i.e., *""*)
+   + **11** have PDO as one of: *".","-","NA", "N/A"*
+   + **7** have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
+   + **9** have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
+   + **4** have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "a"*
+   + (I eliminate these because uninformative with regards to the text analysis I want to perform)
+
+3. Other projects arbitrarily excluded (for incompleteness or doubts) 
+   + Projects without indication of "project status" have been excluded 
+   + Projects approved in FY >= FY2024 (384) have been excluded (year not complete)
+   + Projects approved before FY2001 have been excluded (no PDO text available)
+
+> **Remaining projects**: 8,811 usable projects selected, of which 4,403 are in the training set.**
+
+4. Of the remaining, viable, 8,811 projects, there are 7,585 unique PDOs!!
+   + i.e. **2,229 projects have NON-UNIQUE PDO text** in the "cleaned" dataset. Why? 
+
+::: {.callout-note}
+Evidently, in some cases,the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same lending program.
+:::
+
+
+### ---------------------------------------------------------------------------
+ 
+# Load pre-processed Projs' dataset + PDO dataset
+Here I will just load the pre-processed data (training set only).
+
+## [Saved file `projs_train_t`  & `pdo_train_t`]
+
+```{r}
+# Load Proj train dataset `projs_train_t`
+projs_train <- readRDS("~/Github/slogan/data/derived_data/projs_train.rds")  
+
+# Load clean tokenized-PDO dataset `pdo_train_t`
+pdo_train_t <- readRDS(here::here("data" , "derived_data", "pdo_train_t.rds"))
+```
+
+## Previous Tokenization and PoS Tagging
+Typically, one of the first steps in this transformation from natural language to feature, or any of kind of text analysis, is *tokenization*. 
+
+### i) Explain Tokenization
+Breaking units of language into components relevant for the research question is called **“tokenization”**. 
+Components can be `words`, `n-grams`, `sentences`, etc. or combining smaller units into larger units.
+
++ Tokenization is a `row-wise` operation: it changes the number of rows in the dataset.
+
+###  The choices of tokenization
+
+  1. Should words be lower cased?
+  2. Should punctuation be removed?   
+  3. Should numbers be replaced by some placeholder?
+  4. Should words be stemmed (also called lemmatization)? ☑️ 
+  5. Should bigrams/multi-word phrase be used instead of single word phrases? ☑️ 
+  6. Should stopwords (the most common words) be removed? ☑️ 
+  7. Should rare words be removed?  ❌
+  8. Should hyphenated words be split into two words? ❌
+  
+> for the moment I keep all as conservatively as possible 
+
+### ii) Explain Pos Tagging
+Linguistic annotation is a common for of **enriching** text data, i.e. adding information about the text that is not directly present in the text itself.
+
+Upon this, e.g. classifying noun, verb, adjective, etc., one can discover *intent* or *action* in a sentence, or scanning "verb-noun" *patterns.*
+
+Here I have a training dataset file with:
+```{r}
+#| eval: true
+#| output: true
+#| echo: false
+
+train_pdo_desc <- tribble(
+  ~Variable, ~ Type,           ~Provenance,           ~Description, ~Example,
+"proj_id              ", "chr", "original PDO data" , "","",
+"pdo                  ", "chr", "original PDO data" , "","",
+"word        ", "chr", "original PDO data" , "","Governments",
+"sid                  ", "int", "output cleanNLP"   , "sentence ID","",
+"tid                  ", "chr", "output cleanNLP"   , "token ID within sentence", "",
+"token                ", "chr", "output cleanNLP"   , "Tokenized form of the token.", "government",
+"token_with_ws        ", "chr", "output cleanNLP"   , "Token with trailing whitespace", "government ",
+"lemma                ", "chr", "output cleanNLP"   , "The base form of the token", "government",
+"stem                ", "chr", "output SnowballC"   , "The base form of the token", "govern",
+"upos                 ", "chr", "output cleanNLP"   , "Universal part-of-speech tag (e.g., NOUN, VERB, ADJ).","",
+"xpos                 ", "chr", "output cleanNLP"   , "Language-specific part-of-speech tags.","",
+"feats                ", "chr", "output cleanNLP"   , "Morphological features of the token","",
+"tid_source           ", "chr", "output cleanNLP"   , "Token ID in the source document","",
+"relation             ", "chr", "output cleanNLP"   , "Dependency relation between the token and its head token", "",
+"pr_name              ", "chr", "output cleanNLP"   , "Name of the parent token", "",
+"FY_appr              ", "dbl", "original PDO data" , "", "",
+"FY_clos              ", "dbl", "original PDO data" , "", "",
+"status               ", "chr", "original PDO data" , "", "",
+"regionname           ", "chr", "original PDO data" , "", "",
+"countryname          ", "chr", "original PDO data" , "", "",
+"sector1              ", "chr", "original PDO data" , "", "",
+"theme1               ", "chr", "original PDO data" , "", "",
+"lendinginstr         ", "chr", "original PDO data" , "", "",
+"env_cat              ", "chr", "original PDO data" , "", "",
+"ESrisk               ", "chr", "original PDO data" , "", "",
+"curr_total_commitment", "dbl", "original PDO data" , "" ,""
+)
+
+kableExtra::kable(train_pdo_desc)
+```
+
+### --- PoS Tagging: `upos` (Universal Part-of-Speech)
+```{r}
+#| eval: true
+#| output: true
+#| echo: false
+
+upos_t <- tabyl(pdo_train_t, upos) %>% 
+   add_column(explan = c(
+      "Adjective", 
+      "Adposition", 
+      "Adverb", 
+      "Auxiliary", 
+      "Coordinating conjunction",
+      "Determiner", 
+      "Interjection",
+      "Noun", 
+      "Numeral", 
+      "Particle", 
+      "Pronoun", 
+      "Proper noun",
+      "Punctuation", 
+      "Subordinating conjunction", 
+      "Symbol", 
+      "Verb",
+      "Other" 
+      )) 
+kableExtra::kable(upos_t)
+```
+
+::: {.callout-warning collapse='true'}
+On random visual check, these are not always correct, but they are a good starting point for now.
+::: 
+
+### iii) Custom Stopwords 
+
+Remove stop words, which are the most common words in a language. 
+
++ but I don't want to remove any *meaningful* word for now
+
+```{r}
+# Custom list of articles, prepositions, and pronouns
+custom_stop_words <- c(
+   # Articles
+   "the", "a", "an",   
+   "and", "but", "or", "yet", "so", "for", "nor", "as", "at", "by", "per",  
+   # Prepositions
+   "of", "in", "on", "at", "by", "with", "about", "against", "between", "into", "through", 
+   "during", "before", "after", "above", "below", "to", "from", "up", "down", "under",
+   "over", "again", "further", "then", "once",  
+   # Pronouns
+   "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
+   "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", 
+   "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves" ,
+   "this", "that", "these", "those", "which", "who", "whom", "whose", "what", "where",
+   "when", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other",
+   # "some", "such", "no",  "not", 
+   # "too", "very",   
+   # verbs
+   "is", "are", "would", "could", "will", "be", "e.g", "e.g.", "i.e.",
+   "i", "ii", "iii", "iv", "v",
+   # because tautology
+   "pdo"
+)
+
+# Convert to a data frame if needed for consistency with tidytext
+custom_stop_words_df <- tibble(word = custom_stop_words)
+```
+
+```{r}
+saveRDS(custom_stop_words, here("data" , "derived_data", "custom_stop_words.rds"))
+saveRDS(custom_stop_words_df, here("data" , "derived_data", "custom_stop_words_df.rds"))
+```
+
+### iv) Stemming 
+
+Often documents contain different versions of one base word, often called a `stem`.  *Stemming* is the process of reducing words to their base or root form.
+
+**Snowball** is one framework released in 1980 with an open-source license that can be found in R package `SnowballC`.
+
+```{r}
+# Using `SnowballC::wordStem` to stem the words. e.g.
+pdo_train_t <- pdo_train_t %>% 
+   mutate(stem = SnowballC::wordStem(token_l)) %>%
+   relocate(stem, .after = lemma)
+```
+
+***Why Stemming?***: For example, in topic modeling, *stemming* reduces noise by making it easier for the model to identify core topics without being distracted by grammatical variations. (*Lemmatization* is more computationally intensive as it requires linguistic context and dictionaries, making it slower, especially on large datasets)
+
+| **Token**       | **Lemma**                              | **Stem**|
+|-----------------|----------------------------------------|---------|
+| development     | development                            | develop |
+| quality         | quality                                | qualiti |
+| high-quality    | high-quality                           | high-qual|
+| include         | include                                | includ  |
+| logistics       | logistic                               | logist  |
+| government/governance | Governemnt/government/governance | govern  |
+
+> NOTE: Among `word` / `stems` encountered in PDOs, there are a lot of acronyms which may refer to World Bank lingo, or local agencies, etc... Especially when looked at in low case form they don't make much sense... 
+
+#### Sparsity [CMPL🟡]
+**Sparsity** in the context of a document-term matrix refers to the proportion of cells in the matrix that contain zeros. High sparsity means that most terms do not appear in most documents.
+
++ removing stopwords before stemming can reduce sparsity
+ 
+```{r}
+# create document-word matrix
+pdo_train_t %>% 
+   anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>% 
+   count(proj_id, token_l) %>%
+   tidytext::cast_dtm(proj_id, token_l, n) # HIGH!!!
+
+# create document-word matrix
+pdo_train_t %>% 
+   anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>% 
+   count(proj_id, stem) %>%
+   tidytext::cast_dtm(proj_id, stem, n) # HIGH!!!
+```
+
+
+### v) Document-term matrix or TF-IDF
+
+> The tf-idf is the product of the term frequency and the inverse document frequency::
+
+$$
+\begin{aligned}
+tf(\text{term}) &= \frac{n_{\text{term}}}{n_{\text{terms in document}}} \\
+idf(\text{term}) &= \ln{\left(\frac{n_{\text{documents}}}{n_{\text{documents containing term}}}\right)} \\
+tf\text{-}idf(\text{term}) &= tf(\text{term}) \times idf(\text{term})
+\end{aligned}
+$$
+
+### --- TF-IDF matrix on train pdo 
+```{r}
+# reduce size 
+
+pdo_train_4_tf_idf <- pdo_train_t %>% # 255964
+   # Keep only content words [very restrictive for now]
+   # normally c("NOUN", "VERB", "ADJ", "ADV")
+   filter(upos %in% c("NOUN")) %>% #    72,668 
+   filter(!token_l %in% c("development", "objective", "project")) %>%   #  66,741
+   # get rid of stop words (from default list)   
+   filter(!token_l %in% custom_stop_words_df$word) %>%   #  66,704
+   # Optional: Remove lemmas of length 1 or shorter
+   filter(nchar(lemma) > 1)  #  66,350
+```
+
+Now, count the occurrences of each `lemma` for each document. (This is the term frequency or `tf`)
+
+```{r}
+# This is the term frequency or `tf`
+
+# Count lemmas per document
+lemma_counts <- pdo_train_4_tf_idf %>%
+  count(proj_id, lemma, sort = TRUE)
+# Preview the result
+head(lemma_counts) 
+```
+
+With the lemma counts prepared, the `bind_tf_idf()` function from the tidytext package computes the TF-IDF scores.
+```{r}
+# Compute the TF-IDF scores
+lemma_tf_idf <- lemma_counts %>%
+  bind_tf_idf(lemma, proj_id, n) %>%
+  arrange(desc(tf_idf))
+
+head(lemma_tf_idf)
+```
+
+::: {.callout-note collapse='true'}
+What to use: token, lemma, or stem?
+
+General Preference in Real-World NLP:
+
++ `Tokens` for analyses where word forms matter or for sentiment analysis.
++ `Lemmas` (*)  for most general-purpose NLP tasks where you want to reduce dimensionality while maintaining accuracy and clarity of meaning.
++ `Stems` for very large datasets, search engines, and applications where speed and simplicity are more important than linguistic precision.
+
+(*) I use lemma, after "aggressively" reducing the number of words to consider, and removing stop words (at least for now). 
+::: 
+
+# _______ 
+# TEXT ANALYSIS/SUMMARY
+# _______ 
+<!-- see https://cengel.github.io/R-text-analysis/textanalysis.html  -->
+
+
+```{r}
+#| echo: false
+
+# Count words
+counts_pdo <- pdo_train_t %>%
+     count(pdo, sort = TRUE)  # 4,071
+
+counts_words <- pdo_train_t %>%
+     count(word, sort = TRUE)  # 13,197
+
+counts_token <- pdo_train_t %>%
+  count(token, sort = TRUE)   # 13,177
+
+counts_lemma <- pdo_train_t %>%
+  count(lemma, sort = TRUE)   # 11,440
+
+counts_stem <- pdo_train_t %>%
+  count(stem, sort = TRUE)   # 8,781
+```
+
+We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo_train_t)` rows and `r ncol(pdo_train_t)` columns obtained from 4,403 PDOs (of which `r n_distinct(pdo_train_t$pdo)` unique) of `r n_distinct(pdo_train_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train_t$FY_appr)` to `r max(pdo_train_t$FY_appr)`. 
+
+### [TBL] Frequencies of documents/words/stems   
+```{r}
+#| eval: true
+#| output: true
+#| echo: false
+
+# Create a tibble
+train_recap <- tibble(
+  entity = c("N proj", "N PDOs", "N words","N token", "N lemma", "N stem"),
+  counts = c(n_distinct(pdo_train_t$proj_id),
+              n_distinct(pdo_train_t$pdo),
+              n_distinct(pdo_train_t$word),
+              n_distinct(pdo_train_t$token_l),
+              n_distinct(pdo_train_t$lemma),
+              n_distinct(pdo_train_t$stem)
+              ))
+
+# Pipe the tibble into kable
+train_recap %>%
+  kableExtra::kable()
+```
+
+## Term frequency
+
+Note: normally, the most frequent words are *function words* (e.g. determiners, prepositions, pronouns, and auxiliary verbs), which are not very informative. Moreover, even *content words* (e.g. nouns, verbs, adjectives, and adverbs) can often be quite generic semantically speaking (e.g. "good" may be used for many different things). 
+ 
+However, in this analysis, I do not use the **STOPWORD** approach, but use the **POS tags** to reduce -- in a more controlled way -- the dataset, filtering the content words such as nouns, verbs, adjectives, and adverbs.
+
+
+#### [FUNC] save plots 
+```{r}
+#| echo: false
+
+f_save_plot <- function(plot_name, plot_object) {
+   # Print the plot, save as PDF and PNG
+   plot_object %T>%
+      print() %T>%
+      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
+             # width = 4, height = 2.25, units = "in",
+             device = cairo_pdf) %>%
+      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
+             # width = 4, height = 2.25, units = "in",
+             type = "cairo", dpi = 300)
+}
+
+# Example of using the function
+# f_save_plot("proj_wrd_freq", proj_wrd_freq)
+
+```
+ 
+
+### [FIG] Overall `token` freq ggplot
++ Excluding "project" "develop","objective"  
++ Including only "content words" (NOUN, VERB, ADJ, ADV)
+
+```{r}
+#| output: TRUE
+
+# Evaluate the title with glue first
+title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+
+pdo_wrd_freq <- pdo_train_t %>%   # 123,927
+   # include only content words
+   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+   #filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
+   filter (!(relation %in% c("nummod" ))) %>% # 173,686 
+ filter (!(token_l %in% c("pdo","project", "development", "objective","objectives", "i", "ii", "iii",
+                          "is"))) %>% # whne it is VERB
+   count(token_l) %>% 
+   filter(n > 800) %>% 
+   mutate(token_l = reorder(token_l, n)) %>%  # reorder values by frequency
+   # plot 
+   ggplot(aes(token_l, n)) +
+   geom_col(fill = "#d7b77b") +
+   coord_flip() + # flip x and y coordinates so we can read the words better
+   labs(title = title_text,
+        subtitle = "[token_l count > 800]", y = "", x = "")+
+  theme(plot.title.position = "plot")
+
+pdo_wrd_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_wrd_freq", pdo_wrd_freq)
+```
+
+
+### [FIG] Overall `stem` freq ggplot
++ Without "project" "develop","objective"  
++ Including only "content words" (NOUN, VERB, ADJ, ADV)
+
+```{r}
+#| output: TRUE
+
+# Evaluate the title with glue first
+title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+# Plot
+pdo_stem_freq <- pdo_train_t %>%   # 256,632
+   # include only content words
+   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+   filter (!(relation %in% c("nummod" ))) %>% # 173,686 
+ filter (!(stem %in% c("pdo","project", "develop", "object", "i", "ii", "iii"))) %>%
+   count(stem) %>% 
+   filter(n > 800) %>% 
+   mutate(stem = reorder(stem, n)) %>%  # reorder values by frequency
+   # plot 
+   ggplot(aes(stem, n)) +
+   geom_col(fill = "#d7b77b") +
+   coord_flip() + # flip x and y coordinates so we can read the words better
+   labs(title = title_text,
+        subtitle = "[stem count > 800]", y = "", x = "") +
+  theme(plot.title.position = "plot")
+
+pdo_stem_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_stem_freq", pdo_stem_freq)
+```
+
+> Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800 (they have been combined by root).
+
+# _______ 
+
+## SECTOR-related term frequency
+
+### Isolate SECTOR words and see frequency over years
+
+To try and make it a bit more meaningful, let's focus on the frequency of the most common words related to SECTORS. 
+
+From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
+
++ **WATER** = water, wastewater, sanitation
++ **TRANSPORT** = transport, railway, road, airport, port
++ **URBAN** = urban
++ **ENERGY** = energy, electricity, hydroelectric, hydropower, renewable, transmission
++ **HEALTH** = health, hospital, medicine, drugs, epidemic, pandemic, covid-19, vaccine
++ **EDUCATION** = education, school, vocational, teach, university, student, literacy, training, curricul 
+ 
+```{r}
+pdo_train_t <- pdo_train_t %>%
+   # dealing with water/watershed/waterway
+   mutate(tok_sector_broad = case_when(
+      str_detect(token_l, "water|wastewater|sanitat") ~ "WATER",
+      str_detect(token_l, "transport|railway|road|airport|waterway|bus|metropolitan") ~ "TRANSPORT",
+      token_l == "port" ~ "TRANSPORT",
+      str_detect(token_l, "urban|housing|inter-urban|peri-urban") ~ "URBAN",
+      str_detect(token_l, "energ|electri|hydroele|hydropow|renewable|transmis") ~ "ENERGY",  # Matches either "energy" or "power"
+      str_detect(token_l, "health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin") ~ "HEALTH",
+      str_detect(token_l, "educat|school|vocat|teach|univers|student|literacy|training|curricul") ~ "EDUCATION",
+      TRUE ~ NA_character_)) %>% 
+   relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
+```
+
+#### [FIG] faceted sector (`tok_sector_broad`) freq ggplot
+```{r}
+#| output: TRUE
+
+# prepare data for plotting (count)
+sector_broad <- pdo_train_t %>% 
+   filter(!is.na(tok_sector_broad)) %>% 
+   count(FY_appr, tok_sector_broad) %>% 
+   filter(n > 0) %>% 
+   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c("WATER", "TRANSPORT", "URBAN", "ENERGY", "HEALTH", "EDUCATION"))) # reorder values by frequency
+#df$FY
+
+# Evaluate the title with glue first
+title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+
+# Plot
+pdo_sect_broad_freq <-  ggplot(data = sector_broad, 
+                               aes(x = FY_appr, y = n, 
+                                   group = tok_sector_broad, color = tok_sector_broad)) +
+   geom_line() +
+   geom_point() +
+   scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
+   scale_color_viridis_d(option = "magma", end = 0.9) + 
+   facet_wrap(~tok_sector_broad, ncol = 2, scales = "free")+ 
+   guides(color = FALSE) +
+   theme_bw()+
+   theme(# Adjust angle and alignment of x labels
+      axis.text.x = element_text(angle = 45, hjust = 1)) + 
+   labs(title = "Sector words frequency in PDO over Fiscal Years",
+        subtitle = "[Using \"custom\" broad sector definition]",
+        x =   "Board approval FY", 
+        y = "Counts of 'sector' word (tok_sector_broad)") + 
+   geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
+              aes(xintercept = 2020), 
+              linetype = "dashed", color = "#9b6723") +
+   geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
+             aes(x = 2020, y = max(sector_broad$n)*0.75, label = "Covid"), 
+             angle = 90, vjust = -0.5, color = "#9b6723")
+
+
+pdo_sect_broad_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
+```
+
+
+#### [FIG] split sector (`tok_sector_broad`) freq ggplot
+```{r}
+# Create a custom color list for each sector
+sector_colors <- c(
+   "WATER" = "#26BDE2", 
+   "TRANSPORT" =  "#A6A6A6",
+   "URBAN" = "#FD9D24", 
+   "ENERGY" = "#FCC30B", 
+   "HEALTH" = "#4C9F38", 
+   "EDUCATION" = "#C5192D") 
+
+# --- Get a LIST of unique sectors (facets) and split the data
+sector_list <- split(x = sector_broad, f = sector_broad$tok_sector_broad)
+
+# --- Create a function to plot for each sector with custom colors
+f_plot_sector <- function(data) {
+   # Get the sector name
+   sector <- unique(data$tok_sector_broad)
+   # Create the plot
+   p <-ggplot(data = data, 
+              aes(x = FY_appr, y = n, 
+                  group = tok_sector_broad, color = tok_sector_broad)) +
+      geom_line(color = sector_colors[sector]) +  # Apply custom color
+      geom_point(color = sector_colors[sector]) +              # Apply custom color to points
+      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+      scale_y_continuous(breaks = seq(0, max(data$n), by = 10)) +
+      theme_bw() +
+      theme(
+         axis.text.x = element_text(angle = 45, hjust = 1)
+      ) +
+      labs(
+         title = paste("Count of ",sector,"token in PDOs"),  # Use facet-specific title
+         subtitle = "[Using \"custom\" broad sector definition]",
+         x = "Board approval FY", 
+         y = ""  # Remove y-axis label
+      ) +
+ # Ensure y-axis limit includes 50
+    expand_limits(y = 50) + 
+    # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+    geom_hline(yintercept = 50, linetype = "dashed", color = "#d02e4c", alpha = 0.5)
+   # Add vline and text annotation only for the HEALTH sector
+   if (sector == "HEALTH") {
+      p <- p +
+         geom_vline(aes(xintercept = 2020), linetype = "dashed", color = "#9b6723") +
+         geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+   }
+   
+   return(p)
+}
+
+# --- Use purrr::map to create a LIST of plots, one for each sector
+sector_plots <- map(sector_list, f_plot_sector)
+```
+
+```{r}
+#| output: TRUE
+# Optionally print each plot to the console
+walk(sector_plots, print)
+```
+
+
+```{r}
+# Define the output directory using the 'here' function
+output_dir <- here("analysis", "output", "figures")
+
+# Save each plot to a file in the specified directory
+walk2(sector_plots, names(sector_list), 
+      ~ggsave(filename = file.path(output_dir, paste0(.y, "_sector_plot.png")), plot = .x))
+
+```
+
+### Check (by sector) why peaks [CMPL 🟠]  
+
+For the (broadly defined) health sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. What about the other sectors? (they all seem to have at least 1 evident peak)
+  
+### --- I could see if corresponds to any WDR publications
+
+### Qualify: peak or trend (by sector) [CMPL 🟠]  
+
+... capire come si stabilisce che c'e' un trend ... magari vedere google search trend... 
+
+
+# _______ 
+## BIGRAMS 
+# _______ 
+
+> Here I use [`clnp_annotate()` output + ] `dplyr` to combine consecutive tokens into bigrams.
+
+```{r}
+# Create bigrams by pairing consecutive tokens by sentence ID and token IDs
+bigrams <- pdo_train_t %>%
+   # keeping FY with tokens
+   group_by(FY_appr, proj_id, pdo, sid ) %>%
+   arrange(tid) %>%
+   # Using mutate() and lead(), we create bigrams from consecutive tokens 
+   mutate(next_token = lead(token), 
+          bigram = paste(token, next_token)) %>%
+   # make bigram low case
+   mutate(bigram = tolower(bigram)) %>%
+   # only includes the rows where valid bigrams are formed
+   filter(!is.na(next_token)) %>%
+   ungroup() %>%
+   arrange(FY_appr, proj_id, sid, tid) %>%
+   select(FY_appr,proj_id, pdo,sid, tid, token, bigram) 
+```
+
+```{r}
+# most frequent bigrams 
+count_bigram <- bigrams %>% 
+   count(bigram, sort = TRUE)  
+```
+
+## Clean bigrams
+
+The challenge is to clean but without separating consecutive words... so I do this split-reunite process to remove stopwords and punctuation. Basically only keeping bigrams made of 2 nouns or ADJ+noun.
+```{r}
+# Separate the bigram column into two words
+bigrams_cleaned <- bigrams %>%
+  tidyr::separate(bigram, into = c("word1", "word2"), sep = " ")
+
+# Remove stopwords and bigrams in EACH component word containing punctuation
+bigrams_cleaned <- bigrams_cleaned %>%
+   # custom stop words
+   filter(!word1 %in% custom_stop_words_df$word, !word2 %in% custom_stop_words_df$word) %>% 
+   # Remove punctuation   
+   filter(!str_detect(word1, "[[:punct:]]"), !str_detect(word2, "[[:punct:]]"))  
+
+# Reunite the component cleaned words into the bigram column
+bigrams_cleaned <- bigrams_cleaned %>%
+   unite(bigram, word1, word2, sep = " ") %>% 
+   # Remove too obvious bigrams 
+   filter(!bigram %in% c("development objective", "development objectives", 
+                         "proposed project", "project development", "program development"))
+
+# View the cleaned dataframe
+bigrams_cleaned
+
+# Count the frequency of each bigram
+bigram_freq <- bigrams_cleaned %>%
+  count(bigram, sort = TRUE)
+```
+
+### [FIG] most frequent bigrams in PDOs
++ Excluding bigrams where 1 word is among stopwords or a punctuation sign
++ Excluding *"development objective/s"*, *"proposed project"*, *"program development"* because not very informative
+
+```{r}
+#| output: true
+
+# ---- Prepare data for plotting
+# Evaluate the title with glue first
+title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+# Define the bigrams you want to highlight
+bigrams_to_highlight <- c("public sector", "private sector", "eligible crisis",
+                          "health care", "health services", "public health")   
+
+ 
+# ---- Plot the most frequent bigrams
+pdo_bigr_freq <- bigram_freq %>%
+   slice_max(n, n = 25) %>%
+   ggplot(aes(x = reorder(bigram, n), y = n,
+              fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+   geom_col() +
+   # coord flipped so n is Y axis
+   scale_y_continuous(breaks = seq(min(bigram_freq$n)-1, max(bigram_freq$n), by = 50)) +
+   scale_fill_manual(values = c("public sector" = "#005ca1", 
+                                "private sector" = "#9b2339", 
+                                "eligible crisis"= "#8e550a", 
+                                "health care"= "#245048",
+                                "health services"= "#245048",
+                                "public health"= "#245048", 
+                                "Other" = "grey")) +
+   guides(fill = "none") +
+   coord_flip() +
+   labs(title = title_text, subtitle = "(ranking top 25 bigrams)",
+        x = "", y = "") +
+   theme(plot.title.position = "plot",
+         axis.text.y = element_text(
+            # obtain vector of colors 2 match x axis labels color to fill
+            color = bigram_freq %>%
+               slice_max(n, n = 25) %>%
+               # mutate(color = ifelse(bigram %in% bigrams_to_highlight,
+               #                       ifelse(bigram == "public sector", "#005ca1",
+               #                              ifelse(bigram == "private sector", "#9b2339", "#8e550a")),
+               #                       "#4c4c4c")) 
+               mutate(color = case_when (
+                  bigram == "public sector" ~ "#005ca1",
+                  bigram == "private sector" ~ "#9b2339",
+                  bigram == "eligible crisis" ~ "#8e550a",
+                  bigram %in% c("health care", "health services", "public health") ~ "#245048",
+                  TRUE ~ "#4c4c4c")) %>%
+               # Ensure the order matches the reordered bigrams (AS BINS)
+               arrange(reorder(bigram, n)) %>%  
+               # Extract the color column in bin order as vector to be passed to element_text()
+               pull(color)
+            )
+         )
+
+pdo_bigr_freq
+```
+
+
+```{r}
+#| echo: false
+f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+```
+ 
+Results are not surprising in terms of frequent bigram recurrence:
+
++ See for example "increase access", "service delivery" ,"institutional capacity", "poverty reduction" etc, at the top.
++ Although, while *"health"* recurred in several bigrams (e.g. "health services", "public health", "health care") among the top 25, *"education"* did not appear at all.
++ A bit mysterious is perhaps *"eligible crisis"* (> 100 mentions)?! (coming back to this later)
+
+### [FIG] Changes over time BY 1FY 
+Besides huge, counter intuitive, difference between *"health"* and *"education"*, *"climate change"* appears in the top 25 (ranking above "financial sector" and "capacity building") which begs the question: Has the frequency of these bigrams has changed over time?
+
+```{r}
+#| output: false
+
+## too busy to be useful
+
+# Step 1: Count the frequency of each bigram by year
+top_bigrams_1FY <- bigrams_cleaned %>%
+   group_by(FY_appr, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_appr, desc(count)) %>%
+   # ---  +/- top 10  
+   group_by(FY_appr) %>%
+   top_n(10, count) %>%
+   ungroup()
+   # # ---  STRICT  top 10  
+   # mutate(rank = dense_rank(desc(count))) %>%  # Rank bigrams by frequency
+   # filter(rank <= 10) %>%  # Keep only the top 10 by rank
+   # ungroup()
+
+  
+# Add specific bigrams to highlight, if any
+bigrams_to_highlight <- c("climate change",  "climate resilience", "public sector", "private sector")
+
+# Step 2: Plot the top bigrams by frequency over time   
+pdo_bigr_FY_freq  <-  top_bigrams_1FY %>% 
+ ggplot(aes(x = reorder(bigram, count), 
+             y = count,
+             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+  geom_col() +
+  scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", 
+                               "climate change" = "#399B23", "climate resilience" = "#d8e600",
+                               "Other" = "grey")) +
+  guides(fill = "none") +
+  coord_flip() +
+  facet_wrap(~ FY_appr, scales = "free_y") +
+  labs(title = "Top 10 Bigrams by Frequency Over Time",
+       subtitle = "(Faceted by Fiscal Year Approval)",
+       x = "Bigrams",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title.position = "plot",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+
+pdo_bigr_FY_freq
+```
+
+### [FIG] Changes over time BY 3FY 
+To reduce the noise and make the plot more readable, we can group the data by 3 fiscal years (FY) intervals. 
+ 
+```{r}
+# generate FY group 
+f_generate_year_groups <- function(years, interval) {
+  breaks <- seq(floor(min(years, na.rm = TRUE) / interval) * interval, 
+                ceiling(max(years, na.rm = TRUE) / interval) * interval, 
+                by = interval)
+  
+  labels <- paste(breaks[-length(breaks)], "-", breaks[-1] - 1)
+  
+  return(list(breaks = breaks, labels = labels))
+}
+
+```
+
+```{r}
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 3 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_FYper <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+
+# --- Step 3: Add specific bigrams to highlight, if any
+bigrams_to_highlight <- c("climate change",  "climate resilience", 
+                          "eligible crisis",  
+                          "public sector", "private sector",
+                          "water supply", "sanitation services",
+                          "health care", "health services", "public health", "health preparedness"
+                          )
+
+# --- Step 4: Plot the top bigrams by frequency over n-year periods
+pdo_bigr_FY_freq  <-  top_bigrams_FYper %>% 
+ ggplot(aes(x = reorder(bigram, count), 
+             y = count,
+             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+  geom_col() +
+  scale_fill_manual(values = c(
+     # "public sector" = "#005ca1", 
+     # "private sector" = "#e60066", 
+     "water supply" = "#26BDE2",
+      "sanitation services" = "#26BDE2",
+     "climate change" = "#3F7E44", 
+     "climate resilience" = "#a6bd23",
+     "eligible crisis" = "#e68000",  
+     "health care" = "#E5243B",
+     "health services" = "#E5243B",
+     "public health" = "#E5243B",
+     "Other" = "grey")) +
+  guides(fill = "none") +
+  coord_flip() +
+  facet_wrap(~ FY_group, ncol = 2 , scales = "free_y" )+ 
+              #strip.position = "top") +  # Facet wrap with columns
+  labs(title = glue::glue("Top 12 Bigrams by Frequency Over {interval_i}-Year Periods"),
+       subtitle =  "(Some sectors highlighted)",
+       x = "Bigrams",
+       y = "Count") +
+  theme_minimal() +
+  theme(plot.title.position = "plot")
+```
+
+
+```{r}
+#| output: true
+
+# print the plot
+pdo_bigr_FY_freq
+```
+
+```{r}
+#| echo: false
+f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
+```
+
+> Frequency observed over FY intervals is very revealing. 
+
++ Interesting to see the trend of "water supply" and "sanitation services" bigrams, which are quite stable over time.
++ The bigram *"health care"* and *"health services"* are also quite stable, while *"public health"* obviously gained relevance since the 2019-2021 FY period.
++ Conversely, *"private sector"* and *"public sector"* loose importance over time (around mid 2010s), while *"climate change"* and *"climate resilience"* gain relevance from the same point on.
++ Still quite surprising the bigram *"eligible crisis"*, which actually appears in the top 12 bigrams starting in FY 2016-2018!
+  
+### 🤔 Which are the most frequent and persistent Bigrams Over Time? 
+
+> For this, I am looking for a ranking that considers Mean frequency across periods `arrange(desc(mean_count))` + Stability (low standard deviation) across periods [this is hard bc of NAs], and *NOT* total count overall...
+
++ Using `top_bigrams_FYper` which had breaks of 3FY 
+```{r}
+#| eval: FALSE
+
+# ------------------------------[REPEATED just to see the table]
+
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 3 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_FYper <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+```
+ 
+ 
+> sd() returns NA for bigrams that are not present in any periods (or are present in just 1 period). 
+
+
+```{r}
+# Calculate the mean frequency and standard deviation of the counts for each bigram across periods
+stable_and_frequent_bigrams_per <- top_bigrams_FYper %>%
+   group_by(bigram) %>%
+   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
+             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
+             count_non_na = sum(!is.na(count)),  # Count non-NA values
+             sd_count2 = if_else(count_non_na >= 1, sd(count, na.rm = TRUE), NA_real_),  # Only calculate sd if >= 3 non-NA
+             total_count = sum(count)) %>%               # Total count across all periods (optional)
+   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
+   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+   # Focus on the top 25% most frequent bigrams
+   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
+   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
+   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+```
+
+#### [TBL] Bigrams Over Time [3FY]
+```{r}
+#| output: TRUE
+
+# View the most frequent and stable bigrams
+stable_and_frequent_bigrams_per %>% 
+   slice_head(n = 15)  %>% kableExtra::kable()
+```
+
++ Using `top_bigrams_1FY` which had breaks of 1FY 
+
+```{r}
+# --- Step 1: Create n-year groups (using `f_generate_year_groups`)
+interval_i = 1 # decide the interval
+year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
+top_n_i = 12 # decide the top n bigrams to show
+
+# --- Step 2: Add the generated FY breaks and labels to data frame
+top_bigrams_1FY <- bigrams_cleaned %>%
+   # cut divides the range of x into intervals
+   mutate(FY_group = base::cut(FY_appr, 
+                               breaks = year_groups$breaks, 
+                               include.lowest = TRUE, 
+                               right = FALSE, 
+                               labels = year_groups$labels)) %>% 
+   # Count the frequency of each bigram by n-year groups
+   group_by(FY_group, bigram) %>%
+   summarise(count = n(), .groups = 'drop') %>%
+   arrange(FY_group, desc(count)) %>%
+   # Top ? bigrams for each n-year period
+   group_by(FY_group) %>%
+   top_n(top_n_i, count) %>%
+   ungroup()
+```
+
+
+```{r}
+# Calculate the mean frequency and standard deviation of the counts for each bigram across periods
+stable_and_frequent_bigrams_1FY <- top_bigrams_1FY %>%
+   group_by( bigram) %>%
+   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
+             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
+             total_count = sum(count)) %>%               # Total count across all periods (optional)
+   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
+   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+   # Focus on the top 25% most frequent bigrams
+   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
+   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
+   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+```
+
+#### [TBL] Bigrams Over Time [1FY]
+
+```{r}
+#| output: TRUE
+
+# View the most frequent and stable bigrams
+stable_and_frequent_bigrams_1FY %>% 
+   slice_head(n = 15)   %>% kableExtra::kable()
+```
+  
+# _______ 
+## Explore specific bigrams
+
+
+### --- *Public/Private* ~ compare frequency over FY 
+
+A case in which looking at **bigrams** may be better than **tokens** is the question whether WB project are more focused on *public* or *private* sector. It is not easy to capture this information from the text, because:
+
++ "government" may be referred to the subject/counterpart of the project (e.g. "government of Mozambique")
++ "private" is not necessarily referred to the "private sector" (e.g. "private households")
++ "public" is not necessarily referred to the "public sector" (e.g. "public health")
+
+So, I narrow down to consecutive *bigrams* **"public sector"** and **"private sector"** to get an indicative frequency of these terms. 
+
+#### [FIG] Bigrams ("public sector", "private sector") freq plot
+```{r}
+# Filter for the specific bigrams "public sector" and "private sector"
+bigrams_pub_priv_sec <- bigrams %>%
+   filter(bigram %in% c("public sector", "private sector"))
+
+# Display the result
+#bigrams_pub_priv_sec
+
+# prepare data for plotting (count)
+sector_bigr_df <- bigrams_pub_priv_sec %>% 
+   count(FY_appr, bigram) %>% 
+   # reorder values by frequency
+   mutate(bigram = factor(bigram, levels = c("public sector", "private sector")))
+```
+
+
+```{r}
+#| output: true
+
+# ---- Prepare data for plotting
+# Evaluate the title with glue first
+title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over FY {min(sector_bigr_df$FY_appr)}-{max(sector_bigr_df$FY_appr)}") 
+
+two_col_contrast <- c( "#005ca1",  "#e60066" )
+
+# Create a named vector for the legend labels with totals in a single pipeline
+legend_labels <- sector_bigr_df %>%
+   group_by(bigram) %>%
+   # Calculate total counts for each bigram
+   summarize(total_n = sum(n)) %>% 
+   # Append totals to bigram names
+   mutate(label = paste0(bigram, " (", total_n, ")")) %>%  
+   # Create a named vector with bigram as names and labels as values
+   {setNames(.$label, .$bigram)} # curly braces {} in a dplyr pipeline using . as ouptu from previous..
+
+# ---- Plot
+pdo_pub_pri_bigr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bigram, color = bigram)) +
+   geom_line(linetype = "dashed", alpha = 0.5, size = 1) +
+   geom_point(size = 2) +
+   scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+   scale_color_manual(values = two_col_contrast, 
+                      labels = legend_labels) +  # Use modified labels
+   theme_bw() +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+   labs(title = title_text, x = "Board approval FY", y = "Counts of bigrams", color = "bigram")+
+  theme(plot.title.position = "plot")
+
+pdo_pub_pri_bigr
+```
+
+```{r}
+# Save the plot
+f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
+```
+
+> Note: 
+
++ these are much less common than the single words.
++ What happens in FY 2014-2016 that makes these bigram drop in frequency of mention?
+
+
+### --- *climate change* ~ notable bigrams over FY [CMPL 🟠]
+
+### --- *eligible crisis* ~ notable bigrams over FY
+
+```{r}
+# reduce back to the original data
+pdo_t <- pdo_train_t %>% 
+   select(proj_id, pdo,pr_name, FY_appr, FY_clos, status, regionname, countryname, sector1, theme1,lendinginstr, env_cat, ESrisk, curr_total_commitment) %>%
+   group_by(proj_id) %>% 
+   slice(1)
+```
+
+First of all, let's see what are the sentence that contain the bigram "eligible crisis" in the PDOs. 
+
+```{r}
+# ---- Define the bigram you want to find
+target_bigram <- "eligible crisis"
+
+# Tokenize the text data into sentences
+sentences <- pdo_t %>%
+   unnest_tokens(sentence, pdo, token = "sentences")
+
+# Count the number of sentences in each document
+sentence_count <- sentences %>%
+   group_by(proj_id) %>%
+   summarise(num_sentences = n())
+
+n_distinct(sentence_count$proj_id)  # number of projects
+sum(sentence_count$num_sentences)   # total number of sentences
+
+# Filter sentences that contain the specific bigram
+sentences_with_targ <- sentences %>%
+   filter(str_detect(sentence, target_bigram))
+
+# Define how many characters before and after the bigram to extract
+chars_before <- 60  # Number of characters before the bigram
+chars_after <- 60   # Number of characters after the bigram
+
+# Add the extracted bigram and surrounding characters to the same dataframe
+sentences_with_eligcris <- sentences_with_targ %>%
+   mutate(closest_text = str_extract(sentence, paste0(".{0,", chars_before, "}", target_bigram, ".{0,", chars_after, "}"))) %>% 
+   # View the updated dataframe with the closest_text column
+   select(proj_id, #sentence, 
+          closest_text)
+```
+
+
+#### [TBL] Close phrase around bigram "eligible crisis"
+
+I still don't know what "eligible" crisis means, but it appears that the following is like a commonly used phrase in the PDOs: *"to respond promptly and effectively"* as well as *"provide immediate and effective response to"* seem to often accompany the text *"**eligible crisis or emergency**"*. Presumably, a standard sentence indicating eligibility for ODA funding.
+
+```{r}
+# Define the phrase you want to search for in the vicinity of the target bigram
+phrase_to_search <- "respond promptly and effectively"
+
+# Count how often the phrase appears in the vicinity of the target bigram
+phrase_count <- sentences_with_eligcris %>%
+  mutate(contains_phrase = str_detect(closest_text, phrase_to_search)) %>%  # Check if the phrase is present
+  summarise(count = sum(contains_phrase))  # Count how many times the phrase is found
+
+# View the result
+tabyl(phrase_count$count)
+```
+
+Here are a few examples of the sentences containing the bigram "eligible crisis" and the phrase "respond promptly and effectively":
+
+```{r}
+#| output: true
+
+# Filter the sentences that contain the phrase
+sample_with_eligcris <-  sentences_with_eligcris %>% 
+   ungroup() %>% 
+   # take a random sample of 5 sentences
+   sample_n(8 ) %>%
+   select(proj_id, closest_text) %>% 
+   mutate (closest_text =  paste0("(...) ", closest_text),
+           # Make "eligible crisis" bold by adding <b> tags
+           closest_text = gsub("eligible crisis", "<b>eligible crisis</b>", closest_text)
+   )
+
+# print out sample in a kable 
+kable(sample_with_eligcris, format = "html", 
+      # Display the table with bold formatting
+       escape = FALSE,
+      col.names = c("WB Project ID","excerpt of PDO sentences with 'eligible crisis'")) %>% 
+   kable_styling(full_width = FALSE)   
+   
+```
+
+ 
+## Analyzing bigrams: tf-idf
+
+> There are advantages and disadvantages to examining the tf-idf of bigrams rather than individual words. Pairs of consecutive words might capture structure that isn’t present when one is just counting single words, and _may provide context that makes tokens more understandable_. However, ***the per-bigram counts are also sparser*** (a typical two-word pair is rarer than either of its component words). 
+
+```{r}
+bigram_tf_idf <- bigrams_cleaned %>% 
+ # then on that calculate tf-idf
+ count(FY_appr, bigram) %>%
+  bind_tf_idf(bigram, FY_appr, n) %>%
+  arrange(FY_appr, desc(tf_idf))
+
+bigram_tf_idf_top <- slice_head(bigram_tf_idf, n =  5, by = FY_appr ) %>% 
+      arrange(FY_appr, desc(tf_idf))
+```
+
+
+# _______ 
+
+<!-- ## Bag of words -->
+<!-- https://www.nlpdemystified.org/course/basic-bag-of-words  -->
+
+<!-- ## N-Grams -->
+<!-- ... -->
+
+<!-- ## Co-occurrence -->
+<!-- ... -->
+
+<!-- ## Correlation -->
+<!-- ... -->
+
+<!-- ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE) -->
+
+# Acknowledgements
+
+Below are some invaluable resources that I used to learn and implement the NLP techniques in this analysis:
++ [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/)
+
++ [Text Mining with R](https://www.tidytextmining.com/)
++ [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns)
+
++ [Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
++ [Guidef from Penn Libraries](https://guides.library.upenn.edu/penntdm/r)
+

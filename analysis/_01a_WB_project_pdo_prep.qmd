@@ -150,8 +150,6 @@ lapply(start_year:end_year, function(year) {
   cat("Processing data for fiscal year:", year, "\n")
   fetch_and_save_data_year(year)
 })
-
-
 ```
 
 ## Attempt # 2.a - nope! 🚫 {Ingest Projects data (manually split)}
@@ -878,11 +876,13 @@ pdo_train_t <- pdo_train_t %>%
   )
 ```
 
-
+# _______ 
 # Save clean Proj PDO train dataset `pdo_train_t`
-
+# _______ 
 ```{r}
 saveRDS(projs_train, here("data" , "derived_data", "projs_train.rds"))
+saveRDS(projs_test, here("data" , "derived_data", "proj_test.rds"))
+saveRDS(projs_val, here("data" , "derived_data", "projs_val.rds"))
 saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))
 ```
 
@@ -922,7 +922,6 @@ spacy_initialize()
 ```
 
 # RE-run  `cleanNLP::cnlp_annotate` with NER
- 
 
 ```{r}
 #| eval: false
