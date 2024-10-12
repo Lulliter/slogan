@@ -36,14 +36,12 @@ git status
 # Add changes to git Index.
 git add -A # ALL
 git add -u # tracked
-git add R/f_recap_values.R
-git add images/*
+git add data/*
 git add docs/*
-git add analysis/*
-git add data/raw_data/project2/
-git add data/derived_data/*
-git add README*
-git add _extensions/
+git add images/*
+
+
+
 =======
 # Create Std commit "message"....
 msg="rebuilt on `date`"
@@ -53,7 +51,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "chgd analysis/01b_... &  _01a_... & R/*func*.R"
+git commit -m "split  01b_WB_project_pdo_EDA.qmd 🔱 _01c_WB_project_pdo_feat_class.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

@@ -1,7 +1,7 @@
 ---
 title: "WB Project PDO text EDA"
-author: "Luisa M. Mimmi"
-date: "Last run: `r format(Sys.time(), '%F')`"
+#author: "Luisa M. Mimmi"
+#date: "Last run: `r format(Sys.time(), '%F')`"
 lang: en
 editor: source
 engine: knitr
