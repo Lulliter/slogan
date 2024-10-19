@@ -36,10 +36,11 @@ git status
 # Add changes to git Index.
 git add -A # ALL
 git add -u # tracked
+git add R/*
 git add data/*
 git add docs/*
 git add images/*
-
+git add analysis/PDO-explor.qmd
 
 
 =======
@@ -51,7 +52,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "split  01b_WB_project_pdo_EDA.qmd 🔱 _01c_WB_project_pdo_feat_class.qmd"
+git commit -m "🤯   _01c_WB_project_pdo_feat_class.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
@@ -80,3 +81,5 @@ Rscript R/salvo_output_li.R
 echo "accident.txt" >> .gitignore
 # tell Git NOT to track this file (it gets removed from the index, but stays local system)
 git rm --writings/zzzz_old/
+git rm --buzzwords.bib
+git rm --cached buzzwords.bib

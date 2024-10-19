@@ -19,6 +19,7 @@ _freeze/
 # Private or old
 _my_stuff/*
 analysis/_zz_old_files/
+buzzwords.bib
 
 # Temporary files
 *.log

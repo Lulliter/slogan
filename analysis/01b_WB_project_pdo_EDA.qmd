@@ -54,33 +54,95 @@ bibliography: ../bib/slogan.bib
 ```{r}
 # Pckgs -------------------------------------
 library(fs) # Cross-Platform File System Operations Based on 'libuv'
-library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
-library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
-library(skimr) # Compact and Flexible Summaries of Data
 library(here) # A Simpler Way to Find Your Files
 library(paint) # paint data.frames summaries in colour
+library(tidyverse) # Easily Install and Load the 'Tidyverse' 
+library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
+library(skimr) # Compact and Flexible Summaries of Data
 library(readxl) # Read Excel Files
-library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
-library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
-library(rsample) # General Resampling Infrastructure
-library(rvest) # Easily Harvest (Scrape) Web Pages
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing  
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
-library(tidyverse) # Easily Install and Load the 'Tidyverse' # Easily Install and Load the 'Tidyverse'
-library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages # Easily Install and Load the 'Tidymodels' Packages
-library(textrecipes) # Extra 'Recipes' for Text Processing # Extra 'Recipes' for Text Processing
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
+library(patchwork) # The Composer of Plots
 
-set.seed(123) # for reproducibility
+# # ML ------------------------------------- 
+# library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages 
+# library(textrecipes) # Extra 'Recipes' for Text Processing 
+
+# # TEXT ANALYTICS -------------------------------------
+# library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools 
+# library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
+# library(cleanNLP) # A Tidy Data Model for Natural Language Processing 
 ```
 
+```{r}
+#| echo: FALSE
+# 0) --- See prior steps in R/fonts.R
+library(showtext)
+font_add_google("Roboto Condensed", "roboto_condensed")
+showtext_auto()
+
+# 1) --- Set the font as the default for ggplot2
+# Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html 
+my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
+  theme(panel.grid.minor = element_blank(),
+        # Bold, bigger title
+        plot.title = element_text(face = "bold", size = rel(1.7)),
+        # Plain, slightly bigger subtitle that is grey
+        plot.subtitle = element_text(face = "plain", size = rel(1.3), color = "#A6A6A6"),
+        # Italic, smaller, grey caption that is left-aligned
+        plot.caption = element_text(face = "italic", size = rel(0.7), 
+                                    color = "#A6A6A6", hjust = 0),
+        # Bold legend titles
+        legend.title = element_text(face = "bold"),
+        # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+        strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
+        # Bold axis titles
+        axis.title = element_text(face = "bold"),
+        # Add some space above the x-axis title and make it left-aligned
+        axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+        # Add some space to the right of the y-axis title and make it top-aligned
+        axis.title.y = element_text(margin = margin(r = 10), hjust = 1),
+        # Add a light grey background to the facet titles, with no borders
+        strip.background = element_rect(fill = "grey90", color = NA),
+        # Add a thin grey border around all the plots to tie in the facet titles
+        panel.border = element_rect(color = "grey90", fill = NA))
+
+# 2) --- use 
+# ggplot + my_pretty_theme
+
+```
+
+### ----------------------------------------------------------------------------
+
+# Data sources
+The data used in this analysis comes from the World Bank's Projects & Operations database.
+
+Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/_01a_WB_project_pdo_prep.qmd`), WHERE:  
+
+1. Retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
+   + Of these, approximately 50% (**11,322 projects**) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
+   + There are no **Project Development Objectives** available in projects approved before FY2001
+   + However, other than approval year, based on some tests on available projects' features, PDO texts' missingness seems to happen at random.
+
+2. Dropped from the analysis: projects with no PDO text (including those approved before FY2001), and projects with missing status, FY of approval --> **8,811 usable projects** selected.
+
+3. Split the dataset into training / validation / test subsets (proportional to FY and regional distribution). 
+   + Here I work only on ***training set*** (~50% of usable ones, i.e. **4,403 PDOs**).
+
+4. Cleaned the data (parse dates, recode variables, etc.), fix typos, unwanted special characters, and other unimportant issues in PDOs.
+
+5. Obtained **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned train dataset).
+
+
 ::: {.callout-note collapse='true'}
+
 #### --- Note on `cleanNLP` package
 `cleanNLP` supports multiple *backends for processing text*, such as `CoreNLP`, `spaCy`, `udpipe`, and `stanza.` Each of these backends has different capabilities and might require different initialization procedures.
 
 + `CoreNLP` ~ powerful Java-based NLP toolkit developed by Stanford, which includes many linguistic tools like tokenization, part-of-speech tagging, and named entity recognition. 
    + ❕❗️ NEEDS EXTERNAL INSTALLATION (must be installed in Java with `cnlp_install_corenlp()` which installs the Java JAR files and models)
 + `spaCy` ~ fast and modern NLP library written in *Python.* It provides advanced features like dependency parsing, named entity recognition, and tokenization. 
-   + ❕❗️ NEEDS EXTERNAL INSTALLATION (fust be installed in Python (with `spacy_install()` which installs both `spaCy` and necessary Python dependencies) and the `spacyr` R package must be installed to interface with it.
+   + ❕❗️ NEEDS EXTERNAL INSTALLATION (fmst be installed in Python (with `spacy_install()` which installs both `spaCy` and necessary Python dependencies) and the `spacyr` R package must be installed to interface with it.
 + `udpipe` ~ R package that provides bindings to the `UDPipe` NLP toolkit. Fast, lightweight and language-agnostic NLP library for tokenization, part-of-speech tagging, lemmatization, and dependency parsing.
 + `stanza`~ another modern NLP library from Stanford, similar to CoreNLP but built on PyTorch and supports over 66 languages...
 
@@ -116,23 +178,6 @@ cnlp_init_udpipe(model_name = "english")
 :::
 
 
-### ----------------------------------------------------------------------------
-
-# Data sources
-The data used in this analysis comes from the World Bank's Projects & Operations database.
-
-Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/_01a_WB_project_pdo_prep.qmd`), WHERE:  
-
-1. I retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
-   + Of these, ~50% projects have a "viable" **Project Development Objective (PDO)** text in the dataset (i.e., not "TBD").
-   + There are no **Project Development Objectives** available in projects approved before FY2001
-   + However, other than approval year, based on some tests on available projects' features, PDO texts' missingness seems to happen at random.
-2. Dropped from the analysis: projects with no PDO text, those approved before FY2001, and projects with missing status --> **8,814 projects** selected.
-3. Split the dataset into training / validation / test subsets (proportional to FY and regional distribution). 
-   + Here I work only on ***training set*** (~50% of usable ones, i.e. **4,403 PDOs**).
-3. Clean the dataset (parse dates, recode variables, etc.), fix some typos, unwanted special characters, and other unimportant issues in PDOs.
-4. Obtain **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned train dataset).
-
 ## [TBL] Illustrative PDOs text in Projects' documents
 ```{r}
 #| eval: true
@@ -150,31 +195,35 @@ tibble::tribble(
 
 # Notes on PDO text data quality 
 
+First, it is important to notice that **all 7,548 projects approved before FY2001** had no PDO text available. 
+
+The exploratory analysis of the **11,353 projects WITH PDO text** revealed some interesting findings:
+
 1. **PDO text length**: The PDO text is quite short, with a median of 2 sentences and a maximum of 9 sentences.
 <!-- From 22,659 Proj -->
 <!-- all_proj_t %>% filter(pdo %in% c(".","-","NA", "N/A")) %>% nrow() -->
-2. **PDO text missingness**: Of the 11,353 NON-MISSING PDOs (50.1% of projects), 
-   + **11,216** have PDO as blank text (i.e., *""*)
+2. **PDO text missingness**: besides **11,306** projects with missing PDOs, **31 projects** had some invalid PDO values, namely:
+   <!-- + **11,216** have missing PDO -->
    + **11** have PDO as one of: *".","-","NA", "N/A"*
    + **7** have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
    + **9** have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
    + **4** have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "a"*
-   + (I eliminate these because uninformative with regards to the text analysis I want to perform)
+  
+<!-- FROM 22,659 total - 11,306 MISSING PDOs = 11,353 WITH PDO - 31 = 11,322 with *VALID* PDO -->
+Of the **remaining 11,322 projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
 
-3. Other projects arbitrarily excluded (for incompleteness or doubts) 
-   + Projects without indication of "project status" have been excluded 
-   + Projects approved in FY >= FY2024 (384) have been excluded (year not complete)
-   + Projects approved before FY2001 have been excluded (no PDO text available)
+   + **3 projects** without *"project status"* 
+   + **2,176 projects** without *"board approval FY"* 
+   + **332 projects** approved in FY >= FY2024  (for incomplete approval stage) 
 
-> **Remaining projects**: 8,811 usable projects selected, of which 4,403 are in the training set.**
+Lastly (and this was quite surprising to me) the **remaining, viable 8,811 unique projects**, were matched by **only 7,582 unique PDOs**!
+In fact, **2,235 projects share 1,006 NON-UNIQUE PDO text** in the "cleaned" dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
 
-4. Of the remaining, viable, 8,811 projects, there are 7,585 unique PDOs!!
-   + i.e. **2,229 projects have NON-UNIQUE PDO text** in the "cleaned" dataset. Why? 
+In sum, the cleaning process yielded a usable set of **8,811 functional projects**, which was split into a *training subset* (4,403) to explore and test models and a *testing subset* (4408), held out for post-prediction evaluation. 
 
 ::: {.callout-note}
 Evidently, in some cases,the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same lending program.
 :::
-
 
 ### ---------------------------------------------------------------------------
  
@@ -228,13 +277,13 @@ train_pdo_desc <- tribble(
   ~Variable, ~ Type,           ~Provenance,           ~Description, ~Example,
 "proj_id              ", "chr", "original PDO data" , "","",
 "pdo                  ", "chr", "original PDO data" , "","",
-"word        ", "chr", "original PDO data" , "","Governments",
+"word                  ", "chr", "original PDO data" , "","Governments",
 "sid                  ", "int", "output cleanNLP"   , "sentence ID","",
 "tid                  ", "chr", "output cleanNLP"   , "token ID within sentence", "",
 "token                ", "chr", "output cleanNLP"   , "Tokenized form of the token.", "government",
 "token_with_ws        ", "chr", "output cleanNLP"   , "Token with trailing whitespace", "government ",
 "lemma                ", "chr", "output cleanNLP"   , "The base form of the token", "government",
-"stem                ", "chr", "output SnowballC"   , "The base form of the token", "govern",
+"stem                 ", "chr", "output SnowballC"   , "The base form of the token", "govern",
 "upos                 ", "chr", "output cleanNLP"   , "Universal part-of-speech tag (e.g., NOUN, VERB, ADJ).","",
 "xpos                 ", "chr", "output cleanNLP"   , "Language-specific part-of-speech tags.","",
 "feats                ", "chr", "output cleanNLP"   , "Morphological features of the token","",
@@ -356,23 +405,26 @@ pdo_train_t <- pdo_train_t %>%
 
 > NOTE: Among `word` / `stems` encountered in PDOs, there are a lot of acronyms which may refer to World Bank lingo, or local agencies, etc... Especially when looked at in low case form they don't make much sense... 
 
-#### Sparsity [CMPL🟡]
+#### Notes on sparsity
 **Sparsity** in the context of a document-term matrix refers to the proportion of cells in the matrix that contain zeros. High sparsity means that most terms do not appear in most documents.
 
 + removing stopwords before stemming can reduce sparsity
- 
++ `tidytext::cast_tdm` turns a "tidy" one-term-per-document-per-row data frame into a Document-Term Matrix (DTM) from the `tm` package. 
+   + this dataset contains 4403 documents (each of them a PDO) and 11029 terms (distinct words). Notice that this DTM is 100% sparse (100% of document-word pairings are zero, bc most pairings of document and term do not occur (they have the value zero). 
+  
 ```{r}
 # create document-word matrix
-pdo_train_t %>% 
+DTM <- pdo_train_t %>% 
    anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>% 
    count(proj_id, token_l) %>%
    tidytext::cast_dtm(proj_id, token_l, n) # HIGH!!!
 
-# create document-word matrix
-pdo_train_t %>% 
-   anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>% 
-   count(proj_id, stem) %>%
-   tidytext::cast_dtm(proj_id, stem, n) # HIGH!!!
+DTM
+# <<DocumentTermMatrix (documents: 4403, terms: 11029)>>
+# Non-/sparse entries: 129940/48430747
+# Sparsity           : 100%
+# Maximal term length: 34
+# Weighting          : term frequency (tf)
 ```
 
 
@@ -431,7 +483,7 @@ What to use: token, lemma, or stem?
 General Preference in Real-World NLP:
 
 + `Tokens` for analyses where word forms matter or for sentiment analysis.
-+ `Lemmas` (*)  for most general-purpose NLP tasks where you want to reduce dimensionality while maintaining accuracy and clarity of meaning.
++ `Lemmas` (*) for most general-purpose NLP tasks where you want to reduce dimensionality while maintaining accuracy and clarity of meaning.
 + `Stems` for very large datasets, search engines, and applications where speed and simplicity are more important than linguistic precision.
 
 (*) I use lemma, after "aggressively" reducing the number of words to consider, and removing stop words (at least for now). 
@@ -441,7 +493,6 @@ General Preference in Real-World NLP:
 # TEXT ANALYSIS/SUMMARY
 # _______ 
 <!-- see https://cengel.github.io/R-text-analysis/textanalysis.html  -->
-
 
 ```{r}
 #| echo: false
@@ -514,7 +565,6 @@ f_save_plot <- function(plot_name, plot_object) {
 # f_save_plot("proj_wrd_freq", proj_wrd_freq)
 
 ```
- 
 
 ### [FIG] Overall `token` freq ggplot
 + Excluding "project" "develop","objective"  
@@ -524,7 +574,7 @@ f_save_plot <- function(plot_name, plot_object) {
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent token in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+title_text <- glue::glue("Most frequent TOKEN in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
 pdo_wrd_freq <- pdo_train_t %>%   # 123,927
    # include only content words
@@ -535,21 +585,23 @@ pdo_wrd_freq <- pdo_train_t %>%   # 123,927
                           "is"))) %>% # whne it is VERB
    count(token_l) %>% 
    filter(n > 800) %>% 
-   mutate(token_l = reorder(token_l, n)) %>%  # reorder values by frequency
-   # plot 
+   mutate(token_l = reorder(token_l, n))   # reorder values by frequency
+
+# plot 
+pdo_wrd_freq_p <- pdo_wrd_freq %>% 
    ggplot(aes(token_l, n)) +
    geom_col(fill = "#d7b77b") +
+   scale_y_continuous(breaks = seq(0, max(pdo_wrd_freq$n), by = 400)) + # directly use 'n' instead of .data$n
    coord_flip() + # flip x and y coordinates so we can read the words better
-   labs(title = title_text,
-        subtitle = "[token_l count > 800]", y = "", x = "")+
-  theme(plot.title.position = "plot")
-
-pdo_wrd_freq
+   labs(#title = title_text,
+      subtitle = "[TOKEN with count > 800]", y = "", x = "")+
+   geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
+     my_pretty_theme
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_wrd_freq", pdo_wrd_freq)
+f_save_plot("pdo_wrd_freq_p", pdo_wrd_freq_p)
 ```
 
 
@@ -567,27 +619,54 @@ pdo_stem_freq <- pdo_train_t %>%   # 256,632
    # include only content words
    filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
    filter (!(relation %in% c("nummod" ))) %>% # 173,686 
- filter (!(stem %in% c("pdo","project", "develop", "object", "i", "ii", "iii"))) %>%
+   filter (!(stem %in% c("pdo", "project", "develop", "object", "i", "ii", "iii"))) %>%
    count(stem) %>% 
-   filter(n > 800) %>% 
-   mutate(stem = reorder(stem, n)) %>%  # reorder values by frequency
+   filter(n > 800) %>%
+   mutate(stem = reorder(stem, n))    # reorder values by frequency
+   
    # plot 
-   ggplot(aes(stem, n)) +
-   geom_col(fill = "#d7b77b") +
-   coord_flip() + # flip x and y coordinates so we can read the words better
-   labs(title = title_text,
-        subtitle = "[stem count > 800]", y = "", x = "") +
-  theme(plot.title.position = "plot")
+pdo_stem_freq_p <-    pdo_stem_freq %>% 
+      ggplot(aes(stem, n)) +
+      geom_col(fill = "#d7b77b") +
+      scale_y_continuous(breaks = seq(0, max(pdo_stem_freq$n), by = 400)) + # directly use 'n' instead of .data$n
+      coord_flip() + # flip x and y coordinates so we can read the words better
+      labs(#title = title_text,
+         subtitle = "[STEM with count > 800]", y = "", x = "") +
+      geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
+     my_pretty_theme
 
-pdo_stem_freq
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_stem_freq", pdo_stem_freq)
+f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
 ```
 
 > Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800 (they have been combined by root).
+
+### [FIG] `token` + `stem` freq ggplot
+```{r}
+#| output: TRUE
+
+title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train_t$proj_id)} PDOs") 
+subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+
+combo_freq <-  pdo_wrd_freq_p + pdo_stem_freq_p + 
+   plot_annotation(title = title2_text,
+                    subtitle = subtitle2_text,
+                   # caption = "Source: World Bank Project Documents",
+                   theme = theme(plot.title = element_text(size = 12, face = "bold"),
+                                 plot.subtitle = element_text(size = 10, face = "italic"),
+                                 plot.caption = element_text(size = 10, face = "italic"))
+                   )
+combo_freq
+```
+
+
+```{r}
+f_save_plot("combo_freq", combo_freq)
+```
+
 
 # _______ 
 
@@ -599,7 +678,7 @@ To try and make it a bit more meaningful, let's focus on the frequency of the mo
 
 From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
 
-+ **WATER** = water, wastewater, sanitation
++ **WAT_SAN** = water, wastewater, sanitation
 + **TRANSPORT** = transport, railway, road, airport, port
 + **URBAN** = urban
 + **ENERGY** = energy, electricity, hydroelectric, hydropower, renewable, transmission
@@ -610,13 +689,21 @@ From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in br
 pdo_train_t <- pdo_train_t %>%
    # dealing with water/watershed/waterway
    mutate(tok_sector_broad = case_when(
-      str_detect(token_l, "water|wastewater|sanitat") ~ "WATER",
-      str_detect(token_l, "transport|railway|road|airport|waterway|bus|metropolitan") ~ "TRANSPORT",
+      str_detect(token_l, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", ignore_case = T)) ~ "WAT_SAN",
+      str_detect(token_l, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation", ignore_case = T)) ~ "TRANSPORT",
       token_l == "port" ~ "TRANSPORT",
-      str_detect(token_l, "urban|housing|inter-urban|peri-urban") ~ "URBAN",
-      str_detect(token_l, "energ|electri|hydroele|hydropow|renewable|transmis") ~ "ENERGY",  # Matches either "energy" or "power"
-      str_detect(token_l, "health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin") ~ "HEALTH",
-      str_detect(token_l, "educat|school|vocat|teach|univers|student|literacy|training|curricul") ~ "EDUCATION",
+      str_detect(token_l, regex("urban|housing|inter-urban|peri-urban|waste", ignore_case = T)) ~ "URBAN",
+      str_detect(token_l, regex("energ|electri|hydroele|hydropow|renewable|transmis", ignore_case = T)) ~ "ENERGY",   
+      str_detect(token_l, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin", ignore_case = T))  ~ "HEALTH",
+      str_detect(token_l, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul", ignore_case = T)) ~ "EDUCATION",
+      # not infra 
+      str_detect(token_l, regex("Agricultural|Agro|Fish|Forest|Crop|lovestock", ignore_case = T)) ~ "AGR FOR FISH",
+      str_detect(token_l, regex("Minin|oil|gas|mineral", ignore_case = T)) ~ "MINING OIL&GAS",
+      str_detect(token_l, regex("Social Protec", ignore_case = T)) ~ "SOCIAL PROTECTION",
+      str_detect(token_l, regex("Bank|finan|Investment", ignore_case = T)) ~ "FINANCIAL",
+      str_detect(token_l, regex("Information|Communication|ICT|Internet", ignore_case = T)) ~ "ICT",
+      str_detect(token_l, regex("Tourism|Trade and Services|Manuf", ignore_case = T)) ~ "IND TRADE SERV",
+      str_detect(token_l, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance", ignore_case = T)) ~ "INSTITUTIONAL SUPP.",
       TRUE ~ NA_character_)) %>% 
    relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
 ```
@@ -625,12 +712,29 @@ pdo_train_t <- pdo_train_t %>%
 ```{r}
 #| output: TRUE
 
+# Create a custom color list for each sector
+sector_colors <- c(
+   "WAT_SAN" = "#26BDE2", 
+   "TRANSPORT" =  "#A6A6A6",
+   "ENERGY" = "#FCC30B", 
+   "MINING OIL&GAS" = "#23399b", # no SDG! 
+   "URBAN" = "#FD9D24", 
+   "ICT" = "#0f7184",    # no SDG!
+   "HEALTH" = "#4C9F38", 
+   "EDUCATION" = "#C5192D"
+)
+ 
+
+
 # prepare data for plotting (count)
 sector_broad <- pdo_train_t %>% 
    filter(!is.na(tok_sector_broad)) %>% 
+   filter(tok_sector_broad %in% c("WAT_SAN", "TRANSPORT", "ENERGY","MINING OIL&GAS", "URBAN","ICT", "HEALTH", "EDUCATION")) %>%
    count(FY_appr, tok_sector_broad) %>% 
    filter(n > 0) %>% 
-   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c("WATER", "TRANSPORT", "URBAN", "ENERGY", "HEALTH", "EDUCATION"))) # reorder values by frequency
+   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c("WAT_SAN", "ENERGY", "TRANSPORT",
+                                                                 "URBAN","MINING OIL&GAS","ICT", 
+                                                                 "HEALTH", "EDUCATION"))) # reorder values by frequency
 #df$FY
 
 # Evaluate the title with glue first
@@ -640,25 +744,31 @@ title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t
 pdo_sect_broad_freq <-  ggplot(data = sector_broad, 
                                aes(x = FY_appr, y = n, 
                                    group = tok_sector_broad, color = tok_sector_broad)) +
-   geom_line() +
-   geom_point() +
+   geom_line(linetype = "dotted", alpha = 0.5, size = 1) +
+   geom_point(size = 2) +
    scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
-   scale_color_viridis_d(option = "magma", end = 0.9) + 
-   facet_wrap(~tok_sector_broad, ncol = 2, scales = "free")+ 
+   scale_y_continuous(breaks =  seq(0,150, by=  25)) +
+   # ~ SDG colors 
+    # scale_color_viridis_d(option = "magma", end = 0.9) + 
+   scale_color_manual(values = sector_colors) +
+   facet_wrap(~tok_sector_broad, ncol = 3, scales = "free")+ 
    guides(color = FALSE) +
-   theme_bw()+
+   my_pretty_theme +
    theme(# Adjust angle and alignment of x labels
       axis.text.x = element_text(angle = 45, hjust = 1)) + 
-   labs(title = "Sector words frequency in PDO over Fiscal Years",
+   labs(title = "Sector words frequency in PDOs by fiscal years of approval",
         subtitle = "[Using \"custom\" broad sector definition]",
-        x =   "Board approval FY", 
-        y = "Counts of 'sector' word (tok_sector_broad)") + 
+        x =  "",# "Board approval FY", 
+        y = ""#"Counts of 'sector' word (tok_sector_broad)"
+   ) + 
+   # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+   geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.40) + 
    geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
               aes(xintercept = 2020), 
-              linetype = "dashed", color = "#9b6723") +
+              linetype = "solid", color = "#9b6723",alpha = 0.35) +
    geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
-             aes(x = 2020, y = max(sector_broad$n)*0.75, label = "Covid"), 
-             angle = 90, vjust = -0.5, color = "#9b6723")
+             aes(x = 2020, y = max(sector_broad$n)*0.65, label = "Covid"), 
+             angle = 90, vjust = -0.5, color = "#9b6723") 
 
 
 pdo_sect_broad_freq
@@ -670,19 +780,11 @@ f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
 ```
 
 
-#### [FIG] split sector (`tok_sector_broad`) freq ggplot
+#### [FIG fun] split sector (`tok_sector_broad`) freq ggplot
 ```{r}
-# Create a custom color list for each sector
-sector_colors <- c(
-   "WATER" = "#26BDE2", 
-   "TRANSPORT" =  "#A6A6A6",
-   "URBAN" = "#FD9D24", 
-   "ENERGY" = "#FCC30B", 
-   "HEALTH" = "#4C9F38", 
-   "EDUCATION" = "#C5192D") 
 
 # --- Get a LIST of unique sectors (facets) and split the data
-sector_list <- split(x = sector_broad, f = sector_broad$tok_sector_broad)
+sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
 
 # --- Create a function to plot for each sector with custom colors
 f_plot_sector <- function(data) {
@@ -692,37 +794,40 @@ f_plot_sector <- function(data) {
    p <-ggplot(data = data, 
               aes(x = FY_appr, y = n, 
                   group = tok_sector_broad, color = tok_sector_broad)) +
-      geom_line(color = sector_colors[sector]) +  # Apply custom color
-      geom_point(color = sector_colors[sector]) +              # Apply custom color to points
+      # By sector ... 
+      geom_line(color = sector_colors[sector], linetype = "dotted", alpha = 0.5, size = 1) +   
+      geom_point(color = sector_colors[sector], size = 3) +               
       scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-      scale_y_continuous(breaks = seq(0, max(data$n), by = 10)) +
-      theme_bw() +
-      theme(
-         axis.text.x = element_text(angle = 45, hjust = 1)
-      ) +
+      scale_y_continuous(breaks = seq(0, max(data$n), by = 25)) +
+      # custom
+      my_pretty_theme + 
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       labs(
-         title = paste("Count of ",sector,"token in PDOs"),  # Use facet-specific title
-         subtitle = "[Using \"custom\" broad sector definition]",
-         x = "Board approval FY", 
+         title = paste("\"",sector,"\" in PDOs by fiscal years of approval"),  # Use facet-specific title
+         subtitle = "[Using a \"custom\" broad sector definition]",
+         x = "", 
          y = ""  # Remove y-axis label
       ) +
- # Ensure y-axis limit includes 50
-    expand_limits(y = 50) + 
-    # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
-    geom_hline(yintercept = 50, linetype = "dashed", color = "#d02e4c", alpha = 0.5)
+      # Ensure y-axis limit includes 50
+      expand_limits(y = 50) + 
+      # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+      geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
    # Add vline and text annotation only for the HEALTH sector
    if (sector == "HEALTH") {
       p <- p +
-         geom_vline(aes(xintercept = 2020), linetype = "dashed", color = "#9b6723") +
+         geom_vline(aes(xintercept = 2020), linetype = "solid", color = "#9b6723",alpha = 0.35) +
          geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
-   }
+   } 
    
    return(p)
 }
 
 # --- Use purrr::map to create a LIST of plots, one for each sector
 sector_plots <- map(sector_list, f_plot_sector)
+
+# --- (exe) Extract the first plot to display
+sector_plots$HEALTH
 ```
 
 ```{r}
@@ -742,6 +847,7 @@ walk2(sector_plots, names(sector_list),
 
 ```
 
+# =====  !!!!! QUI !!!!!  ======
 ### Check (by sector) why peaks [CMPL 🟠]  
 
 For the (broadly defined) health sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. What about the other sectors? (they all seem to have at least 1 evident peak)
@@ -819,6 +925,10 @@ bigram_freq <- bigrams_cleaned %>%
 
 ```{r}
 #| output: true
+#| fig.width: 9
+#| fig.height: 6
+#| fig.align: center
+
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
@@ -847,8 +957,7 @@ pdo_bigr_freq <- bigram_freq %>%
    coord_flip() +
    labs(title = title_text, subtitle = "(ranking top 25 bigrams)",
         x = "", y = "") +
-   theme(plot.title.position = "plot",
-         axis.text.y = element_text(
+   theme(axis.text.y = element_text(
             # obtain vector of colors 2 match x axis labels color to fill
             color = bigram_freq %>%
                slice_max(n, n = 25) %>%
@@ -867,7 +976,7 @@ pdo_bigr_freq <- bigram_freq %>%
                # Extract the color column in bin order as vector to be passed to element_text()
                pull(color)
             )
-         )
+         ) + my_pretty_theme
 
 pdo_bigr_freq
 ```
@@ -928,7 +1037,8 @@ pdo_bigr_FY_freq  <-  top_bigrams_1FY %>%
        y = "Count") +
   theme_minimal() +
   theme(plot.title.position = "plot",
-        axis.text.x = element_text(angle = 45, hjust = 1))
+        axis.text.x = element_text(angle = 45, hjust = 1))+
+     my_pretty_theme
 
 pdo_bigr_FY_freq
 ```
@@ -1005,15 +1115,17 @@ pdo_bigr_FY_freq  <-  top_bigrams_FYper %>%
               #strip.position = "top") +  # Facet wrap with columns
   labs(title = glue::glue("Top 12 Bigrams by Frequency Over {interval_i}-Year Periods"),
        subtitle =  "(Some sectors highlighted)",
-       x = "Bigrams",
-       y = "Count") +
-  theme_minimal() +
-  theme(plot.title.position = "plot")
+       x = "",
+       y = "") +
+     my_pretty_theme
 ```
 
 
 ```{r}
 #| output: true
+#| fig.width: 9
+#| fig.height: 6
+#| fig.align: center
 
 # print the plot
 pdo_bigr_FY_freq
@@ -1179,6 +1291,9 @@ sector_bigr_df <- bigrams_pub_priv_sec %>%
 
 ```{r}
 #| output: true
+#| fig.width: 9
+#| fig.height: 6
+#| fig.align: center
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
@@ -1198,15 +1313,18 @@ legend_labels <- sector_bigr_df %>%
 
 # ---- Plot
 pdo_pub_pri_bigr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bigram, color = bigram)) +
-   geom_line(linetype = "dashed", alpha = 0.5, size = 1) +
-   geom_point(size = 2) +
+   geom_line(linetype = "dotted", alpha = 0.75, size = 1) +
+   geom_point(size = 3) +
    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
    scale_color_manual(values = two_col_contrast, 
                       labels = legend_labels) +  # Use modified labels
-   theme_bw() +
+   my_pretty_theme +
    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = title_text, x = "Board approval FY", y = "Counts of bigrams", color = "bigram")+
-  theme(plot.title.position = "plot")
+   labs(title = title_text, 
+        x = "", 
+        y = "", 
+        color = "") 
+   
 
 pdo_pub_pri_bigr
 ```

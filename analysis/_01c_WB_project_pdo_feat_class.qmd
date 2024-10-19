@@ -40,6 +40,22 @@ bibliography: ../bib/slogan.bib
 
 <!-- In this file I address the **research question 1.2**, which is also to learn ML, IS IT POSSIBLE TO IMPROVE THE QUALITY OF THE DATA (E.G. MISSING FEATURES IN METADATA) BY USING TOPIC MODELING?  -->
 
+
+
+# TO DO [COMPL🟠🟡] list 
+
++  Study the theory of Lasso Regr and Classification with ML on Gabor's book
+   + BOOK chp 14[Prediction with LASSO](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture22-lasso)
+   + [lelc 25 class ML](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture25-classification-wML)
++ re-write the attempted models in more condensed form
++ tell in plain English the choices available for improving ML pred perormance (even if not run)
+   + defining data / sample for analysis (preprocessing)
+   + defining/label engineering of  y
+   + feature engineering of x (dealing with missing data %, what x and in what functional form)
+   + model selection
+   + model hyperparameters tuning 
+
+# __________
 I experiment predicting the `environmental risk category` (e.g., `A`, `B`, `C`, `D`) based on the available features in the dataset.
 
 # Set up
@@ -147,6 +163,9 @@ How do we use them?
 projs_train <- projs_train %>% 
    # useful for later 
    rename(., proj_id = "id") %>%
+   # recode as factors 
+   mutate (across (c(status, boardapprovalFY, regionname, countryname, sector1, 
+                     theme1, lendinginstr), as.factor))  %>% 
    # env risk category 7 levels
    mutate(env_cat_f = fct_na_value_to_level(env_cat, level = "Unknown")) %>% 
    mutate(env_cat_f = fct_recode(env_cat_f, 
@@ -171,7 +190,37 @@ tabyl(projs_train, env_cat_f, show_na = TRUE) # 2 levels
 tabyl(projs_train, env_cat_f2, show_na = TRUE) # 7levels
 ```
 
-## 2) Split sample
+### Recode `sector1` variable 
+```{r}
+projs_train <- projs_train %>% # sector1 99 levels
+   mutate(sector_f = case_when(
+      str_detect(sector1, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", ignore_case = T)) ~ "WAT & SAN",
+      str_detect(sector1, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation", ignore_case = T)) ~ "TRANSPORT",
+      sector1 == "port" ~ "TRANSPORT",
+      str_detect(sector1, regex("urban|housing|inter-urban|peri-urban|waste", ignore_case = T)) ~ "URBAN",
+      str_detect(sector1, regex("energ|electri|hydroele|hydropow|renewable|transmis", ignore_case = T)) ~ "ENERGY",  # Matches either "energy" or "power"
+      str_detect(sector1, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin", ignore_case = T)) ~ "HEALTH",
+      str_detect(sector1, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul", ignore_case = T)) ~ "EDUCATION",
+      
+      str_detect(sector1, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|agri-business", ignore_case = T)) ~ "AGR FOR FISH",
+      str_detect(sector1, regex("Minin|oil|gas|mineral|Extract", ignore_case = T)) ~ "MINING OIL&GAS",
+      str_detect(sector1, regex("Social Protec", ignore_case = T)) ~ "SOCIAL PROT.",
+      
+      str_detect(sector1, regex("Bank|finan|Investment", ignore_case = T)) ~ "FINANCIAL",
+      str_detect(sector1, regex("Information|Communication|ICT|Internet|Technologies", ignore_case = T)) ~ "ICT",
+      str_detect(sector1, regex("Tourism|Trade and Services|Manuf|Other Industry|Trade and Services", ignore_case = T)) ~ "IND TRADE SERV",
+      
+      
+      str_detect(sector1, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance", ignore_case = T)) ~ "INSTIT. SUPP.",
+      TRUE ~ "Missing")) %>% 
+   relocate(sector_f, .after = sector1)  
+
+tabyl(projs_train, sector1, show_na = TRUE) # 99 levels
+tabyl(projs_train, sector_f, show_na = TRUE) # 7 levels
+```
+
+
+## 2) Split sample based on `env_cat` variable
 
 ![Sampling strategy](/images/Sample_EnvCat.pdf){fig-align="center"}
 
@@ -223,8 +272,6 @@ projs_train %>% tabyl(env_cat_f) # 7 levels
 # Split BUT only "Not Missing" `env_cat_f` 
 ## --- 0) THIS WILL BE 4 TRAINING & VALIDATION 
 env_cat_use <- projs_train %>% 
-   mutate (across (c(status, boardapprovalFY, regionname, countryname, sector1, 
-                     theme1, lendinginstr), as.factor))  %>% 
    filter(env_cat_f != "Missing") # 3236 proj 
 
 # SPLIT INTO TRAINING, VALIDATION 
@@ -962,17 +1009,18 @@ env_stop_lassofinal_fit_pred %>%
 
 # 2. model - log w/ text with tf-idf + stopwords + 3 factors
 
-## [👍🏻] Logistic with text and `sector1` and `regionname` as predictors
+## [👍🏻] Logistic with `pdo` + `sector_f`|`regionname`|`boardapprovalFY` as predictors
 <!-- -   can I add non text features? [smltar 7.7](https://smltar.com/mlclassification#case-study-including-non-text-data) -->
 
 ### 3) Define preprocessing steps [`env_FEAT_recipe`] (same)
 
 ### --- Improve recipe [`env_FEAT_recipe`] (NEW!)
++ using `sector_f` to include the sector tag but with less dimensions
 + `step_dummy` because logistic regression, especially when using certain tuning functions in `tidymodels`, requires numeric or dummy variables. 
 ```{r}
 # ---  Create a recipe with a token filter step that excludes stopwords
 # Rebuild recipe with tokenfilter step
-env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector1 + regionname + boardapprovalFY,
+env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector_f + regionname + boardapprovalFY,
                            data = training(env_split)) %>%
    # tokenize the text
    step_tokenize(pdo) %>%  
@@ -983,11 +1031,11 @@ env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector1 + regionname + boardapprov
    # creates tf-idf matrix of weighted term frequencies
    step_tfidf(pdo, smooth_idf = FALSE) %>%
    # add NA as special factor level
-   step_unknown(sector1 ,new_level = "Unknown sect" ) %>%
+   step_unknown(sector_f ,new_level = "Unknown sect" ) %>%
    step_unknown(regionname ,new_level = "Unknown reg" ) %>%
    step_unknown(boardapprovalFY ,new_level = "Unknown FY" ) %>%
    # convert to dummy variables
-   step_dummy(sector1, regionname, boardapprovalFY, one_hot = TRUE) 
+   step_dummy(sector_f, regionname, boardapprovalFY, one_hot = TRUE) 
 ```
 check what changed... 
 ```{r}
@@ -998,7 +1046,7 @@ env_FEAT_recipe_bake <-  env_FEAT_recipe %>%
 
 # preview the baked recipe
 dim(env_FEAT_recipe_bake)
-#[1] 2264 101 --> 2264  206
+#[1] 2264 101 --> 2264  150
 env_FEAT_recipe_bake[1:5, 1:10]
 ```
 
@@ -1116,7 +1164,7 @@ env_FEAT_fitted_coeff <- env_FEAT_fit %>%
    tidy() %>%
    arrange(-estimate)
 ```
-+ "sector1... " appear among the top coefficients!!!
++ "sector_f... " appear among the top coefficients!!!
 
 ### --- [FIG] Assessing performance [`env_FEAT_fit`] on training set
 Now is `env_split_train`
@@ -1275,11 +1323,11 @@ env_FEAT_final_fit_pred %>%
       caption = "logistic regression model on text (stopwords) + features"
    )
 ```
-# _________________________
-# __________ QUI __________
+
 <!-- EXAMPLE 9.32  ( 268 - 271)  -->
 
 ### 9) Interpret the model
+
 ### --- Inspecting what levels of the outcome are most difficult to estimate 
 ```{r}
 # collect the predictions from the final model
@@ -1287,7 +1335,7 @@ env_FEAT_final_fit_feat <- env_FEAT_final_fit %>%
    collect_predictions() %>%
    bind_cols(env_cat_test)  %>%
    rename(env_cat_f2 = 'env_cat_f2...6') %>% 
-   select ( -'env_cat_f2...21')
+   select ( -'env_cat_f2...22')
 
 #preview the predictions
 glimpse(env_FEAT_final_fit_feat)
@@ -1313,7 +1361,6 @@ levels(env_FEAT_final_fit_feat$env_cat_f2)
 #[1] "High-Med-risk" "Low-risk_Othr"
 
 ```
-
 
 ### --- Inspecting the most important features for predicting the outcome 
 
@@ -1404,9 +1451,9 @@ var_importance_tbl %>%
 
 # __________ 
 # 3. model - NB w/ text with tf-idf + stopwords + 3 factors
-## [🫤] Naive bayes classific with text and `sector1` and `regionname` and `boardapprovalFY` as predictors
+## [🫤] Naive bayes classific with text and `sector_f` and `regionname` and `boardapprovalFY` as predictors
 
-### 3) Define preprocessing steps [`env_FEAT_recipe`] (same)
+### 3) Define preprocessing steps (same)
 
 ### 4) Select algorithm + workflow (same)
 ### --- Model specification [`env_spec`]
@@ -1431,9 +1478,9 @@ env_NB_spec <-
 env_NB_spec
 ```
 
-### --- Create workflow [`env_FEAT_wf`] (NEW!)
+### --- Create workflow [`env_NB_wf`] (NEW!)
 
-`env_FEAT_recipe` is actually the part that changed in this workflow adding `step_stopwords()`.
+`env_NB_spec` is actually the part that changed in this workflow adding `step_stopwords()`.
 
 ```{r}
 # Create a workflow
@@ -1499,13 +1546,13 @@ env_NB_rs <- fit_resamples(
 We can extract the relevant information using `collect_metrics()` and `collect_predictions()`.
 ```{r}
 env_NB_rs_metrics <- collect_metrics(env_NB_rs)
+#1 accuracy    binary     0.684    10 0.00843 Preprocessor1_Model1
+#2 brier_class binary     0.314    10 0.00884 Preprocessor1_Model1
+#3 roc_auc     binary     0.762    10 0.00715 Preprocessor1_Model1
 
 env_NB_rs_predictions <- collect_predictions(env_NB_rs)
 ```
 Worse than logistic!
-<!-- 1 accuracy    binary     0.677    10  0.0101 Preprocessor1_Model1 -->
-<!-- 2 brier_class binary     0.323    10  0.0100 Preprocessor1_Model1 -->
-<!-- 3 roc_auc     binary     0.630    10  0.0198 Preprocessor1_Model1 -->
 
 + `Accuracy` is the proportion of the data that is predicted correctly. Be aware that accuracy can be misleading in some situations, such as for imbalanced data sets. 
 + `ROC AUC` measures how well a classifier performs at different thresholds. The ROC curve plots the *true positive rate against the false positive rate*; AUC closer to 1 indicates a better-performing model, while AUC closer to 0.5 indicates a model that does no better than random guessing. 
@@ -1537,11 +1584,600 @@ conf_mat_resampled(env_NB_rs, tidy = FALSE) %>%
 + different from logistic 
 + Very well with true positive (high risk), but very bad with true negative (low risk).
 
+# __________
+# 4. & 5.  model - Multiclass outcome `sector_f`
 
-## [🤞🏻] ??? classific with multiclass outcome?
+## [🙃] Multiclass outcome   
 
 <!-- [smltar 7.6](https://smltar.com/mlclassification#mlmulticlass)  -->
 <!-- [ANdrew Couch](https://www.google.com/url?q=https://youtu.be/ntk_1xLQBwo?si%3DKLyDqum-02TvQFt-&source=gmail-imap&ust=1729273003000000&usg=AOvVaw2U7DIV1lwHfclSEeNVc0AM) -->
+
+### 2) Split sample (based on `sector_f`)
+This time I need to create a new split of the data using `initial_split()` based on levels of `sector_f` (here I collapsed the original 99 levels into 7 macro levels.
+
+We will use the `strata` argument to stratify the data by the outcome variable (`sector_f`). This will ensure that the *training* and *validation* sets have the same proportion.
+
+```{r}
+# Create a stratified split based on missing vs non-missing env_cat
+projs_train %>% tabyl(sector_f) # 7 levels
+
+# Split BUT only "Not Missing" `env_cat_f` 
+## --- 0) THIS WILL BE 4 TRAINING & VALIDATION 
+sec_use <- projs_train %>% 
+   filter(sector_f != "Missing") # 4316 proj 
+
+# SPLIT INTO TRAINING, VALIDATION 
+set.seed(123)  # Ensure reproducibility
+sec_split <- initial_split(sec_use, prop = 0.7, # 70% training, 30% testing
+                       strata = sector_f) # stratify by OUTCOME 
+
+## -- 1) for training (labelled `sector_f`)
+sec_train <- training(sec_split)   # 3019 proj
+    
+## -- 2) for validation (labelled `sector_f`)
+sec_test <- testing(sec_split)  # 1297 proj
+   
+# # UNLABELLED PORTION 
+## -- 3) for actual test (UNlabelled `sector_f`)
+sec_missing <- projs_train %>% 
+  filter(sector_f == "Missing") # 87 proj 
+
+# check ditribution of `sector_f` in training and validation
+tabyl(sec_train, sector_f) |> adorn_totals("row") |> adorn_pct_formatting(digits = 1)# 
+tabyl(sec_test, sector_f)|> adorn_totals("row") |> adorn_pct_formatting(digits = 1)# 
+```
+
+There is no terrible imbalance between the levels of `sector_f` in the training and validation sets. However, Compared to binary classification, there are several additional issues to keep in mind when working with multiclass classification:
+
++ Many machine learning algorithms do not handle imbalanced data well and are likely to have a hard time predicting minority classes.
++ Not all machine learning algorithms are built for multiclass classification at all.
++ Many evaluation metrics need to be reformulated to describe multiclass predictions.
+
+### 3) Preprocessing steps [`multi_rec`] (same)
+we have added `step_downsample(sector_f)` to the end of the recipe specification to downsample after all the text preprocessing. 
++ We want to *downsample last* so that we still generate features on the full training data set. 
++ The downsampling will then only affect the modeling step, not the preprocessing steps, with hopefully better results.
+
+```{r}
+multi_rec <- recipe(
+   #sector_f ~ pdo, data = sec_train) %>%
+   sector_f ~ pdo + regionname + boardapprovalFY + env_cat_f, data = sec_train) %>%
+   step_tokenize(pdo) %>%  
+   step_stopwords(pdo, custom_stopword_source = stop_vector) %>%  
+   step_tokenfilter(pdo, max_tokens = 100) %>%  
+   step_tfidf(pdo, smooth_idf = FALSE) %>%
+   # add NA as special factor level
+   step_unknown(regionname ,new_level = "Unknown reg" ) %>%
+   step_unknown(boardapprovalFY ,new_level = "Unknown FY" ) %>%
+   step_unknown(env_cat_f ,new_level = "Unknown env cat" ) %>%
+   # convert to dummy variables
+   step_dummy(regionname, boardapprovalFY,env_cat_f, one_hot = TRUE) %>% 
+   # resolve imnbalance
+   step_downsample(sector_f) 
+```
+
+
+### --- COULD do `step_word_embeddings` to see a diffrernent 
+
+
+check what changed... 
+```{r}
+# prep and juice the recipe
+multi_juice <- multi_rec %>% 
+   prep() %>% 
+   #bake(new_data = NULL)
+   juice()
+
+# preview the baked recipe
+dim(multi_juice)
+#[1] 559 142
+slice_head(multi_juice, n = 3)
+```
+
+
+### 4.a) Specify models (NEW!)
+
+### --- i) Multin. Lasso Logistic Regress [`logistic_model`]
+Some model algorithms and computational engines (examples are most random forests and SVMs) automatically detect when we perform multiclass classification from the number of classes in the outcome variable and do not require any changes to our model specification. For lasso regularization, we need to create a new special model specification just for the multiclass class using `multinom_reg()`.
+```{r}
+# MULTINOMIAL LASSO REGRESSION MODEL 
+# For lasso regularization, we need to create a new special model specification just for the multiclass class
+logistic_model <- multinom_reg(penalty = tune(), mixture = 1) %>%
+  set_mode("classification") %>%
+  set_engine("glmnet")
+
+logistic_model
+```
+
+
+### --- ii) KNN [`knn_model`]
+```{r}
+knn_model <- nearest_neighbor(neighbors = tune()) %>%
+  set_engine("kknn") %>%
+  set_mode("classification")
+```
+
+### 4.b) Specify workflows (NEW!)
+
+### --- i) Multin. Lasso Logistic Regress [`logistic_wf`]
+To keep our text data sparse throughout modeling and use the sparse capabilities of set_engine("glmnet"), we need to explicitly set a non-default preprocessing blueprint, using the package `hardhat`. This *“blueprint”* lets us specify during modeling how we want our data passed around from the preprocessing into the model. The composition "dgCMatrix" is the most common sparse matrix type, from the `Matrix` package, used in R for modeling. We can use this blueprint argument when we add our recipe to our modeling workflow, to define how the data should be passed into the model.
+
+```{r}
+library(hardhat)
+sparse_bp <- default_recipe_blueprint(composition = "dgCMatrix")
+
+# workflow
+logistic_wf <- workflow() %>%
+  add_recipe(multi_rec, blueprint = sparse_bp) %>%
+  add_model(logistic_model)
+
+logistic_wf
+```
+
+### --- ii) KNN [`knn_wf`] 
+
+```{r}
+library(hardhat)
+#sparse_bp <- default_recipe_blueprint(composition = "dgCMatrix")
+
+# workflow
+knn_wf <- workflow() %>%
+  add_recipe(multi_rec, blueprint = sparse_bp) %>%
+  add_model(knn_model)
+
+knn_wf
+```
+
+### 5) Hyperparameters tuning
+We used the same arguments for *penalty* and *mixture* as before, as well as the same mode and engine, but this model specification is set up to handle **more than just two classes**.
+
+### --- folds for cross-validation
+We also need a new `cross-validation object` since we are using a *different data set*.
+```{r}
+set.seed(123)
+# random splits ("folds") of the data for cross-validation
+multi_folds <- vfold_cv(sec_train)
+```
+
+### --- Define Grids
+The last time we tuned a lasso model, we used the defaults for the penalty parameter and 30 levels. Let’s *restrict the values* this time using the range argument, so we don’t test out as small values for regularization, and only try 20 levels.
+
++ `grid_regular()` chooses sensible values to try for the penalty parameter, based on the range we provide - we ask for 20 different possible values.
+
+### --- i) Multin. Lasso Logistic Regress [`logistic_grid`]
+
+<!-- ```{r} -->
+<!-- smaller_grid <- grid_regular( -->
+<!--    penalty(range = c(-5, 0)), levels = 20) -->
+<!-- ``` -->
+
+```{r}
+logistic_grid <- grid_regular(hardhat::extract_parameter_set_dials(logistic_model), levels = 10)
+```
+
+### --- ii) KNN [`knn_grid`] 
+```{r}
+knn_grid <- grid_regular(hardhat::extract_parameter_set_dials(knn_model), levels = 10, 
+                         filter = c( neighbors >1))
+```
+
+### --- Define tuning process
+Multiclass support for the parameters
+```{r}
+model_control <- control_grid(save_pred = TRUE)
+model_metrics <- metric_set( accuracy, sens, spec,  mn_log_loss, roc_auc)
+```
+
+
+Now we have everything we need to tune the *regularization penalty* and find an appropriate value. 
+
++ `tune_grid()` can fit a model at each of the values for the regularization penalty in our regular grid.
++ Note that we specify `save_pred = TRUE`so we can create ROC curves and a confusion matrix later.
+
+### --- i) Multin. Lasso Logistic Regress [`logistic_model`]
+
+```{r}
+# Tune model 
+multi_lasso_rs <- tune_grid(
+   # A) unfitted workflow
+   # logistic_wf,
+   # B) model specification
+   logistic_model,
+   # B) recipe
+   multi_rec,
+   grid = logistic_grid,
+   metrics = model_metrics, # pre defined metrics
+   control = model_control, # pre defined control
+   # folds for cross-validation
+   resamples = multi_folds)
+
+multi_lasso_rs
+```
+
+### --- ii) KNN [`knn_grid`] 
+```{r}
+# Tune model 
+multi_knn_rs <- tune_grid(
+   # A) unfitted workflow
+   # logistic_wf,
+   # B) model specification
+    knn_model,
+   # B) recipe
+   multi_rec,
+   grid = knn_grid,
+   metrics = model_metrics, # pre defined metrics
+   control = model_control, # pre defined control
+   # folds for cross-validation
+   resamples = multi_folds)
+
+multi_knn_rs
+```
+
+### 6) Evaluate the model performance & upd WF
+### --- Accuracy metric
+What do we see, in terms of performance metrics?
+```{r}
+multi_lasso_rs %>%  collect_metrics()  
+multi_knn_rs %>%  collect_metrics()  
+
+multi_lasso_rs %>%  show_best(metric = "roc_auc")   # better 
+multi_knn_rs %>%  show_best(metric ="roc_auc")  
+
+multi_lasso_rs %>%  show_best(metric = "accuracy")   # better 
+multi_knn_rs %>%  show_best(metric ="accuracy")  
+```
+
+Even the very best *"accuracy"* value here is quite low (0.44), *significantly lower* than the binary classification model. This is expected because multiclass classification is more difficult than binary classification.
+
+### --- [FIG] performance metrics
+### --- i) Multin. Lasso Logistic Regress [`logistic_model`]
+```{r}
+autoplot(multi_lasso_rs) +
+  labs(
+    color = "Number of tokens",
+    title = "Multiclass Lasso Logistic Regression performance across regularization penalties and tokens"
+  )
+```
+### --- ii) KNN [`knn_grid`]  
+```{r}
+autoplot(multi_knn_rs) +
+  labs(
+    color = "Number of tokens",
+    title = "Knn performance across regularization penalties and tokens"
+  )
+```
+
+### --- choose final hyperparameters
+### --- i) Multin. Lasso Logistic Regress [`log_final_param`]
+ 
+### --- TIDY conf matrix
+```{r}
+log_final_param <- multi_lasso_rs %>% 
+   show_best(metric = "accuracy") %>% 
+   slice(1) %>% 
+   select(-.config) 
+```
+
+```{r}
+multi_lasso_rs %>% 
+   collect_predictions() %>%
+   inner_join(log_final_param) %>%
+   conf_mat(truth = sector_f, estimate = .pred_class)  
+
+```
+
+### --- [FIG] conf matrix (1st fold)
+
+To get a more detailed view of how our classifier is performing, let us look at one of the `confusion matrices` in 
+
+<!-- ```{r} -->
+<!-- choose_acc <- multi_lasso_rs %>% -->
+<!--    select_by_pct_loss(metric = "accuracy", -penalty) -->
+
+<!-- choose_acc -->
+<!-- ``` -->
+
+```{r}
+final_penalty <- multi_lasso_rs %>% 
+   show_best(metric = "accuracy") %>% 
+   slice(1) %>% 
+   pull(penalty)
+
+
+multi_lasso_rs %>% 
+   collect_predictions() %>%
+   filter(penalty == final_penalty) %>%
+   filter(id == "Fold01") %>%
+   conf_mat(truth = sector_f, estimate = .pred_class) %>%
+   autoplot(type = "heatmap") +
+   scale_y_discrete(labels = function(x) str_wrap(x, 20)) +
+   scale_x_discrete(labels = function(x) str_wrap(x, 20))
+```
+
++ The *diagonal* is fairly well populated, which is a good sign. This means that the model generally predicted the right class. 
++ The **off-diagonal numbers** are all the failures and where we should direct our focus. It is a little hard to see these cases well since the majority class affects the scale. A trick to deal with this problem is to remove all the correctly predicted observations.
+
+### --- [FIG] conf matrix (1st fold) only wrong pred
+```{r}
+multi_lasso_rs %>% 
+   collect_predictions() %>%
+   # final param 
+   filter(penalty == final_penalty) %>%
+   filter(id == "Fold01") %>%
+   # exclude correct 
+   filter(.pred_class != sector_f) %>%
+   conf_mat(truth = sector_f, estimate = .pred_class) %>%
+   autoplot(type = "heatmap", values = "prop") +
+   scale_y_discrete(labels = function(x) str_wrap(x, 20)) +
+   scale_x_discrete(labels = function(x) str_wrap(x, 20))
+
+```
+Here it is more clear where the model breaks down: **"Institutional Supp."** which makes sense because it was often an agency created FOR a sector!
+
+### --- ii) KNN [`knn_final_param`] 
+
+
+### --- TIDY conf matrix
+
+```{r}
+knn_final_param <- multi_knn_rs %>% 
+   show_best(metric = "accuracy") %>% 
+   slice(1)  
+ 
+multi_knn_rs %>% 
+   collect_predictions() %>%
+   inner_join(knn_final_param) %>%
+   conf_mat(truth = sector_f, estimate = .pred_class)  
+```
+
+### --- [FIG] conf matrix (1st fold)
+To get a more detailed view of how our classifier is performing, let us look at one of the `confusion matrices` in 
+```{r}
+neighbors_final <- multi_knn_rs %>% 
+   show_best(metric = "accuracy") %>% 
+   slice(1) %>% 
+   pull(neighbors)
+
+multi_knn_rs %>% 
+   collect_predictions() %>%
+   # final param 
+   filter(neighbors == neighbors_final) %>%
+   filter(id == "Fold01") %>%
+   conf_mat(truth = sector_f, estimate = .pred_class) %>%
+   autoplot(type = "heatmap") +
+   scale_y_discrete(labels = function(x) str_wrap(x, 20)) +
+   scale_x_discrete(labels = function(x) str_wrap(x, 20))
+```
+
+To get a more detailed view of how our classifier is performing, let us look at one of the `confusion matrices` in 
+```{r}
+multi_knn_rs %>% 
+   collect_predictions() %>%
+   # final param 
+   filter(neighbors == neighbors_final) %>%
+   filter(id == "Fold01") %>%
+   # exclude correct 
+   filter(.pred_class != sector_f) %>%
+    conf_mat(truth = sector_f, estimate = .pred_class) %>%
+   autoplot(type = "heatmap") +
+   scale_y_discrete(labels = function(x) str_wrap(x, 20)) +
+   scale_x_discrete(labels = function(x) str_wrap(x, 20))
+```
+
+### 6.b) Finalize the workflow
+This I do only for the best model 
+
+### --- Finalize workflow 
+After we have those parameters (`final_penalty`), penalty {and max_tokens}, we can finalize our earlier tunable workflow, by updating it with this value.
+
+```{r}
+logistic_wf_final <- logistic_wf %>%
+   # here it wants a tibble 
+   finalize_workflow(parameters =  log_final_param )
+```
+
+### 7) Assess the model performance on training set
+
+### --- See the results  [`multi_fit`] 
+Here we access the model coefficients to see which features are most important in the model
++ We see here, for the penalty we chose, what terms contribute the most to a en cat NOT being high risk . 
+```{r}
+# Fit the model to the training data
+multi_fit <- fit (logistic_wf_final, data = sec_train)
+```
+
+### --- Coefficients  [`multi_fitted_coeff`] 
+```{r}
+multi_fitted_coeff <- multi_fit %>% 
+   extract_fit_parsnip() %>% 
+   tidy( penalty = final_penalty) %>% 
+   arrange(-estimate)
+
+multi_fitted_coeff
+
+```
+
+In this model, it seems that words contained in PDO are the most influential in predicting the sector of a project.
+
++ "tfidf_pdo_education" appear among the top coefficients!!!
++ "tfidf_pdo_health " appear among the top coefficients!!!
+
+
+### 8) Evaluate the best model on the test set [`last_fit()`]
+ 
+We can now fit this finalized workflow on training data and finally return to our *testing data*.
+
++ `last_fit()` emulates the process where, after determining the best model, the final fit on the entire training set is needed and is then evaluated on the test set
+
+### --- metrics
+```{r}
+multi_final_fitted <- last_fit(logistic_wf_final, sec_split)
+
+collect_metrics(multi_final_fitted)
+#1 accuracy    multiclass     0.448 Preprocessor1_Model1
+#2 roc_auc     hand_till      0.800Preprocessor1_Model1
+#3 brier_class multiclass     0.367 Preprocessor1_Model1
+```
+
+### --- predictions
+```{r}
+multi_final_fitted %>%
+   collect_predictions() %>%
+   conf_mat(truth = sector_f, estimate = .pred_class)
+```
+
+### --- [FIG] confusion matrix
+```{r}
+multi_final_fitted %>%
+   collect_predictions() %>%
+   conf_mat(truth = sector_f, estimate = .pred_class) %>%
+   autoplot(type = "heatmap") +
+   scale_y_discrete(labels = function(x) str_wrap(x, 20)) +
+   scale_x_discrete(labels = function(x) str_wrap(x, 20)) +
+   theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+### --- [FIG] ROC curve
+```{r}
+pred_tibble <- multi_final_fitted %>%
+   collect_predictions()
+
+# Assuming you have your results (with columns for true classes and predicted probabilities)
+results <- pred_tibble # e.g., tibble with true and predicted columns
+paint(results)
+
+# Compute ROC curve (micro-average)
+roc_curve(results, truth = sector_f, 
+          '.pred_AGR FOR FISH',
+          '.pred_EDUCATION'           ,
+          '.pred_ENERGY'              ,
+          '.pred_FINANCIAL'           ,
+          '.pred_HEALTH'              ,
+          '.pred_ICT'                 ,
+          '.pred_IND TRADE SERV'      ,
+          '.pred_INSTIT. SUPP.' ,
+          '.pred_MINING OIL&GAS'      ,
+          '.pred_SOCIAL PROT.'   ,
+          '.pred_TRANSPORT'           ,
+          '.pred_URBAN'               ,
+          '.pred_WAT & SAN'           
+) %>%
+   autoplot()
+
+```
+
+It makes sense that the sectors' levels in which I have collapsed more things and/or have a more "blurred" definitions are the ones that are harder to predict: 
+
++ "URBAN" 
++ "IND TRADE SERV"
++ "INSTIT. SUPP." 
++ "ICT" (?) 
+
+# __________ QUI __________
+
+### 9) Interpret the model
+The output of `last_fit()` (`multi_final_fitted`) also contains a fitted model (a workflow, to be more specific) that has been trained on the training data. We can use the vip package to understand what the most important variables are in the predictions
+
+```{r}
+multi_final_fitted$.workflow
+multi_final_fitted$.metrics
+multi_final_fitted$.predictions 
+# N of observation is the same as the `sec_test` set 1267 
+nrow(multi_final_fitted$.predictions[[1]])
+```
+
+### --- Inspecting what levels of the outcome are most difficult to estimate 
+```{r}
+# collect the predictions from the final model
+multi_final_fit_feat <- multi_final_fitted %>%
+   collect_predictions() %>%
+   bind_cols(sec_test)  %>%
+   rename(sector_f = 'sector_f...17') %>% 
+   select ( -'sector_f...28')
+
+#preview the predictions
+glimpse(multi_final_fit_feat)
+```
+
+### --- Inspecting the most important features for predicting the outcome 
+We can use the vip package to understand what the most important variables are in the predictions
+
++ using the `extract_fit_parsnip()` function from the `workflows` package to extract the model object from the workflow. 
+
+A quick way to extract the most important features for predicting each out￾come is to use the `vi()` function from {`vip`}. 
+
++ The `vi()` function calculates the permutation **importance** of each feature in the model.
+
+```{r}
+library(vip)
+sector_feat_imp <- extract_fit_parsnip(multi_final_fitted$.workflow[[1]]) %>%
+  vi(lambda = final_penalty) %>% 
+  mutate(
+    Sign = case_when(Sign == "POS" ~ "More important for predicting a given sector", 
+                     Sign == "NEG" ~ "Less important for predicting a given sector",
+                     TRUE ~ "Neutral"),
+    Importance = abs(Importance))   %>% 
+   #filter(!str_detect(Variable, "boardapprovalFY"))  %>%
+   filter (Importance != 0.00000000)
+```
+
+### --- [FIG] Variable importance for predicting the sector category
+```{r}
+#| output: TRUE
+sector_feat_imp %>% group_by(Sign) %>%
+   top_n(30, Importance) %>%
+   mutate(Variable =  str_replace(Variable, "tfidf_pdo_", "PDO_"),
+          Variable =  str_replace(Variable, "env_cat_f", "ENVCAT_"),
+          Variable =  str_replace(Variable, "regionname_", "REG_"),
+          Variable =  str_replace(Variable, pattern = "boardapprovalFY_X" , replacement = "APPR_FY_")
+          ) %>% 
+   ungroup %>%
+   ggplot(aes(x = Importance,
+              y = fct_reorder(Variable, Importance),
+              fill = Sign
+   )) +
+   geom_col(show.legend = FALSE) +
+   scale_x_continuous(expand = c(0, 0)) +
+   facet_wrap(~Sign, scales = "free", ncol = 2) +
+   labs(
+      y = NULL,
+      title = "Variable importance for predicting the sector category",
+      #subtitle = paste0("These features are the most important in predicting a given class" )
+   )
+
+```
+
+### --- Misclassified sector 
+We can gain some final insight into our model by looking at observations from the test set that it misclassified. 
+I will then select the columns with the actual outcome (`sector_f`), and compare with the predicted sector: What was predicted wrong? 
+
+```{r}
+# solo sbagliate 
+compare_true_pred <- multi_final_fit_feat %>%
+   filter(sector_f != .pred_class ) %>%  
+   select(.pred_class, sector_f,sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo )
+```
+
+Let's see for example cases labelled "AGR FOR FISH" but misclassified
+```{r}
+check_AGR <- compare_true_pred %>% 
+   filter(.pred_class == "AGR FOR FISH") %>%
+   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo ) %>%    slice_sample(n = 5)
+
+ 
+```
+
+> Interesting: they all have very brief PDO ! 
+
+```{r}
+check_FIN <- compare_true_pred %>% 
+   filter(.pred_class == "FINANCIAL") %>%
+   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo ) %>%
+   slice_sample(n = 5)
+
+```
+
+> same !!! 
 
 # ____________________
 # SET OF MODELS      
@@ -1714,38 +2350,3 @@ quarto render analysis/01b_WB_project_pdo_EDA.qmd --to html
 open ./docs/analysis/01b_WB_project_pdo_anal.html
 ```
 
-# Conclusions and Next Steps
-
--   Evidently, this project was primarily a learning / proof-of-concept exercise, not too concerned with the evaluating ML models' performance, nor with in-depth analysis of the data.
-
--   Nevertheless, even this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data, such as World Bank project documents, to achieve various goals, including:
-
-    -   detecting frequency trends of sector-specific language, and ideas over time,
-    -   improving documents classification and metadata tagging, via ML predictive models,
-    -   uncovering surprising patterns and relationships in the data, e.g. recurring phrases or topics,
-    -   trigger additional questions that could lead to further research.
-
--   Next steps could include: 
-   + delving deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements)
-   - exploring more advanced NLP techniques, such as Named Entity Recognition (NER), Structural Topic Modeling (STM), or BERTopic, to enhance the analysis and insights drawn from World Bank project documents.
-
--   It is quite clear that the above techniques for exploration and topic modeling are most effective when paired with domain expertise that can inform how to interrogate the data and what to look for.
-
--  While AI and large language models (LLMs) are currently in the spotlight, this kind of analysis might seem like yesterday's news. However, I believe there is still a huge untapped potential for meaningful applications of NLP and text analytics in development studies, policy analysis, and other areas.
-
--  A pain point in this type of work is efficiently retrieving input data from document corpora. Despite the World Bank's "Access to Information" policy, programmatic access to its extensive text data resources is still quite lacking (no dedicated API, various stale pages and broken links). This should be addressed, perhaps following the model of the World Development Indicators (WDI) data, much more accessible and well-curated.
-
-# Acknowledgements
-
-Below are some invaluable resources that I used to learn and implement the NLP techniques in this analysis: 
-
-+ [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
-+ [NLP demystified](https://www.nlpdemystified.org/course/advanced-preprocessing) 
-+ [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/) 
-+ [Supervised Machine Learning for Text Analysis in R](https://smltar.com/) 
-+ [Emil....text recipes](https://emilhvitfeldt.com/blog#category=textrecipes)
-
-- [Text Mining with R](https://www.tidytextmining.com/)
-- [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns)
-- [Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
--  [Guide from Penn Libraries](https://guides.library.upenn.edu/penntdm/r)

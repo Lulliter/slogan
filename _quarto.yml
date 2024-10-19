@@ -52,15 +52,15 @@ website:
   sidebar:
     - title: "Analysis"
       contents:
-        - section: "Questions"
+        - section: "Research Plan"
           contents:
             - analysis/hypotheses.qmd
-        - section: "Text analysis EDA"
+        - section: "PDO text exploration"
           contents:
-            - analysis/descr-stats.qmd
-        - section: "Models"
-          contents:
-            - analysis/model-idea.qmd
+            - analysis/PDO-explor.qmd
+        # - section: "Models"
+        #   contents:
+        #     - analysis/_model-idea.qmd
 
 format:
   html:

@@ -1,5 +1,5 @@
 ---
-title: "Revisione libro: Il Sistema invisibile, di Marcello Foa del 15 Novembre 2023"
+title: "Spunti dal libro: Il Sistema invisibile, di Marcello Foa del 15 Novembre 2023"
 # subtitle: "test new post"
 description: |
   [libri]
@@ -21,4 +21,4 @@ number-sections: false
 
 + Da "4.4. Come disarticolare una società"
 
-> Vladimis Volkoff (Il montaggio) "Quando si tratta di mobilitare le masse in realta non si ha che uno scopo: immobilizzarle" (...) tante volte la nostra rabbia e' stata indirizzata verso bersagli di facile presa, il politico corrotto che abusa dell'auto blu, mentre i veri sprechi e gli scandali rilevanti erano altri, come nel caso di Autostrade Italiane. Tante, troppe volte l'indignazione delle masse e' stata indirizzata contro bersagli fittizzi o sproporzionati, che non hanno prodotto altro effetto che generare sfiducia socaile verso le autorita costituite, i partiti e le istituzioni (p. 104, 105) 
+> Vladimis Volkoff (Il montaggio) "Quando si tratta di mobilitare le masse in realta non si ha che uno scopo: immobilizzarle" (...) tante volte la nostra rabbia è stata indirizzata verso bersagli di facile presa, il politico corrotto che abusa dell'auto blu, mentre i veri sprechi e gli scandali rilevanti erano altri, come nel caso di Autostrade Italiane. Tante, troppe volte l'indignazione delle masse è stata indirizzata contro bersagli fittizzi o sproporzionati, che non hanno prodotto altro effetto che generare sfiducia sociale verso le autorita costituite, i partiti e le istituzioni (p. 104, 105) 

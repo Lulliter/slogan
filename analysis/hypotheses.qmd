@@ -1,5 +1,5 @@
 ---
-title: "Research Plan"
+#title: "Research Plan"  # ALREADY IN YML SECTION TITLE 
 # author: ""
 # date: "Last run: `r format(Sys.time(), '%F')`"
 lang: en

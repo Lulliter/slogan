@@ -59,18 +59,14 @@ library(cleanNLP)
 
 # Data sources
 
-# WB Projects & Operations [CHECK 🔴]
+# WB Projects & Operations
 **World Bank Projects & Operations** can be explored at: 
 
-1. [Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations). From which 
-  + [API for projects](https://search.worldbank.org/api/v3/projects) 
++ [World Bank Projects & Operations Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800) - links + some metadata
++ [World Bank Projects & Operations Advanced Search](https://projects.worldbank.org/en/projects-operations/project-search) - search engine with filters.  
 
-2. [Advanced Search](https://projects.worldbank.org/en/projects-operations/project-search) 
-
-- Accessibility Classification: **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
-
-- For example: <https://datacatalog.worldbank.org/search/dataset/0037800> <https://datacatalog.worldbank.org/search/dataset/0037800/World-Bank-Projects---Operations>
-
+The Accessibility Classification is **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+ 
 # [Steps 2 Ingest + preprocess PDOs data HERE]
 
 1. I retrieved manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
@@ -224,7 +220,7 @@ str(object = '1973_WB_Projects_1_500')
 + I retrieved manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
 + By the way this is the link ["list-download-excel"](https://search.worldbank.org/api/projects/all.xls)
 + then saved HUUUGE `.xls` files in `data/raw_data/project2/all_projects_as_of29ago2024.xls`
-  + (plus a `Rdata` copy of the original file )
+  + (plus a `Rdata` copy of the original file)
 
 ```{r}
 all_projects_as_of29ago2024 <- read_excel(here::here ("data", "raw_data", "project2","all_projects_as_of29ago2024.xls"), 
@@ -497,20 +493,24 @@ For my purposes it is safe to drop all the projects with missing PDO !
 
 ```{r}
 projs <- all_proj_t %>%                    # 22,659
-   filter(!is.na(pdo)) %>%                 # 11,353
+   filter(!is.na(pdo)) %>%                 # 11,353  = 11306 MISSING
+   # filter(boardapprovalFY < 2001) %>%  # 7548
    # 4 proj have PDO == "." 
    filter( pdo != ".") %>%                  # 11,346
    filter( pdo != "-") %>%                  # 11,344
+   filter( pdo != "NA") %>%                  # 11,344
    filter( pdo != "N/A") %>%                   # 11,342
    filter( pdo != "No change") %>%                # 11,340
    filter( pdo != "No change to PDO following restructuring.") %>%   # 11,337
    filter( pdo != "PDO remains the same.") %>%  # 11,335
    filter(!(pdo %in% c("TBD", "TBD.", "Objective to be Determined."))) %>%   # 11,326
-   filter(!(pdo %in% c("XXXXXX", "XXXXX", "XXXX", "a"))) %>%   # 11,322
+   filter(!(pdo %in% c("XXXXXX", "XXXXX", "XXXX", "a"))) %>%   # 11,322 = VALID PDO AVAILABLE
    # No proj without status 
-   filter(!is.na(projectstatusdisplay)) %>%  # 11,319 
-   # No project with approval FY >= 2024 
-   filter(boardapprovalFY < 2024)  %>% # 8811 
+   filter(!is.na(projectstatusdisplay)) %>%  # 11,319  ---- 3 missing
+   # No proj without approval FY 
+   filter(!is.na(boardapprovalFY)) %>% # 9,143   ---- 2,176 missing
+   # No project with approval FY >= 2024  
+   filter(boardapprovalFY < 2024)  %>% # 8811  ----- 2508 
    select(id, pr_name = project_name, pdo, boardapprovalFY, closingdateFY,status = projectstatusdisplay, regionname, countryname, sector1, theme1 ,
           lendinginstr,env_cat = envassesmentcategorycode, ESrisk = esrc_ovrl_risk_rate ,curr_total_commitment  )   
 
@@ -534,7 +534,7 @@ skim(projs$id)
 skim(projs$pdo)
 
 n_distinct(projs$id) # 8811
-n_distinct(projs$pdo) # 7585  !!!!!!!! 
+n_distinct(projs$pdo) # 7582  !!!!!!!! 
 
 # Detect duplicated PDOs and the corresponding IDs
 duplicates <- projs %>%
@@ -543,7 +543,7 @@ duplicates <- projs %>%
   select(id, pdo)       # Select only id and pdo columns
 
 # View the duplicated PDOs and their corresponding IDs
-nrow(duplicates) # 2229
+nrow(duplicates) # 2235
 
 # Count duplicates per each unique ID based on duplicated PDOs
 count_dp <- duplicates %>%          # Filter PDOs that appear more than once
@@ -553,6 +553,8 @@ count_dp <- duplicates %>%          # Filter PDOs that appear more than once
 min(count_dp$dup_count) # 2
 max(count_dp$dup_count) # 9
 mean(count_dp$dup_count) # 2.22332
+n_distinct(duplicates$id)  # 2235
+n_distinct(duplicates$pdo)  # 1006
 ```
 
 There are `r nrow(duplicates)` 2250 projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
