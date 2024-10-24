@@ -2315,7 +2315,6 @@ NER can identify key entities (organizations, people, locations) mentioned in th
 #| output: false
 #| echo: true
 
-
 # Initialize the spacy backend
 cnlp_init_spacy() 
 ```

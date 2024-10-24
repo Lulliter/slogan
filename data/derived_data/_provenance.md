@@ -2,15 +2,36 @@
 
 These files in the folder `data/derived_data/` are created in different scripts and saved here to be reused in other scripts.
 
-| FIle `*.rds` name          | Source File Name                       | Details              |
-|----------------------------|----------------------------------------|----------------------|
-| `projs_train.rds`          | analysis/\_01a_WB_project_pdo_prep.qmd | 4,403 obs (projects) |
-| `projs_test.rds`           | analysis/\_01a_WB_project_pdo_prep.qmd | 2,204 obs (projects) |
-| `projs_val.rds`            | analysis/\_01a_WB_project_pdo_prep.qmd | 2,204 obs (projects) |
-| `pdo_train.rds`            | analysis/\_01a_WB_project_pdo_prep.qmd | 249,360 obs (tokens) |
-|                            |                                        |                      |
-| `custom_stop_words.rds`    | analysis/01b_WB_project_pdo_EDA.qmd    | as vector            |
-| `custom_stop_words_df.rds` | analysis/01b_WB_project_pdo_EDA.qmd    | as df                |
-|                            |                                        |                      |
-|                            |                                        |                      |
-|                            |                                        |                      |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| FIle `*.rds` name          | Source File Name                                  | Details                                                            |
++============================+===================================================+====================================================================+
+| `projs_train.rds`          | analysis/\_01a_WB_project_pdo_prep.qmd            | 4,403 obs (projects)                                               |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `projs_test.rds`           | analysis/\_01a_WB_project_pdo_prep.qmd            | 2,204 obs (projects)                                               |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `projs_val.rds`            | analysis/\_01a_WB_project_pdo_prep.qmd            | 2,204 obs (projects)                                               |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `pdo_train.rds`            | analysis/\_01a_WB_project_pdo_prep.qmd            | 249,360 obs (tokens)                                               |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+|                            |                                                   |                                                                    |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `custom_stop_words.rds`    | analysis/01b_WB_project_pdo_EDA.qmd               | as vector                                                          |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `custom_stop_words_df.rds` | analysis/01b_WB_project_pdo_EDA.qmd               | as df                                                              |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+|                            |                                                   |                                                                    |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `wdr.rds`                  | \[from `OLD` repo `~/Github/slogan_old/`\]        | as df (44)                                                         |
+|                            |                                                   |                                                                    |
+|                            | -   ...OLD/\_my_stuff/WDR-data-ingestion.Rmd      | -   *problem, bc API changed so now not reproducible*              |
+|                            |                                                   |                                                                    |
+|                            |     -   result as `...OLD/data/raw_data/WDR.rds`  | -   there I did text processing on WDR abstracts (\~ like on PDOs) |
+|                            |                                                   |                                                                    |
+|                            | -   ...OLD/01b_WDR_data-exploration_abstracts.Rmd |                                                                    |
+|                            |                                                   |                                                                    |
+|                            |     -   result as `...OLD/data/raw_data/wdr.rds`  |                                                                    |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `wdr2.rds`                 | \[added WDR 2023/2024 manually\]                  | as df (46)                                                         |
+|                            |                                                   |                                                                    |
+|                            | analysis/01b_WB_project_pdo_EDA.qmd               |                                                                    |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+

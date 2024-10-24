@@ -48,8 +48,13 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="where-do-these-files-come-from" class="level1">
 <h1>Where do these files come from?</h1>
+<p>These files in the folder <code>data/derived_data/</code> are created in different scripts and saved here to be reused in other scripts.</p>
 <table class="table">
-<caption>files details</caption>
+<colgroup>
+<col style="width: 19%">
+<col style="width: 34%">
+<col style="width: 45%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>FIle <code>*.rds</code> name</th>
@@ -59,14 +64,24 @@ ul.task-list li input[type="checkbox"] {
 </thead>
 <tbody>
 <tr class="odd">
+<td><code>projs_train.rds</code></td>
+<td>analysis/_01a_WB_project_pdo_prep.qmd</td>
+<td>4,403 obs (projects)</td>
+</tr>
+<tr class="even">
+<td><code>projs_test.rds</code></td>
+<td>analysis/_01a_WB_project_pdo_prep.qmd</td>
+<td>2,204 obs (projects)</td>
+</tr>
+<tr class="odd">
+<td><code>projs_val.rds</code></td>
+<td>analysis/_01a_WB_project_pdo_prep.qmd</td>
+<td>2,204 obs (projects)</td>
+</tr>
+<tr class="even">
 <td><code>pdo_train.rds</code></td>
 <td>analysis/_01a_WB_project_pdo_prep.qmd</td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>projs_train.eds</code></td>
-<td>analysis/_01a_WB_project_pdo_prep.qmd</td>
-<td></td>
+<td>249,360 obs (tokens)</td>
 </tr>
 <tr class="odd">
 <td></td>
@@ -74,14 +89,14 @@ ul.task-list li input[type="checkbox"] {
 <td></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
+<td><code>custom_stop_words.rds</code></td>
+<td>analysis/01b_WB_project_pdo_EDA.qmd</td>
+<td>as vector</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td></td>
-<td></td>
+<td><code>custom_stop_words_df.rds</code></td>
+<td>analysis/01b_WB_project_pdo_EDA.qmd</td>
+<td>as df</td>
 </tr>
 <tr class="even">
 <td></td>
@@ -89,24 +104,29 @@ ul.task-list li input[type="checkbox"] {
 <td></td>
 </tr>
 <tr class="odd">
-<td></td>
-<td></td>
-<td></td>
+<td><code>wdr.rds</code></td>
+<td><p>[from <code>OLD</code> repo <code>~/Github/slogan_old/</code>]</p>
+<ul>
+<li><p>…OLD/_my_stuff/WDR-data-ingestion.Rmd</p>
+<ul>
+<li>result as <code>...OLD/data/raw_data/WDR.rds</code></li>
+</ul></li>
+<li><p>…OLD/01b_WDR_data-exploration_abstracts.Rmd</p>
+<ul>
+<li>result as <code>...OLD/data/raw_data/wdr.rds</code></li>
+</ul></li>
+</ul></td>
+<td><p>as df (44)</p>
+<ul>
+<li><p><em>problem, bc API changed so now not reproducible</em></p></li>
+<li><p>there I did text processing on WDR abstracts (~ like on PDOs)</p></li>
+</ul></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td></td>
-<td></td>
-<td></td>
+<td><code>wdr2.rds</code></td>
+<td><p>[added WDR 2023/2024 manually]</p>
+<p>analysis/01b_WB_project_pdo_EDA.qmd</p></td>
+<td>as df (46)</td>
 </tr>
 </tbody>
 </table>

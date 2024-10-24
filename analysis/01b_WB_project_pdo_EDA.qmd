@@ -74,6 +74,7 @@ library(patchwork) # The Composer of Plots
 # library(cleanNLP) # A Tidy Data Model for Natural Language Processing 
 ```
 
+# Set up ggplot2 theme
 ```{r}
 #| echo: FALSE
 # 0) --- See prior steps in R/fonts.R
@@ -86,9 +87,9 @@ showtext_auto()
 my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
   theme(panel.grid.minor = element_blank(),
         # Bold, bigger title
-        plot.title = element_text(face = "bold", size = rel(1.7)),
+        plot.title = element_text(face = "bold", size = rel(1.8)),
         # Plain, slightly bigger subtitle that is grey
-        plot.subtitle = element_text(face = "plain", size = rel(1.3), color = "#A6A6A6"),
+        plot.subtitle = element_text(face = "plain", size = rel(1.5), color = "#A6A6A6"),
         # Italic, smaller, grey caption that is left-aligned
         plot.caption = element_text(face = "italic", size = rel(0.7), 
                                     color = "#A6A6A6", hjust = 0),
@@ -98,6 +99,10 @@ my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 1
         strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
         # Bold axis titles
         axis.title = element_text(face = "bold"),
+        # Change X-axis label size
+        axis.text.x = element_text(size = rel(1.5)),   
+        # Change Y-axis label size
+        axis.text.y = element_text(size = 14),   
         # Add some space above the x-axis title and make it left-aligned
         axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
         # Add some space to the right of the y-axis title and make it top-aligned
@@ -550,15 +555,27 @@ However, in this analysis, I do not use the **STOPWORD** approach, but use the *
 #| echo: false
 
 f_save_plot <- function(plot_name, plot_object) {
-   # Print the plot, save as PDF and PNG
-   plot_object %T>%
-      print() %T>%
-      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
-             # width = 4, height = 2.25, units = "in",
-             device = cairo_pdf) %>%
-      ggsave(., filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
-             # width = 4, height = 2.25, units = "in",
-             type = "cairo", dpi = 300)
+   # Define plot dimensions and resolution
+   width <- 8         # Width in inches
+   height <- 6        # Height in inches
+   dpi <- 320         # Resolution in DPI
+
+   # Save the plot as PDF
+   ggsave(plot_object, 
+          filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
+          device = cairo_pdf,
+          width = width, 
+          height = height, 
+          units = "in")
+   
+   # Save the plot as PNG
+   ggsave(plot_object, 
+          filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
+          type = "cairo", 
+          dpi = dpi,      # Set DPI
+          width = width, 
+          height = height, 
+          units = "in")
 }
 
 # Example of using the function
@@ -678,72 +695,110 @@ To try and make it a bit more meaningful, let's focus on the frequency of the mo
 
 From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
 
-+ **WAT_SAN** = water, wastewater, sanitation
-+ **TRANSPORT** = transport, railway, road, airport, port
-+ **URBAN** = urban
-+ **ENERGY** = energy, electricity, hydroelectric, hydropower, renewable, transmission
-+ **HEALTH** = health, hospital, medicine, drugs, epidemic, pandemic, covid-19, vaccine
-+ **EDUCATION** = education, school, vocational, teach, university, student, literacy, training, curricul 
++ **WAT_SAN** = water|wastewater|sanitat|Sewer|sewage|Irrigat|Drainag|river basin|groundwater
++ **TRANSPORT** = transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation|highway|transit|bridge|port
++ **URBAN** = urban|housing|inter-urban|peri-urban|waste manag|slum|city|megacity|intercity|inter-city|town
++ **ENERGY** = energ|electri|hydroele|hydropow|renewable|transmis|grid|transmission|electric power|geothermal|solar|wind|thermal|nuclear power|energy generation
++ **HEALTH** = health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin|immuniz|diseas|malaria|HIV|AIDS|TB|maternal|clinic|nutrition
++ **EDUCATION** = educat|school|vocat|teach|univers|student|literacy|training|curricul|pedagog
++ **AGR_FOR_FISH** (Agriculture, Forestry, Fishing) = Agricultural|Agro|Fish|Forest|Crop|livestock|fishery|land|soil
++ **MINING OIL&GAS** = Minin|oil|gas|mineral|quarry|extract|coal|natural gas|mine|petroleum|hydrocarbon
++ **SOCIAL_PROT** = Social Protec|social risk|social assistance|living standard|informality|insurance|social choesion|gig economy|human capital|employment|unemploy|productivity|wage lev|intergeneration|lifelong learn|vulnerab|empowerment|sociobehav
++ **FINANCIAL** = Bank|finan|Investment|credit|microfinan|loan|financial stability|banking|financial intermed|fintech
++ **ICT** = Information|Communication|ICT|Internet|telecom|cyber|data|AI|artificial intelligence|blockchain|e-learn|e-commerce|platform|software|hardware|digital
++ **IND_TRADE_SERV** = Industry|Trade|Service|manufactur|Tourism|Trade and Services|market|export|import|supply chain|logistic|distribut|e-commerce|retail|wholesale|trade facilitation|trade policy|trade agreement|trade barrier|trade finance|trade promotion|trade integration|trade liberalization|trade balance|trade deficit|trade surplus|trade war|trade dispute|trade negotiation|trade cooperation|trade relation|trade partner|trade route|trade corridor
++ **"INSTIT_SUPP"** = Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance|Policy|Regulation|Public Expenditure|Public Investment|Public Procurement
++ **"GENDER_EQUAL"** = Gender|Women|Girl|Woman|femal|Gender Equal|gender-base|gender inclus|gender mainstream|gender sensit|gender respons|gender gap|gender-based|gender-sensitive|gender-responsive|gender-transform|gender-equit|gender-balance
++ **"CLIMATE"** =  Climate|Environment|Sustain|Resilience|Adaptation|Mitigation|Green|Eco|Eco-|carbon|carbon cycle|carbon dioxide|climate change|ecosystem|emission|energy effic|greenhouse|greenhouse gas|temperature anomalies|zero net|green growth|low carbon|climate resilient|climate smart|climate tech|climate variab
  
 ```{r}
 pdo_train_t <- pdo_train_t %>%
    # dealing with water/watershed/waterway
    mutate(tok_sector_broad = case_when(
-      str_detect(token_l, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", ignore_case = T)) ~ "WAT_SAN",
-      str_detect(token_l, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation", ignore_case = T)) ~ "TRANSPORT",
-      token_l == "port" ~ "TRANSPORT",
-      str_detect(token_l, regex("urban|housing|inter-urban|peri-urban|waste", ignore_case = T)) ~ "URBAN",
-      str_detect(token_l, regex("energ|electri|hydroele|hydropow|renewable|transmis", ignore_case = T)) ~ "ENERGY",   
-      str_detect(token_l, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin", ignore_case = T))  ~ "HEALTH",
-      str_detect(token_l, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul", ignore_case = T)) ~ "EDUCATION",
+      str_detect(token_l, regex("water|wastewater|sanitat|Sewer|sewage|Irrigat|Drainag|river basin|groundwater", ignore_case = T)) ~ "WAT_SAN",
+      str_detect(token_l, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation|highway|transit|bridge|port", ignore_case = T)) ~ "TRANSPORT",
+      str_detect(token_l, regex("urban|housing|inter-urban|peri-urban|waste manag|slum|city|megacity|intercity|inter-city|town", ignore_case = T)) ~ "URBAN",
+      str_detect(token_l, regex("energ|electri|hydroele|hydropow|renewable|transmis|grid|transmission|electric power|geothermal|solar|wind|thermal|nuclear power|energy generation", ignore_case = T)) ~ "ENERGY",   
+      str_detect(token_l, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin|immuniz|diseas|malaria|HIV|AIDS|TB|maternal|clinic|nutrition", ignore_case = T))  ~ "HEALTH",
+      str_detect(token_l, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul|pedagog", ignore_case = T)) ~ "EDUCATION",
       # not infra 
-      str_detect(token_l, regex("Agricultural|Agro|Fish|Forest|Crop|lovestock", ignore_case = T)) ~ "AGR FOR FISH",
-      str_detect(token_l, regex("Minin|oil|gas|mineral", ignore_case = T)) ~ "MINING OIL&GAS",
-      str_detect(token_l, regex("Social Protec", ignore_case = T)) ~ "SOCIAL PROTECTION",
-      str_detect(token_l, regex("Bank|finan|Investment", ignore_case = T)) ~ "FINANCIAL",
-      str_detect(token_l, regex("Information|Communication|ICT|Internet", ignore_case = T)) ~ "ICT",
-      str_detect(token_l, regex("Tourism|Trade and Services|Manuf", ignore_case = T)) ~ "IND TRADE SERV",
-      str_detect(token_l, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance", ignore_case = T)) ~ "INSTITUTIONAL SUPP.",
+      str_detect(token_l, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|fishery|land|soil", ignore_case = T)) ~ "AGR_FOR_FISH",
+      str_detect(token_l, regex("Minin|oil|gas|mineral|quarry|extract|coal|natural gas|mine|petroleum|hydrocarbon", ignore_case = T)) ~ "MINING OIL&GAS",
+      str_detect(token_l, regex("Social Protec|social risk|social assistance|living standard|informality|insurance|social choes|gig economy|human capital|employment|unemploy|productivity|wage lev|intergeneration|lifelong learn|vulnerab|empowerment|sociobehav", ignore_case = T)) ~ "SOCIAL_PROT",
+      str_detect(token_l, regex("Bank|finan|Investment|credit|microfinan|loan|financial stability|banking|financial intermed|fintech", ignore_case = T)) ~ "FINANCIAL",
+      str_detect(token_l, regex("Information|Communication|ICT|Internet|telecom|cyber|data|AI|artificial intelligence|blockchain|e-learn|platform|software|hardware|digital", ignore_case = T)) ~ "ICT",
+      str_detect(token_l, regex("Industry|Trade|Service|manufactur|Tourism|Trade and Services|market|export|import|supply chain|logistic|distribut|e-commerce|retail|wholesale|trade facilitation|trade policy|trade agreement|trade barrier|trade finance|trade promotion|trade integration|trade liberalization|trade balance|trade deficit|trade surplus|trade war|trade dispute|trade negotiation|trade cooperation|trade relation|trade partner|trade route|trade corridor", ignore_case = T)) ~ "IND_TRADE_SERV",
+      str_detect(token_l, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance|Policy|Regulation|Public Expenditure|Public Investment|Public Procurement", ignore_case = T)) ~ "INSTIT_SUPP",
+      str_detect(token_l, regex("Gender|Women|Girl|Woman|femal|Gender Equal|gender-base|gender inclus|gender mainstream|gender sensit|gender respons|gender gap|gender-based|gender-sensitive|gender-responsive|gender-transform|gender-equit|gender-balance", ignore_case = T)) ~  "GENDER_EQUAL" ,
+            str_detect(token_l, regex("Climate|Environment|Sustain|Resilience|Adaptation|Mitigation|Green|Eco|Eco-|carbon|carbon cycle|carbon dioxide|climate change|ecosystem|emission|energy effic|greenhouse|greenhouse gas|temperature anomalies|zero net|green growth|low carbon|climate resilient|climate smart|climate tech|climate variab", ignore_case = T)) ~ "CLIMATE" ,
       TRUE ~ NA_character_)) %>% 
    relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
+```
+
+#### Data prep for sector plots
+```{r}
+tabyl(pdo_train_t$tok_sector_broad)
+
+# Create a custom color list for each sector
+sector_colors <- c(
+   "WAT_SAN" = "#26BDE2",  # SDG 6
+   "ENERGY" = "#FCC30B", # 7SDG 
+   "MINING OIL&GAS" = "#23399b", # no SDG! 
+   "URBAN" = "#FD9D24", # SDG 11
+   "ICT" = "#0f7184",    # no SDG!
+   "HEALTH" = "#4C9F38", # SDG 3
+   "EDUCATION" = "#C5192D", # SDG 4
+   # SDGS 
+   "POVERTY" = "#E5243B", # SDG 1
+   "ZERO_HUNGER" = "#DDA63A", # SDG 2
+   "GENDER_EQUAL" = "#FF3A21", # SDG 5
+   "WORK" = "#A21942", # SDG 8
+   "INDUSTRY" = "#FD9D24", # SDG 9
+   "INEQUALITY" =  "#DD1367", # SDG 10
+   "CONSUMPTION" = "#BF8B2E", # SDG 12
+   "CLIMATE" = "#3F7E44", # SDG 13
+   "OCEANS" = "#0A97D9", # SDG 14
+   "BIODIVERSITY" = "#56C02B", # SDG 15
+   "PEACE" = "#00689D", # SDG 16
+   "PARTNERSHIP" = "#19486A", # SDG 17
+   # MINE
+   "TRANSPORT" =  "#A6A6A6", 
+   "AGR_FOR_FISH" = "#56C02B" , 
+   "SOCIAL_PROT" = "#e28293", 
+   "FINANCIAL" =  "#e60066",
+   "IND_TRADE_SERV" = "#85239b",
+   "INSTIT_SUPP" = "#49239b"
+   )
+
+# prepare data for plotting (count)
+sector_broad <- pdo_train_t %>% 
+   filter(!is.na(tok_sector_broad)) %>% 
+   filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING OIL&GAS", "ICT", "HEALTH", "EDUCATION", 
+                                  # not infrastructure
+                                  "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE",  "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP" )) %>%
+   count(FY_appr, tok_sector_broad) %>% 
+   filter(n > 0) %>% 
+   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c(
+      "WAT_SAN", "ENERGY", "TRANSPORT","URBAN","MINING OIL&GAS","ICT", "HEALTH", "EDUCATION",
+      # not infrastructure
+       "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE",  "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP"))) # reorder values by frequency
+#df$FY
 ```
 
 #### [FIG] faceted sector (`tok_sector_broad`) freq ggplot
 ```{r}
 #| output: TRUE
 
-# Create a custom color list for each sector
-sector_colors <- c(
-   "WAT_SAN" = "#26BDE2", 
-   "TRANSPORT" =  "#A6A6A6",
-   "ENERGY" = "#FCC30B", 
-   "MINING OIL&GAS" = "#23399b", # no SDG! 
-   "URBAN" = "#FD9D24", 
-   "ICT" = "#0f7184",    # no SDG!
-   "HEALTH" = "#4C9F38", 
-   "EDUCATION" = "#C5192D"
-)
- 
-
-
-# prepare data for plotting (count)
-sector_broad <- pdo_train_t %>% 
-   filter(!is.na(tok_sector_broad)) %>% 
-   filter(tok_sector_broad %in% c("WAT_SAN", "TRANSPORT", "ENERGY","MINING OIL&GAS", "URBAN","ICT", "HEALTH", "EDUCATION")) %>%
-   count(FY_appr, tok_sector_broad) %>% 
-   filter(n > 0) %>% 
-   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c("WAT_SAN", "ENERGY", "TRANSPORT",
-                                                                 "URBAN","MINING OIL&GAS","ICT", 
-                                                                 "HEALTH", "EDUCATION"))) # reorder values by frequency
-#df$FY
-
 # Evaluate the title with glue first
 title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
 # Plot
-pdo_sect_broad_freq <-  ggplot(data = sector_broad, 
-                               aes(x = FY_appr, y = n, 
-                                   group = tok_sector_broad, color = tok_sector_broad)) +
+pdo_sect_broad_freq <- sector_broad %>% 
+   # only the "original group
+  filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING OIL&GAS", "ICT", "HEALTH", "EDUCATION" )) %>% 
+   ggplot(.,
+          aes(x = FY_appr, y = n, 
+              group = tok_sector_broad, color = tok_sector_broad)) +
    geom_line(linetype = "dotted", alpha = 0.5, size = 1) +
    geom_point(size = 2) +
    scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
@@ -762,14 +817,13 @@ pdo_sect_broad_freq <-  ggplot(data = sector_broad,
         y = ""#"Counts of 'sector' word (tok_sector_broad)"
    ) + 
    # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
-   geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.40) + 
-   geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
-              aes(xintercept = 2020), 
-              linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
-             aes(x = 2020, y = max(sector_broad$n)*0.65, label = "Covid"), 
-             angle = 90, vjust = -0.5, color = "#9b6723") 
-
+   geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.40)   
+   # geom_vline(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
+   #            aes(xintercept = 2020), 
+   #            linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   # geom_text(data = subset(sector_broad, tok_sector_broad == "HEALTH"), 
+   #           aes(x = 2020, y = max(sector_broad$n)*0.65, label = "Covid"), 
+   #           angle = 90, vjust = -0.5, color = "#9b6723") 
 
 pdo_sect_broad_freq
 ```
@@ -780,9 +834,8 @@ f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
 ```
 
 
-#### [FIG fun] split sector (`tok_sector_broad`) freq ggplot
+#### [FUN fig] split sector (`tok_sector_broad`) freq ggplot
 ```{r}
-
 # --- Get a LIST of unique sectors (facets) and split the data
 sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
 
@@ -804,7 +857,7 @@ f_plot_sector <- function(data) {
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       labs(
          title = paste("\"",sector,"\" in PDOs by fiscal years of approval"),  # Use facet-specific title
-         subtitle = "[Using a \"custom\" broad sector definition]",
+         subtitle = "[Using a \"custom\" broad sector definition &\nshowing relevant WDR publication(s)]",
          x = "", 
          y = ""  # Remove y-axis label
       ) +
@@ -812,14 +865,14 @@ f_plot_sector <- function(data) {
       expand_limits(y = 50) + 
       # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
       geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
-   # Add vline and text annotation only for the HEALTH sector
+   # # Add vline and text annotation only for the HEALTH sector
    if (sector == "HEALTH") {
       p <- p +
          geom_vline(aes(xintercept = 2020), linetype = "solid", color = "#9b6723",alpha = 0.35) +
-         geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"), 
+         geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"),
                    angle = 90, vjust = -0.5, color = "#9b6723")
-   } 
-   
+   }
+
    return(p)
 }
 
@@ -831,11 +884,10 @@ sector_plots$HEALTH
 ```
 
 ```{r}
-#| output: TRUE
+#| output: FALSE
 # Optionally print each plot to the console
 walk(sector_plots, print)
 ```
-
 
 ```{r}
 # Define the output directory using the 'here' function
@@ -847,17 +899,403 @@ walk2(sector_plots, names(sector_list),
 
 ```
 
-# =====  !!!!! QUI !!!!!  ======
-### Check (by sector) why peaks [CMPL 🟠]  
+## SECTOR in PDO v. WDR publications
 
-For the (broadly defined) health sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. What about the other sectors? (they all seem to have at least 1 evident peak)
-  
-### --- I could see if corresponds to any WDR publications
+For the (broadly defined) *HEALTH* sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. 
 
-### Qualify: peak or trend (by sector) [CMPL 🟠]  
+What about the other sectors? I was struck by the fact that, observing PDOs over time, the broadly defined *"sector term"* in the PDO always presents at least one peak and I wonder what could trigger it.
 
-... capire come si stabilisce che c'e' un trend ... magari vedere google search trend... 
+One possible explanation is that the PDOs somehow reflect the topics discussed by the **World Development Reports (WDR)** published annually by the World Bank. The WDR is a flagship publication of the World Bank that provides in-depth analysis of a specific aspect of development.
 
+It is important to remark that these publications are not some speculative research endeavor, as they are deeply rooted in the concrete information that the Bank retrieves on the ground from projects and operations as they are supported and evaluated. In turn, the WDRs themselves inform the Bank's policy priorities and operational strategies. 
+
+Therefore, it is reasonable to expect some kind of correlation between the topics discussed in the WDRs and the objectives of projects stated in in the PDOs.
+
+## Ingest WDR data 
+
+Previously created, as explained in `data/derived_data/_provenance.md`
+
+```{r}
+# Read the WDR data
+wdr <- readRDS(here("data","derived_data", "wdr.rds"))
+```
+
+
+### --- Manually add WDR 2023 
+[OKR Full item](https://openknowledge.worldbank.org/entities/publication/5e5ac9f1-71ee-4734-825e-60966658395f/full)
+```{r}
+library(tibble)
+
+# Create a named list of NA values for subj_11 to subj_46
+na_values <- setNames(rep(NA, 35), paste0("subj_", 12:46))
+
+# Add a new row with the existing columns and NA for subj_11 to subj_46
+wdr <- wdr %>%
+  add_row(
+    date_issued = 2023,
+    decade = "2020s",
+    id = NA, # ? 
+    ISBN = "978-1-4648-1941-4",
+    title = "Migrants, Refugees, and Societies",
+    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/39696", #? 
+    subject_miss = NA,
+    abstract = "Migration is a development challenge. About 184 million people-2.3 percent of the world’s population-live outside of their country of nationality. Almost half of them are in low- and middle-income countries. But what lies ahead? As the world struggles to cope with global economic imbalances, diverging demographic trends, and climate change, migration will become a necessity in the decades to come for countries at all levels of income. If managed well, migration can be a force for prosperity and can help achieve the United Nations’ Sustainable Development Goals. World Development Report 2023 proposes an innovative approach to maximize the development impacts of cross-border movements on both destination and origin countries and on migrants and refugees themselves. The framework it offers, drawn from labor economics and international law, rests on a “Match and Motive Matrix” that focuses on two factors: how closely migrants’ skills and attributes match the needs of destination countries and what motives underlie their movements. This approach enables policy makers to distinguish between different types of movements and to design migration policies for each. International cooperation will be critical to the effective management of migration.",
+    url_keys = "https://openknowledge.worldbank.org/handle/10986/39696",
+    altmetric = 150,
+    all_topic = "Poverty Reduction,Social Development,Conflict and Development",
+    all_subj = "migration,migrants,refugees,force displacement,crss-border mobility,remittances,origin country,international protection,refugee-hosting country,irregular migration,international cooperation",
+    subj_1 = "migration",
+    subj_2 = "migrants",
+    subj_3 = "refugees",
+    subj_4 = "force displacement",
+    subj_5 = "crss-border mobility",
+    subj_6 = "remittances",
+    subj_7 = "origin country",
+    subj_8 = "international protection",
+    subj_9 = "refugee-hosting country",
+    subj_10 = "irregular migration",
+    subj_11 = "international cooperation",
+    !!!na_values  # Unpack the NA values for subj_12 to subj_46
+  )
+```
+
+### --- Manually add WDR 2024 
+[OKR Full item](https://openknowledge.worldbank.org/entities/publication/7c5cd962-11ae-4101-8f3f-e15b86135f0e/full)
+
+```{r}
+library(tibble)
+
+# Create a named list of NA values for subj_11 to subj_46
+na_values <- setNames(rep(NA, 35), paste0("subj_", 12:46))
+# https://documents.worldbank.org/en/publication/documents-reports/documentdetail/099042523192514880/p17826903573340450b2d00e8cfd3baf7ac
+# https://openknowledge.worldbank.org/entities/publication/5e5ac9f1-71ee-4734-825e-60966658395f/full
+
+# Add a new row with the existing columns and NA for subj_11 to subj_46
+wdr <- wdr %>%
+  add_row(
+    date_issued = 2024,
+    decade = "2020s",
+    id = NA, # ? 
+    ISBN = "978-1-4648-2078-6",
+    title = "The Middle-Income Trap",
+    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/41919", #? 
+    subject_miss = NA,
+    abstract = "Middle-income countries are in a race against time. Many of them have done well since the 1990s to escape low-income levels and eradicate extreme poverty, leading to the perception that the last three decades have been great for development. But the ambition of the more than 100 economies with incomes per capita between US$1,100 and US$14,000 is to reach high-income status within the next generation. When assessed against this goal, their record is discouraging. Since the 1970s, income per capita in the median middle-income country has stagnated at less than a tenth of the US level. With aging populations, growing protectionism, and escalating pressures to speed up the energy transition, today’s middle-income economies face ever more daunting odds. To become advanced economies despite the growing headwinds, they will have to make miracles. Drawing on the development experience and advances in economic analysis since the 1950s, World Development Report 2024 identifies pathways for developing economies to avoid the “middle-income trap.” It points to the need for not one but two transitions for those at the middle-income level: the first from investment to infusion and the second from infusion to innovation. Governments in lower-middle-income countries must drop the habit of repeating the same investment-driven strategies and work instead to infuse modern technologies and successful business processes from around the world into their economies. This requires reshaping large swaths of those economies into globally competitive suppliers of goods and services. Upper-middle-income countries that have mastered infusion can accelerate the shift to innovation—not just borrowing ideas from the global frontiers of technology but also beginning to push the frontiers outward. This requires restructuring enterprise, work, and energy use once again, with an even greater emphasis on economic freedom, social mobility, and political contestability. Neither transition is automatic. The handful of economies that made speedy transitions from middle- to high-income status have encouraged enterprise by disciplining powerful incumbents, developed talent by rewarding merit, and capitalized on crises to alter policies and institutions that no longer suit the purposes they were once designed to serve. Today’s middle-income countries will have to do the same.",
+    url_keys = "https://openknowledge.worldbank.org/handle/10986/41919",
+    altmetric = 13,
+   all_topic = "Macroeconomics,Economic Growth,Business Cycles and Stabilization Policies,Poverty Reduction,Achieving Shared Growth,Science and Technology Development,Innovation",
+    all_subj = "middle-income trap,investment,infusion,innovation,technologies,competitive suppliers,economic freedom",
+    subj_1   = "middle-income trap",
+    subj_2   = "investment",
+    subj_3   = "infusion",
+    subj_4   = "innovation",
+    subj_5   = "technologies",
+    subj_6   = "competitive suppliers",
+    subj_7   = "economic freedom",
+    subj_8   = NA,
+    subj_9   = NA,
+    subj_10  = NA,
+    subj_11  = NA,
+    !!!na_values  # Unpack the NA values for subj_12 to subj_46
+  )
+```
+
+### --- Manually correct WDR 2011
+
+<!-- this was a weird case in slogan OLD which I corrected manually, subjects were invented (taking from abstracts-->
+
+```{r}
+
+wdr$url_keys [wdr$id == "4389"] <- "https://openknowledge.worldbank.org/handle/10986/4389"
+
+wdr$altmetric [wdr$id == "4389"] <- "210"
+
+wdr$abstract [wdr$id == "4389"] <- "The 2011 World development report looks across disciplines and experiences drawn from around the world to offer some ideas and practical recommendations on how to move beyond conflict and fragility and secure development. The key messages are important for all countries-low, middle, and high income-as well as for regional and global institutions: first, institutional legitimacy is the key to stability. When state institutions do not adequately protect citizens, guard against corruption, or provide access to justice; when markets do not provide job opportunities; or when communities have lost social cohesion-the likelihood of violent conflict increases. Second, investing in citizen security, justice, and jobs is essential to reducing violence. But there are major structural gaps in our collective capabilities to support these areas. Third, confronting this challenge effectively means that institutions need to change. International agencies and partners from other countries must adapt procedures so they can respond with agility and speed, a longer-term perspective, and greater staying power. Fourth, need to adopt a layered approach. Some problems can be addressed at the country level, but others need to be addressed at a regional level, such as developing markets that integrate insecure areas and pooling resources for building capacity Fifth, in adopting these approaches, need to be aware that the global landscape is changing. Regional institutions and middle income countries are playing a larger role. This means should pay more attention to south-south and south-north exchanges, and to the recent transition experiences of middle income countries."
+
+wdr$all_topic [wdr$id == "4389"] <- tolower("Justice,Jobs,Political Violence and Civil War,Political Violence and War,Organized Crime,Fragility,Conflict and Violence,Crime,Social Cohesion,Public Sector Management,Social Development,Law and Development, Social Protections and Labor,Conflict and Development,Water Supply and Sanitation,Judicial System Reform, Labor Markets,Armed Conflict,Urban Solid Waste Management") 
+
+# Define the subjects to be added for the specific row
+subjects <- c(
+  "Armed Conflict",
+  "Civil Wars",
+  "Conflict Prevention",
+  "Conflict Resolution",
+  "Development Policy",
+  "Fragile States",
+  "International Development",
+  "Peacebuilding",
+  "Political Instability",
+  "Post-Conflict Reconstruction",
+  "Security and Development"
+) %>% tolower()  # Convert subjects to lowercase
+
+# Ensure id is handled as character and enforce lowercase comparison
+wdr <- wdr %>%
+   mutate(across(starts_with("subj_"),
+                 ~ ifelse(id == "4389", 
+                          subjects[as.numeric(sub("^subj_", "", cur_column()))], 
+                          NA_character_))) %>% 
+   mutate (all_subj = if_else(id == "4389", paste0(subjects, collapse = ","), all_subj)) 
+
+# Check the result for the row with id == "4389"
+wdr %>% filter(id == "4389") %>% select(starts_with("subj_"))  # Display the updated subject columns
+
+
+# check <- wdr[wdr$id == "4389",] 
+```
+
+### --- Remove extra space in title column
+
+```{r}
+# Check and remove leading space in the 'title' column
+wdr <- wdr %>%
+  mutate(title = str_trim(title, side = "left"))
+```
+
+
+### --- re-save upon correction `wrd2.rds`
+```{r}
+wdr2 <-  wdr
+write_rds(x = wdr2, file = here::here("data", "derived_data","wdr2.rds"))
+```
+
+### [TBL] World Develompent Reports 2000-2024
+
+Below are the titles of the World Development Reports from 2000 to 2024. 
+
+```{r}
+#| eval: true
+#| output: true
+#| echo: false
+
+# Filter the data
+wdr2_set <- wdr2 %>% 
+  filter(date_issued >= 2000) %>% 
+  select(date_issued, title, url_keys) %>%
+  mutate(url_keys = kableExtra::cell_spec(url_keys, link = url_keys))
+
+# Pipe the tibble into kable
+wdr2_set %>%
+  kableExtra::kable(escape = FALSE) %>%  # escape = FALSE allows HTML rendering
+  kableExtra::column_spec(2, width = "30em") %>%  # Adjust width of 'title'
+  kableExtra::column_spec(3, width = "30em")      # Adjust width of 'url_keys'
+```
+
+### Qualify: peak or trend (by sector) 
+
+## Add `geomvline` to sector plots v WDR title [CMPL 🟠] 
+```{r}
+tabyl(pdo_train_t$tok_sector_broad)
+# pdo_train_t$tok_sector_broad      n  WDR 
+
+#                  AGR_FOR_FISH    665 WDR 2008  Agriculture for Development
+#                     EDUCATION   1180 WDR 2004 Making Services Work for Poor People
+#                        ENERGY    886 WDR 
+#                     FINANCIAL   1843 WDR 
+#                  GENDER_EQUAL    213 WDR 2012  Gender Equality and Development
+#                        HEALTH    946 WDR 
+#                           ICT    548 WDR 
+#                IND TRADE SERV     60 WDR 
+#           INSTITUTIONAL SUPP.   2171 WDR 
+#                MINING OIL&GAS    299 WDR 
+#                     TRANSPORT   1371 WDR 
+#                         URBAN    553 WDR 
+#                       WAT_SAN   1069 WDR 
+```
+
+### --- ✅ AGR_FOR_FISH ( Agriculture, forestry, and fishing)  
+
+The WDR of 2008 was titled **" Agriculture for Development"**, [link](`r wdr2$url_keys[wdr2$title == " Agriculture for Development"]`)
+
+```{r}
+#| output: TRUE
+# --- Get a LIST of unique sectors (facets) and split the data
+sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
+# Specific split df 
+#sector_list$'AGR_FOR_FISH'
+
+# Specific plot 
+pdo_agr_plot <- sector_plots$'AGR_FOR_FISH' +  
+  geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2012, y = max(n) * 0.5, label = "WDR Agric"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+pdo_agr_plot
+```
+
+
+```{r}
+f_save_plot("pdo_agr_plot", pdo_agr_plot)
+```
+
+### --- ✅ EDUCATION
+
+WDR 2007 was titled **" Development and the Next Generation"**
+WDR 2018 was titled **" Learning to Realize Education's Promise"** 
+```{r}
+#| output: TRUE
+# Specific split df 
+#sector_list$EDUCATION
+
+# Specific plot 
+pdo_edu_plot <- sector_plots$EDUCATION + 
+  geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2007, y = max(n) * 0.45, label = "WDR Youth"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723") +
+  geom_vline(xintercept = 2018, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2018, y = max(n) * 0.30, label = "WDR Educ"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_edu_plot
+```
+
+```{r}
+f_save_plot("pdo_edu_plot", pdo_edu_plot)
+```
+
+### --- ✅ CLIMATE (climate change)
+<!-- The WDR 2003 was titled  **" Sustainable Development in a Dynamic World"** -->
+The WDR of 2010 was titled **" Development and Climate Change"**, [link](`r wdr2$url_keys[wdr2$title == " Development and Climate Change"]`)
+
+```{r}
+#| output: TRUE
+# --- Get a LIST of unique sectors (facets) and split the data
+sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
+# GENDER split df 
+#sector_list$'CLIMATE'
+
+# Specific plot 
+pdo_clim_plot <- sector_plots$'CLIMATE' + 
+   # geom_vline(xintercept = 2003, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   # geom_text(aes(x = 2003, y = max(n) * 0.5, label = "WDR Sust Dev"), 
+   #           angle = 90, vjust = -0.5, color = "#9b6723")+ 
+   geom_vline(xintercept = 2010, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   geom_text(aes(x = 2010, y = max(n) * 0.2, label = "WDR Climate change"), 
+             angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_clim_plot
+```
+
+```{r}
+f_save_plot("pdo_clim_plot", pdo_clim_plot)
+```
+
+### --- ✅ GENDER EQUALITY
+
+the WDR of 2012 was titled **"Gender Equality and Development"**, [link](`r wdr2$url_keys[wdr2$title == " Gender Equality and Development"]`)
+
+```{r}
+#| output: TRUE
+# --- Get a LIST of unique sectors (facets) and split the data
+sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
+# GENDER split df 
+#sector_list$GENDER_EQUAL
+
+# Specific plot 
+pdo_gen_plot <- sector_plots$GENDER_EQUAL +
+  geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2012, y = max(n) * 0.75, label = "WDR Gender equal"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_gen_plot
+```
+
+```{r}
+f_save_plot("pdo_gen_plot", pdo_gen_plot)
+```
+
+
+### --- SOCIAL PROTECTION 
+WDR 2004 " Making Services Work for Poor People"
+ 
+```{r}
+#| output: TRUE
+# Specific split df 
+#sector_list$SOCIAL_PROT
+
+# Specific plot 
+pdo_soc_plot <- sector_plots$SOCIAL_PROT + 
+  geom_vline(xintercept = 2004, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2004, y = max(n) * 0.75, label = "WDR Services"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_soc_plot
+```
+
+```{r}
+f_save_plot("pdo_soc_plot", pdo_soc_plot)
+```
+
+### --- INSTITUTIONAL SUPPORT
+WDR 2002 " Building Institutions for Markets"
+WDR 2007 " Governance and the Law"
+```{r}
+# Specific split df 
+# sector_list$INSTIT_SUP
+
+# Specific plot 
+pdo_inst_plot <- sector_plots$INSTIT_SUPP + 
+   geom_vline(xintercept = 2002, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   geom_text(aes(x = 2002, y = max(n) * 0.75, label = "WDR Institutions"), 
+             angle = 90, vjust = -0.5, color = "#9b6723") + 
+   geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   geom_text(aes(x = 2007, y = max(n) * 0.75, label = "WDR Governance"), 
+             angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_inst_plot
+```
+
+```{r}
+f_save_plot("pdo_inst_plot", pdo_inst_plot)
+```
+
+
+### --- ICT
+WDR 2016 " Digital Dividends"
+WDR 2021 " Data for Better Lives"
+
+```{r}
+# Specific split df 
+# sector_list$ICT
+
+# Specific plot 
+pdo_ict_plot <- sector_plots$ICT + 
+   geom_vline(xintercept = 2016, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   geom_text(aes(x = 2016, y = max(n) * 0.75, label = "WDR Digital Div"), 
+             angle = 90, vjust = -0.5, color = "#9b6723") + 
+   geom_vline(xintercept = 2021, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+   geom_text(aes(x = 2021, y = max(n) * 0.75, label = "WDR Data"), 
+             angle = 90, vjust = -0.5, color = "#9b6723")
+
+pdo_ict_plot
+```
+
+```{r}
+f_save_plot("pdo_ict_plot", pdo_ict_plot)
+```
+
+
+### --- FINANCIAL
+WDR 2005 " A Better Investment Climate for Everyone"
+WDR 2022 " Finance for an Equitable Recovery"
+
+```{r}
+# Specific split df 
+#sector_list$FINANCIAL
+
+# Specific plot 
+pdo_fin_plot <- sector_plots$FIN + 
+  geom_vline(xintercept = 2005, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2005, y = max(n) * 0.80, label = "WDR Inv Clim"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723") +
+  geom_vline(xintercept = 2022, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2022, y = max(n) * 0.75, label = "WDR Finance"), 
+                   angle = 90, vjust = -0.5, color = "#9b6723")
+pdo_fin_plot
+```
+
+```{r}
+f_save_plot("pdo_fin_plot", pdo_fin_plot)
+```
 
 # _______ 
 ## BIGRAMS 
@@ -1461,6 +1899,156 @@ bigram_tf_idf_top <- slice_head(bigram_tf_idf, n =  5, by = FY_appr ) %>%
 <!-- ... -->
 
 <!-- ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE) -->
+
+
+
+# _______
+# =====  !!!!! QUI !!!!!  ======
+# _______
+
+
+# CONCORDANCES - KWIC 
+
+A more evolved way to look at the data is to use the KWIC (Key Word In Context) method. This method allows us to see the context in which a word appears in the text. 
++ {Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)}
++ {Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)}
++ https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html
+
+In the language sciences, ***concordancing*** refers to the extraction of words from a given text or texts. Concordances are commonly displayed in the form of ***keyword-in-context displays (KWICs)*** where the search term is shown in context, i.e. with preceding and following words. 
+
+Concordancing is central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. As concordances allow us to analyze the context in which a word or phrase occurs and provide frequency information about word use, they also enable us to analyze collocations or the collocational profiles of words and phrases (Stefanowitsch 2020, 50–51). Finally, concordances can also be used to extract examples and it is a very common procedure.
+
+## --- Concordances
+<!-- + Concordances: [Libro Agnese - ITA](https://www.agnesevardanega.eu/books/analisi-testuale-2021/05-esplorazione.html#espl-quanteda) -->
++ https://ladal.edu.au/textanalysis.html#Concordancing
++ https://www.quantumjitter.com/project/deal/
+
+> Using `quanteda` 
+
+
+
+file:///Users/luisamimmi/Github/slogan_old/docs/01b_WDR_data-exploration_abstracts.html
+
+
+```{r}
+# I use again data = pdo_words
+pdo_q_corpus <- quanteda::corpus(as.data.frame(projs_train), 
+                               docid_field = "id",
+                               text_field = "pdo",
+                               meta = list("pr_name", "boardApprovalFY")
+)
+ 
+# --- example with individual keyword 
+# Step 1) tokens
+pdo_q_tokens <- quanteda::tokens(x = pdo_q_corpus,
+                       remove_punct = TRUE,
+                       remove_symbols = TRUE#,remove_numbers = TRUE
+ ) %>% 
+  quanteda::tokens_tolower() #%>%
+ #quanteda::tokens_remove(pattern = custom_stop_words) %>%
+ #quanteda::tokens_remove(pattern = c("project", "development", "bank", "world", "project", "projects"))
+                                      
+# #______ Step 2) kwic (individual exe )
+# kwic_pdo_data <- quanteda::kwic(x = pdo_q_tokens, # define text(s)
+#                                  # define pattern
+#                                  pattern = quanteda::phrase(c("gender", "climate", "sustainab*")),
+#                                  # define window size
+#                                  window = 5) %>%
+#     # convert into a data frame
+#     as_tibble() %>%
+#     left_join(projs_train, by = c("docname" =  "id")) %>%
+#     # remove superfluous columns
+#      dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post) %>%
+#   #  slice_sample( n = 50) %>%
+#    kbl(align = "c") # %>% kable_styling()
+ 
+# ____ Step 2) kwic (on vector)
+# Iterate `quanteda::kwic` over a vector of tokens | regex-modified-keywords
+keywords <- c("gender", "climate", "sustainab*", "conditional*" )
+
+# apply iteratively kwic over a vector of keywords
+outputs_key <-  map(keywords, 
+      ~quanteda::kwic(pdo_q_tokens,
+                      pattern =  .x,
+                      window = 5) %>% 
+        as_tibble() %>%
+        left_join(projs_train, by = c("docname" =  "id")) %>%  
+        # remove superfluous columns
+       dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post)
+  )
+
+# # all togetha 3
+n = length(keywords)
+
+# check the first element  
+outputs_key[[1]] %>%
+   kbl(align = "c")
+outputs_key[[2]] %>%
+   kbl(align = "c")
+
+# this list  has no element names 
+names(outputs_key)
+```
+
+#### --- create kwic with phrases | purrr + print + save png
+```{r}
+# Iterate `quanteda::kwic` over a vector of phrases/bigrams 
+keywords_phrase <- c("climate change", "investment climate", "pro-poor", 
+                     "gender equality", "maximizing finance", "digital revolution")
+
+# Step 1) tokens
+# (done above) -> abs_q_tokens
+
+# Step 2) kwic 
+# apply iteratively kwic over a vector of bigrams
+outputs_bigrams <- map(keywords_phrase,
+                       ~quanteda::kwic(x = pdo_q_tokens, # define text(s) 
+                                       # define pattern
+                                       pattern = quanteda::phrase(.x),
+                                       # define window size
+                                       window = 5) %>%
+                          # convert into a data frame
+                          as_tibble() %>%
+                          left_join(projs_train, by = c("docname" =  "id")) %>%  
+                          ## remove superfluous columns
+                          dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post)
+)  
+
+#  number ofo cbigrams 
+n_bi = length(keywords_phrase)
+n_bi # 7
+# name this list's elements 
+outputs_bigrams <- outputs_bigrams %>% 
+  set_names(paste0("kwic_", keywords_phrase))  
+
+# get rid of empty output dfs in list  
+outputs_bigrams2 <- outputs_bigrams[sapply(
+  outputs_bigrams, function(x) dim(x)[1]) > 0] # 4 left!
+ 
+#or 
+outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
+
+# -------------- print all 
+#  walk + print -
+walk(.x = outputs_bigrams2, .f = print)  
+
+
+# -------------- save  all -> create multiple tables from a single dataframe and save them as images
+# https://stackoverflow.com/questions/69323569/how-to-save-multiple-tables-as-images-using-kable-and-map/69323893#69323893
+
+out_dir_tab <- fs::path("./analysis/output/tables")
+out_dir_tab
+outputs_bigrams2  %>%
+  imap(~save_kable(file = paste0(out_dir_tab, '/', 'pdo_', .y, '_.png'),
+                   # bs_theme = 'journal', 
+                   self_contained = T, 
+                   x = kbl(.x, booktabs = T, align = c('l','l', 'c')) %>%
+                     kable_styling() 
+  )
+  )
+
+```
+
 
 # Acknowledgements
 

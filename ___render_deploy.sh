@@ -40,8 +40,8 @@ git add R/*
 git add data/*
 git add docs/*
 git add images/*
-git add analysis/PDO-explor.qmd
-
+git add analysis/slogan_selected.bib
+git add analysis/output/figures/
 
 =======
 # Create Std commit "message"....
@@ -52,7 +52,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "🤯   _01c_WB_project_pdo_feat_class.qmd"
+git commit -m "upd 🤞🏻  analysis/01b_WB_project_pdo_EDA.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

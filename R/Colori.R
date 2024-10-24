@@ -108,20 +108,20 @@ two_col_contrast <- c( "#399B23",  "#e60066" )
 
 
 blu_contrast <- c(
-  "#0f7184",
-  "#56adbf",
-  "#5bd6ef",
-  "#025b6d",
-  "#b5f2ff",
-  "#1b5884",
-  "#72aed8",
-  "#98c8ea",
-  "#5097c9",
-  "#3a7aa8",
-  "#0286e5",
-  "#c6e7ff",
-  "#013d68"
-  )
+   "#0f7184",
+   "#56adbf",
+   "#5bd6ef",
+   "#025b6d",
+   "#b5f2ff",
+   "#1b5884",
+   "#72aed8",
+   "#98c8ea",
+   "#5097c9",
+   "#3a7aa8",
+   "#0286e5",
+   "#c6e7ff",
+   "#013d68"
+)
 
 # # -- Add custom fonts & make custom theme for ggplot2 -----
 # # -- da google
