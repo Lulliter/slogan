@@ -1,10 +1,16 @@
 ---
 #title: "Motivation"
 author: "Luisa M. Mimmi"
-date: "Last run: `r format(Sys.time(), '%F')`"
-#date-format: "dddd MMM D, YYYY"
+date: last-modified  # today #  |     now
+date-format: "ddd MMMM DD, YYYY"
 bibliography: bib/slogan.bib
 ---
+
+
+::: {.callout-warning collapse="false" style="background-color: #fffcf9;"}
+WORK IN PROGRESS!
+(Please expect unfinished sections, and unpolished code. Feedback is welcome!)
+:::
 
 # Motivation
 
@@ -49,7 +55,7 @@ I've observed how similar formulaic expressions often make their way into projec
 
 This has led me to wonder how much consideration is given to the deliberate selection of such terms, or if they may simply be 'in vogue' and become a convenient shorthand for more complex ideas. Something that isn’t so surprising when we consider the paradoxical effect of social media and their recommendation algorithms on the selection of news, posts and articles that we access. Rather than broadening broadening our exposure, these algorithms tend to restrict it, reinforcing the *echo chamber* effect.
 
-## The curious case of lexical reduction, modification or domestication
+## The curious case of lexical reduction, modification or *domestication*
 
 An element that makes this investigation even more intriguing is that, often, the meaning of words and phrases progressively detaches from reality and/or from their originally intended meaning, while some *revised meaning* (more or less explicit) starts to live on a journey of its own.\
 For example, I was really struck as I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation adopted in 1861 by the Englishman John Hulley as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the original statement has quite a different meaning than its more famous shortened version: for one thing, it is about prayer, not fitness!
@@ -81,8 +87,8 @@ A similar reduction is clearly relevant and consequence-ridden if, as Giovanni G
 ## So what?
 
 For a while now, I have wondered *why* and *how* certain catchphrases/slogans/buzzwords become so prevalent in a given public policy context at some specific point in time.\
-The problem is that if you are (as I was) just a small cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process.\
-Therefore, I decided to investigate this phenomenon with a "reverse engineering" approach, starting from the *corpora* of documents themselves to see if I could identify some patterns or trends over time. Head over to [this page](https://lulliter.github.io/slogan/analysis/hypotheses.html#sec-RQ) to see my specific research questions. 
+The problem is that if you are (as I was) just a cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process.\
+Therefore, I decided to investigate this phenomenon with a "reverse engineering" approach, starting from the *corpora* of documents themselves to see if I could identify some patterns or trends over time. Head over to [this page](https://lulliter.github.io/slogan/research/hypotheses.html#sec-RQ) to see my specific research questions. 
 
 ## Why focus on the World Bank?
 

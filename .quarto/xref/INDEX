@@ -82,5 +82,20 @@
   },
   "analysis/PDO-explor.qmd": {
     "PDO-explor.html": "eca24364"
+  },
+  "posts/blog_PDO_explor/index.qmd": {
+    "index.html": "2d602872"
+  },
+  "posts/PDO_explor/index.qmd": {
+    "index.html": "b678e5f8"
+  },
+  "posts/2024-10-29-pdoeda/index.qmd": {
+    "index.html": "cb27b5dc"
+  },
+  "posts/PDO_eda.qmd": {
+    "PDO_eda.html": "e3b5148a"
+  },
+  "research/hypotheses.qmd": {
+    "hypotheses.html": "b7edd186"
   }
 }

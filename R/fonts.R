@@ -5,9 +5,9 @@
 # 1) --- Use loadfonts() with "pdf" on macOS
 library(extrafont)
 # ---- This will import all system fonts into R, takes a few minutes
-#font_import()
+# font_import()
 # -- quali ho nel sistema
-#fonts()
+# fonts()
 loadfonts(device = "pdf")
 
 # 2) --- Use showtext for More Robust Font Handling
@@ -21,6 +21,7 @@ font_add_google("Roboto Condensed", "roboto_condensed")
 
 # 4) --- Set the font as the default for ggplot2
 # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html
+library(ggplot2)
 my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
    theme(panel.grid.minor = element_blank(),
          # Bold, bigger title

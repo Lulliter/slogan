@@ -1,43 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lulliter.github.io/slogan/data/raw_data/project2/all_projects_as_of29ago2024descr-stats.html</loc>
-    <lastmod>2024-09-06T15:16:39.669Z</lastmod>
-  </url>
-  <url>
     <loc>https://lulliter.github.io/slogan/about.html</loc>
     <lastmod>2024-05-10T09:58:56.620Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/analysis/hypotheses.html</loc>
-    <lastmod>2024-10-16T10:21:50.855Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/PDO-explor.html</loc>
-    <lastmod>2024-10-24T22:01:10.280Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts/2024-05-29-sviluppo-sostenibile/index.html</loc>
-    <lastmod>2024-08-28T19:06:28.213Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/analysis/01b_WB_project_pdo_EDA.html</loc>
+    <lastmod>2024-10-29T14:39:36.460Z</lastmod>
   </url>
   <url>
     <loc>https://lulliter.github.io/slogan/intro_NLP.html</loc>
     <lastmod>2024-10-12T21:33:18.590Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/posts/2023-11-15-revisione-libro-il-sistema-invisibile/index.html</loc>
-    <lastmod>2024-10-16T08:57:15.795Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/research/hypotheses.html</loc>
+    <lastmod>2024-10-29T14:35:07.536Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/analysis/01b_WB_project_pdo_EDA.html</loc>
-    <lastmod>2024-10-24T21:18:02.140Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
+    <lastmod>2024-10-29T14:12:44.653Z</lastmod>
   </url>
   <url>
     <loc>https://lulliter.github.io/slogan/index.html</loc>
-    <lastmod>2024-10-24T21:52:07.582Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts.html</loc>
-    <lastmod>2024-09-06T13:21:57.578Z</lastmod>
+    <lastmod>2024-10-29T14:35:36.652Z</lastmod>
   </url>
 </urlset>

@@ -36,7 +36,12 @@ format-links: false
 bibliography: ../bib/slogan.bib
 ---
 
-<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+::: {.callout-warning collapse="false" style="background-color: #fffcf9;"}
+WORK IN PROGRESS!
+(Please expect unfinished sections, and unpolished code. Feedback is welcome!)
+:::
+
 
 <!-- In this file I address the **research question 1.1.**, which is exploratory in nature. The hypothesis being tested here is that the WBG project document corpus shows a non-random variation in the incidence of certain policy concepts over time.  -->
 
@@ -46,9 +51,10 @@ bibliography: ../bib/slogan.bib
 
 # TO DO [COMPL🟠🟡] list 
 
-+ check if the peaks in sector words correspond to peak in sector (the feature) 
-+ add vertical lines with relevant WDR over the years 
-+ do bigram plots on "*climate change*" and "*climate resilient*"
++ check if the peaks in sector words correspond to peak in sector (the tag) 
++ check if the peaks in sector words correspond to  sector (the  \$$ )
++ ~~add vertical lines with relevant WDR over the years~~ 
++ ~~do bigram plots on "*climate change*" and "*climate resilient*"~~
 
 # Set up
 ```{r}
@@ -61,15 +67,14 @@ library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(skimr) # Compact and Flexible Summaries of Data
 library(readxl) # Read Excel Files
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
-library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
 library(patchwork) # The Composer of Plots
-
+library(ragg) # Anti-Grain Geometry Graphics)
 # # ML ------------------------------------- 
 # library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages 
 # library(textrecipes) # Extra 'Recipes' for Text Processing 
 
-# # TEXT ANALYTICS -------------------------------------
-# library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools 
+# TEXT ANALYTICS -------------------------------------
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools 
 # library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
 # library(cleanNLP) # A Tidy Data Model for Natural Language Processing 
 ```
@@ -77,19 +82,60 @@ library(patchwork) # The Composer of Plots
 # Set up ggplot2 theme
 ```{r}
 #| echo: FALSE
-# 0) --- See prior steps in R/fonts.R
-library(showtext)
-font_add_google("Roboto Condensed", "roboto_condensed")
-showtext_auto()
+#| eval: FALSE
+
+
+# # 0) --- See prior steps in R/fonts.R
+# library(showtext)
+# font_add_google("Roboto Condensed", "roboto_condensed")
+# showtext_auto()
+# 
+# # 1) --- Set the font as the default for ggplot2
+# # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html 
+# my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
+#   theme(panel.grid.minor = element_blank(),
+#         # Bold, bigger title
+#         plot.title = element_text(face = "bold", size = rel(1.6)),
+#         # Plain, slightly bigger subtitle that is grey
+#         plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
+#         # Italic, smaller, grey caption that is left-aligned
+#         plot.caption = element_text(face = "italic", size = rel(0.7), 
+#                                     color = "#A6A6A6", hjust = 0),
+#         # Bold legend titles
+#         legend.title = element_text(face = "bold"),
+#         # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+#         strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
+#         # Bold axis titles
+#         axis.title = element_text(face = "bold"),
+#         # Change X-axis label size
+#         axis.text.x = element_text(size = rel(1.5)),   
+#         # Change Y-axis label size
+#         axis.text.y = element_text(size = 14),   
+#         # Add some space above the x-axis title and make it left-aligned
+#         axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+#         # Add some space to the right of the y-axis title and make it top-aligned
+#         axis.title.y = element_text(margin = margin(r = 10), hjust = 1),
+#         # Add a light grey background to the facet titles, with no borders
+#         strip.background = element_rect(fill = "grey90", color = NA),
+#         # Add a thin grey border around all the plots to tie in the facet titles
+#         panel.border = element_rect(color = "grey90", fill = NA))
+# 
+# # 2) --- use 
+# # ggplot + my_pretty_theme
+```
+
+```{r}
+#| echo: TRUE
+#| eval: TRUE
 
 # 1) --- Set the font as the default for ggplot2
 # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html 
-my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
+lulas_theme <- theme_minimal(base_size = 12) +
   theme(panel.grid.minor = element_blank(),
         # Bold, bigger title
-        plot.title = element_text(face = "bold", size = rel(1.8)),
+        plot.title = element_text(face = "bold", size = rel(1.6)),
         # Plain, slightly bigger subtitle that is grey
-        plot.subtitle = element_text(face = "plain", size = rel(1.5), color = "#A6A6A6"),
+        plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
         # Italic, smaller, grey caption that is left-aligned
         plot.caption = element_text(face = "italic", size = rel(0.7), 
                                     color = "#A6A6A6", hjust = 0),
@@ -113,9 +159,9 @@ my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 1
         panel.border = element_rect(color = "grey90", fill = NA))
 
 # 2) --- use 
-# ggplot + my_pretty_theme
-
+# ggplot + lulas_theme
 ```
+
 
 ### ----------------------------------------------------------------------------
 
@@ -550,37 +596,57 @@ Note: normally, the most frequent words are *function words* (e.g. determiners, 
 However, in this analysis, I do not use the **STOPWORD** approach, but use the **POS tags** to reduce -- in a more controlled way -- the dataset, filtering the content words such as nouns, verbs, adjectives, and adverbs.
 
 
-#### [FUNC] save plots 
+#### [FUNC] save plot Ouptput
+
+Pointless bc does not render in the HTML output.
 ```{r}
 #| echo: false
 
-f_save_plot <- function(plot_name, plot_object) {
-   # Define plot dimensions and resolution
-   width <- 8         # Width in inches
-   height <- 6        # Height in inches
-   dpi <- 320         # Resolution in DPI
-
-   # Save the plot as PDF
-   ggsave(plot_object, 
-          filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
-          device = cairo_pdf,
-          width = width, 
-          height = height, 
-          units = "in")
-   
-   # Save the plot as PNG
-   ggsave(plot_object, 
-          filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
-          type = "cairo", 
-          dpi = dpi,      # Set DPI
-          width = width, 
-          height = height, 
-          units = "in")
-}
+# f_save_plot <- function(plot_name, plot_object) {
+#    # Define plot dimensions and resolution
+#    width <- 8         # Width in inches
+#    height <- 6        # Height in inches
+#    dpi <- 320         # Resolution in DPI
+# 
+#    # Save the plot as PDF
+#    ggsave(plot_object, 
+#           filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
+#           device = "pdf", #cairo_pdf,
+#           width = width, 
+#           height = height, 
+#           units = "in")
+#    
+#    # Save the plot as PNG
+#    ggsave(plot_object, 
+#           filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
+#           # type = "cairo", 
+#           device = "png",
+#           dpi = dpi,      # Set DPI
+#           width = width, 
+#           height = height, 
+#           units = "in")
+# }
 
 # Example of using the function
 # f_save_plot("proj_wrd_freq", proj_wrd_freq)
 
+```
+
+#### [FUNC] save plot Object
+
+```{r}
+#| echo: false
+
+f_save_plot_obj <- function(plot_object, plot_obj_name) {
+   # Save the plot object
+   saveRDS(plot_object, here("analysis", "output", "figures", paste0(plot_obj_name, ".rds")))
+}
+
+# Example of using the function
+# f_save_plot_obj("proj_wrd_freq", proj_wrd_freq)
+# Dopo 
+# proj_wrd_freq <- readRDS(file = here ("analysis", "output", "figures", "plot_object.rds"))
+# proj_wrd_freq
 ```
 
 ### [FIG] Overall `token` freq ggplot
@@ -613,12 +679,16 @@ pdo_wrd_freq_p <- pdo_wrd_freq %>%
    labs(#title = title_text,
       subtitle = "[TOKEN with count > 800]", y = "", x = "")+
    geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
-     my_pretty_theme
+   lulas_theme +
+   theme(# Adjust angle and alignment of x labels
+      axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_wrd_freq_p", pdo_wrd_freq_p)
+
+# f_save_plot("pdo_wrd_freq_p", pdo_wrd_freq_p)
+f_save_plot_obj(pdo_wrd_freq_p, "pdo_wrd_freq_p")
 ```
 
 
@@ -631,6 +701,7 @@ f_save_plot("pdo_wrd_freq_p", pdo_wrd_freq_p)
 
 # Evaluate the title with glue first
 title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+
 # Plot
 pdo_stem_freq <- pdo_train_t %>%   # 256,632
    # include only content words
@@ -641,22 +712,25 @@ pdo_stem_freq <- pdo_train_t %>%   # 256,632
    filter(n > 800) %>%
    mutate(stem = reorder(stem, n))    # reorder values by frequency
    
-   # plot 
+# plot 
 pdo_stem_freq_p <-    pdo_stem_freq %>% 
-      ggplot(aes(stem, n)) +
-      geom_col(fill = "#d7b77b") +
-      scale_y_continuous(breaks = seq(0, max(pdo_stem_freq$n), by = 400)) + # directly use 'n' instead of .data$n
-      coord_flip() + # flip x and y coordinates so we can read the words better
-      labs(#title = title_text,
-         subtitle = "[STEM with count > 800]", y = "", x = "") +
-      geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
-     my_pretty_theme
+   ggplot(aes(stem, n)) +
+   geom_col(fill = "#d7b77b") +
+   scale_y_continuous(breaks = seq(0, max(pdo_stem_freq$n), by = 400)) + # directly use 'n' instead of .data$n
+   coord_flip() + # flip x and y coordinates so we can read the words better
+   labs(#title = title_text,
+      subtitle = "[STEM with count > 800]", y = "", x = "") +
+   geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
+   lulas_theme +
+   theme(# Adjust angle and alignment of x labels
+      axis.text.x = element_text(angle = 45, hjust = 1)) 
 
 ```
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
+#f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
+f_save_plot_obj(pdo_stem_freq_p, "pdo_stem_freq_p")
 ```
 
 > Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800 (they have been combined by root).
@@ -666,24 +740,26 @@ f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
 #| output: TRUE
 
 title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train_t$proj_id)} PDOs") 
+
 subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
 
-combo_freq <-  pdo_wrd_freq_p + pdo_stem_freq_p + 
+combo_freq_p <-  pdo_wrd_freq_p + pdo_stem_freq_p + 
    plot_annotation(title = title2_text,
                     subtitle = subtitle2_text,
                    # caption = "Source: World Bank Project Documents",
                    theme = theme(plot.title = element_text(size = 12, face = "bold"),
                                  plot.subtitle = element_text(size = 10, face = "italic"),
                                  plot.caption = element_text(size = 10, face = "italic"))
-                   )
-combo_freq
+                   )  
+
+combo_freq_p
 ```
 
 
 ```{r}
-f_save_plot("combo_freq", combo_freq)
+#f_save_plot("combo_freq_p", combo_freq_p)
+f_save_plot_obj(combo_freq_p, "combo_freq_p")
 ```
-
 
 # _______ 
 
@@ -802,13 +878,13 @@ pdo_sect_broad_freq <- sector_broad %>%
    geom_line(linetype = "dotted", alpha = 0.5, size = 1) +
    geom_point(size = 2) +
    scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
-   scale_y_continuous(breaks =  seq(0,150, by=  25)) +
+   scale_y_continuous(breaks =  seq(0,300, by=  25)) +
    # ~ SDG colors 
     # scale_color_viridis_d(option = "magma", end = 0.9) + 
    scale_color_manual(values = sector_colors) +
    facet_wrap(~tok_sector_broad, ncol = 3, scales = "free")+ 
    guides(color = FALSE) +
-   my_pretty_theme +
+   lulas_theme +
    theme(# Adjust angle and alignment of x labels
       axis.text.x = element_text(angle = 45, hjust = 1)) + 
    labs(title = "Sector words frequency in PDOs by fiscal years of approval",
@@ -830,11 +906,12 @@ pdo_sect_broad_freq
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
+#f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
+f_save_plot_obj(pdo_sect_broad_freq, "pdo_sect_broad_freq")
 ```
 
 
-#### [FUN fig] split sector (`tok_sector_broad`) freq ggplot
+#### [FUNC] Figure split sector (`tok_sector_broad`) freq ggplot
 ```{r}
 # --- Get a LIST of unique sectors (facets) and split the data
 sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
@@ -853,7 +930,7 @@ f_plot_sector <- function(data) {
       scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
       scale_y_continuous(breaks = seq(0, max(data$n), by = 25)) +
       # custom
-      my_pretty_theme + 
+      lulas_theme + 
       theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
       labs(
          title = paste("\"",sector,"\" in PDOs by fiscal years of approval"),  # Use facet-specific title
@@ -875,29 +952,35 @@ f_plot_sector <- function(data) {
 
    return(p)
 }
+```
 
+
+```{r}
 # --- Use purrr::map to create a LIST of plots, one for each sector
 sector_plots <- map(sector_list, f_plot_sector)
 
 # --- (exe) Extract the first plot to display
-sector_plots$HEALTH
-```
+#sector_plots$HEALTH
 
-```{r}
-#| output: FALSE
-# Optionally print each plot to the console
-walk(sector_plots, print)
+# ---- Optionally print each plot to the console
+#walk(sector_plots, print)
 ```
 
 ```{r}
 # Define the output directory using the 'here' function
 output_dir <- here("analysis", "output", "figures")
 
-# Save each plot to a file in the specified directory
-walk2(sector_plots, names(sector_list), 
-      ~ggsave(filename = file.path(output_dir, paste0(.y, "_sector_plot.png")), plot = .x))
+## Save each plot to a file in the specified directory
+#walk2(sector_plots, names(sector_list), 
+#      ~ggsave(filename = file.path(output_dir, paste0(.y, "_sector_plot.png")), plot = .x))
 
+# Save iteratively the plots' objects as RDS files
+walk2(sector_plots, names(sector_list), 
+      ~f_save_plot_obj(.x, paste0("pdo_", .y, "_sect_p")))
+
+#pdo_FINANCIAL_sect_p
 ```
+
 
 ## SECTOR in PDO v. WDR publications
 
@@ -1105,7 +1188,7 @@ tabyl(pdo_train_t$tok_sector_broad)
 
 ### --- ✅ AGR_FOR_FISH ( Agriculture, forestry, and fishing)  
 
-The WDR of 2008 was titled **" Agriculture for Development"**, [link](`r wdr2$url_keys[wdr2$title == " Agriculture for Development"]`)
+The WDR of 2008 was titled **"Agriculture for Development"**, [link](`r wdr2$url_keys[wdr2$title == " Agriculture for Development"]`)
 
 ```{r}
 #| output: TRUE
@@ -1115,29 +1198,30 @@ sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
 #sector_list$'AGR_FOR_FISH'
 
 # Specific plot 
-pdo_agr_plot <- sector_plots$'AGR_FOR_FISH' +  
-  geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2012, y = max(n) * 0.5, label = "WDR Agric"), 
+pdo_agr_WDR_plot <- sector_plots$'AGR_FOR_FISH' +  
+  geom_vline(xintercept = 2008, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  geom_text(aes(x = 2008, y = max(n) * 0.5, label = "WDR Agric"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
-pdo_agr_plot
+pdo_agr_WDR_plot
 ```
 
 
 ```{r}
-f_save_plot("pdo_agr_plot", pdo_agr_plot)
+#f_save_plot("pdo_agr_plot", pdo_agr_plot)
+f_save_plot_obj (pdo_agr_WDR_plot, "pdo_agr_WDR_plot")
 ```
 
 ### --- ✅ EDUCATION
 
-WDR 2007 was titled **" Development and the Next Generation"**
-WDR 2018 was titled **" Learning to Realize Education's Promise"** 
+WDR 2007 was titled **"Development and the Next Generation"**
+WDR 2018 was titled **"Learning to Realize Education's Promise"** 
 ```{r}
 #| output: TRUE
 # Specific split df 
 #sector_list$EDUCATION
 
 # Specific plot 
-pdo_edu_plot <- sector_plots$EDUCATION + 
+pdo_edu_WDR_plot <- sector_plots$EDUCATION + 
   geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723",alpha = 0.35) +
   geom_text(aes(x = 2007, y = max(n) * 0.45, label = "WDR Youth"), 
                    angle = 90, vjust = -0.5, color = "#9b6723") +
@@ -1145,11 +1229,13 @@ pdo_edu_plot <- sector_plots$EDUCATION +
   geom_text(aes(x = 2018, y = max(n) * 0.30, label = "WDR Educ"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_edu_plot
+pdo_edu_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_edu_plot", pdo_edu_plot)
+#f_save_plot("pdo_edu_plot", pdo_edu_plot)
+f_save_plot_obj (pdo_edu_WDR_plot, "pdo_edu_WDR_plot")
+
 ```
 
 ### --- ✅ CLIMATE (climate change)
@@ -1164,19 +1250,20 @@ sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
 #sector_list$'CLIMATE'
 
 # Specific plot 
-pdo_clim_plot <- sector_plots$'CLIMATE' + 
+pdo_clim_WDR_plot <- sector_plots$'CLIMATE' + 
    # geom_vline(xintercept = 2003, linetype = "solid", color = "#9b6723",alpha = 0.35) +
    # geom_text(aes(x = 2003, y = max(n) * 0.5, label = "WDR Sust Dev"), 
    #           angle = 90, vjust = -0.5, color = "#9b6723")+ 
    geom_vline(xintercept = 2010, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2010, y = max(n) * 0.2, label = "WDR Climate change"), 
+   geom_text(aes(x = 2010, y = max(n) * 0.45, label = "WDR Climate change"), 
              angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_clim_plot
+pdo_clim_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_clim_plot", pdo_clim_plot)
+#f_save_plot("pdo_clim_plot", pdo_clim_plot)
+f_save_plot_obj (pdo_clim_WDR_plot, "pdo_clim_WDR_plot")
 ```
 
 ### --- ✅ GENDER EQUALITY
@@ -1191,16 +1278,17 @@ sector_list <- base::split(x = sector_broad, f = sector_broad$tok_sector_broad)
 #sector_list$GENDER_EQUAL
 
 # Specific plot 
-pdo_gen_plot <- sector_plots$GENDER_EQUAL +
+pdo_gen_WDR_plot <- sector_plots$GENDER_EQUAL +
   geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2012, y = max(n) * 0.75, label = "WDR Gender equal"), 
+  geom_text(aes(x = 2012, y = max(n) * 0.45, label = "WDR Gender equal"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_gen_plot
+pdo_gen_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_gen_plot", pdo_gen_plot)
+#f_save_plot("pdo_gen_plot", pdo_gen_plot)
+f_save_plot_obj (pdo_gen_WDR_plot, "pdo_gen_WDR_plot")
 ```
 
 
@@ -1213,16 +1301,17 @@ WDR 2004 " Making Services Work for Poor People"
 #sector_list$SOCIAL_PROT
 
 # Specific plot 
-pdo_soc_plot <- sector_plots$SOCIAL_PROT + 
+pdo_soc_WDR_plot <- sector_plots$SOCIAL_PROT + 
   geom_vline(xintercept = 2004, linetype = "solid", color = "#9b6723",alpha = 0.35) +
   geom_text(aes(x = 2004, y = max(n) * 0.75, label = "WDR Services"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_soc_plot
+pdo_soc_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_soc_plot", pdo_soc_plot)
+#f_save_plot("pdo_soc_plot", pdo_soc_plot)
+f_save_plot_obj (pdo_soc_WDR_plot, "pdo_soc_WDR_plot")
 ```
 
 ### --- INSTITUTIONAL SUPPORT
@@ -1233,7 +1322,7 @@ WDR 2007 " Governance and the Law"
 # sector_list$INSTIT_SUP
 
 # Specific plot 
-pdo_inst_plot <- sector_plots$INSTIT_SUPP + 
+pdo_inst_WDR_plot <- sector_plots$INSTIT_SUPP + 
    geom_vline(xintercept = 2002, linetype = "solid", color = "#9b6723",alpha = 0.35) +
    geom_text(aes(x = 2002, y = max(n) * 0.75, label = "WDR Institutions"), 
              angle = 90, vjust = -0.5, color = "#9b6723") + 
@@ -1241,11 +1330,12 @@ pdo_inst_plot <- sector_plots$INSTIT_SUPP +
    geom_text(aes(x = 2007, y = max(n) * 0.75, label = "WDR Governance"), 
              angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_inst_plot
+pdo_inst_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_inst_plot", pdo_inst_plot)
+#f_save_plot("pdo_inst_plot", pdo_inst_plot)
+f_save_plot_obj (pdo_inst_WDR_plot, "pdo_inst_WDR_plot")
 ```
 
 
@@ -1258,7 +1348,7 @@ WDR 2021 " Data for Better Lives"
 # sector_list$ICT
 
 # Specific plot 
-pdo_ict_plot <- sector_plots$ICT + 
+pdo_ict_WDR_plot <- sector_plots$ICT + 
    geom_vline(xintercept = 2016, linetype = "solid", color = "#9b6723",alpha = 0.35) +
    geom_text(aes(x = 2016, y = max(n) * 0.75, label = "WDR Digital Div"), 
              angle = 90, vjust = -0.5, color = "#9b6723") + 
@@ -1266,11 +1356,12 @@ pdo_ict_plot <- sector_plots$ICT +
    geom_text(aes(x = 2021, y = max(n) * 0.75, label = "WDR Data"), 
              angle = 90, vjust = -0.5, color = "#9b6723")
 
-pdo_ict_plot
+pdo_ict_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_ict_plot", pdo_ict_plot)
+#f_save_plot("pdo_ict_plot", pdo_ict_plot)
+f_save_plot_obj (pdo_ict_WDR_plot, "pdo_ict_WDR_plot")
 ```
 
 
@@ -1283,19 +1374,21 @@ WDR 2022 " Finance for an Equitable Recovery"
 #sector_list$FINANCIAL
 
 # Specific plot 
-pdo_fin_plot <- sector_plots$FIN + 
+pdo_fin_WDR_plot <- sector_plots$FIN + 
   geom_vline(xintercept = 2005, linetype = "solid", color = "#9b6723",alpha = 0.35) +
   geom_text(aes(x = 2005, y = max(n) * 0.80, label = "WDR Inv Clim"), 
                    angle = 90, vjust = -0.5, color = "#9b6723") +
   geom_vline(xintercept = 2022, linetype = "solid", color = "#9b6723",alpha = 0.35) +
   geom_text(aes(x = 2022, y = max(n) * 0.75, label = "WDR Finance"), 
                    angle = 90, vjust = -0.5, color = "#9b6723")
-pdo_fin_plot
+pdo_fin_WDR_plot
 ```
 
 ```{r}
-f_save_plot("pdo_fin_plot", pdo_fin_plot)
+#f_save_plot("pdo_fin_plot", pdo_fin_plot)
+f_save_plot_obj (pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
 ```
+
 
 # _______ 
 ## BIGRAMS 
@@ -1414,7 +1507,7 @@ pdo_bigr_freq <- bigram_freq %>%
                # Extract the color column in bin order as vector to be passed to element_text()
                pull(color)
             )
-         ) + my_pretty_theme
+         ) + lulas_theme
 
 pdo_bigr_freq
 ```
@@ -1422,8 +1515,10 @@ pdo_bigr_freq
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+#f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+f_save_plot_obj(pdo_bigr_freq , "pdo_bigr_freq")
 ```
+
  
 Results are not surprising in terms of frequent bigram recurrence:
 
@@ -1436,49 +1531,49 @@ Besides huge, counter intuitive, difference between *"health"* and *"education"*
 
 ```{r}
 #| output: false
-
-## too busy to be useful
-
-# Step 1: Count the frequency of each bigram by year
-top_bigrams_1FY <- bigrams_cleaned %>%
-   group_by(FY_appr, bigram) %>%
-   summarise(count = n(), .groups = 'drop') %>%
-   arrange(FY_appr, desc(count)) %>%
-   # ---  +/- top 10  
-   group_by(FY_appr) %>%
-   top_n(10, count) %>%
-   ungroup()
-   # # ---  STRICT  top 10  
-   # mutate(rank = dense_rank(desc(count))) %>%  # Rank bigrams by frequency
-   # filter(rank <= 10) %>%  # Keep only the top 10 by rank
-   # ungroup()
-
-  
-# Add specific bigrams to highlight, if any
-bigrams_to_highlight <- c("climate change",  "climate resilience", "public sector", "private sector")
-
-# Step 2: Plot the top bigrams by frequency over time   
-pdo_bigr_FY_freq  <-  top_bigrams_1FY %>% 
- ggplot(aes(x = reorder(bigram, count), 
-             y = count,
-             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
-  geom_col() +
-  scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", 
-                               "climate change" = "#399B23", "climate resilience" = "#d8e600",
-                               "Other" = "grey")) +
-  guides(fill = "none") +
-  coord_flip() +
-  facet_wrap(~ FY_appr, scales = "free_y") +
-  labs(title = "Top 10 Bigrams by Frequency Over Time",
-       subtitle = "(Faceted by Fiscal Year Approval)",
-       x = "Bigrams",
-       y = "Count") +
-  theme_minimal() +
-  theme(plot.title.position = "plot",
-        axis.text.x = element_text(angle = 45, hjust = 1))+
-     my_pretty_theme
-
-pdo_bigr_FY_freq
+# 
+# ## too busy to be useful
+# 
+# # Step 1: Count the frequency of each bigram by year
+# top_bigrams_1FY <- bigrams_cleaned %>%
+#    group_by(FY_appr, bigram) %>%
+#    summarise(count = n(), .groups = 'drop') %>%
+#    arrange(FY_appr, desc(count)) %>%
+#    # ---  +/- top 10  
+#    group_by(FY_appr) %>%
+#    top_n(10, count) %>%
+#    ungroup()
+#    # # ---  STRICT  top 10  
+#    # mutate(rank = dense_rank(desc(count))) %>%  # Rank bigrams by frequency
+#    # filter(rank <= 10) %>%  # Keep only the top 10 by rank
+#    # ungroup()
+# 
+#   
+# # Add specific bigrams to highlight, if any
+# bigrams_to_highlight <- c("climate change",  "climate resilience", "public sector", "private sector")
+# 
+# # Step 2: Plot the top bigrams by frequency over time   
+# pdo_bigr_FY_freq  <-  top_bigrams_1FY %>% 
+#  ggplot(aes(x = reorder(bigram, count), 
+#              y = count,
+#              fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+#   geom_col() +
+#   scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", 
+#                                "climate change" = "#399B23", "climate resilience" = "#d8e600",
+#                                "Other" = "grey")) +
+#   guides(fill = "none") +
+#   coord_flip() +
+#   facet_wrap(~ FY_appr, scales = "free_y") +
+#   labs(title = "Top 10 Bigrams by Frequency Over Time",
+#        subtitle = "(Faceted by Fiscal Year Approval)",
+#        x = "Bigrams",
+#        y = "Count") +
+#   theme_minimal() +
+#   theme(plot.title.position = "plot",
+#         axis.text.x = element_text(angle = 45, hjust = 1))+
+#      lulas_theme
+# 
+# pdo_bigr_FY_freq
 ```
 
 ### [FIG] Changes over time BY 3FY 
@@ -1549,13 +1644,13 @@ pdo_bigr_FY_freq  <-  top_bigrams_FYper %>%
      "Other" = "grey")) +
   guides(fill = "none") +
   coord_flip() +
-  facet_wrap(~ FY_group, ncol = 2 , scales = "free_y" )+ 
+  facet_wrap(~ FY_group, ncol = 3 , scales = "free_y" )+ 
               #strip.position = "top") +  # Facet wrap with columns
   labs(title = glue::glue("Top 12 Bigrams by Frequency Over {interval_i}-Year Periods"),
        subtitle =  "(Some sectors highlighted)",
        x = "",
        y = "") +
-     my_pretty_theme
+     lulas_theme
 ```
 
 
@@ -1571,7 +1666,8 @@ pdo_bigr_FY_freq
 
 ```{r}
 #| echo: false
-f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
+#f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
+f_save_plot_obj(pdo_bigr_FY_freq , "pdo_bigr_FY_freq")
 ```
 
 > Frequency observed over FY intervals is very revealing. 
@@ -1751,12 +1847,12 @@ legend_labels <- sector_bigr_df %>%
 
 # ---- Plot
 pdo_pub_pri_bigr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bigram, color = bigram)) +
-   geom_line(linetype = "dotted", alpha = 0.75, size = 1) +
+   geom_line(linetype = "solid", alpha = 0.75, size = .5) +
    geom_point(size = 3) +
    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
    scale_color_manual(values = two_col_contrast, 
                       labels = legend_labels) +  # Use modified labels
-   my_pretty_theme +
+   lulas_theme +
    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
    labs(title = title_text, 
         x = "", 
@@ -1769,7 +1865,8 @@ pdo_pub_pri_bigr
 
 ```{r}
 # Save the plot
-f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
+#f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
+f_save_plot_obj(pdo_pub_pri_bigr, "pdo_pub_pri_bigr")
 ```
 
 > Note: 
@@ -1778,14 +1875,24 @@ f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
 + What happens in FY 2014-2016 that makes these bigram drop in frequency of mention?
 
 
-### --- *climate change* ~ notable bigrams over FY [CMPL 🟠]
+# _______ 
+# CONCORDANCES & KWIC
+
+## Concordances with specific bigrams
+
+Concordancing is central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. 
+
+A **concordance** list is a list of all contexts in which a particular token appears in a corpus or text. Here I use it in association with the bigram "eligible crisis" to see in which context it appears in the PDOs.
+
+> Here I did it at the level of *sentence*, i.e. without tokenizing the text into words. 
 
 ### --- *eligible crisis* ~ notable bigrams over FY
 
 ```{r}
 # reduce back to the original data
 pdo_t <- pdo_train_t %>% 
-   select(proj_id, pdo,pr_name, FY_appr, FY_clos, status, regionname, countryname, sector1, theme1,lendinginstr, env_cat, ESrisk, curr_total_commitment) %>%
+   select(proj_id, pdo,pr_name, FY_appr, FY_clos, status, regionname, countryname,
+          sector1, theme1,lendinginstr, env_cat, ESrisk, curr_total_commitment) %>%
    group_by(proj_id) %>% 
    slice(1)
 ```
@@ -1793,12 +1900,9 @@ pdo_t <- pdo_train_t %>%
 First of all, let's see what are the sentence that contain the bigram "eligible crisis" in the PDOs. 
 
 ```{r}
-# ---- Define the bigram you want to find
-target_bigram <- "eligible crisis"
-
 # Tokenize the text data into sentences
 sentences <- pdo_t %>%
-   unnest_tokens(sentence, pdo, token = "sentences")
+   unnest_tokens(sentence, pdo, token = "sentences", drop = FALSE)
 
 # Count the number of sentences in each document
 sentence_count <- sentences %>%
@@ -1807,6 +1911,13 @@ sentence_count <- sentences %>%
 
 n_distinct(sentence_count$proj_id)  # number of projects
 sum(sentence_count$num_sentences)   # total number of sentences
+```
+
+
+```{r}
+# ---- Define the bigram you want to find
+target_bigram <- "eligible crisis"
+
 
 # Filter sentences that contain the specific bigram
 sentences_with_targ <- sentences %>%
@@ -1822,19 +1933,42 @@ sentences_with_eligcris <- sentences_with_targ %>%
    # View the updated dataframe with the closest_text column
    select(proj_id, #sentence, 
           closest_text)
+
+
+# Define how many words before and after the bigram to extract
+words_before <- 8  # Number of words before the bigram
+words_after <- 8   # Number of words after the bigram
+
+# Add the extracted bigram and surrounding words to the same dataframe
+sentences_with_eligcris2 <- sentences_with_targ %>%
+   mutate(closest_text = str_extract(sentence, 
+                                     paste0("(", # Start a capture group
+                                            # Match preceding words
+                                            "(?:\\S+\\s+){0,", words_before, "}", 
+                                            target_bigram, 
+                                            # Match following words
+                                            "(?:\\s+\\S+){0,", words_after, "}", 
+                                            ")"
+                                           ))) %>% 
+   # View the updated dataframe with the closest_text column
+   select(proj_id,  sentence, 
+          closest_text)
+
+n_distinct(sentences_with_eligcris2$proj_id)
 ```
 
+> There are 112 projects, for which the PDO has a sentences containing the bigram "eligible crisis" in the PDOs. 
 
 #### [TBL] Close phrase around bigram "eligible crisis"
 
-I still don't know what "eligible" crisis means, but it appears that the following is like a commonly used phrase in the PDOs: *"to respond promptly and effectively"* as well as *"provide immediate and effective response to"* seem to often accompany the text *"**eligible crisis or emergency**"*. Presumably, a standard sentence indicating eligibility for ODA funding.
+It appears *"**eligible crisis or emergency**"* is a commonly used phrase in the PDOs, often accompanied by similar phrasing: *"to respond promptly and effectively"*. as well as *"provide immediate and effective response to"*. Presumably, a standard sentence that refers to a situation that qualifies for specific types of assistance or intervention under certain policies.
 
 ```{r}
 # Define the phrase you want to search for in the vicinity of the target bigram
 phrase_to_search <- "respond promptly and effectively"
 
 # Count how often the phrase appears in the vicinity of the target bigram
-phrase_count <- sentences_with_eligcris %>%
+phrase_count <- sentences_with_eligcris2 %>%
   mutate(contains_phrase = str_detect(closest_text, phrase_to_search)) %>%  # Check if the phrase is present
   summarise(count = sum(contains_phrase))  # Count how many times the phrase is found
 
@@ -1842,49 +1976,200 @@ phrase_count <- sentences_with_eligcris %>%
 tabyl(phrase_count$count)
 ```
 
-Here are a few examples of the sentences containing the bigram "eligible crisis" and the phrase "respond promptly and effectively":
+> 32% of the (112) times, the bigram "eligible crisis" in the PDOs, it is accompanied by the phrase "respond promptly and effectively".
+
+Here are a few examples of the sentences containing the bigram *"eligible crisis"* and the phrase *"respond promptly and effectively"* OR *immediate and effective response*:
 
 ```{r}
 #| output: true
-
+ 
+set.seed(555)
 # Filter the sentences that contain the phrase
-sample_with_eligcris <-  sentences_with_eligcris %>% 
+sample_with_eligcris2 <- sentences_with_eligcris2 %>% 
    ungroup() %>% 
    # take a random sample of 5 sentences
-   sample_n(8 ) %>%
+   sample_n(10) %>%
    select(proj_id, closest_text) %>% 
-   mutate (closest_text =  paste0("(...) ", closest_text),
-           # Make "eligible crisis" bold by adding <b> tags
-           closest_text = gsub("eligible crisis", "<b>eligible crisis</b>", closest_text)
-   )
+   mutate(
+     closest_text = paste0("(...) ", closest_text),
+     # Make "eligible crisis" bold by adding <b> tags
+     closest_text = gsub("eligible crisis", "<b>eligible crisis</b>", closest_text),
+     # Highlight by adding <mark> tags
+     closest_text = gsub("(?i)(promptly and effectively|immediate and effective response)", # (?i) makes the match case-insensitive.
+                         "<mark style='background-color: #d8e600;'>\\1</mark>", closest_text, perl = TRUE)
+     )
 
-# print out sample in a kable 
-kable(sample_with_eligcris, format = "html", 
-      # Display the table with bold formatting
-       escape = FALSE,
-      col.names = c("WB Project ID","excerpt of PDO sentences with 'eligible crisis'")) %>% 
-   kable_styling(full_width = FALSE)   
-   
+# Print out sample in a kable 
+elcr_k <- kable(sample_with_eligcris2, format = "html", 
+                # Display the table with bold formatting
+                escape = FALSE,
+                col.names = c("WB Project ID","Excerpt of PDO Sentences with 'Eligible Crisis'")) %>% 
+   kable_styling(full_width = FALSE)
+
+elcr_k
+
+# Save the table as an HTML file
+write_rds(elcr_k, here("analysis", "output", "tables" ,"elcr_k.rds"))
+
 ```
 
- 
-## Analyzing bigrams: tf-idf
+### --- *climate change* ~ notable bigrams over FY [CMPL 🟠]
+First of all, let's see what are the sentence that contain the bigram "eligible crisis" in the PDOs. 
 
-> There are advantages and disadvantages to examining the tf-idf of bigrams rather than individual words. Pairs of consecutive words might capture structure that isn’t present when one is just counting single words, and _may provide context that makes tokens more understandable_. However, ***the per-bigram counts are also sparser*** (a typical two-word pair is rarer than either of its component words). 
 
 ```{r}
-bigram_tf_idf <- bigrams_cleaned %>% 
- # then on that calculate tf-idf
- count(FY_appr, bigram) %>%
-  bind_tf_idf(bigram, FY_appr, n) %>%
-  arrange(FY_appr, desc(tf_idf))
+# ---- Define the bigram you want to find
+target_bigram <- "climate change"
 
-bigram_tf_idf_top <- slice_head(bigram_tf_idf, n =  5, by = FY_appr ) %>% 
-      arrange(FY_appr, desc(tf_idf))
+# # Filter sentences that contain the specific bigram
+# sentences_with_targ <- sentences %>%
+#    filter(str_detect(sentence, target_bigram))
+# 
+# # Define how many words before and after the bigram to extract
+# words_before <- 8  # Number of words before the bigram
+# words_after <- 8   # Number of words after the bigram
+
+# Add the extracted bigram and surrounding words to the same dataframe
+sentences_with_climchang <- sentences %>%
+   filter(str_detect(sentence, target_bigram)) %>% 
+   mutate(closest_text = str_extract(sentence, 
+                                     paste0("(", # Start a capture group
+                                            # Match preceding words
+                                            "(?:\\S+\\s+){0,", words_before, "}", 
+                                            target_bigram, 
+                                            # Match following words
+                                            "(?:\\s+\\S+){0,", words_after, "}", 
+                                            ")"
+                                           ))) %>% 
+   # View the updated dataframe with the closest_text column
+   select(proj_id, pdo, sentence,
+          closest_text)
 ```
 
+> There are 92 projects, for which the PDO has a sentences containing the bigram "climate change"in the PDOs. 
+ 
+#### [TBL] Close phrase around bigram "climate change"
 
-# _______ 
+I want to know which of these commonly used phrases are most often found in the vicinity of the bigram "climate change" in the PDOs. 
+ 
+```{r}
+#| output: true
+
+
+# Count how often the phrase appears in the vicinity of the target bigram
+close_words <- sentences_with_climchang %>%
+  mutate(contains_what = case_when(
+     str_detect(sentence, "mitigat") ~ "mitigate",
+     str_detect(sentence, "adapt") ~ "adapt",
+     str_detect(sentence, "vulnerab") ~ "vulnerability",
+     str_detect(sentence, "hazard") ~ "hazard",
+     str_detect(sentence, "resil") ~ "resilience",
+     TRUE ~ "..."))
+ 
+# Count how often the phrase is found
+close_words_sort <-  close_words %>% 
+   filter(contains_what != "...") %>% 
+  group_by(contains_what) %>% 
+  summarise(count = n()) %>% 
+  mutate(percentage = scales::percent(count/sum(count))) %>% 
+   arrange(desc(count))
+
+# Specify the words to highlight
+highlight_words <- c("mitigate", "adapt")
+
+
+clch_close_k <- close_words_sort %>% 
+   kable(format = "html", 
+         col.names = c("Near 'climate change'", "Count", "Percentage")) %>% 
+   kable_styling(full_width = FALSE) %>% 
+   row_spec(which(close_words_sort$contains_what %in% highlight_words), 
+            background = "#d8e600") # Light yellow background
+
+clch_close_k
+
+# save as object
+write_rds(clch_close_k, here("analysis", "output", "tables" ,"clch_close_k.rds"))
+
+
+#   <chr>         <int>       <chr>     
+# 1 vulnerab         18       32.1%     
+# 2 mitigate         12       21.4%     
+# 3 resil            12       21.4%     
+# 4 hazard            9       16.1%     
+# 5 adapt             5       8.9% 
+```
+
+Here are a few examples of the sentences containing the bigram "climate change" and the words "mitigate|adaptation":
+
+```{r}
+
+set.seed(888)
+# Filter the sentences that contain the phrase
+sentences_with_climchang2_k <-  sentences_with_climchang %>%
+   filter(proj_id != "P125447") %>%
+   # add a column to identify the phrases
+   mutate(contains_what = case_when(
+      str_detect(closest_text, "mitig") ~ "mitig",
+      str_detect(closest_text, "adapt") ~ "adapt",
+      str_detect(closest_text, "vulnerab") ~ "vulnerab",
+      str_detect(closest_text, "hazard") ~ "hazard",
+      str_detect(closest_text, "resil") ~ "resil",
+      TRUE ~ "...")) %>% 
+   filter(contains_what != "...") %>% 
+   # take a random sample of 3  by word 
+   group_by(contains_what) %>% 
+   slice_sample(n = 3, replace = FALSE ) %>%
+   select(contains_what, proj_id, closest_text) %>%
+   mutate(closest_text = paste0("(...) ", closest_text),
+          # Make "mutate" bold by adding <b> tags
+          closest_text = gsub("climate change", "<b>climate change</b>", closest_text), 
+          # highlight the phrases by adding <mark> tags (adapt, mitigate, etc.)
+          closest_text = gsub("(?i)(adaptation|resilience)", # (?i) makes the match case-insensitive.
+                              "<mark style='background-color: #a6bd23;'>\\1</mark>", closest_text, perl = TRUE),
+          closest_text = gsub("(?i)(mitigation|mitigate)",  
+                              "<mark style='background-color: #8e94d6;'>\\1</mark>", closest_text, perl = TRUE),
+          closest_text = gsub("(?i)(hazard|vulnerability)", 
+                              "<mark style='background-color: #e28293;'>\\1</mark>", closest_text, perl = TRUE)
+          )
+
+# save as object
+write_rds(sentences_with_climchang2_k, here("analysis", "output", "tables" ,"sentences_with_climchang2_k.rds"))
+
+```
+
+```{r}
+#| output: true
+ 
+#paint(sentences_with_climchang2_k)
+
+# Prepare the kable table with subheaders based on 'contains_what'
+sentences_with_climchang2_k %>%
+  ungroup() %>%
+  arrange(contains_what) %>%
+  select(contains_what, proj_id, closest_text) %>%
+  kable(format = "html", 
+        escape = FALSE,
+        col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
+  kable_styling(full_width = FALSE)   
+   # Add subheaders based on the unique values in `contains_what`
+  #group_rows(index = table(sentences_with_climchang2$contains_what))
+
+```
+ 
+<!-- ## Analyzing bigrams: tf-idf -->
+
+<!-- > There are advantages and disadvantages to examining the tf-idf of bigrams rather than individual words. Pairs of consecutive words might capture structure that isn’t present when one is just counting single words, and _may provide context that makes tokens more understandable_. However, ***the per-bigram counts are also sparser*** (a typical two-word pair is rarer than either of its component words).  -->
+
+<!-- ```{r} -->
+<!-- bigram_tf_idf <- bigrams_cleaned %>%  -->
+<!--  # then on that calculate tf-idf -->
+<!--  count(FY_appr, bigram) %>% -->
+<!--   bind_tf_idf(bigram, FY_appr, n) %>% -->
+<!--   arrange(FY_appr, desc(tf_idf)) -->
+
+<!-- bigram_tf_idf_top <- slice_head(bigram_tf_idf, n =  5, by = FY_appr ) %>%  -->
+<!--       arrange(FY_appr, desc(tf_idf)) -->
+<!-- ``` -->
 
 <!-- ## Bag of words -->
 <!-- https://www.nlpdemystified.org/course/basic-bag-of-words  -->
@@ -1901,31 +2186,28 @@ bigram_tf_idf_top <- slice_head(bigram_tf_idf, n =  5, by = FY_appr ) %>%
 <!-- ✔️ [MEDIUM articles: common words, pairwise correlations - 2018-12-04](https://www.youtube.com/watch?v=C69QyycHsgE) -->
 
 
-
 # _______
 # =====  !!!!! QUI !!!!!  ======
 # _______
 
+## --- Keyword In Context (KWIC)
 
-# CONCORDANCES - KWIC 
+<!-- + {Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)} -->
+<!-- + {Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)} -->
+<!-- + https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html -->
 
-A more evolved way to look at the data is to use the KWIC (Key Word In Context) method. This method allows us to see the context in which a word appears in the text. 
-+ {Following [LADAL Tutorial](https://ladal.edu.au/kwics.html)}
-+ {Following [Ben Schmidt, Chp 8.2.3](http://benschmidt.org/HDA/texts-as-data.html#concordances)}
-+ https://alvinntnu.github.io/NTNU_ENC2036_LECTURES/corpus-analysis-a-start.html
+**Keyword In Context (KWIC)**, or *concordances*, are the most frequently used method in corpus linguistics. The idea is very intuitive: we get to know more about the semantics of a word by examining how it is being used in a wider context. 
 
-In the language sciences, ***concordancing*** refers to the extraction of words from a given text or texts. Concordances are commonly displayed in the form of ***keyword-in-context displays (KWICs)*** where the search term is shown in context, i.e. with preceding and following words. 
+Usually, the process involves: 1) tokenizing the text, 2) perform a search for a word and retrieve its *concordances* from the corpus. 
+Typically, these extractions are displayed through **keyword-in-context displays (KWICs)**, where the search term, also referred to as the node word, is showcased within its surrounding context, comprising both preceding and following words. 
 
-Concordancing is central to analyses of text and they often represents the first step in more sophisticated analyses of language data, because _concordances are extremely valuable for understanding how a word or phrase is used, how often it is used, and in which contexts is used_. As concordances allow us to analyze the context in which a word or phrase occurs and provide frequency information about word use, they also enable us to analyze collocations or the collocational profiles of words and phrases (Stefanowitsch 2020, 50–51). Finally, concordances can also be used to extract examples and it is a very common procedure.
 
 ## --- Concordances
 <!-- + Concordances: [Libro Agnese - ITA](https://www.agnesevardanega.eu/books/analisi-testuale-2021/05-esplorazione.html#espl-quanteda) -->
-+ https://ladal.edu.au/textanalysis.html#Concordancing
-+ https://www.quantumjitter.com/project/deal/
+<!-- + https://ladal.edu.au/textanalysis.html#Concordancing -->
+<!-- + https://www.quantumjitter.com/project/deal/ -->
 
 > Using `quanteda` 
-
-
 
 file:///Users/luisamimmi/Github/slogan_old/docs/01b_WDR_data-exploration_abstracts.html
 
@@ -1993,8 +2275,7 @@ names(outputs_key)
 #### --- create kwic with phrases | purrr + print + save png
 ```{r}
 # Iterate `quanteda::kwic` over a vector of phrases/bigrams 
-keywords_phrase <- c("climate change", "investment climate", "pro-poor", 
-                     "gender equality", "maximizing finance", "digital revolution")
+keywords_phrase <- c("pro-poor", "gender equality", "gender mainstreaming" )
 
 # Step 1) tokens
 # (done above) -> abs_q_tokens
@@ -2030,14 +2311,16 @@ outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
 
 # -------------- print all 
 #  walk + print -
-walk(.x = outputs_bigrams2, .f = print)  
+walk(.x = outputs_bigrams2, .f = print)
+```
 
 
+```{r}
 # -------------- save  all -> create multiple tables from a single dataframe and save them as images
 # https://stackoverflow.com/questions/69323569/how-to-save-multiple-tables-as-images-using-kable-and-map/69323893#69323893
 
-out_dir_tab <- fs::path("./analysis/output/tables")
-out_dir_tab
+out_dir_tab <-  here::here("analysis", "output","tables")
+ 
 outputs_bigrams2  %>%
   imap(~save_kable(file = paste0(out_dir_tab, '/', 'pdo_', .y, '_.png'),
                    # bs_theme = 'journal', 
@@ -2049,6 +2332,15 @@ outputs_bigrams2  %>%
 
 ```
 
+1. Paradossalmente, per chi si cimenta con l’utilizzo di questi strumenti di IA (ChatGPT, ecc.), appare presto evidente che per quanto stupefacenti, le sue risposte rivelano-per contrasto-l'incredibile complessità dell'intelligenza umana e della nostra capacità di comprendere il mondo.
+
+Per fare qualche esempio:
+   + la capacita di collegare concetti e idee in modo creativo e originale
+   + *heuristics*, ovvero quelle scorciatoie mentali che ci permettono di prendere decisioni rapide e intuitive basate su esperienza e contesto 
+   + la capacità di comprendere il contesto e di adattare il nostro comportamento di conseguenza
+   + i principi etici e morali che guidano le nostre azioni e decisioni
+   + l'autocoscienza, ovvero la consapevolezza di noi stessi, dei nostri pensieri e azioni  
+ma allora cos'e' che sta scatenando tutto questo interesse per l'IA e la sua capacità di generare testi e risposte?
 
 # Acknowledgements
 

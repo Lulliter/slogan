@@ -57,8 +57,8 @@ div.csl-indent {
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "language": {
     "search-no-results-text": "No results",
@@ -100,14 +100,9 @@ div.csl-indent {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./posts.html"> <i class="bi bi-cup-hot-fill" role="img">
+    <a class="nav-link" href="./research/hypotheses.html"> <i class="bi bi-clipboard-data-fill" role="img">
 </i> 
-<span class="menu-text">Blog</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./intro_NLP.html"> <i class="bi bi-terminal-fill" role="img">
-</i> 
-<span class="menu-text">Text Analytics</span></a>
+<span class="menu-text">Research Plan</span></a>
   </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-wb-case-study" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -123,9 +118,9 @@ div.csl-indent {
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./analysis/hypotheses.html"> <i class="bi bi-clipboard-data-fill" role="img">
+    <a class="nav-link" href="./posts/PDO_eda.html"> <i class="bi bi-cup-hot-fill" role="img">
 </i> 
-<span class="menu-text">Analysis</span></a>
+<span class="menu-text">Blog</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -145,7 +140,7 @@ div.csl-indent {
   <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a>
   <ul class="collapse">
   <li><a href="#examples-in-the-development-economics-arena" id="toc-examples-in-the-development-economics-arena" class="nav-link" data-scroll-target="#examples-in-the-development-economics-arena">Examples in the development economics arena</a></li>
-  <li><a href="#the-curious-case-of-lexical-reduction-modification-or-domestication" id="toc-the-curious-case-of-lexical-reduction-modification-or-domestication" class="nav-link" data-scroll-target="#the-curious-case-of-lexical-reduction-modification-or-domestication">The curious case of lexical reduction, modification or domestication</a></li>
+  <li><a href="#the-curious-case-of-lexical-reduction-modification-or-domestication" id="toc-the-curious-case-of-lexical-reduction-modification-or-domestication" class="nav-link" data-scroll-target="#the-curious-case-of-lexical-reduction-modification-or-domestication">The curious case of lexical reduction, modification or <em>domestication</em></a></li>
   <li><a href="#so-what" id="toc-so-what" class="nav-link" data-scroll-target="#so-what">So what?</a></li>
   <li><a href="#why-focus-on-the-world-bank" id="toc-why-focus-on-the-world-bank" class="nav-link" data-scroll-target="#why-focus-on-the-world-bank">Why focus on the World Bank?</a></li>
   </ul></li>
@@ -177,7 +172,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">Tue October 29, 2024</p>
     </div>
   </div>
   
@@ -189,6 +184,22 @@ div.csl-indent {
 </header>
 
 
+<div class="callout callout-style-default callout-warning callout-titled" style="background-color: #fffcf9;">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>WORK IN PROGRESS! (Please expect unfinished sections, and unpolished code. Feedback is welcome!)</p>
+</div>
+</div>
+</div>
 <section id="motivation" class="level1">
 <h1>Motivation</h1>
 <p>Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of <strong>buzzwords</strong><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, <strong>catchphrases</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> and <strong>slogans</strong><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> that suddenly emerge in policy discussions, and—at least for some time—take center stage in strategic planning.<br>
@@ -226,7 +237,7 @@ Notably, in the organizations I worked with (including World Bank, Inter-America
 <p>This has led me to wonder how much consideration is given to the deliberate selection of such terms, or if they may simply be ‘in vogue’ and become a convenient shorthand for more complex ideas. Something that isn’t so surprising when we consider the paradoxical effect of social media and their recommendation algorithms on the selection of news, posts and articles that we access. Rather than broadening broadening our exposure, these algorithms tend to restrict it, reinforcing the <em>echo chamber</em> effect.</p>
 </section>
 <section id="the-curious-case-of-lexical-reduction-modification-or-domestication" class="level2">
-<h2 class="anchored" data-anchor-id="the-curious-case-of-lexical-reduction-modification-or-domestication">The curious case of lexical reduction, modification or domestication</h2>
+<h2 class="anchored" data-anchor-id="the-curious-case-of-lexical-reduction-modification-or-domestication">The curious case of lexical reduction, modification or <em>domestication</em></h2>
 <p>An element that makes this investigation even more intriguing is that, often, the meaning of words and phrases progressively detaches from reality and/or from their originally intended meaning, while some <em>revised meaning</em> (more or less explicit) starts to live on a journey of its own.<br>
 For example, I was really struck as I realized how the Latin motto I had heard since childhood: <em>“Mens sana in corpore sano”</em>, was actually a partial quotation adopted in 1861 by the Englishman John Hulley as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: <em>“Orandum est ut sit mens sana in corpore sano”</em> (Satire X, 356). Taken in its entirety, the original statement has quite a different meaning than its more famous shortened version: for one thing, it is about prayer, not fitness!</p>
 <p>A similar reduction is clearly relevant and consequence-ridden if, as Giovanni Gentile pointed out in <em>“Sommario di pedagogia come scienza filosofica”</em>: “Language is not a garment of thought: it is thought’s own body”, i.e.&nbsp;language does not merely communicate our ideas to others, but it is also the tool of our thought, it provides wings for it to fly <span class="citation" data-cites="garbini_uscire_2003">(<a href="#ref-garbini_uscire_2003" role="doc-biblioref">Garbini 2003, p3</a>)</span>. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --> Similarly, Luca D’Auria asserts that “language is <em>performative</em>”, in that it colors, deforms, produces reality <span class="citation" data-cites="dauria_tua_2024">(<a href="#ref-dauria_tua_2024" role="doc-biblioref">D’Auria 2024</a>)</span>. For this reason, it is necessarily a divisive instrument because, as soon as it is able to categorize, it is also capable of separating (good from bad, truth from lie, etc.). Knowledge itself, much to the dismay of the proponents of <em>political correctness</em>, lives on categories and categories, including linguistic ones, must precisely distinguish and correctly identify the ontological characteristics of what we are talking about.</p>
@@ -245,8 +256,8 @@ For example, I was really struck as I realized how the Latin motto I had heard s
 <section id="so-what" class="level2">
 <h2 class="anchored" data-anchor-id="so-what">So what?</h2>
 <p>For a while now, I have wondered <em>why</em> and <em>how</em> certain catchphrases/slogans/buzzwords become so prevalent in a given public policy context at some specific point in time.<br>
-The problem is that if you are (as I was) just a small cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process.<br>
-Therefore, I decided to investigate this phenomenon with a “reverse engineering” approach, starting from the <em>corpora</em> of documents themselves to see if I could identify some patterns or trends over time. Head over to <a href="https://lulliter.github.io/slogan/analysis/hypotheses.html#sec-RQ">this page</a> to see my specific research questions.</p>
+The problem is that if you are (as I was) just a cog in very complex institutional machine, it is difficult to capture the (often intangible) dynamics of this process.<br>
+Therefore, I decided to investigate this phenomenon with a “reverse engineering” approach, starting from the <em>corpora</em> of documents themselves to see if I could identify some patterns or trends over time. Head over to <a href="https://lulliter.github.io/slogan/research/hypotheses.html#sec-RQ">this page</a> to see my specific research questions.</p>
 </section>
 <section id="why-focus-on-the-world-bank" class="level2">
 <h2 class="anchored" data-anchor-id="why-focus-on-the-world-bank">Why focus on the World Bank?</h2>

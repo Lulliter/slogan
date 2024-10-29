@@ -33,38 +33,25 @@ website:
       - text: "Home"
         icon: house-fill # https://icons.getbootstrap.com/?q=home
         href: index.qmd
-      - text: "Blog"
-        icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
-        href: posts.qmd
-      - text: "Text Analytics"
-        icon: terminal-fill #  archive-fill # https://icons.getbootstrap.com/?q=home
-        href: intro_NLP.qmd
+      # - text: "Text Analytics"
+      #   icon: terminal-fill #  archive-fill # https://icons.getbootstrap.com/?q=home
+      #   href: intro_NLP.qmd
+      - text: "Research Plan"
+        icon: clipboard-data-fill
+        file: research/hypotheses.qmd
       - text: "WB case study"
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
           - text: "WB projects' PDO data"
             href: analysis/01b_WB_project_pdo_EDA.qmd
-      - text: "Analysis"
-        icon: clipboard-data-fill
-        file: analysis/hypotheses.qmd
-
-
-  sidebar:
-    - title: "Analysis"
-      contents:
-        - section: "Research Plan"
-          contents:
-            - analysis/hypotheses.qmd
-        - section: "PDO text exploration"
-          contents:
-            - analysis/PDO-explor.qmd
-        # - section: "Models"
-        #   contents:
-        #     - analysis/_model-idea.qmd
+      - text: "Blog"
+        icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
+        href: posts/PDO_eda.qmd
 
 format:
   html:
     theme: theme/Lulas_theme.scss # cosmo
+    fontawesome: true
     # css: theme/styles.css
     toc: true
     toc-location: "left"

@@ -1,0 +1,447 @@
+---
+title: "PDO text exploration" # ALREADY IN YML SECTION TITLE 
+subtitle: "TL;DR"
+description: |
+  The idea of analyzing language as data has always intrigued me. In this deep dive, I analyze ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of project documentation itself.  
+  
+  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is linked (still in progress and not fully polished).<br>
+  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
+#author: "Luisa M. Mimmi"
+categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
+#date-modified: "2024-10-29"
+date: "2024-10-29"
+lang: en
+number-sections: false
+
+draft: FALSE
+
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    #theme: callout.scss
+    code-fold: false # redundant bc echo false 
+    toc-depth: 2
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+
+bibliography: slogan_selected.bib
+nocite: |
+  @*
+---
+
+```{r}
+#| label: load_pkgs
+#| eval: true
+#| echo: false
+
+
+# Servono x i c***o di grafici con il theme_pretty
+library(here)
+library(showtext)
+font_add_google("Roboto Condensed", "roboto_condensed")
+showtext_auto()
+```
+
+
+# Motivation
+
+I have always been fascinated by the idea of analyzing language as data and I finally found some time to study *Natural Language Processing (NLP)* and *Text Analytics* techniques.
+
+In this project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of the Bank's projects. The **PDO** outlines, in synthetic form, the proposed objectives of operations (loans, grants, technical assistance), as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
+
+Normally, a few objectives are listed in paragraphs that are a couple sentences long. @tbl-pdo_exes shows two examples. 
+
+```{r}
+#| label: tbl-pdo_exes
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Illustrative PDOs text in Projects' documents
+
+library(tibble)
+library(kableExtra)
+tibble::tribble(
+   ~Project_ID, ~Project_Name, ~Project_Development_Objective,
+   "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
+   
+   "P179010", "Tunisia Emergency Food Security Response Project", "To (a) ensure, in the short-term, the supply of (i) agricultural inputs for farmers to secure the next cropping seasons and for continued dairy production, and (ii) wheat for uninterrupted access to bread and other grain products for poor and vulnerable households; and (b) strengthen Tunisia’s resilience to food crises by laying the ground for reforms of the grain value chain.") %>% 
+   kable()
+```
+
+The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.
+
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=rgba(155,103,35,1.00) >}} Nerdy Note
+
+I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0). (I made some attempts to make data ingestion automatic via API calls, but at the moment this is apparently beyond my web scraping ability 😬).
+
+Such data is classified by the World Bank as **"public"** and accessible under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+:::
+
+# Overview of available data
+
+The original dataset contained **22,569** WB projects approved **between FY1947 and FY2026** as of *August 31, 2024*. Of these, approximately 50% (**11,322 projects**) had a *viable* **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this subgroup, some projects were excluded for incompleteness: **3 projects** lacking *project status*, **2,176 projects** without *"board approval FY"*, and **332 projects** with approval still pending as of September 2024.
+
+As a result, the **usable** data for the analysis consists of **8,811 projects**.
+
+Surprisingly, within these *clean* subsample, **2,235 unique projects share only 1,006 unique PDOs among them**: *recycled PDOs* seem to appear in cases of follow-up projects or components of a parent project.
+
+Finally, from the remaining pool of 8,811 projects, I drew a representative sample of **4,403 projects with PDO** to work on.
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+### PDO text data quality
+First, it is important to notice that **all 7,548 projects approved before FY2001** had no PDO text available.
+
+The exploratory analysis of the **11,353 projects WITH PDO text** revealed some interesting findings:
+
+1.  **PDO text length**: The PDO text is quite short, with a median of 2 sentences and a maximum of 9 sentences. <!-- From 22,659 Proj --> <!-- all_proj_t %>% filter(pdo %in% c(".","-","NA", "N/A")) %>% nrow() -->
+2.  **PDO text missingness**: besides **11,306** projects with missing PDOs, **31 projects** had some invalid PDO values, namely: <!-- + **11,216** have missing PDO -->
+    -   **11** have PDO as one of: *".","-","NA", "N/A"*
+    -   **7** have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
+    -   **9** have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
+    -   **4** have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "a"*
+
+<!-- FROM 22,659 total - 11,306 MISSING PDOs = 11,353 WITH PDO - 31 = 11,322 with *VALID* PDO -->
+
+Of the **available 11,322 projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
+
+-   **3 projects** without *"project status"*
+-   **2,176 projects** without *"board approval FY"*
+-   **332 projects** approved in FY \>= FY2024 (for incomplete approval stage)
+
+Lastly (and this was quite surprising to me) the **remaining, viable 8,811 unique projects**, were matched by **only 7,582 unique PDOs**! In fact, **2,235 projects share 1,006 NON-UNIQUE PDO text** in the clean dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
+
+In sum, the cleaning process yielded a usable set of **8,811 functional projects**, which was split into a *training subset* (4,403) to explore and test models and a *testing subset* (4408), held out for post-prediction evaluation.
+:::
+
+# Preprocessing the PDO text data
+
+Cleaning text data entails extra steps compared to numerical data. A key process is **tokenization**, which breaks text into smaller units like `words`, `bigrams`, `n-grams`, or `sentences`. Another common cleaning task is **normalization**, where text is standardized (e.g., converting to lowercase). Similarly, **data reduction techniques** like *stemming* and *lemmatization* simplify words to their root form (e.g., "running," "ran," and "runs" become "run"). This can help to reduce dimensionality, especially with very large datasets, when the word form is not relevant.
+
+After tokenization, it is very common to **remove irrelevant elements** like punctuation or `stop words` (unimportant words like "the", "ii)", "at", or repeated ones in context like "PDO") which add noise to the data.
+
+In contrast, **data enhancement techniques** like *part-of-speech tagging* add value by identifying grammatical components, allowing focus on meaningful elements like `nouns`, `verbs`, or `adjectives`.
+
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
+
+In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, which provides a wrapper around the `CoreNLP` Java library. Executing these tasks is very computationally expensive. Based on random checks, the classification of POS tags in the PDO text data was not always accurate, but I considered it good enough for the purpose of this analysis.
+:::
+
+# Term Frequency
+
+@fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800 (as they have been combined by root). Despite the pre-processing of PDOs' text data, these aren't particularly informative words.
+
+<!-- ![](output/figures/combo_freq.png){#fig-combo_freq} -->
+
+```{r}
+#| label: fig-combo_freq
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+combo_freq_p <- readRDS(file = here ("analysis", "output", "figures", "combo_freq_p.rds"))
+combo_freq_p 
+```
+
+
+# Interesting patterns in the PDO text data
+Seeking some more meaningful *tokens*, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
+
+::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
+### *Custom* Sector Definitions
+The ***"sector"*** term for which frequency is observed in the PDOs is actually an artificial construct. It is based on a logical association of certain words with a sector definition, rooted in the World Bank's own classification of sector and sub-sector.
+
+Below is how I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
+
+-   **WAT_SAN** = water\|wastewater\|sanitat\|Sewer\|sewage\|Irrigat\|Drainag\|river basin\|groundwater
+-   **TRANSPORT** = transport\|railway\|road\|airport\|waterway\|bus\|metropolitan\|inter-urban\|aviation\|highway\|transit\|bridge\|port
+-   **URBAN** = urban\|housing\|inter-urban\|peri-urban\|waste manag\|slum\|city\|megacity\|intercity\|inter-city\|town
+-   **ENERGY** = energ\|electri\|hydroele\|hydropow\|renewable\|transmis\|grid\|transmission\|electric power\|geothermal\|solar\|wind\|thermal\|nuclear power\|energy generation
+-   **HEALTH** = health\|hospital\|medicine\|drugs\|epidem\|pandem\|covid-19\|vaccin\|immuniz\|diseas\|malaria\|HIV\|AIDS\|TB\|maternal\|clinic\|nutrition
+-   **EDUCATION** = educat\|school\|vocat\|teach\|univers\|student\|literacy\|training\|curricul\|pedagog
+-   **AGR_FOR_FISH** (Agriculture, Forestry, Fishing) = Agricultural\|Agro\|Fish\|Forest\|Crop\|livestock\|fishery\|land\|soil
+-   **MINING OIL&GAS** = Minin\|oil\|gas\|mineral\|quarry\|extract\|coal\|natural gas\|mine\|petroleum\|hydrocarbon
+-   **SOCIAL_PROT** = Social Protec\|social risk\|social assistance\|living standard\|informality\|insurance\|social choesion\|gig economy\|human capital\|employment\|unemploy\|productivity\|wage lev\|intergeneration\|lifelong learn\|vulnerab\|empowerment\|sociobehav
+-   **FINANCIAL** = Bank\|finan\|Investment\|credit\|microfinan\|loan\|financial stability\|banking\|financial intermed\|fintech
+-   **ICT** = Information\|Communication\|ICT\|Internet\|telecom\|cyber\|data\|AI\|artificial intelligence\|blockchain\|e-learn\|e-commerce\|platform\|software\|hardware\|digital
+-   **IND_TRADE_SERV** = Industry\|Trade\|Service\|manufactur\|Tourism\|Trade and Services\|market\|export\|import\|supply chain\|logistic\|distribut\|e-commerce\|retail\|wholesale\|trade facilitation\|trade policy\|trade agreement\|trade barrier\|trade finance\|trade promotion\|trade integration\|trade liberalization\|trade balance\|trade deficit\|trade surplus\|trade war\|trade dispute\|trade negotiation\|trade cooperation\|trade relation\|trade partner\|trade route\|trade corridor
+-   **"INSTIT_SUPP"** = Government\|Public Admin\|Institution\|Central Agenc\|Sub-national Gov\|law\|justice\|governance\|Policy\|Regulation\|Public Expenditure\|Public Investment\|Public Procurement
+-   **"GENDER_EQUAL"** = Gender\|Women\|Girl\|Woman\|femal\|Gender Equal\|gender-base\|gender inclus\|gender mainstream\|gender sensit\|gender respons\|gender gap\|gender-based\|gender-sensitive\|gender-responsive\|gender-transform\|gender-equit\|gender-balance
+-   **"CLIMATE"** = Climate\|Environment\|Sustain\|Resilience\|Adaptation\|Mitigation\|Green\|Eco\|Eco-\|carbon\|carbon cycle\|carbon dioxide\|climate change\|ecosystem\|emission\|energy effic\|greenhouse\|greenhouse gas\|temperature anomalies\|zero net\|green growth\|low carbon\|climate resilient\|climate smart\|climate tech\|climate variab
+:::
+
+The occurrence trends over time for key *sector terms* are shown in @fig-sector_freq.  
+
+Interestingly, all the broadly defined *"sector term"* in the PDO present one or more peaks at some point in time. For the (broadly defined) *HEALTH* sector, it is likely that **Covid-19** triggered the peak in 2020. What about the other sectors? What could be the driving reason?
+
+```{r}
+#| label: fig-sector_freq
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_sect_broad_freq <- readRDS(file = here ("analysis", "output", "figures", "pdo_sect_broad_freq.rds"))
+pdo_sect_broad_freq   
+```
+
+
+## Peaks in sector-related term frequency within the PDO text data
+
+A possible explanation is that the PDOs may reflect themes addressed in the **World Development Reports (WDR)**, the World Bank’s annual flagship publication that provides an in-depth analysis of a key development issue. Far from being speculative research, each WDR is grounded in the Bank’s concrete, field-based insights from projects and operations. These reports, in turn, inform the Bank's policy priorities and operational strategies.  
+Thus, it is reasonable to expect a degree of alignment between the themes discussed in the WDRs and the projects' objectives outlined in the PDOs.
+
+To some extent, visual exploration (examples provided below) seems to support this hypothesis: thematically relevant WDRs consistently *appear* in close proximity to peaks in sector-related term frequencies. However, further validation is necessary. Additionally, it’s important to note that:
+
++ Sector terms are not always captured with the same *precision*, which affects the association.
++ Each WDR is the culmination of an extensive empirical research process, typically spanning 2-3 years. Therefore, a temporal alignment with project documents may naturally include some lag.
+
+## Examples of peaks in sector-related term frequency within the PDO text data
+
+@fig-agr consolidated a sector that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**.
+
+```{r}
+#| label: fig-agr
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_agr_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_agr_WDR_plot.rds"))
+pdo_agr_WDR_plot 
+```
+
+@fig-climate, tracking frequency of **CLIMATE** terms, shows the highest peak in 2010, aligned the publication of the WDR on **"Development and Climate Change"** in 2010.
+
+```{r}
+#| label: fig-climate
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_clim_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_clim_WDR_plot.rds"))
+pdo_clim_WDR_plot 
+```
+
+@fig-educ reports two WDR publications relevant to **EDUCATION**, which seemingly preceded two peaks in the sector-related terms in the PDOs:
+
++ in 2007, on **"Development and the Next Generation"**
++ in 2018, on **"Learning to Realize Education's Promise"**
+
+```{r}
+#| label: fig-educ
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_edu_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_edu_WDR_plot.rds"))
+pdo_edu_WDR_plot 
+```
+
+@fig-gender shows that the highest frequency of terms related to **GENDER EQUALITY** was instead recorded a couple of years before the publication of the WDR on **"Gender Equality and Development"** in 2012.
+
+```{r}
+#| label: fig-gender
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_gen_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_gen_WDR_plot.rds"))
+pdo_gen_WDR_plot 
+```
+
+
+# Concordances: a.k.a. keywords in context
+
+Another useful analysis that can be done exploring text data refers to ***concordance***, which enables a closer look at the context surrounding a word (or combination of words). This approach can help clarify the word’s specific meaning or reveal underlying patterns in the data.
+
+
+## The bigram *"eligible crisis"* in the PDOs
+For example, looking at most recurrent `bigrams` (two-word combinations) in the PDO text, the phrase *"eligible crisis"* caught my attention. It appears in the PDOs of 112 projects, and in 32% of these cases, it is accompanied by either *"respond promptly and effectively"* or *"immediate and effective response"*. @tbl-elgcris shows a few examples of what seems to be a recurring standard phrasing.
+
+```{r}
+#| label: tbl-elgcris
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Context of the bigram "eligible crisis" in the PDOs
+
+
+# Load the Kable table
+elcr_k <- readRDS(file = here( "analysis" , "output", "tables", "elcr_k.rds"))
+elcr_k
+```
+
+## The bigram "climate change" in the PDOs
+Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"*—which I associate with a more *aspirational*, long-term response—appears more frequently than *"adaptation"*, which I view as a more *practical*, short-term response. However, the term *"resilience"* may convey a similar practical intent.
+
+```{r}
+#| label: tbl-clim
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Frequent words near "climate change"
+
+# READ as object
+clch_close_k <- readRDS( file = here("analysis", "output", "tables" ,"clch_close_k.rds"))
+clch_close_k
+```
+
+@tbl-clim2 shows examples. 
+
+```{r}
+#| label: tbl-clim2
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Context of the bigram "climate change" in the PDOs
+
+
+# READ as object
+sentences_with_climchang2_k <-  readRDS(file = here("analysis", "output", "tables" ,"sentences_with_climchang2_k.rds"))
+
+  
+#paint(sentences_with_climchang2_k)
+
+# Prepare the kable table with subheaders based on 'contains_what'
+sentences_with_climchang2_k %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(contains_what) %>%
+  dplyr::select(contains_what, proj_id, closest_text) %>%
+  kable(format = "html", 
+        escape = FALSE,
+        col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
+  kable_styling(full_width = FALSE)   
+   # Add subheaders based on the unique values in `contains_what`
+  #group_rows(index = table(sentences_with_climchang2$contains_what))
+
+```
+
+# Metadata quality enhancement with ML predictive models
+
+The idea is to predict the missing *tags* (sector, environmental risk category, etc.) in the World Bank project documents, using the text of the Project Development Objective (PDO) section as input data.
+
+## Steps of prediction
+
+1.  `label engineering` Define what we want to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)
+    -   Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best)
+2.  `sample design` Select the observations to use .
+    -   For *high external validity* it will have to be as close as possible to the population of interest (patterns of variables' distribution etc.)
+3.  `feature engineering` Define the input data (predictors, $X$) and their format (text, numeric, categorical)
+    -   Deal with *missing* values in $X$ (understand, variable by variable, the reasons for missingness, and decide what to do: keep, impute value if numeric, drop the predictor?)\
+    -   Select the most *relevant* predictors (which $X$ to have and in which form). For text predictor data, there are specific NLP transformations that can be applied (e.g. tokenization, lemmatization, etc.)
+    -   In some cases *interaction* between predictor variables makes sense.
+    -   Alternative models can be build with less predictors in simpler form to compare with others with more predictors in more complex form... Here domain knowledge + EDA are key to decide what to include and what to exclude.
+4.  `model selection` It's impossible to try all possible models (i.e. all possible choices of $X$ variables to include, their possible functional form, and their possible interactions give too many combinations).
+    -   `cross-validation` is similar to training-test method, which basically splits the data into training and test sets, but it does this multiple times (e.g. `k-fold cross-validation` means $k$ = 10 test sets) and it helps selecting the best model without *overfitting*.
+    -   Here we do all the work said above (model building and best model selection) in the *work set*. This will be further divided $k-times$ into $k$ train-test splits, then we use the *holdout set* to evaluate the prediction itself.
+5.  `last_fit` means that, once the best model(s) is/are selected, they are re-run on all of the work set (training data) to evaluate the performance to obtain the final model.
+6.  `post-prediction diagnostic`, lastly, serves to evaluate the model's performance on the *hold-out sample* instead. Here we can
+    -   evaluate the fit of the prediction (using, MSE, RMSE, accuracy, ROC etc. to summarize *goodness of fit*
+    -   (for continuous $y$) we can visualize the prediction interval around the prediction, for discrete $y$ the confusion matrix.
+    -   we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.)
+    -   finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data")
+
+> LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model.
+
+# Parting thoughts and next steps
+
+-   Evidently, this project was primarily a learning / proof-of-concept exercise, so I wasn't concerned with in-depth analysis of the data, nor with maximizing ML models' predictive performance. Nevertheless, this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data to uncover valuable insights, such as:
+
+    -   detecting frequency trends of sector-specific language, and topics over time,
+    -   improving documents classification and metadata tagging, via ML predictive models,
+    -   uncovering surprising patterns and relationships in the data, e.g. recurring phrases or topics,
+    -   triggering additional text-related questions that could lead to further research.
+
+-   Next steps could include:
+
+    -   delving deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements);
+    -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents.
+
+<!-- -   It is quite clear that the described exploratory analysis and topic modeling are most effective when paired with domain expertise that can inform how to interrogate the data and what to look for. -->
+
+-   A pain point in this type of work is efficiently retrieving input data from document corpora. Despite the World Bank's generous *"Access to Information"* policy, programmatic access to its extensive text data resources is still quite hard (no dedicated API, various stale pages and broken links). This should be addressed, perhaps following the model of the World Development Indicators (WDI) data, much more accessible and well-curated.
+
+-   Amid the ongoing hype around AI and Large Language Models (LLMs), this kind of analysis seems like yesterday's news. However, I believe there is still a huge untapped potential for meaningful applications of NLP and text analytics in development studies, policy analysis, and other areas---which will be even more impactful if informed by domain knowledge.
+
+# TOOL
+
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
+
+XXX
+:::
+
+::: {.callout-tip collapse="true" style="background-color: #f6fbf7;"}
+xxx
+:::
+
+::: {.callout-caution collapse="true" style="background-color: #fffcf5;"}
+xxx
+:::
+
+::: {.callout-important collapse="true" style="background-color: #fdf7f7;"}
+xxx
+:::
+
+::: {.callout-warning collapse="true" style="background-color: #fffcf9;"}
+xxx
+:::
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+xxx
+:::
+
+# Acknowledgements
+
+Below are some valuable resources to learn and implement NLP techniques---especially geared toward R programming.
+
+-   [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
+-   [Emil....text recipes](https://emilhvitfeldt.com/blog#category=textrecipes)
+-   [Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
+-   [Guide from Penn Libraries](https://guides.library.upenn.edu/penntdm/r) <!-- + [NLP demystified](https://www.nlpdemystified.org/course/advanced-preprocessing)  --> <!-- + [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/)  --> <!-- + [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)  --> <!-- - [Text Mining with R](https://www.tidytextmining.com/) --> <!-- - [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns) -->
