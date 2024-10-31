@@ -40,9 +40,12 @@ git add R/*
 git add data/*
 git add docs/*
 git add images/*
-git add analysis/slogan_selected.bib
+git add         _extensions/quarto-ext/fontawesome/assets/css/all.min.css
 git add analysis/output/figures/*
 git add analysis/output/tables/*
+
+git add posts/
+git add research/
 =======
 # Create Std commit "message"....
 msg="rebuilt on `date`"
@@ -52,7 +55,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "check gggsave PDF  ‼️🙀 analysis/01b_WB_project_pdo_EDA.qmd"
+git commit -m "massive restruct to simplify 🏛 (️posts/PDO_eda.qmd) "
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

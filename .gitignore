@@ -20,6 +20,8 @@ _freeze/
 _my_stuff/*
 analysis/_zz_old_files/*
 buzzwords.bib
+data/raw_data/project2/_all_projects_as_of29ago2024descr-stats.md
+
 
 # Temporary files
 *.log

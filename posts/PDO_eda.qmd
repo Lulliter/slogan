@@ -1,11 +1,11 @@
 ---
-title: "PDO text exploration" # ALREADY IN YML SECTION TITLE 
+title: "Exploring the PDO text of World Bank's projects"  
 subtitle: "TL;DR"
 description: |
   The idea of analyzing language as data has always intrigued me. In this deep dive, I analyze ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of project documentation itself.  
   
   This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is linked (still in progress and not fully polished).<br>
-  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
+#  NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
 #author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
 #date-modified: "2024-10-29"
@@ -33,7 +33,7 @@ format:
   html:
     #theme: callout.scss
     code-fold: false # redundant bc echo false 
-    toc-depth: 2
+    toc-depth: 3
     toc_float: true
     toc-location: left
     toc-title: Outline
@@ -87,7 +87,9 @@ tibble::tribble(
    "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
    
    "P179010", "Tunisia Emergency Food Security Response Project", "To (a) ensure, in the short-term, the supply of (i) agricultural inputs for farmers to secure the next cropping seasons and for continued dairy production, and (ii) wheat for uninterrupted access to bread and other grain products for poor and vulnerable households; and (b) strengthen Tunisia’s resilience to food crises by laying the ground for reforms of the grain value chain.") %>% 
-   kable()
+   kable() %>%
+   kable_styling() %>%
+   column_spec(3, background = "#f1e7d3")
 ```
 
 The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.
@@ -170,9 +172,57 @@ combo_freq_p <- readRDS(file = here ("analysis", "output", "figures", "combo_fre
 combo_freq_p 
 ```
 
+# Most frequent combination of words in the PDO text data
+
+## Bigrams 
+@fig-bigr shows the most frequent bigrams in the PDO text data. Results are not surprising in terms of frequent bigram recurrence:
+
++ See for example "increase access", "service delivery" ,"institutional capacity", "poverty reduction" etc, at the top.
++ Although, while *"health"* recurred in several bigrams (e.g. "health services", "public health", "health care") among the top 25, *"education"* did not appear at all.
++ A bit mysterious is perhaps *"eligible crisis"* (> 100 mentions)?!
+
+```{r}
+#| label: fig-bigr
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+# ---- Prepare data for plotting
+
+# Define the bigrams you want to highlight
+bigrams_to_highlight <- c("public sector", "private sector", "eligible crisis",
+                          "health care", "health services", "public health")   
+
+
+pdo_bigr_freq <- readRDS(file = here ("analysis", "output", "figures", "pdo_bigr_freq.rds"))
+pdo_bigr_freq  
+```
+
+
+## Trigrams 
+
+@fig-trigr shows the most frequent trigrams in the PDO text data. Here, the recurrence of phrases involving *"health"* is reiterated, along with a few phrases revolving around *"environmental"* goals, along with other terms that are expected to go together: like *"water resource management"*, *"social safety net"*, etc..
+
+```{r}
+#| label: fig-trigr 
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+pdo_trigram_freq_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_trigram_freq_plot.rds"))
+pdo_trigram_freq_plot 
+```
 
 # Interesting patterns in the PDO text data
-Seeking some more meaningful *tokens*, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
+Seeking some meaningful *tokens*, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
 
 ::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
 ### *Custom* Sector Definitions
@@ -228,7 +278,7 @@ To some extent, visual exploration (examples provided below) seems to support th
 
 ## Examples of peaks in sector-related term frequency within the PDO text data
 
-@fig-agr consolidated a sector that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**.
+@fig-agr shows a "combined sector" that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**.
 
 ```{r}
 #| label: fig-agr
@@ -244,7 +294,7 @@ pdo_agr_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_a
 pdo_agr_WDR_plot 
 ```
 
-@fig-climate, tracking frequency of **CLIMATE** terms, shows the highest peak in 2010, aligned the publication of the WDR on **"Development and Climate Change"** in 2010.
+@fig-climate, tracking frequency of **CLIMATE-related** terms, shows how the highest peak coincided with the publication of the WDR on **"Development and Climate Change"** in 2010.
 
 ```{r}
 #| label: fig-climate
@@ -295,6 +345,93 @@ pdo_gen_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_g
 pdo_gen_WDR_plot 
 ```
 
+# Comparing PDO text data with *metadata* elements (`sector`)
+
+Do information contained in the PDOs' text actually reflect the sector assignment in the metadata? To explore this question, I used the **two sample Kolmogorov-Smirnov test** to compare the distribution of sector-related terms in the PDOs' text with the distribution of variable `sector1`, provided in the project data.  
+In @tbl-comp_sec, the results show that the distributions are similar in most of the sectors observed. This is quite good news, because it means that (in the absence of proper metadata availability) the PDOs' text data can be used to infer the sector assignment with a reasonable degree of accuracy. 
+
+```{r}
+#| label: tbl-comp_sec
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Comparing the freqeuncy distributions of SECTOR in text and metadata
+
+
+# save as object
+ks_results_k <- readRDS(file =  here("analysis", "output", "tables" ,"ks_results_k.rds"))
+
+# Count how often the phrase appears in the vicinity of the target bigram
+ks_results_k %>% 
+   kable(format = "html", 
+         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
+         # Round  to 4 digits) 
+         digits = c(0, 4, 4, 0)) %>% 
+   kable_styling(full_width = FALSE) %>%
+   row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+The **Kolmogorov-Smirnov Test** (KS test) is a non-parametric test that compares the distribution of two samples. The **null hypothesis** is that the two samples are drawn from the same distribution. Notably, this test does not assume any particular underlying distribution. The **test statistic** is the maximum absolute difference between the two cumulative distribution functions. The **p-value** is the probability of observing a test statistic as extreme as the one computed, assuming that the null hypothesis is true. 
+:::
+
+
+Below is a graphical representation of two illustrative sectors, showing the most similar and the most dissimilar distributions of the **SECTOR** as deducted form text data, versus the proper metadata labeling. 
+
+@fig-comp_transp shows the distributions of the **TRANSPORT** sector in the  PDOs' text data and the metadata. The two distributions are the most similar, as confirmed by the Kolmogorov-Smirnov test with a p-value of 0.641. 
+```{r}
+#| label: fig-comp_transp
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+comp_pdo_sec_TRANSP_plot <- readRDS(file = here ("analysis", "output", "figures", "comp_pdo_sec_TRANSP_plot.rds"))
+comp_pdo_sec_TRANSP_plot 
+```
+
+
+
+
+@fig-comp_ene compares visually the distributions of the **ENERGY** sector in the  PDOs' text data and the metadata. The two distributions are the most dissimilar, as the Kolmogorov-Smirnov test confirms with a p-value of 0.0001. 
+ 
+ 
+```{r}
+#| label: fig-comp_ene
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+comp_pdo_sec_ENE_plot <- readRDS(file = here ("analysis", "output", "figures", "comp_pdo_sec_ENE_plot.rds"))
+comp_pdo_sec_ENE_plot 
+```
+
+
+# Comparing PDO text data with *metadata* elements (`amount committed`)
+
+In line with the previous point, is it just words or do trends observed in PDOs' text actually reflect the allocation of funds to specific sectors? To explore this question, we follow the same approach as before, but this time we compare the distribution of sector-related terms in the PDOs' text with the distribution of variable `amount committed`, provided in the project data.
+
+let us pick a couple of examples in which a sector/theme is also declared by dedicated variables. In these cases, the dataset enables to identify projects focused on:
+
++ **EDUCATION**, which is codified as the first *sector* in the metadata accompanying the PDOs.  
++ **CLIMATE CHANGE**, which is codified as as the first *theme* in the metadata accompanying the PDOs. 
+
+
+### 🔶 Education sector: words v. funding 
+
+
+### 🔶 Climate change theme: words v. funding 
+
+
+
+
 
 # Concordances: a.k.a. keywords in context
 
@@ -332,7 +469,7 @@ clch_close_k <- readRDS( file = here("analysis", "output", "tables" ,"clch_close
 clch_close_k
 ```
 
-@tbl-clim2 shows examples. 
+@tbl-clim2 shows examples, with highlighted words in the vicinity of the phrase of interest. 
 
 ```{r}
 #| label: tbl-clim2
@@ -362,11 +499,28 @@ sentences_with_climchang2_k %>%
 
 ```
 
-# Metadata quality enhancement with ML predictive models
+# 🟡  Metadata quality enhancement with ML predictive models
 
 The idea is to predict the missing *tags* (sector, environmental risk category, etc.) in the World Bank project documents, using the text of the Project Development Objective (PDO) section as input data.
 
-## Steps of prediction
+
+## 🟡 Using ML models to predict a missing feature
+
+> Remember that text data is SPARSE!
+
+To predict a missing feature (e.g., sector) based on available features from text data, several supervised machine learning algorithms can be applied. Given that you have a mixture of text and structured data, here are some suitable algorithms:
+
++ **Logistic regression** (LR) is a good starting point for binary classification tasks.
++ **Random Forest** (RF) is a robust algorithm that can handle a mix of data types.
++ **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting.
++ **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources.
++ **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data.
++ **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources.
+
+
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
+### Steps of prediction
 
 1.  `label engineering` Define what we want to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)
     -   Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best)
@@ -387,9 +541,17 @@ The idea is to predict the missing *tags* (sector, environmental risk category, 
     -   we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.)
     -   finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data")
 
+:::
+
+
+
 > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model.
 
-# Parting thoughts and next steps
+## 🟡 Evaluating the performance of the preferred ML model to predict a missing feature
+
+
+
+# Conclusions and next steps
 
 -   Evidently, this project was primarily a learning / proof-of-concept exercise, so I wasn't concerned with in-depth analysis of the data, nor with maximizing ML models' predictive performance. Nevertheless, this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data to uncover valuable insights, such as:
 
@@ -439,9 +601,21 @@ xxx
 
 # Acknowledgements
 
-Below are some valuable resources to learn and implement NLP techniques---especially geared toward R programming.
+Below are some valuable resources to learn and implement NLP techniques--geared toward R programmers.
+ 
+ <!-- 
+- [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
+- [Emil....text recipes](https://emilhvitfeldt.com/blog#category=textrecipes)
 
--   [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
--   [Emil....text recipes](https://emilhvitfeldt.com/blog#category=textrecipes)
--   [Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
--   [Guide from Penn Libraries](https://guides.library.upenn.edu/penntdm/r) <!-- + [NLP demystified](https://www.nlpdemystified.org/course/advanced-preprocessing)  --> <!-- + [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/)  --> <!-- + [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)  --> <!-- - [Text Mining with R](https://www.tidytextmining.com/) --> <!-- - [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns) -->
++ [NLP demystified](https://www.nlpdemystified.org/course/advanced-preprocessing)  
++ [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/) 
++ [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)  
+- [Text Mining with R](https://www.tidytextmining.com/) 
+- [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns) 
++ [Text Analysis with R](https://cengel.github.io/R-text-analysis/textprep.html#detecting-patterns)
++ [A PAGAMENTO Text Analysis with R for Students of Literature](https://www.matthewjockers.net/text-analysis-with-r-for-students-of-literature/)
++ [Guidef from Penn Libraries](https://guides.library.upenn.edu/penntdm/r)
+-->
+
+ 
+

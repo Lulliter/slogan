@@ -15,13 +15,13 @@ WORK IN PROGRESS!
 # Motivation
 
 Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of **buzzwords**[^1], **catchphrases**[^2] and **slogans**[^3] that suddenly emerge in policy discussions, and—at least for some time—take center stage in strategic planning.\
-Notably, in the organizations I worked with (including World Bank, Inter-American Development Bank, G20, EU, and the Italian Government) these catchphrases and slogans often turn into significant funding allocations, thus influencing which policies and programs are prioritized. 
+Notably, in the organizations I worked with (including World Bank, Inter-American Development Bank, G20, EU, and the Italian Government) these catchphrases and slogans often turn into significant funding allocations, thus steering the prioritization of policies and programs. 
 
 [^1]: **Buzzword**: The term probably originated in the 1940s as jargon used in business and marketing circles. More recently, it has taken on the meaning "fashionable jargon", especially common in business, technology, and politics, where they often signal innovation or forward-thinking but may lack clear, practical applications.
 [^2]: **Catchphrase**: The notion is of a short phrase that will "catch" in the mind of the hearer. The word was used in the 1840s of a line of music that was easy to catch and remember. It describes, in the modern sense, a memorable, often simplistic phrase or expression that becomes widely recognized and associated with a particular individual, group, or concept. It is designed to stick in people's minds and to evoke a specific idea or emotion, usually through repetition in media, advertising, or popular culture.
 [^3]: **Slogan**: from Gaelic *sluagh-ghairm*, i.e. "battle cry", used by Scottish Highland or Irish clans. The metaphoric sense of "distinctive word or phrase used by a political or other group" is attested from 1704. It still carries the connotation of a rallying cry, a motto, or a watchword, deliberately crafted to be persuasive, promote a cause or sell an idea.  
  
-## Examples in the development economics arena
+## 🔴 Examples in the development economics arena
 
 Drawing from my own professional experience in development economics, I recall the ebb and flow of trends in the popularity of phrases like the following (grouped by macro theme): 
 
@@ -53,9 +53,9 @@ Drawing from my own professional experience in development economics, I recall t
 
 I've observed how similar formulaic expressions often make their way into project documentation and policy papers, quickly gaining traction—at times becoming pervasive—in both academic and professional discourse.  
 
-This has led me to wonder how much consideration is given to the deliberate selection of such terms, or if they may simply be 'in vogue' and become a convenient shorthand for more complex ideas. Something that isn’t so surprising when we consider the paradoxical effect of social media and their recommendation algorithms on the selection of news, posts and articles that we access. Rather than broadening broadening our exposure, these algorithms tend to restrict it, reinforcing the *echo chamber* effect.
+This has led me to wonder how much consideration is given to the deliberate selection of such terms, or if they may simply be 'in vogue' and become a convenient shorthand for more complex ideas. Something that isn’t so surprising when we consider the paradoxical effect of social media and their recommendation algorithms on the selection of news, posts and articles that we access. Rather than broadening our exposure, these algorithms tend to restrict it, reinforcing the *echo chamber* effect.
 
-## The curious case of lexical reduction, modification or *domestication*
+## 🟠 The curious case of lexical reduction, modification or *domestication*
 
 An element that makes this investigation even more intriguing is that, often, the meaning of words and phrases progressively detaches from reality and/or from their originally intended meaning, while some *revised meaning* (more or less explicit) starts to live on a journey of its own.\
 For example, I was really struck as I realized how the Latin motto I had heard since childhood: *"Mens sana in corpore sano"*, was actually a partial quotation adopted in 1861 by the Englishman John Hulley as a motto for his Liverpool Athletic Club. In fact, it was extrapolated from a longer sentence by Juvenal poet: *"Orandum est ut sit mens sana in corpore sano"* (Satire X, 356). Taken in its entirety, the original statement has quite a different meaning than its more famous shortened version: for one thing, it is about prayer, not fitness!
@@ -98,3 +98,24 @@ The World Bank simply presented, from my point of view, a convenient "study case
 2. The Bank has a long history and a vast amount of digitized documents, which allows for a longitudinal analysis.
 3. The Bank's sectorial and thematic coverage is very broad, which allows for an interesting analysis.
 4. Last but not least, I am familiar with the Bank's documents' nature, structure and jargon, having worked there for several years.
+
+
+
+::: {.custom-border style="border: 1px solid #5b8bac; padding: 10px; border-radius: 15px; background-color: #9cc6e3;"}
+:::: {.columns}
+
+::: {.column width="70%"}
+***Get in touch if you have questions, comments or suggestions!***
+:::
+
+::: {.column width="5%"}
+::: 
+::: {.column width="25%"}
+
+<!-- bootstrap buttons  -->
+<p> <a id="mail-link" href="mailto:lmm76@georgetown.edu"  class="btn btn-secondary"> <i class="fa fa-envelope"></i> &nbsp;&nbsp;Email</a></p>
+:::
+    
+::::
+:::
+
