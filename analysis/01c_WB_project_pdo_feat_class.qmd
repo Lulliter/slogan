@@ -36,7 +36,10 @@ format-links: false
 bibliography: ../bib/slogan.bib
 ---
 
-<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+::: {.callout-warning collapse="false" style="background-color: #fffcf9;"}
+WORK IN PROGRESS!
+(Please expect unfinished sections, and unpolished code. Feedback is welcome!)
+:::
 
 <!-- In this file I address the **research question 1.2**, which is also to learn ML, IS IT POSSIBLE TO IMPROVE THE QUALITY OF THE DATA (E.G. MISSING FEATURES IN METADATA) BY USING TOPIC MODELING?  -->
 

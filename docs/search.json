@@ -151,7 +151,7 @@
     "href": "analysis/01a_WB_project_pdo_prep.html",
     "title": "WB Project PDOs Data Preprocessing",
     "section": "",
-    "text": "Work in progress"
+    "text": "Warning\n\n\n\n\n\nWORK IN PROGRESS! (Please expect unfinished sections, and unpolished code. Feedback is welcome!)"
   },
   {
     "objectID": "analysis/01a_WB_project_pdo_prep.html#ingest-raw-pdo-text-data",
@@ -396,7 +396,7 @@
     "href": "analysis/01c_WB_project_pdo_feat_class.html",
     "title": "WB Project PDO features classification",
     "section": "",
-    "text": "Work in progress"
+    "text": "Warning\n\n\n\n\n\nWORK IN PROGRESS! (Please expect unfinished sections, and unpolished code. Feedback is welcome!)"
   },
   {
     "objectID": "analysis/01c_WB_project_pdo_feat_class.html#what-ml-models-work-with-text",

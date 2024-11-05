@@ -6,6 +6,9 @@ quarto add quarto-ext/fontawesome # https://github.com/quarto-ext/fontawesome#re
 quarto install extension schochastics/academicons # https://jpswalsh.github.io/academicons/
 #quarto add mcanouil/quarto-iconify
 
+# ====== RUN tar_make() to render reports in ./analysis/*    !!!!!!!!
+Rscript -e "targets::tar_make()"
+
 # ====== RENDER the entire site
 # quarto preview
 quarto preview
@@ -55,7 +58,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "added to analysis/01b_WB_project_pdo_EDA.qmd 📊"
+git commit -m "targets ributta dentro analysis/* 🙌🏻🎉🎊"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

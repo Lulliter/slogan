@@ -36,7 +36,12 @@ format-links: false
 bibliography: ../bib/slogan.bib
 ---
 
-<i class="fa fa-refresh" style="color: firebrick"></i> Work in progress
+
+::: {.callout-warning collapse="false" style="background-color: #fffcf9;"}
+WORK IN PROGRESS!
+(Please expect unfinished sections, and unpolished code. Feedback is welcome!)
+:::
+
 
 # Set up
 ```{r}
