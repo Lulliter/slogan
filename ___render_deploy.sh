@@ -12,7 +12,12 @@ Rscript -e "targets::tar_make(callr_function = NULL)"
 Rscript -e "targets::tar_make(prep_report)"
 Rscript -e "targets::tar_make(eda_report)"
 Rscript -e "targets::tar_make(feat_class_report)"
-Rscript -e "targets::tar_make(website)"
+Rscript -e "targets::tar_make(analysis_reports)" # error
+Rscript -e "targets::tar_make(index_page)"
+Rscript -e "targets::tar_make(post_page)"
+Rscript -e "targets::tar_make(research_page)"
+Rscript -e "targets::tar_make(render_website)"
+
 # GRAPH
 Rscript -e "targets::tar_visnetwork()"
 
@@ -66,7 +71,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "targets ributta dentro analysis/* 🙌🏻🎉🎊"
+git commit -m "targets +++ * 🙌🏻🎉🎊"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
