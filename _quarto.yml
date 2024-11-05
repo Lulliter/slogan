@@ -42,8 +42,12 @@ website:
       - text: "WB case study"
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:
-          - text: "WB projects' PDO data"
+          - text: "WB projects' PDO data prep"
+            href: analysis/01a_WB_project_pdo_prep.qmd
+          - text: "WB projects' PDO data EDA"
             href: analysis/01b_WB_project_pdo_EDA.qmd
+          - text: "WB projects' PDO data ML"
+            href: analysis/01c_WB_project_pdo_feat_class.qmd
       - text: "Blog"
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
         href: posts/PDO_eda.qmd

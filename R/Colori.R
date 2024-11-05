@@ -21,7 +21,7 @@ bluMEFsec_extralight <- "#455A8B33" #  (alpha = .2) OR rgb(69/255, 90/255, 139/2
 gialloMEF_dark <- "#715115"
 gialloMEFprinc <- "#BD8723" # "#BD8723FF" (alpha = 1) OR rgb(189/255, 135/255, 35/255, 1)
 gialloMEF_light <- "#d7b77b" # "#BD8723FF" (alpha = 1) OR rgb(189/255, 135/255, 35/255, 0.4)
-gialloMEF_extralight <- "#f1e7d3" # "#BD8723FF" (alpha = 1) OR rgb(189/255, 135/255, 35/255, 0.2)
+gialloMEF_extralight <- "#📊📊" # "#BD8723FF" (alpha = 1) OR rgb(189/255, 135/255, 35/255, 0.2)
 
 bordeaux_dark <- "#51242c" # "#854442FF" (alpha = 1) OR rgb(133/255, 68/255, 66/255, 1)
 bordeaux <- "#873c4a" # "#854442FF" (alpha = 1) OR rgb(133/255, 68/255, 66/255, 1)

@@ -2,9 +2,9 @@
 title: "Exploring the PDO text of World Bank's projects"  
 subtitle: "TL;DR"
 description: |
-  The idea of analyzing language as data has always intrigued me. In this deep dive, I analyze ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of project documentation itself.  
+  The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of projects' data itself.  
   
-  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is linked (still in progress and not fully polished).<br>
+  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open (still in progress and not fully polished).<br>
 #  NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
 #author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
@@ -69,7 +69,7 @@ showtext_auto()
 
 I have always been fascinated by the idea of analyzing language as data and I finally found some time to study *Natural Language Processing (NLP)* and *Text Analytics* techniques.
 
-In this project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of the Bank's projects. The **PDO** outlines, in synthetic form, the proposed objectives of operations (loans, grants, technical assistance), as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
+In this learning project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of the Bank's projects (loans, grants, technical assistance). The **PDO** outlines, in synthetic form, the proposed objectives of operations, as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
 
 Normally, a few objectives are listed in paragraphs that are a couple sentences long. @tbl-pdo_exes shows two examples. 
 
@@ -104,11 +104,11 @@ Such data is classified by the World Bank as **"public"** and accessible under a
 
 # Overview of available data
 
-The original dataset contained **22,569** WB projects approved **between FY1947 and FY2026** as of *August 31, 2024*. Of these, approximately 50% (**11,322 projects**) had a *viable* **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this subgroup, some projects were excluded for incompleteness: **3 projects** lacking *project status*, **2,176 projects** without *"board approval FY"*, and **332 projects** with approval still pending as of September 2024.
+The original dataset contained **22,569** WB projects approved **between fiscal years 1947 and 2025** as of *August 31, 2024*. Of these, approximately 50% (**11,322 projects**) had a *viable* **PDO** text in the dataset (not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this subgroup, some projects were dropped: **3 projects** lacking *project status*, **2,176 projects** without *"board approval FY"*, and **332 projects** with approval still pending as of September 2024.
 
-As a result, the **usable** data for the analysis consists of **8,811 projects**.
+As a result, the **usable** data for the analysis include **8,811 projects**.
 
-Surprisingly, within these *clean* subsample, **2,235 unique projects share only 1,006 unique PDOs among them**: *recycled PDOs* seem to appear in cases of follow-up projects or components of a parent project.
+Surprisingly, within this *clean* subsample, **2,235 unique projects share only 1,006 unique PDOs among them**: *recycled PDOs* seem to appear in cases of follow-up projects or components of a parent project.
 
 Finally, from the remaining pool of 8,811 projects, I drew a representative sample of **4,403 projects with PDO** to work on.
 
@@ -154,7 +154,7 @@ In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, whi
 
 # Term Frequency
 
-@fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. Evidently, after stemming, more words (or stems) reach the threshold frequency count of 800 (as they have been combined by root). Despite the pre-processing of PDOs' text data, these aren't particularly informative words.
+@fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. Evidently, after stemming, more words (or `stems`) reach the threshold frequency count of 800 (as they have been combined by root). Despite the pre-processing of PDOs' text data, these aren't particularly informative words.
 
 <!-- ![](output/figures/combo_freq.png){#fig-combo_freq} -->
 
@@ -175,11 +175,8 @@ combo_freq_p
 # Most frequent combination of words in the PDO text data
 
 ## Bigrams 
-@fig-bigr shows the most frequent bigrams in the PDO text data. Results are not surprising in terms of frequent bigram recurrence:
-
-+ See for example "increase access", "service delivery" ,"institutional capacity", "poverty reduction" etc, at the top.
-+ Although, while *"health"* recurred in several bigrams (e.g. "health services", "public health", "health care") among the top 25, *"education"* did not appear at all.
-+ A bit mysterious is perhaps *"eligible crisis"* (> 100 mentions)?!
+@fig-bigr shows the most frequent bigrams in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"* ,*"institutional capacity"*, *"poverty reduction"* etc., at the top.
+Notably, while *"health"* appears in several bigrams (e.g., *"health services"*, *"public health"*, *"health care"*), *"education"* is absent from the top 25. Another intriguing observation is the frequent mention (over 100 instances) of *"eligible crisis"*, which seems somewhat unexpected. 
 
 ```{r}
 #| label: fig-bigr
@@ -221,30 +218,31 @@ pdo_trigram_freq_plot <- readRDS(file = here ("analysis", "output", "figures", "
 pdo_trigram_freq_plot 
 ```
 
-# Interesting patterns in the PDO text data
-Seeking some meaningful *tokens*, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
+# Sectors in the PDO text data
+To narrow down the exploration of `tokens`, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
 
 ::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
 ### *Custom* Sector Definitions
-The ***"sector"*** term for which frequency is observed in the PDOs is actually an artificial construct. It is based on a logical association of certain words with a sector definition, rooted in the World Bank's own classification of sector and sub-sector.
+The ***"sector"*** term discussed here is *not* the `sector` variable available in the data, but it is an artificial construct reflecting the occurrence of a group of terms referred to a sector topic. It is based on a logical association of certain words with a sector definition, rooted in the World Bank's own classification of sector and sub-sector.
 
-Below is how I created a *"broad SECTOR" variable* to group the sectors in broader definitions:
+Here is the approach used to create a *"broad SECTOR" variable* to group the sectors into broader categories:
 
--   **WAT_SAN** = water\|wastewater\|sanitat\|Sewer\|sewage\|Irrigat\|Drainag\|river basin\|groundwater
+-   **WAT_SAN** = water\|wastewater\|sanitat\|sewer\|sewage\|irrigat\|drainag\|river basin\|groundwater
 -   **TRANSPORT** = transport\|railway\|road\|airport\|waterway\|bus\|metropolitan\|inter-urban\|aviation\|highway\|transit\|bridge\|port
 -   **URBAN** = urban\|housing\|inter-urban\|peri-urban\|waste manag\|slum\|city\|megacity\|intercity\|inter-city\|town
 -   **ENERGY** = energ\|electri\|hydroele\|hydropow\|renewable\|transmis\|grid\|transmission\|electric power\|geothermal\|solar\|wind\|thermal\|nuclear power\|energy generation
--   **HEALTH** = health\|hospital\|medicine\|drugs\|epidem\|pandem\|covid-19\|vaccin\|immuniz\|diseas\|malaria\|HIV\|AIDS\|TB\|maternal\|clinic\|nutrition
+-   **HEALTH** = health\|hospital\|medicine\|drugs\|epidem\|pandem\|covid-19\|vaccin\|immuniz\|diseas\|malaria\|hiv\|aids\|tb\|maternal\|clinic\|nutrition
 -   **EDUCATION** = educat\|school\|vocat\|teach\|univers\|student\|literacy\|training\|curricul\|pedagog
--   **AGR_FOR_FISH** (Agriculture, Forestry, Fishing) = Agricultural\|Agro\|Fish\|Forest\|Crop\|livestock\|fishery\|land\|soil
--   **MINING OIL&GAS** = Minin\|oil\|gas\|mineral\|quarry\|extract\|coal\|natural gas\|mine\|petroleum\|hydrocarbon
--   **SOCIAL_PROT** = Social Protec\|social risk\|social assistance\|living standard\|informality\|insurance\|social choesion\|gig economy\|human capital\|employment\|unemploy\|productivity\|wage lev\|intergeneration\|lifelong learn\|vulnerab\|empowerment\|sociobehav
--   **FINANCIAL** = Bank\|finan\|Investment\|credit\|microfinan\|loan\|financial stability\|banking\|financial intermed\|fintech
--   **ICT** = Information\|Communication\|ICT\|Internet\|telecom\|cyber\|data\|AI\|artificial intelligence\|blockchain\|e-learn\|e-commerce\|platform\|software\|hardware\|digital
--   **IND_TRADE_SERV** = Industry\|Trade\|Service\|manufactur\|Tourism\|Trade and Services\|market\|export\|import\|supply chain\|logistic\|distribut\|e-commerce\|retail\|wholesale\|trade facilitation\|trade policy\|trade agreement\|trade barrier\|trade finance\|trade promotion\|trade integration\|trade liberalization\|trade balance\|trade deficit\|trade surplus\|trade war\|trade dispute\|trade negotiation\|trade cooperation\|trade relation\|trade partner\|trade route\|trade corridor
--   **"INSTIT_SUPP"** = Government\|Public Admin\|Institution\|Central Agenc\|Sub-national Gov\|law\|justice\|governance\|Policy\|Regulation\|Public Expenditure\|Public Investment\|Public Procurement
--   **"GENDER_EQUAL"** = Gender\|Women\|Girl\|Woman\|femal\|Gender Equal\|gender-base\|gender inclus\|gender mainstream\|gender sensit\|gender respons\|gender gap\|gender-based\|gender-sensitive\|gender-responsive\|gender-transform\|gender-equit\|gender-balance
--   **"CLIMATE"** = Climate\|Environment\|Sustain\|Resilience\|Adaptation\|Mitigation\|Green\|Eco\|Eco-\|carbon\|carbon cycle\|carbon dioxide\|climate change\|ecosystem\|emission\|energy effic\|greenhouse\|greenhouse gas\|temperature anomalies\|zero net\|green growth\|low carbon\|climate resilient\|climate smart\|climate tech\|climate variab
+-   **AGR_FOR_FISH** = agricultural\|agro\|fish\|forest\|crop\|livestock\|fishery\|land\|soil
+-   **MINING_OIL_GAS** = minin\|oil\|gas\|mineral\|quarry\|extract\|coal\|natural gas\|mine\|petroleum\|hydrocarbon
+-   **SOCIAL_PROT** = social protec\|social risk\|social assistance\|living standard\|informality\|insurance\|social cohesion\|gig economy\|human capital\|employment\|unemploy\|productivity\|wage lev\|intergeneration\|lifelong learn\|vulnerab\|empowerment\|sociobehav
+-   **FINANCIAL** = bank\|finan\|investment\|credit\|microfinan\|loan\|financial stability\|banking\|financial intermed\|fintech
+-   **ICT** = information\|communication\|ict\|internet\|telecom\|cyber\|data\|ai\|artificial intelligence\|blockchain\|e-learn\|e-commerce\|platform\|software\|hardware\|digital
+-   **IND_TRADE_SERV** = industry\|trade\|service\|manufactur\|tourism\|trade and services\|market\|export\|import\|supply chain\|logistic\|distribut\|e-commerce\|retail\|wholesale\|trade facilitation\|trade policy\|trade agreement\|trade barrier\|trade finance\|trade promotion\|trade integration\|trade liberalization\|trade balance\|trade deficit\|trade surplus\|trade war\|trade dispute\|trade negotiation\|trade cooperation\|trade relation\|trade partner\|trade route\|trade corridor
+-   **INSTIT_SUPP** = government\|public admin\|institution\|central agenc\|sub-national gov\|law\|justice\|governance\|policy\|regulation\|public expenditure\|public investment\|public procurement
+-   **GENDER_EQUAL** = gender\|women\|girl\|woman\|femal\|gender equal\|gender-base\|gender inclus\|gender mainstream\|gender sensit\|gender respons\|gender gap\|gender-based\|gender-sensitive\|gender-responsive\|gender-transform\|gender-equit\|gender-balance
+-   **CLIMATE** = climate\|environment\|sustain\|resilience\|adaptation\|mitigation\|green\|eco\|eco-\|carbon\|carbon cycle\|carbon dioxide\|climate change\|ecosystem\|emission\|energy effic\|greenhouse\|greenhouse gas\|temperature anomalies\|zero net\|green growth\|low carbon\|climate resilient\|climate smart\|climate tech\|climate variab
+
 :::
 
 The occurrence trends over time for key *sector terms* are shown in @fig-sector_freq.  
@@ -265,20 +263,18 @@ pdo_sect_broad_freq <- readRDS(file = here ("analysis", "output", "figures", "pd
 pdo_sect_broad_freq   
 ```
 
+A possible explanation is that the PDOs may may echo themes from the **World Development Reports (WDR)**, the World Bank’s flagship annual publication that analyzes a key development issue each year. Far from being speculative research, each WDR is grounded in the Bank’s field-based insights and, in turn, it informs the Bank's policy and operational priorities. This would suggest a likely alignment between WDR themes and project objectives in the PDOs.
 
-## Peaks in sector-related term frequency within the PDO text data
+To some extent, visual exploration (see examples below) seems to support this hypothesis: thematically relevant WDRs consistently *appear* in close proximity to peaks in sector-related term frequencies. However, further validation is necessary. Additionally, preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may naturally include some lag.
 
-A possible explanation is that the PDOs may reflect themes addressed in the **World Development Reports (WDR)**, the World Bank’s annual flagship publication that provides an in-depth analysis of a key development issue. Far from being speculative research, each WDR is grounded in the Bank’s concrete, field-based insights from projects and operations. These reports, in turn, inform the Bank's policy priorities and operational strategies.  
-Thus, it is reasonable to expect a degree of alignment between the themes discussed in the WDRs and the projects' objectives outlined in the PDOs.
+<!-- Additionally, it’s important to note that: -->
 
-To some extent, visual exploration (examples provided below) seems to support this hypothesis: thematically relevant WDRs consistently *appear* in close proximity to peaks in sector-related term frequencies. However, further validation is necessary. Additionally, it’s important to note that:
+<!-- + Sector terms are not always captured with the same *precision*, which affects the association. -->
+<!-- + Preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may naturally include some lag. -->
 
-+ Sector terms are not always captured with the same *precision*, which affects the association.
-+ Each WDR is the culmination of an extensive empirical research process, typically spanning 2-3 years. Therefore, a temporal alignment with project documents may naturally include some lag.
+## Examples of sector-related term frequency within the PDO text
 
-## Examples of peaks in sector-related term frequency within the PDO text data
-
-@fig-agr shows a "combined sector" that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**.
+@fig-agr shows a "combined sector" that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**. Perhaps the "alignment" hypothesis is not very meaningful with such a broadly defined sector. 
 
 ```{r}
 #| label: fig-agr
@@ -345,10 +341,11 @@ pdo_gen_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_g
 pdo_gen_WDR_plot 
 ```
 
-# Comparing PDO text data with *metadata* elements (`sector`)
+# Comparing PDO text against *metadata* elements (`sector`)
 
-Do information contained in the PDOs' text actually reflect the sector assignment in the metadata? To explore this question, I used the **two sample Kolmogorov-Smirnov test** to compare the distribution of sector-related terms in the PDOs' text with the distribution of variable `sector1`, provided in the project data.  
-In @tbl-comp_sec, the results show that the distributions are similar in most of the sectors observed. This is quite good news, because it means that (in the absence of proper metadata availability) the PDOs' text data can be used to infer the sector assignment with a reasonable degree of accuracy. 
+The available data includes not only text but also relevant metadata, such as the `sector1` variable, which indicates the project’s primary sector. Do the terms in the PDO text align with this sector label? To examine this, I applied the **two-sample Kolmogorov-Smirnov test** to compare the distribution of `sector-related terms` in the PDO text with the distribution of `sector1`.
+
+As shown in @tbl-comp_sec, the results indicate similar distributions across most sectors. This is promising, as it suggests that in cases where metadata is lacking, sector assignments can be reasonably inferred from the PDO text.
 
 ```{r}
 #| label: tbl-comp_sec
@@ -375,10 +372,10 @@ ks_results_k %>%
 The **Kolmogorov-Smirnov Test** (KS test) is a non-parametric test that compares the distribution of two samples. The **null hypothesis** is that the two samples are drawn from the same distribution. Notably, this test does not assume any particular underlying distribution. The **test statistic** is the maximum absolute difference between the two cumulative distribution functions. The **p-value** is the probability of observing a test statistic as extreme as the one computed, assuming that the null hypothesis is true. 
 :::
 
-
 Below is a graphical representation of two illustrative sectors, showing the most similar and the most dissimilar distributions of the **SECTOR** as deducted form text data, versus the proper metadata labeling. 
 
-@fig-comp_transp shows the distributions of the **TRANSPORT** sector in the  PDOs' text data and the metadata. The two distributions are the most similar, as confirmed by the Kolmogorov-Smirnov test with a p-value of 0.641. 
+@fig-comp_transp shows the distributions of the **TRANSPORT** sector in the  PDOs' text and in the metadata. The two distributions are the most similar, as confirmed by the Kolmogorov-Smirnov test with a p-value of 0.641. 
+
 ```{r}
 #| label: fig-comp_transp
 #| eval: true
@@ -414,7 +411,7 @@ comp_pdo_sec_ENE_plot
 ```
 
 
-# Comparing PDO text data with *metadata* elements (`amount committed`)
+# Comparing PDO text against *metadata* elements (`amount committed`)
 
 In line with the previous point, is it just words or do trends observed in PDOs' text actually reflect the allocation of funds to specific sectors? To explore this question, we follow the same approach as before, but this time we compare the distribution of sector-related terms in the PDOs' text with the distribution of variable `amount committed`, provided in the project data.
 

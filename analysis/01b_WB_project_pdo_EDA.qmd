@@ -49,11 +49,6 @@ WORK IN PROGRESS!
 <!--    + (i.e. I see that after 2020, the word "pandemic" and "vaccine" peaks within PDOs' texts, so I will look for a correlation with the COVID-19 pandemic shock, instead of the other way around). -->
 
 
-# TO DO [COMPL🟠🟡] list 
-
-+ ~~add vertical lines with relevant WDR over the years~~ 
-+ ~~do bigram plots on "*climate change*" and "*climate resilient*"~~
-
 # Set up
 ```{r}
 # Pckgs -------------------------------------
@@ -1951,7 +1946,7 @@ trigram_freq <- trigrams_clean %>%
 title_text <- glue::glue("Most frequent trigrams in PDOs over FY {min(trigrams_clean$FY_appr)}-{max(trigrams_clean$FY_appr)}")
  
 # Define colors for specific highlights
-highlight_colors <- c("Health" =  "#4C9F38", "Environment" ="#3F7E44", "Other" = "grey")
+highlight_colors <- c("Health" =  "#d02e4c", "Environment" ="#3F7E44", "Other" = "grey")
 
 
 # Plot the most frequent trigrams
@@ -2462,7 +2457,7 @@ ma allora cos'e' che sta scatenando tutto questo interesse per l'IA e la sua cap
 
 
 # _______
-# =====  !!!!! CORRESPONDENCE TEXT v. FEATURES !!!!!  ======
+# CORRESPONDENCE TEXT v. FEATURES 
 # _______
 
 The particular dataset containing PDO text, offers the advantage of having also some other *features* that have been used to categorize the projects. 
@@ -3053,7 +3048,7 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "EDUCATION",
 ```
 
 
-## Trend PDO words v sector (the  \$$ )
+## Trend PDO words v sector ($$)
 
 #### ----  sum of `curr_total_commitment` corresponding to each sector1_broad per year 
 
@@ -3064,16 +3059,298 @@ I need a table in long form with the following columns: `FY_appr`, `sector1_broa
 ```{r}
 # prep data
 proj_train_commit <- projs_train %>% 
-  select(FY_appr = boardapprovalFY, sector1_broad, curr_total_commitment) %>% 
-  group_by(FY_appr, sector1_broad) %>% 
-  summarise(sum_curr_total_commitment = sum(curr_total_commitment)) %>% 
-  ungroup() %>% 
-  mutate(FY_appr = as.character(FY_appr))
+   select(FY_appr = boardapprovalFY, sector1_broad, curr_total_commitment) %>% 
+   group_by(FY_appr, sector1_broad) %>% 
+   summarise(sum_curr_total_commitment = sum(curr_total_commitment)) %>% 
+   ungroup() %>% 
+   mutate(FY_appr = as.character(FY_appr)) %>% 
+   filter (sector1_broad %in% c("WAT_SAN", "ENERGY","TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION", "URBAN")) %>% 
+   mutate(FY_appr = as.numeric(FY_appr))
 
 ```
  
  
+This I can bind with the `sector_broad_combo` to get the `n_pdo` and `n_tag` for each sector1_broad per year. 
  
+```{r}
+
+# THE FIRST TABLE 
+sector_broad_combo2 <- sector_broad_combo %>% 
+   dplyr::filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY","TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION", "URBAN"))
+
+tabyl(sector_broad_combo2$tok_sector_broad, show_missing_levels = FALSE)
+                  #        WAT_SAN 23 0.15231788   x
+                  #         ENERGY 23 0.15231788   x  
+                  #      TRANSPORT 23 0.15231788   X 
+                  #            ICT 21 0.13907285   ~
+                  # MINING_OIL_GAS 15 0.09933775   ~
+                  #         HEALTH 23 0.15231788   X
+                  #     EDUCATION 23 0.15231788    X
+tabyl(proj_train_commit$sector1_broad)
+                       #        WAT_SAN 23 0.15231788    x 
+                       #         ENERGY 23 0.15231788    x 
+                       #      TRANSPORT 23 0.15231788    X 
+                       #            ICT 21 0.13907285    ~ 
+                       # MINING_OIL_GAS 15 0.09933775    ~ 
+                       #         HEALTH 23 0.15231788    X
+                       #      EDUCATION 23 0.15231788    X 
+
+# bind
+sector_broad_freq_v_commit <- left_join(sector_broad_combo, 
+                                        proj_train_commit, by = c("FY_appr", 
+                                                                  "tok_sector_broad" =  "sector1_broad")) %>% 
+   mutate(sum_curr_total_commitment = ifelse(is.na(sum_curr_total_commitment), 0, sum_curr_total_commitment),
+          sum_comm_mln = sum_curr_total_commitment/1000000) %>%
+   select(-n_tag) %>% 
+   rename(sector = tok_sector_broad )
+
+paint(sector_broad_freq_v_commit)
+
+# count the rows per sector1_broad per year
+counts <- sector_broad_freq_v_commit %>% 
+   group_by(FY_appr ) %>% 
+   summarise(n = n()) %>% 
+   ungroup() %>% 
+   rename(n_pdo = n)
+```
+ 
+ 
+#### --- Calculate relative frequencies 
+Using `relative frequencies` or `normalized values` aligns better with comparing distributions that have vastly different ranges, like your `n_pdo` (token count) and `sum_curr_total_commitment` (funding amount).
+```{r}
+# Calculate relative frequency for n_pdo and sum_curr_total_commitment
+sector_broad_freq_v_commit <- sector_broad_freq_v_commit %>%
+  group_by(FY_appr) %>%
+  mutate(
+    rel_freq_n_pdo = n_pdo / sum(n_pdo) * 100,  # Relative frequency for n_pdo in percentage
+    rel_freq_commitment = sum_curr_total_commitment / sum(sum_curr_total_commitment) * 100  # Relative frequency for funding in percentage
+  ) %>%
+  ungroup() %>% 
+   select(-sum_comm_mln)
+
+# View the modified tibble
+sector_broad_freq_v_commit
+```
+
+
+#### --- 🟢 [TAB] Chi-Square Test test of similarity with a table 
+
++ The `chi-square test` is used to evaluates whether two categorical distributions have the same proportions across categories.
++ The `null hypothesis` is that The relative frequencies of `n_pdo` and `sum_curr_total_commitment` are distributed *similarly* across categories (in this case, sectors). This means that any observed differences in category proportions are due to chance.
+- A `p-value` < 0.05 indicates a significant difference, suggesting the distributions are *dissimilar.*
++ The Chi-Square Test does not require the data to follow a normal distribution because it operates on observed versus expected frequencies rather than on assumptions about the underlying data distribution.
++ the Chi-Square Test's reliability improves with larger counts. 
+
+
+```{r}
+#| label: tab-CHI_sec_comm
+#| eval: true
+#| echo: false
+#| output: true
+
+# Run the Chi-Square Test on the relative frequencies for each FY_appr
+chi_square_test_by_sec_k <- sector_broad_freq_v_commit %>%
+  group_by(sector) %>%
+  summarise(
+    chi_square_stat = chisq.test(
+      x = rel_freq_n_pdo,
+      y = rel_freq_commitment
+    )$statistic,  
+    chi_square_p_value = chisq.test(
+      x = rel_freq_n_pdo,
+      y = rel_freq_commitment#,
+      # Use Monte Carlo simulation to estimate the p-value
+      # simulate.p.value = TRUE,
+      # B = 1000
+    )$p.value
+  ) %>% 
+   mutate(similarity = if_else(chi_square_p_value < 0.05,  "Dissimilar", "Similar")) %>%
+   arrange( desc(chi_square_p_value))
+
+# # View the test results
+# chi_square_test_by_sec_k
+
+# save as object
+write_rds(chi_square_test_by_sec_k, here("analysis", "output", "tables" ,"chi_square_test_by_sec_k.rds"))
+
+# Count how often the phrase appears in the vicinity of the target bigram
+chi_square_test_by_sec_k %>% 
+   kable(format = "html", 
+         col.names = c("SECTORS", "Chi2 statistic","Chi2 p-value",  "Distributions"),
+         # Round  to 4 digits) 
+         digits = c(0, 4, 4, 0)) %>% 
+   kable_styling(full_width = FALSE) %>%
+   row_spec(which(chi_square_test_by_sec_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
+ 
+#### --- Calculate Cumulative Relative Frequencies
+Calculate Cumulative Distributions: `cum_rel_freq_n_pdo` and `cum_rel_freq_commitment` represent the cumulative relative frequencies within each sector.
+
++ The K-S Test compares the cumulative distribution functions (CDFs) of two continuous distributions , yielding a statistic (ks_statistic) and p-value (ks_p_value).
++ The `null hypothesis` is that the cumulative distributions of `cum_rel_freq_n_pdo` and `cum_rel_freq_commitment` are identical. This implies that the two distributions have the same shape and cumulative behavior over the range of values.
+```{r}
+sector_broad_freq_v_commit <- sector_broad_freq_v_commit %>%
+  group_by(sector) %>%
+  arrange(FY_appr) %>%
+  mutate(
+    cum_rel_freq_n_pdo = cumsum(rel_freq_n_pdo) / sum(rel_freq_n_pdo),  # Cumulative distribution for n_pdo
+    cum_rel_freq_commitment = cumsum(rel_freq_commitment) / sum(rel_freq_commitment)  # Cumulative distribution for commitment
+  ) %>%
+  ungroup()
+
+```
+
+#### --- [TAB] K-S Test for Each Sector
+```{r}
+#| label: tab-KS_sec_comm
+#| eval: true
+#| echo: false
+#| output: true
+
+ks_test_by_sector <- sector_broad_freq_v_commit %>%
+  group_by(sector) %>%
+  summarise(
+    ks_statistic = ks.test(
+      x = cum_rel_freq_n_pdo,
+      y = cum_rel_freq_commitment
+    )$statistic,
+    ks_p_value = ks.test(
+      x = cum_rel_freq_n_pdo,
+      y = cum_rel_freq_commitment
+    )$p.value
+  ) %>%
+  mutate(similarity = if_else(ks_p_value < 0.05, "Dissimilar", "Similar")) %>%
+  arrange(ks_p_value)
+
+# View the results
+ks_test_by_sector
+
+# # View the test results
+# chi_square_test_by_sec_k
+
+# save as object
+write_rds(ks_test_by_sector, here("analysis", "output", "tables" ,"ks_test_by_sector.rds"))
+
+# Count how often the phrase appears in the vicinity of the target bigram
+ks_test_by_sector %>% 
+   kable(format = "html", 
+         col.names = c("SECTORS", "K-S statistic","K-S p-value",  "Distributions"),
+         # Round  to 4 digits) 
+         digits = c(0, 4, 4, 0)) %>% 
+   kable_styling(full_width = FALSE) %>%
+   row_spec(which(ks_test_by_sector$similarity == "Dissimilar"), background = "#e7d8da")
+
+```
+
+KEY DIFF
+
+> The Chi-Square Test focuses on differences in proportions within categories, making it suitable for frequency comparisons across discrete categories.
+
+> The K-S Test compares the cumulative distribution functions (CDFs) of two continuous distributions,  making it suitable for comparing the shape and cumulative trends of continuous distributions.
+ 
+### [FUNC] Plot each rel_freq_commitment v rel_freq_n_pdo BY sector 
+```{r}
+# --- Split data long into a LIST of subset by sector
+commit_by_sector_list <- base::split(sector_broad_freq_v_commit, sector_broad_freq_v_commit$sector) 
+str(commit_by_sector_list) 
+
+# --- FUNCTION to plot iteratively each sector (like f_plot_sector)
+f_plot_comm_sector <- function( name_sec){
+   # --- Get split data postion
+   data_sec <- commit_by_sector_list[[as.character(name_sec)]]
+   #  data_sec <- commit_by_sector_list[["ENERGY"]]
+   
+   # --- Plot
+   ggplot(data = data_sec, aes(x = FY_appr)) +
+      # --- geom_bar for rel_freq_n_pdo
+      geom_bar(aes(y = rel_freq_n_pdo, fill ="PDO term"), stat = "identity", alpha = 0.5) + 
+      # --- geom_line and geom_point for rel_freq_commitment
+      geom_line(aes(y = rel_freq_commitment, color = "$$ committed"), linetype = "dotted", alpha = 0.5, size = 1) +
+      geom_point(aes(y = rel_freq_commitment, color = "$$ committed"), size = 3) +
+      # --- scale
+      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+      scale_y_continuous(breaks = seq(0, 75, by = 5)) +
+# Customize colors and set common legend title
+      scale_color_manual(
+         values = c("$$ committed" = "#00689D") ,
+          guide = guide_legend(title = "Relative frequencies")
+      ) +
+      scale_fill_manual(
+         values = c("PDO term" = "#8e550a"),
+         guide = guide_legend(title = "")
+      ) +
+      # custom
+      lulas_theme + 
+      theme(legend.position = "right",
+            axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(
+         title = paste("PDO term frequency for \"",name_sec,"\" v. $$ committed by FY"),  # Use facet-specific title
+         subtitle = "[Distributions of relative frequencies]",
+         x = "", 
+         y = "" 
+      ) 
+
+}
+
+# --- Plot one sector 
+# name_sec EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN 
+# data_sec EX sector_list[["WAT_SAN"]]
+f_plot_comm_sector( name_sec = "WAT_SAN")
+f_plot_comm_sector( name_sec = "ENERGY")
+f_plot_comm_sector( name_sec = "TRANSPORT")
+f_plot_comm_sector( name_sec = "ICT")
+f_plot_comm_sector( name_sec = "HEALTH")
+f_plot_comm_sector( name_sec = "EDUCATION")
+f_plot_comm_sector( name_sec = "MINING_OIL_GAS")
+ 
+# Use purrr::map to apply the function over the names of sector_list
+ map(names(commit_by_sector_list), f_plot_comm_sector) 
+
+``` 
+ 
+#### --- [FIG] ICT  
+
+Trend of PDO words v sector (the \$$ )
+
+According to Chi Square Test, all sector are similar, but the distributions in the ICT sector are THE *least similar* (p = 0.2306 is the smallest). 
+ 
+```{r}
+#| label: fig-comp_commit_ict
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+# Usage example for a specific sector
+f_plot_comm_sector( name_sec = "ICT" )   
+ 
+```
+
+#### --- [FIG] WAT_SAN  
+
+Trend of PDO words v sector (the \$$ )
+
+
+According to Chi Square Test, all sector are similar, but the distributions in the "MINING_OIL_GAS"  sector are THE *most similar* (p = 0.2665 is the biggest). 
+```{r}
+#| label: fig-comp_commit_min
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+# Usage example for a specific sector
+f_plot_comm_sector( name_sec = "MINING_OIL_GAS" )   
+
+```
+ 
+
 # =====  !!!!! QUI  !!!!!  ======
 
 # Acknowledgements
