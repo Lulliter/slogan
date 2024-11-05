@@ -1,15 +1,14 @@
 ---
 #title: "Motivation"
 author: "Luisa M. Mimmi"
-date: last-modified  # today #  |     now
+date: today
 date-format: "ddd MMMM DD, YYYY"
 bibliography: bib/slogan.bib
 ---
 
-
 ::: {.callout-warning collapse="false" style="background-color: #fffcf9;"}
-WORK IN PROGRESS!
-(Please expect unfinished sections, and unpolished code. Feedback is welcome!)
+### WORK IN PROGRESS!
+(Please expect unfinished sections, and unpolished code)
 :::
 
 # Motivation
@@ -21,35 +20,45 @@ Notably, in the organizations I worked with (including World Bank, Inter-America
 [^2]: **Catchphrase**: The notion is of a short phrase that will "catch" in the mind of the hearer. The word was used in the 1840s of a line of music that was easy to catch and remember. It describes, in the modern sense, a memorable, often simplistic phrase or expression that becomes widely recognized and associated with a particular individual, group, or concept. It is designed to stick in people's minds and to evoke a specific idea or emotion, usually through repetition in media, advertising, or popular culture.
 [^3]: **Slogan**: from Gaelic *sluagh-ghairm*, i.e. "battle cry", used by Scottish Highland or Irish clans. The metaphoric sense of "distinctive word or phrase used by a political or other group" is attested from 1704. It still carries the connotation of a rallying cry, a motto, or a watchword, deliberately crafted to be persuasive, promote a cause or sell an idea.  
  
-## 🔴 Examples in the development economics arena
+## Examples in the development economics arena
 
-Drawing from my own professional experience in development economics, I recall the ebb and flow of trends in the popularity of phrases like the following (grouped by macro theme): 
+Drawing from my own professional experience in development economics, I recall the ebb and flow of trends in the popularity of several phrases. There are less recent examples (*"South-South Cooperation"*, *"Gender Mainstreaming"*, *"Results-Based Financing"*), phrases that are now are quintessential to the development discourse (*"Sustainable Development"*, *"ESG criteria"*) or that are a legacy from the Covid-19 crisis (*"Build back better"*, *"Resilient development"*, *"Green and blue economy"*). 
 
-**OFFICIAL DEVELOPMENT AID**
+ 
+<!-- **OFFICIAL DEVELOPMENT AID** -->
 
--   Boost shared prosperity
--   MFD (Maximizing Finance for Development)
--   PforR (Program for Results)
--   RBF (Results-Based Financing) 
--   RBA (Results-Based Aid)
--   Evidence-based policy <!-- + Cash on Delivery Aid --> <!-- + Private sector engagement --> <!-- + Public-Private Partnerships (PPPs) --> <!-- + Blended finance -->
+<!-- -   Boost shared prosperity -->
+<!-- -   MFD (Maximizing Finance for Development) -->
+<!-- -   PforR (Program for Results) -->
+<!-- -   RBF (Results-Based Financing)  -->
+<!-- -   RBA (Results-Based Aid) -->
+<!-- -   Evidence-based policy <!-- + Cash on Delivery Aid 
+<!--  + Private sector engagement --> <!-- 
+<!--  + Public-Private Partnerships (PPPs) --> 
+<!--  + Blended finance -->
 
-**INCLUSION**
+<!-- **INCLUSION** -->
 
--   South-South Cooperation
--   Gender Mainstreaming
--   Leave No One Behind <!-- + Inclusive Growth --> <!-- + Focus on the "bottom billion" --> <!-- + End extreme poverty -->
--   The Bottom Billion
+<!-- -   South-South Cooperation -->
+<!-- -   Gender Mainstreaming -->
+<!-- -   Leave No One Behind -->
+<!-- + Inclusive Growth --> 
+<!-- + Focus on the "bottom billion" --> 
+<!-- + End extreme poverty --> 
+<!-- -   The Bottom Billion -->
 
-**SUSTAINABILITY, ENVIRONMENT**
+<!-- **SUSTAINABILITY, ENVIRONMENT** -->
 
--   Sustainable Development
--   SDGs (Sustainable Development Goals)
--   ESG (Environmental, social, and governance) *criteria*
--   Mainstreaming climate action
--   3 zeros *(0 poverty, 0 net carbon emissions, 0 net loss of natural capital)*
--   GRID (Green, Resilient, and Inclusive Development)
--   Build Back Better <!-- + Green growth / Green economy --> <!-- + Blue Economy --> <!-- + Green, Digital, and Fair  --> <!-- + Green and grey infrastructure --> <!-- + Circular Economy -->
+<!-- -   Sustainable Development -->
+<!-- -   SDGs (Sustainable Development Goals) -->
+<!-- -   ESG (Environmental, social, and governance) *criteria* -->
+<!-- -   Mainstreaming climate action -->
+<!-- -   3 zeros *(0 poverty, 0 net carbon emissions, 0 net loss of natural capital)* -->
+<!-- -   GRID (Green, Resilient, and Inclusive Development) -->
+<!-- -   Build Back Better <!-- + Green growth / Green economy --> 
+<!-- + Blue Economy --> <!-- + Green, Digital, and Fair  --> 
+<!-- + Green and grey infrastructure --> 
+<!-- + Circular Economy --> 
 
 I've observed how similar formulaic expressions often make their way into project documentation and policy papers, quickly gaining traction—at times becoming pervasive—in both academic and professional discourse.  
 

@@ -7,7 +7,15 @@ quarto install extension schochastics/academicons # https://jpswalsh.github.io/a
 #quarto add mcanouil/quarto-iconify
 
 # ====== RUN tar_make() to render reports in ./analysis/*    !!!!!!!!
-Rscript -e "targets::tar_make()"
+Rscript -e "targets::tar_make(callr_function = NULL)"
+# EACH
+Rscript -e "targets::tar_make(prep_report)"
+Rscript -e "targets::tar_make(eda_report)"
+Rscript -e "targets::tar_make(feat_class_report)"
+Rscript -e "targets::tar_make(website)"
+# GRAPH
+Rscript -e "targets::tar_visnetwork()"
+
 
 # ====== RENDER the entire site
 # quarto preview
@@ -69,7 +77,7 @@ git commit -m "added analysis/00_intro_NLP.qmd analysis/01_text_data.qmd"
 git push origin master
 
 #=========================================== ALL IN ONE  ================================================#
-git add -u && git commit -a -m "revised navbar str" && git push
+git add -u && git commit -a -m "small note" && git push
 
 #=========================================== FIle pubblico  ================================================#
 # https://quarto.org/docs/publishing/quarto-pub.html

@@ -1,7 +1,7 @@
 ---
 title: "WB Project PDOs Data Preprocessing"
 author: "Luisa M. Mimmi"
-date: "Last run: `r format(Sys.time(), '%F')`"
+#date: "Last run: `r format(Sys.time(), '%F')`"
 lang: en
 editor: source
 engine: knitr
@@ -242,7 +242,7 @@ all_proj <- read_excel(here::here("data", "raw_data", "project2",
                                   "all_projects_as_of29ago2024.xls"), 
                          col_names = TRUE,
                          skip = 2) 
-
+# Save as .RDS 
 save(all_proj, file = here::here("data", "raw_data", "project2", 
                                  "all_projects_as_of29ago2024.Rdata") ) 
 rm(all_projects_as_of29ago2024)
@@ -324,7 +324,7 @@ skimr::skim(all_proj_t$closingdateFY) # complete_rate 0.707
    + ranging from 1947 - 2026
 
 
-# Explore WB projects with no PDO text
+# [FUN] Explore WB projects with no PDO text
 
 ```{r}
 # Function to count missing values and distinct values in a subset of columns

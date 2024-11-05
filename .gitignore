@@ -18,6 +18,7 @@ _freeze/
 
 # Private or old
 _my_stuff/*
+_intro_NLP.qmd
 analysis/_zz_old_files/*
 buzzwords.bib
 data/raw_data/project2/_all_projects_as_of29ago2024descr-stats.md
@@ -27,3 +28,6 @@ data/raw_data/project2/_all_projects_as_of29ago2024descr-stats.md
 *.log
 *.aux
 README_files/
+
+# target files
+_targets.yaml
