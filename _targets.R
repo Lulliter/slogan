@@ -14,13 +14,14 @@ library(purrr)  # For walk function
 # --- from 01b_WB_project_pdo_EDA.qmd
 #source(here("R","fs_plotting.R"))
 
+
 # This hardcodes the absolute path in _targets.yaml, so to make this more
 # portable, we rewrite it every time this pipeline is run (and we don't track
 # _targets.yaml with git)
 tar_config_set(
    store = here::here("_targets"),
-   script = here::here("_targets.R")
-)
+   script = here::here("_targets.R"))
+
 
 
 # PIPELINE ----------------
@@ -35,6 +36,12 @@ list(
       data,
       read_excel(data_file, col_names = TRUE, skip = 2)),
 
+   # wrd data from OLD SLOGAN PROJECT
+   tar_target(
+      wdr,
+      here::here("data", "derived_data", "wdr.rds"),
+      format = "file"),
+
    # ANALYSIS FILES ----------------
    ## Process and clean data ----
    tar_target(
@@ -48,41 +55,74 @@ list(
       },
       format = "file"),
 
-   ## ----- 🔴 OUTPUTs from  `prep_report` ----
-   ### ___ Define target for projs_train.rds ----
+   ## OUTPUTs from  `prep_report` ----
+   ### ___ projs_train.rds ----
    tar_target(
       projs_train,
-      here::here("data", "derived_data", "projs_train.rds"),
-      format = "file"
-   ),
+      {
+         # Ensure dependency on `prep_report`
+         prep_report
+         here::here("data", "derived_data", "projs_train.rds")
+      },
+      format = "file"),
 
-   ### ___ Define target for pdo_train_t.rds ----
+   ### ___ pdo_train_t.rds ----
    tar_target(
       pdo_train_t,
-      here::here("data", "derived_data", "pdo_train_t.rds"),
-      format = "file"
-   ),
+      {
+         # Ensure dependency on `prep_report`
+         prep_report
+         here::here("data", "derived_data", "pdo_train_t.rds")
+      },
+      format = "file"),
 
 
    ## Exploratory data analysis ----
    tar_target(
       eda_report,
-      {
-         # Just reference the file paths to signal dependency without loading them
+      {# Just reference the file paths to signal dependency without loading them
          projs_train
          pdo_train_t
-
          # Render the EDA report
          quarto::quarto_render(here::here("analysis", "01b_WB_project_pdo_EDA.qmd"))
       },
-      format = "file"
-   ),
+      format = "file"),
+   ## OUTPUTs from  `eda_report` ----
+   ### ___ custom_stop_words.rds ----
+   tar_target(
+      custom_stop_words, # Ensure dependency on `eda_report`
+      {eda_report
+         eda_report
+         here::here("data", "derived_data", "custom_stop_words.rds")
+      },
+      format = "file"),
+
+   ### ___ pcustom_stop_words_df.rds ----
+   tar_target(
+      custom_stop_words_df, # Ensure dependency on `eda_report`
+      {eda_report
+         here::here("data", "derived_data", "custom_stop_words_df.rds")
+      },
+      format = "file"),
+
    ## ML Feature Classification ----
    tar_target(
       feat_class_report,
-      quarto::quarto_render(here::here("analysis", "01c_WB_project_pdo_feat_class.qmd")),
+      {wdr # Just reference the file to signal dependency without loading them
+         # Render the EDA report
+         quarto::quarto_render(here::here("analysis", "01c_WB_project_pdo_feat_class.qmd"))
+      },
       format = "file"
    ),
+   ## OUTPUTs from  `feat_class_report` ----
+   ### ___ custom_stop_words.rds ----
+   tar_target(
+      wdr2,
+      {feat_class_report # Ensure dependency on `feat_class_report`
+         feat_class_report
+         here::here("data", "derived_data", "wdr2.rds")
+      },
+      format = "file"),
 
    # Combine ALL ANALYSIS reports  ----
    tar_target(
@@ -92,12 +132,10 @@ list(
    # POST page (resulting from above) ----
    tar_target(
       post_page,
-      {# Reference analysis_reports to create dependency
-         analysis_reports
+      {analysis_reports # Reference analysis_reports to create dependency
          quarto::quarto_render(here::here("posts", "PDO_eda.qmd"))
       },
       format = "file"),
-
 
    # OTHER INDEPENDENT PAGES  -------
    ## Index page (root)----
@@ -116,15 +154,16 @@ list(
       all_pages,
       c(analysis_reports, index_page, research_page, post_page)),
 
-   # Copy all rendered pages to docs/ directory -------
+   # RENDER WEBSITE -------
+   ## Copy all rendered pages to docs/ directory
    tar_target(
       render_website,
       {
          # Ensure the docs/ directory exists
-         dir.create(here::here("docs"), showWarnings = FALSE)
+         base::dir.create(here::here("docs"), showWarnings = FALSE)
 
          # Copy each page to docs/
-         walk(all_pages, ~ file.copy(.x, here::here("docs"), overwrite = TRUE))
+         purrr::walk(all_pages, ~ file.copy(.x, here::here("docs"), overwrite = TRUE))
       },
       #cue = tar_cue(mode = "always") # Always re-render the website when this target is called
       cue = tar_cue(depend = TRUE) ) # setting will trigger render_website only if one of its direct dependencies changes

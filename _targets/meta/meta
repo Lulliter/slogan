@@ -1,17 +1,19 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|32d08f66c06e5c9a|||||||||||||||
+.Random.seed|object|a4f52e279ef685fa|||||||||||||||
 all_pages|stem|c510cd7d2d723f31|8aa8e2c4a6cbf123|3ebb59fc30964110|564791516||t20033.380224812s|c3d3b541ede7844e|46|rds|local|vector|||0||
-all_reports|stem||e30c9c479a5050e3|e862af067f685881|-1592468408||t20032.8700292602s||0|file|local|vector|||||_build_ target all_reports did not return a character. dynamic files targets with format  file must return character vectors of file or directory paths.
 analysis_reports|stem|c510cd7d2d723f31|2420a50adb0bc714|e862af067f685881|-1344709957||t20033.6534737449s|c3d3b541ede7844e|46|rds|local|vector|||0||
+custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20033.9509651404s|378c305854a4daa0|440|file|local|vector|||0||
+custom_stop_words_df|stem|a4ba2befa1980ac1|d415925623dcd41d|d82ec1261c0152e5|-1547741128|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words_df.rds|t20033.9509651471s|9e4fbd1b8a0232ce|516|file|local|vector|||0||
 data|stem|8744ccd58d306b8e|b65fa36814e991ef|c34d42c10b3c37c5|33550471||t20033.377248005s|af2f5518db55c56b|2395592|rds|local|vector|||0.468||
 data_file|stem|283a4aed2e154bb3|68df3f3bf994d0ec|2c530c1562a7fbd1|-679625259|/Users/luisamimmi/Github/slogan/data/raw_data/project2/all_projects_as_of29ago2024.xls|t19964.6636342593s|60dddb8bd61b15fd|16567296|file|local|vector|||0||
-data.file|stem|283a4aed2e154bb3|68df3f3bf994d0ec|2c530c1562a7fbd1|-251739241|/Users/luisamimmi/Github/slogan/data/raw_data/project2/all_projects_as_of29ago2024.xls|t19964.6636342593s|60dddb8bd61b15fd|16567296|file|local|vector|||0||
 eda_report|stem|08d5f59e833de599|9a5876cde47030ea|6889aa1657cec7e1|-690365211||t0s|a10b0861f057ffab|0|file|local|vector|||47.964||
-feat_class_report|stem|08d5f59e833de599|0e80dbbd76f1727b|2c530c1562a7fbd1|-1708048460||t0s|a10b0861f057ffab|0|file|local|vector|||82.575||
+feat_class_report|stem|08d5f59e833de599|cd57adc3927a16af|49470ca4cb75aa50|-1708048460||t0s|a10b0861f057ffab|0|file|local|vector|||91.226||
 index_page|stem|08d5f59e833de599|369ff240947dd68d|2c530c1562a7fbd1|40237298||t0s|a10b0861f057ffab|0|file|local|vector|||1.035||
-pdo_train_t|stem|58f395ab21a2db66|2659cd69a0cd8d6b|2c530c1562a7fbd1|-1458755856|/Users/luisamimmi/Github/slogan/data/derived_data/pdo_train_t.rds|t20033.6363373333s|91ede757047d3f42|5820724|file|local|vector|||0||
+pdo_train_t|stem|58f395ab21a2db66|0238ec2fcc8be6ee|8e1f9cecbb48639a|-1458755856|/Users/luisamimmi/Github/slogan/data/derived_data/pdo_train_t.rds|t20033.6363373333s|91ede757047d3f42|5820724|file|local|vector|||0.001||
 post_page|stem|08d5f59e833de599|cf1b05a0a5846d36|b02b7b6bb9b380fa|-1933830623||t0s|a10b0861f057ffab|0|file|local|vector|||7.503||
 prep_report|stem|08d5f59e833de599|f06d2815aeeb3e32|e7e50988e47520c8|-2139184625||t0s|a10b0861f057ffab|0|file|local|vector|||117.478||
-projs_train|stem|32b9d1dc94fb5243|52befa925aedeb30|2c530c1562a7fbd1|-958184839|/Users/luisamimmi/Github/slogan/data/derived_data/projs_train.rds|t20033.636310831s|36a9e5dab42ff29e|591655|file|local|vector|||0||
-render_website|stem|c510cd7d2d723f31|597775323df9cad0|2702651c636d6170|379097287||t20033.38022484s|c3d3b541ede7844e|46|rds|local|vector|||0||
+projs_train|stem|32b9d1dc94fb5243|f62ba75a44ef596f|8e1f9cecbb48639a|-958184839|/Users/luisamimmi/Github/slogan/data/derived_data/projs_train.rds|t20033.636310831s|36a9e5dab42ff29e|591655|file|local|vector|||0.001||
+render_website|stem|c510cd7d2d723f31|845ac6134c3157c9|2702651c636d6170|379097287||t20033.9596634075s|c3d3b541ede7844e|46|rds|local|vector|||0.001||
 research_page|stem|08d5f59e833de599|26339212c59940bf|2c530c1562a7fbd1|844215892||t0s|a10b0861f057ffab|0|file|local|vector|||2.754||
+wdr|stem|8f01b29135b6a7b4|103412fc68c132bd|2c530c1562a7fbd1|-1060017006|/Users/luisamimmi/Github/slogan/data/derived_data/wdr.rds|t20017.3726587004s|91cc0d3d8f532ae2|120370|file|local|vector|||0||
+wdr2|stem|47475e493cf5b170|6a5067d86b6c94ff|2342d0f8ce1d3e35|-1785450563|/Users/luisamimmi/Github/slogan/data/derived_data/wdr2.rds|t20033.9510315004s|1118bb14cd00e029|115194|file|local|vector|||0||

@@ -64,14 +64,8 @@ library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
 library(patchwork) # The Composer of Plots
 library(ragg) # Anti-Grain Geometry Graphics)
 
-# # ML ------------------------------------- 
-# library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages 
-# library(textrecipes) # Extra 'Recipes' for Text Processing 
-
 # TEXT ANALYTICS -------------------------------------
-library(tidytext) # Text  MINING_OIL_GAS using 'dplyr', 'ggplot2', and Other Tidy Tools 
-# library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
-# library(cleanNLP) # A Tidy Data Model for Natural Language Processing 
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools   
 ```
 
 # Set up ggplot2 theme
@@ -163,7 +157,7 @@ lulas_theme <- theme_minimal(base_size = 12) +
 # Data sources
 The data used in this analysis comes from the World Bank's Projects & Operations database.
 
-Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/01a_WB_project_pdo_prep.qmd`), WHERE:  
+Since some pre-processing steps are computationally expensive, I did that in a separate read-only notebook (`analysis/01a_WB_project_pdo_prep.qmd`), where:  
 
 1. Retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
    + Of these, approximately 50% (**11,322 projects**) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
@@ -198,7 +192,7 @@ when you initialize a back-end (like CoreNLP) in `cleanNLP`, it stays active for
 #| echo: true
 
 # ---- 1) Initialize the CoreNLP backend
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing  
 cnlp_init_corenlp()
 # If you want to specify a language or model path:
 cnlp_init_corenlp(language = "en", 
@@ -206,7 +200,7 @@ cnlp_init_corenlp(language = "en",
                   )
 
 # ---- 2) Initialize the spaCy backend 
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing  
 library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library
 # Initialize spaCy in cleanNLP
 cnlp_init_spacy()
@@ -214,7 +208,7 @@ cnlp_init_spacy()
 cnlp_init_spacy(model_name = "en_core_web_sm")
 
 # ---- 3) Initialize the udpipe backend
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing # A Tidy Data Model for Natural Language Processing
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing # 
 # Initialize udpipe backend
 cnlp_init_udpipe(model_name = "english")
 
@@ -537,7 +531,6 @@ General Preference in Real-World NLP:
 
 # _______ 
 # TEXT ANALYSIS/SUMMARY
-# _______ 
 <!-- see https://cengel.github.io/R-text-analysis/textanalysis.html  -->
 
 ```{r}
@@ -591,7 +584,7 @@ Note: normally, the most frequent words are *function words* (e.g. determiners, 
 However, in this analysis, I do not use the **STOPWORD** approach, but use the **POS tags** to reduce -- in a more controlled way -- the dataset, filtering the content words such as nouns, verbs, adjectives, and adverbs.
 
 
-#### [FUNC] save plot Ouptput
+### [FUNC] save plot Ouptput
 
 Pointless bc does not render in the HTML output.
 ```{r}
@@ -627,7 +620,7 @@ Pointless bc does not render in the HTML output.
 
 ```
 
-#### [FUNC] save plot Object
+### [FUNC] save plot Object
 
 ```{r}
 #| echo: false
@@ -757,7 +750,6 @@ f_save_plot_obj(combo_freq_p, "combo_freq_p")
 ```
 
 # _______ 
-
 ## SECTOR-related term frequency
 
 ### Isolate SECTOR words and see frequency over years
@@ -806,7 +798,7 @@ pdo_train_t <- pdo_train_t %>%
    relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
 ```
 
-#### Data prep for sector plots
+### Data prep for sector plots
 ```{r}
 tabyl(pdo_train_t$tok_sector_broad)
 
@@ -856,7 +848,7 @@ sector_broad_pdo <- pdo_train_t %>%
 #df$FY
 ```
 
-#### [FIG] faceted sector (`tok_sector_broad`) freq ggplot
+### [FIG] faceted sector (`tok_sector_broad`) freq ggplot
 ```{r}
 #| output: TRUE
 
@@ -906,7 +898,7 @@ f_save_plot_obj(pdo_sect_broad_freq, "pdo_sect_broad_freq")
 ```
 
 
-#### [FUNC] Figure split sector (`tok_sector_broad`) freq ggplot
+### [FUNC] Figure split sector (`tok_sector_broad`) freq ggplot
 ```{r}
 # --- Get a LIST of unique sectors (facets) and split the data
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
@@ -976,7 +968,7 @@ walk2(sector_plots, names(PDOsector_list),
 #pdo_FINANCIAL_sect_p
 ```
 
-
+# _______
 ## SECTOR in PDO v. WDR publications
 
 For the (broadly defined) *HEALTH* sector, it is quite clear that **Covid-19** is the main driver of the peak in 2020. 
@@ -998,11 +990,10 @@ Previously created, as explained in `data/derived_data/_provenance.md`
 wdr <- readRDS(here("data","derived_data", "wdr.rds"))
 ```
 
-
-### --- Manually add WDR 2023 
+### --- Manually add WDR 2023 ✍🏻
 [OKR Full item](https://openknowledge.worldbank.org/entities/publication/5e5ac9f1-71ee-4734-825e-60966658395f/full)
 ```{r}
-library(tibble)
+library(tibble) # Simple Data Frames # Simple Data Frames
 
 # Create a named list of NA values for subj_11 to subj_46
 na_values <- setNames(rep(NA, 35), paste0("subj_", 12:46))
@@ -1037,11 +1028,11 @@ wdr <- wdr %>%
   )
 ```
 
-### --- Manually add WDR 2024 
+### --- Manually add WDR 2024  ✍🏻
 [OKR Full item](https://openknowledge.worldbank.org/entities/publication/7c5cd962-11ae-4101-8f3f-e15b86135f0e/full)
 
 ```{r}
-library(tibble)
+library(tibble) # Simple Data Frames # Simple Data Frames
 
 # Create a named list of NA values for subj_11 to subj_46
 na_values <- setNames(rep(NA, 35), paste0("subj_", 12:46))
@@ -1078,7 +1069,7 @@ wdr <- wdr %>%
   )
 ```
 
-### --- Manually correct WDR 2011
+### --- Manually correct WDR 2011  ✍🏻
 
 <!-- this was a weird case in slogan OLD which I corrected manually, subjects were invented (taking from abstracts-->
 
@@ -1130,8 +1121,7 @@ wdr <- wdr %>%
   mutate(title = str_trim(title, side = "left"))
 ```
 
-
-### --- re-save upon correction `wrd2.rds`
+### --- Re-save (upon correction) `wrd2.rds`
 ```{r}
 wdr2 <-  wdr
 write_rds(x = wdr2, file = here::here("data", "derived_data","wdr2.rds"))
@@ -1387,7 +1377,6 @@ f_save_plot_obj (pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
 
 # _______ 
 ## BIGRAMS 
-# _______ 
 
 > Here I use [`clnp_annotate()` output + ] `dplyr` to combine consecutive tokens into bigrams.
 
@@ -1416,7 +1405,6 @@ count_bigram <- bigrams %>%
 ```
 
 ## Clean bigrams
-
 The challenge is to clean but without separating consecutive words... so I do this split-reunite process to remove stopwords and punctuation. Basically only keeping bigrams made of 2 nouns or ADJ+noun.
 ```{r}
 # Separate the bigram column into two words
@@ -1454,7 +1442,6 @@ bigram_freq <- bigrams_cleaned %>%
 #| fig.width: 9
 #| fig.height: 6
 #| fig.align: center
-
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
@@ -1515,7 +1502,6 @@ pdo_bigr_freq
 f_save_plot_obj(pdo_bigr_freq , "pdo_bigr_freq")
 ```
 
- 
 Results are not surprising in terms of frequent bigram recurrence:
 
 + See for example "increase access", "service delivery" ,"institutional capacity", "poverty reduction" etc, at the top.
@@ -1705,10 +1691,8 @@ top_bigrams_FYper <- bigrams_cleaned %>%
    top_n(top_n_i, count) %>%
    ungroup()
 ```
- 
- 
-> sd() returns NA for bigrams that are not present in any periods (or are present in just 1 period). 
 
+> sd() returns NA for bigrams that are not present in any periods (or are present in just 1 period). 
 
 ```{r}
 # Calculate the mean frequency and standard deviation of the counts for each bigram across periods
@@ -1871,9 +1855,7 @@ f_save_plot_obj(pdo_pub_pri_bigr, "pdo_pub_pri_bigr")
 + What happens in FY 2014-2016 that makes these bigram drop in frequency of mention?
 
 # _______ 
-## TRIGRAMS 
-# _______ 
-
+# TRIGRAMS 
 
 ```{r}
 # Create bigrams by pairing consecutive tokens by sentence ID and token IDs
@@ -1900,8 +1882,8 @@ trigrams <- pdo_train_t %>%
 count_trigram <- trigrams %>% 
    count(trigram, sort = TRUE) 
 ```
+
 ## Clean trigrams
- 
 The challenge is to clean but without separating consecutive words... so I do this split-reunite process to remove stopwords and punctuation. Basically only keeping bigrams made of 2 nouns or ADJ+noun.
 
 ```{r}
@@ -1990,7 +1972,6 @@ pdo_trigram_freq_plot
 #f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
 f_save_plot_obj(pdo_trigram_freq_plot , "pdo_trigram_freq_plot")
 ```
-
 
 
 # _______ 
@@ -2445,24 +2426,11 @@ outputs_bigrams2  %>%
 
 ```
 
-1. Paradossalmente, per chi si cimenta con l’utilizzo di questi strumenti di IA (ChatGPT, ecc.), appare presto evidente che per quanto stupefacenti, le sue risposte rivelano-per contrasto-l'incredibile complessità dell'intelligenza umana e della nostra capacità di comprendere il mondo.
-
-Per fare qualche esempio:
-   + la capacita di collegare concetti e idee in modo creativo e originale
-   + *heuristics*, ovvero quelle scorciatoie mentali che ci permettono di prendere decisioni rapide e intuitive basate su esperienza e contesto 
-   + la capacità di comprendere il contesto e di adattare il nostro comportamento di conseguenza
-   + i principi etici e morali che guidano le nostre azioni e decisioni
-   + l'autocoscienza, ovvero la consapevolezza di noi stessi, dei nostri pensieri e azioni  
-ma allora cos'e' che sta scatenando tutto questo interesse per l'IA e la sua capacità di generare testi e risposte?
-
-
 # _______
 # CORRESPONDENCE TEXT v. FEATURES 
-# _______
 
 The particular dataset containing PDO text, offers the advantage of having also some other *features* that have been used to categorize the projects. 
 This represents a fantastic opportunity to explore the correspondence between the text and such features.
-
 
 #### ----  Old plot 
 
@@ -2645,26 +2613,26 @@ paint(sector_broad_tag)
 tabyl(sector_broad_tag$sector1_broad )
 ```
 
-MATCH PDO WORDS AND SECTOR TAGS
+<!-- MATCH PDO WORDS AND SECTOR TAGS -->
 
- 
- pdo_train_t$tok_sector_broad      n  sector_broad_tag$sector1_broad 
-               MINING_OIL_GAS    396  MINING_OIL_GAS  3578
-                    EDUCATION   1186  EDUCATION  7734
-                       ENERGY    710  ENERGY 20479
-                       HEALTH   1525  HEALTH 19502
-                          ICT   3244  ICT  6555
-                    TRANSPORT   3642  TRANSPORT 23795
-                        URBAN   2142  URBAN 0 
-                      WAT_SAN   1070  WAT_SAN 20893
-                 AGR_FOR_FISH   1164  
-                      CLIMATE   2831  
-                    FINANCIAL   2044  
-                 GENDER_EQUAL    213  
-               IND_TRADE_SERV   2373  
-                  INSTIT_SUPP   2658  
-                  SOCIAL_PROT    762  
-                         <NA> 223400  
+
+<!--  pdo_train_t$tok_sector_broad      n  sector_broad_tag$sector1_broad  -->
+<!--                MINING_OIL_GAS    396  MINING_OIL_GAS  3578 -->
+<!--                     EDUCATION   1186  EDUCATION  7734 -->
+<!--                        ENERGY    710  ENERGY 20479 -->
+<!--                        HEALTH   1525  HEALTH 19502 -->
+<!--                           ICT   3244  ICT  6555 -->
+<!--                     TRANSPORT   3642  TRANSPORT 23795 -->
+<!--                         URBAN   2142  URBAN 0  -->
+<!--                       WAT_SAN   1070  WAT_SAN 20893 -->
+<!--                  AGR_FOR_FISH   1164   -->
+<!--                       CLIMATE   2831   -->
+<!--                     FINANCIAL   2044   -->
+<!--                  GENDER_EQUAL    213   -->
+<!--                IND_TRADE_SERV   2373   -->
+<!--                   INSTIT_SUPP   2658   -->
+<!--                   SOCIAL_PROT    762   -->
+<!--                          <NA> 223400   -->
 
 
 ### [FUNC] Plot each tag sector
@@ -2731,7 +2699,7 @@ f_plot_tag_sector( name_sec = "EDUCATION")
 <!--    plot_layout(ncol = 1)  # Use `ncol = 1` to stack vertically or `ncol = 2` for side-by-side -->
 <!-- ``` -->
 
-## Combine two sets of data sector_broad_tag and sector_broad_pdo
+## Combine two sets of data `sector_broad_tag` and `sector_broad_pdo`
 
 ```{r}
 # not sure why 
@@ -3353,5 +3321,4 @@ f_plot_comm_sector( name_sec = "MINING_OIL_GAS" )
 
 # =====  !!!!! QUI  !!!!!  ======
 
-# Acknowledgements
 

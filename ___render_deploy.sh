@@ -10,13 +10,14 @@ quarto install extension schochastics/academicons # https://jpswalsh.github.io/a
 Rscript -e "targets::tar_make(callr_function = NULL)"
 # EACH
 Rscript -e "targets::tar_make(prep_report)"
-Rscript -e "targets::tar_make(projs_train)"
-Rscript -e "targets::tar_make(pdo_train_t)"
+Rscript -e "targets::tar_make(projs_train)" # DATA dep
+Rscript -e "targets::tar_make(pdo_train_t)" # DATA dep
 Rscript -e "targets::tar_make(eda_report)"
 Rscript -e "targets::tar_make(feat_class_report)"
 Rscript -e "targets::tar_make(analysis_reports)" # error
-Rscript -e "targets::tar_make(index_page)"
 Rscript -e "targets::tar_make(post_page)"
+
+Rscript -e "targets::tar_make(index_page)"
 Rscript -e "targets::tar_make(research_page)"
 Rscript -e "targets::tar_make(render_website)"
 
@@ -24,25 +25,11 @@ Rscript -e "targets::tar_make(render_website)"
 Rscript -e "targets::tar_visnetwork()"
 
 # ====== RENDER the entire site (not needed if you run tar_make)
-# quarto preview
-quarto preview
+         # quarto preview
+         quarto preview
 
-# ====== RENDER the entire site
-quarto render
-
-# render a single file only
-project:
-  render:
-    - section1.qmd
-    - section2.qmd
-    - "*.qmd"
-    - "!ignored.qmd"
-    - "!ignored-dir/"
-
-# ====== PUBLISH
-# quarto publish  # quasto stronzo mi crea la git branch "gh-pages" -->  FIX delete branch
-			#git branch -d branch_to_delete # { not allowed IF I am on it}
-			#git branch -D branch_to_delete # { -D if you have changes that are not merged and STILL delete}
+         # ====== RENDER the entire site
+         quarto render
 
 #=========================================== (Push to Github repo) ================================================#
 cd .
@@ -72,7 +59,7 @@ fi
 # ... Commit Those changes.
 git commit -m "$msg"
 =======
-git commit -m "targets +++ * 🙌🏻🎉🎊"
+git commit -m "targets review"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "added analysis/* but mostly hidden "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
