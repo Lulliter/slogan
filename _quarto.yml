@@ -20,7 +20,7 @@ website:
     # left: |
     #   {{< fa regular copyright >}} Luisa M. Mimmi 2024
     left: |
-      {{< fa brands creative-commons >}} 2024 Luisa M. Mimmi <br>
+      {{< fa brands creative-commons >}} 2024 [Luisa M. Mimmi](https://luisamimmi.org/) <br>
       License {{< fa brands creative-commons >}}
       {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}} {{< fa brands creative-commons-sa >}}
       [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

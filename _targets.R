@@ -23,65 +23,98 @@ tar_config_set(
 )
 
 
-# Define your targets
+# PIPELINE ----------------
+## each target has a name and an R function to run
 list(
-   # DATA INPUT ----------------
+   # RAW DATA INPUT ----------------
    tar_target(
-      data.file,
+      data_file,
       here::here("data", "raw_data", "project2", "all_projects_as_of29ago2024.xls"),
-      format = "file"
-   ),
+      format = "file"),
    tar_target(
       data,
-      read_excel(data.file, col_names = TRUE, skip = 2)
-   ),
+      read_excel(data_file, col_names = TRUE, skip = 2)),
 
-   # Render specific analysis/*.qmd files ------------
+   # ANALYSIS FILES ----------------
+   ## Process and clean data ----
    tar_target(
       prep_report,
-      quarto::quarto_render(here::here("analysis", "01a_WB_project_pdo_prep.qmd")),
+      {
+         # Use `data` directly in the target to ensure dependency tracking
+         quarto::quarto_render(
+            here::here("analysis", "01a_WB_project_pdo_prep.qmd"),
+            execute_params = list(data = data)  # Pass data as a parameter if used in the report
+         )
+      },
+      format = "file"),
+
+   ## ----- 🔴 OUTPUTs from  `prep_report` ----
+   ### ___ Define target for projs_train.rds ----
+   tar_target(
+      projs_train,
+      here::here("data", "derived_data", "projs_train.rds"),
       format = "file"
    ),
+
+   ### ___ Define target for pdo_train_t.rds ----
+   tar_target(
+      pdo_train_t,
+      here::here("data", "derived_data", "pdo_train_t.rds"),
+      format = "file"
+   ),
+
+
+   ## Exploratory data analysis ----
    tar_target(
       eda_report,
-      quarto::quarto_render(here::here("analysis", "01b_WB_project_pdo_EDA.qmd")),
+      {
+         # Just reference the file paths to signal dependency without loading them
+         projs_train
+         pdo_train_t
+
+         # Render the EDA report
+         quarto::quarto_render(here::here("analysis", "01b_WB_project_pdo_EDA.qmd"))
+      },
       format = "file"
    ),
+   ## ML Feature Classification ----
    tar_target(
       feat_class_report,
       quarto::quarto_render(here::here("analysis", "01c_WB_project_pdo_feat_class.qmd")),
       format = "file"
    ),
-   # Combine analysis reports into a list using tar_combine
+
+   # Combine ALL ANALYSIS reports  ----
    tar_target(
       analysis_reports,
-      c(prep_report, eda_report, feat_class_report),  # Combine manually
-      format = "file"
-   ),
+      c(prep_report, eda_report, feat_class_report)),
 
-   # Render root-level .qmd pages separately -------
+   # POST page (resulting from above) ----
+   tar_target(
+      post_page,
+      {# Reference analysis_reports to create dependency
+         analysis_reports
+         quarto::quarto_render(here::here("posts", "PDO_eda.qmd"))
+      },
+      format = "file"),
+
+
+   # OTHER INDEPENDENT PAGES  -------
+   ## Index page (root)----
    tar_target(
       index_page,
       quarto::quarto_render(here::here("index.qmd")),
-      format = "file"
-   ),
+      format = "file"),
+   ## Hypotheses page ----
    tar_target(
       research_page,
       quarto::quarto_render(here::here("research","hypotheses.qmd")),
-      format = "file"
-   ),
-   tar_target(
-      post_page,
-      quarto::quarto_render(here::here("posts", "PDO_eda.qmd")),
-      format = "file"
-   ),
+      format = "file"),
 
-   # Combine all pages (root-level and analysis) into a list -------
+   # Combine ALL WEB PAGES (root-level and analysis) -------
    tar_target(
       all_pages,
-      c(prep_report, eda_report, feat_class_report, index_page, research_page, post_page),
-      format = "file"
-   ),
+      c(analysis_reports, index_page, research_page, post_page)),
 
    # Copy all rendered pages to docs/ directory -------
    tar_target(
@@ -93,7 +126,8 @@ list(
          # Copy each page to docs/
          walk(all_pages, ~ file.copy(.x, here::here("docs"), overwrite = TRUE))
       },
-      cue = tar_cue(mode = "always")
-   )
+      #cue = tar_cue(mode = "always") # Always re-render the website when this target is called
+      cue = tar_cue(depend = TRUE) ) # setting will trigger render_website only if one of its direct dependencies changes
+
 )
 

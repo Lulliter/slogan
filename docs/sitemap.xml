@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lulliter.github.io/slogan/about.html</loc>
-    <lastmod>2024-05-10T09:58:56.620Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/01b_WB_project_pdo_EDA.html</loc>
-    <lastmod>2024-11-05T12:08:31.284Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/analysis/01a_WB_project_pdo_prep.html</loc>
-    <lastmod>2024-11-05T18:38:23.578Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/research/hypotheses.html</loc>
-    <lastmod>2024-11-05T22:35:34.317Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
-    <lastmod>2024-11-04T17:29:31.932Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/index.html</loc>
+    <lastmod>2024-11-06T10:31:47.371Z</lastmod>
   </url>
   <url>
     <loc>https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html</loc>
     <lastmod>2024-11-05T14:39:15.286Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/index.html</loc>
-    <lastmod>2024-11-05T22:10:20.517Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
+    <lastmod>2024-11-04T17:29:31.932Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/research/hypotheses.html</loc>
+    <lastmod>2024-11-06T11:03:53.390Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/01a_WB_project_pdo_prep.html</loc>
+    <lastmod>2024-11-06T15:16:07.818Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/analysis/01b_WB_project_pdo_EDA.html</loc>
+    <lastmod>2024-11-06T15:32:10.709Z</lastmod>
   </url>
 </urlset>

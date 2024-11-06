@@ -57,10 +57,10 @@ library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
 library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
 library(rsample) # General Resampling Infrastructure
 library(rvest) # Easily Harvest (Scrape) Web Pages
-library(cleanNLP)
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing #
 ```
 
-### ----------------------------------------------------------------------------
+---
 
 # Data sources
 
@@ -72,160 +72,20 @@ library(cleanNLP)
 
 The Accessibility Classification is **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
  
-# [Steps 2 Ingest + preprocess PDOs data HERE]
+# Process to ingest & preprocess raw PDO text data
 
-1. I retrieved manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
-2. Split the dataset and keep only  `projs_train` (50% of projects with PDO text, i.e. **4413 PDOs**)
-3. Clean the dataset
-4. Obtain **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned train dataset).
+1. Retrieve manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page: [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
+2. Split the dataset and keep only `projs_train` (50% of projects with PDO text, i.e. **4413 PDOs**)
+3. Clean the `projs_train` dataset 
+4. Obtain **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned version of `projs_train` dataset).
 
-
-### ---------------------------------------------------------------------------
- 
-## Ingest raw PDO text data
-
-
-<!-- EXE  -->
-<!-- https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0 -->
-<!-- https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=2023&end_fiscalyear=2023&os=0 -->
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
+I had made a prior attempt to ingest the WB document data using the `rvest` package, following the work of [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project who created the function `R/f_scrape_WB-OKR.R`. However the WB website has changed and the function is not working anymore.
+:::
 
 
-##  Attempt # 1 - nope! 🚫 {Ingest Projects data (via API)}
- 
-> DOESN'T WORK! 
-
-```{r}
-#| eval: false
-#| echo: false
-
-# DONE WITH CHAT GPT 
-# Load necessary libraries
-library(httr) # Tools for Working with URLs and HTTP
-library(jsonlite) # A Simple and Robust JSON Parser and Generator for R
-library(dplyr) # A Grammar of Data Manipulation
-
-# Define API parameters
-base_url <- "https://search.worldbank.org/api/v3/projects"
-start_year <- 2001
-end_year <- 2025
-rows_per_page <- 500
-output_dir <- "data/raw_data/project2"  # Output directory for the files
-
-# Ensure the directory exists
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
-}
-
-# Function to fetch and save data for a specific year
-fetch_and_save_data_year <- function(year) {
-  cat("Fetching data for fiscal year:", year, "\n")
-  
-  # Simulate data fetching (replace with actual data fetching logic)
-  data <- tryCatch({
-    # Replace this with the actual data fetching logic
-    # Example: data <- fetch_data_from_api(year)
-    data <- list(id = 1:2, theme_list = 1:3) # Simulated incorrect data
-    if (length(data$id) != length(data$theme_list)) {
-      stop("Data size mismatch")
-    }
-    data
-  }, error = function(e) {
-    cat("Failed to retrieve data for year", year, ". Error:", e$message, "\n")
-    return(NULL)
-  })
-  
-  if (is.null(data)) {
-    return(NULL)
-  }
-  
-  year_df <- bind_rows(lapply(data, bind_rows))
-  
-  # Save the data frame to a CSV file
-  output_file_path <- file.path(output_dir, paste0("world_bank_projects_", year, ".csv"))
-  write.csv(year_df, output_file_path, row.names = FALSE)
-  cat("Data for year", year, "saved to", output_file_path, "\n")
-}
-
-# Loop through each year and process data
-lapply(start_year:end_year, function(year) {
-  cat("Processing data for fiscal year:", year, "\n")
-  fetch_and_save_data_year(year)
-})
-```
-
-## Attempt # 2.a - nope! 🚫 {Ingest Projects data (manually split)}
-
-I retrieved manually ALL WB projects approved *between FY 1973 and 2023 (last FY incomplete)* on 09/22/2022 (WDRs go from 1978-2022)
-using this [example url](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) and saved individual `.xlsx` files in `data/raw_data/project`
-
-+ note the manual download is limited to # = 500
-
-Load all `.xlsx` files separately 
-<!-- Following https://martinctc.github.io/blog/vignette-write-and-read-multiple-excel-files-with-purrr/ -->
-
-```{r}
-#| eval: false
-#| echo: false
-
-# --- define directory path
-file_path <- here("data","raw_data", "projects/")
-
-# --- get a character vector of the names of files
-file_path %>% list.files(. , 
-                         pattern = ".xlsx",
-                         full.names = FALSE) -> xlsx_file_names
-# # or 
-# file_path %>% list.files() %>% .[str_detect(., ".xlsx")] -> csv_file_names
-
-# check
-class(xlsx_file_names)
-
-# ---- Load everything into the Global Environment
-xlsx_file_names %>%
-  purrr::map(function(file_name){ # iterate through each file name
-  assign(x = str_remove(file_name, "_downloaded_9_22_2022.xlsx"), # Remove file extension 
-         value = readxl::read_excel(paste0(file_path, file_name), skip = 1),
-         envir = .GlobalEnv)
-})
-```
-
-Save objs in folder as `.Rds` files separately 
-
-```{r}
-#| eval: false
-#| echo: false
-# [inputs] 2 write as .Rds 
-list_objects  <-  ls(pattern = "*WB_Projects*" ) # list newly created objects 
-list_objects
-rdsFilesFolder <- fs::path("./data/raw_data/projects")
-saveRDSobjects <- paste0(rdsFilesFolder, "/", list_objects, ".Rds")
-
-# [function] write as .Rds 
-for (i in seq_along(list_objects)) {
-  base::saveRDS(get(list_objects[i]), file = saveRDSobjects[i])
-}
-```
-
-```{r}
-#| eval: false
-#| echo: false
-str(object = '1973_WB_Projects_1_500')
-```
-
-## Attempt # 2.b - nope! 🚫 Ingest Projects data (`rvest`)!
-+ Looking at the HMTL structure it actually says at some point  
-   + `project-details-api="//search.worldbank.org/api/v3/projects?format=json&amp;fl=*" `
-   + `list-project-list-api="//search.worldbank.org/api/v3/projects?format=json&amp;rows=20&amp;fct=projectfinancialtype_exact,status_exact,regionname_exact,themev2_level1_exact,themev2_level2_exact,themev2_level3_exact,sector_exact,countryshortname_exact,cons_serv_reqd_ind_exact,esrc_ovrl_risk_rate_exact&amp;fl=id,regionname,countryname,projectstatusdisplay,project_name,countryshortname,pdo,impagency,cons_serv_reqd_ind,url,boardapprovaldate,closingdate,projectfinancialtype,curr_project_cost,ibrdcommamt,idacommamt,totalamt,grantamt,borrower,lendinginstr,envassesmentcategorycode,esrc_ovrl_risk_rate,sector1,sector2,sector3,theme1,theme2,status,totalcommamt,proj_last_upd_date,curr_total_commitment,curr_ibrd_commitment,curr_ida_commitment,last_stage_reached_name,theme_list,ida_cmt_usd_amt,cmt_usd_amt,projectcost"`
-   + `list-project-details-page="asfasf"`  
-   + `list-excel-file="https: //projects.worldbank.org/content/dam/documents/projects/all/all.xlsx"`
-   + `list-download-excel="https://search.worldbank.org/api/projects/all.xls"`
- 
-## Attempt # 2.c ✅ Ingest Projects data (manually all together)!
-
-+ I retrieved manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
-+ By the way this is the link ["list-download-excel"](https://search.worldbank.org/api/projects/all.xls)
-+ then saved HUUUGE `.xls` files in `data/raw_data/project2/all_projects_as_of29ago2024.xls`
-  + (plus a `Rdata` copy of the original file)
+## ✅ Ingest Projects data (manually  from `*.xlsx`  file)
 
 ```{r}
 all_projects_as_of29ago2024 <- read_excel(here::here ("data", "raw_data", "project2","all_projects_as_of29ago2024.xls"), 
@@ -263,10 +123,8 @@ skimr::skim(all_proj$closingdate) # complete_rate 0.707
 
 # _______ 
 # CLEANING FILE PDOs  
-# _______ 
 
-
-# Recode all_proj
+# Recode `all_proj`
 
 This data set has a lot of blank values, probably also bc some information was not collected way back in 1947... (e.g. PDO) 
 
@@ -314,7 +172,7 @@ skimr::skim(all_proj_t$boardapprovalFY) # complete_rate 0.779
 skimr::skim(all_proj_t$closingdateFY) # complete_rate 0.707
 ```
 
-### Recap content 
+## Recap content 
 
 > A lot of PDOs are missing, especially from earlier FYs
 
@@ -323,8 +181,7 @@ skimr::skim(all_proj_t$closingdateFY) # complete_rate 0.707
 + 22,569-4981 = **17,588** (non missing) board approval FY  ... 22.1% are missing
    + ranging from 1947 - 2026
 
-
-# [FUN] Explore WB projects with no PDO text
+### [FUN] Count missing/distinct values of columns
 
 ```{r}
 # Function to count missing values and distinct values in a subset of columns
@@ -370,8 +227,8 @@ f_recap_values <- function(data, columns) {
 f_recap_values(all_proj_t, c("id","pdo", "projectstatusdisplay", "boardapprovalFY", "regionname","sector1", "theme1", "projectfinancialtype"))
 ```
 
-#### Which PDOs are missing? 
-At least I hope the PDOs are missing in a non systematic way so I compare the distributions across some key features of **ALL PROJs** v **NON-missing-PDO-PROJs**
+## Which PDOs are missing? 
+Ideally, the PDOs are missing in a *non systematic* way. To check it, I compare the distributions across some key features of **ALL PROJs** v. **NON-missing-PDO-PROJs**
 
 ```{r}
 missing_pdo <- all_proj_t %>% 
@@ -407,8 +264,9 @@ tabyl(all_proj_t$lendinginstr)  %>% adorn_pct_formatting()  # Spec Inv Loan 6567
 tabyl(missing_pdo$lendinginstr)  %>% adorn_pct_formatting() # Spec Inv Loan 4928 |43.9%
 ```
 
-##### [Chi-Squared Test in the case of `projectfinancialtype`]
-See [expl Equitable Equations](https://www.youtube.com/watch?v=n5c11B5FJ24)
+### [Chi-Squared Test in the case of `projectfinancialtype`]
+<!-- See [expl Equitable Equations](https://www.youtube.com/watch?v=n5c11B5FJ24) -->
+
 ```{r}
 # Chi-Square Test: if a discrete distribution of a sample reflects the population, you can use a chi-square goodness-of-fit test
 
@@ -443,7 +301,7 @@ chisq_test
 # low p-value (typically < 0.05) suggests that the sample distribution is significantly different from the population!!!!
 ```
 
-##### [Chi-Squared Test in the case of `lendinginstr`]
+### [Chi-Squared Test in the case of `lendinginstr`]
 ```{r}
 # Chi-Square Test: if a discrete distribution of a sample reflects the population, you can use a chi-square goodness-of-fit test
 
@@ -482,15 +340,15 @@ Based on some available project features, I would say that even if many projects
 
 + approval FY
 + `projectfinancialtype` (Grants, IBRD, etc) but there are many missing type (many more in with-PDO sample)...
-+ `lendinginstr` **specific Investment Loan** are missing PDO in 4928 pr (43.9%). Why? 
++ `lendinginstr` **specific Investment Loan** are missing PDO in 4928 pr (43.9%). 
+
+Why? 
 
 # _______ 
-# PREPROCESSING 
-# _______ 
-
+# TEXT PREPROCESSING 
 
 # Obtain Reduced df `projs` ✅
-For my purposes it is safe to drop all the projects with missing PDO !
+For my purposes, it is safe to drop all the projects with missing PDO !
 
 + it turns out there are no **Project Development Objectives** spelled out until FY2001, so the **usable population of projects (with PDO text) spans from FY 2001 to FY 2023**.
 + I will also drop the projects with missing `projectstatusdisplay` (status)
@@ -526,13 +384,12 @@ paint(cnames)
 paint(projs)
 ```
 
-####  [[[CLEAN ENV]]]
 ```{r}
 # delete all in env EXCEPT for c(... )
 rm(list=setdiff(ls(), c("projs", "cnames" )))
 ```
 
-# Check DUPLICATES PDOs  🤯
+## Duplicated PDOs 🤯
 ```{r}
 str(projs)
 skim(projs$id)
@@ -562,11 +419,11 @@ n_distinct(duplicates$id)  # 2235
 n_distinct(duplicates$pdo)  # 1006
 ```
 
-There are `r nrow(duplicates)` 2250 projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
+There are `r nrow(duplicates)` projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
 
-# Manual correction text [`projs`]  ✅🤚🏻
+# Manual correction text [`projs`] 🤚🏻
 
-(Here I re-wrote the PDO for some projects that had misspelled words, lacking spaces, some typos and formatting issues. No substantial changes)
+(Here I re-wrote the PDO for some projects that had misspelled words, lacking spaces, some typos and HTML formatting characters. No substantial changes)
 ```{r}
 projs$pdo[projs$id == "P164414"] <- "The Multisector Development Policy Financing (DPF) intends to support Ukraine's highest priority reforms to move from economic stabilization to stronger and sustained economic growth by addressing deeper structural bottlenecks and governance challenges in key areas. Possible policy areas include : (i) strengthening private sector competitiveness, including reforming land markets and the financial sector; (ii) promoting sustainable and effective public services, including reforming pensions, social assistance, and health; and (iii ) improving governance, including reforming anticorruption institutions and tax administration. The financing  DPL or Policy Based Guarantee (PBG)."
 
@@ -631,9 +488,10 @@ projs <- projs %>%
   mutate(pdo = stringr::str_replace_all(pdo, "<[^>]+>", ""))
 ```
 
-# Splitting the sample into training, validation, and test sets
+# _______ 
+# SAMPLE SPLITTING
 
-(also to work on something smaller)
+Splitting the sample into training, validation, and test sets. In case of validating ML models but also to work on something smaller. 
 
 ```{r}
 # ensure we always get the same result when sampling (for convenience )
@@ -662,64 +520,16 @@ tabyl(projs_test$regionname)
 
 ```
 
-
-# Tokenize `train` PDOs | `tidytext`- OK but no! 🚫
-
-### ---- while preserving the *hyphenated words* 
-(so: `community-based` ecc. remain as such)
-```{r}
-#| eval: false
-#| echo: false
-
-# pdo_train_token <- projs_train %>%  # 4413 
-#    ungroup() %>%
-#    # Drop some useless columns PDOs 
-#    dplyr::select(id, FY = boardapprovalFY, pr_name, regionname, sector1, pdo) %>% 
-#    # Step 1: Replace HYPHEN with a placeholder (e.g., "HYPHEN")
-#    mutate(pdo_modified = str_replace_all(pdo, "-", "HYPHEN")) %>% 
-#    # Step 2: Unnest tokens, with punctuation stripping (but hyphens are now preserved)
-#    tidytext::unnest_tokens(output =  word,
-#                            token = "words",
-#                            input = pdo_modified ,
-#                            to_lower = T, # otherwise cannot match the stop_words  
-#                            strip_punc = TRUE,
-#                            drop = F # keep original text col (input)
-#    ) %>% # 225,360
-#    select(-pdo_modified) %>%
-#    # keep track of original word
-#    mutate(word = word) %>% 
-#    relocate(word, .after = pdo) %>% 
-#    # Step 3: Replace the placeholder back with a hyphen
-#    mutate(word = str_replace_all(word, "hyphen", "-")) %>% 
-#    mutate(word = str_replace_all(word, "covid-19", "covid19"))  # 225,360
-```
-
-
-### ---- while dropping *saxon genitive*
-(so `text's` TURNED TO `text` )
-```{r}
-#| eval: false
-#| echo: false
-
-# #### -- `text's` (TURNED TO `text` )
-# pdo_train_token <- pdo_train_token %>% 
-#    #### 1/2 ..  contains `'s` 
-#    mutate(word_s = str_detect(word_original, "\\b\\w+'s\\b")) %>%  
-#    #### 2/2 ... looks 4 ending with "'s" and REPLACES it with JUST  word before apostrophe
-#    mutate(word = str_replace_all(word_original, "\\b(\\w+)'s\\b", "\\1"))  %>%
-#    select(-word_s) # 225,360
-```
-
-
+# _______ 
+# [from here I work on `projs_train` only]
 
 # _______ 
 # PoS tagging + tokenization with `cleanNLP` ✅
-# _______ 
  
-## ---- tagging with `cleanNLP`
-AH: https://datavizs22.classes.andrewheiss.com/example/13-example/#sentiment-analysis
+## PoS tagging with `cleanNLP`
+<!-- AH: https://datavizs22.classes.andrewheiss.com/example/13-example/#sentiment-analysis -->
 
-Here’s the general process for tagging (or “annotating”) text with the cleanNLP package:
+Here’s the general process for tagging (or *“annotating”*) text with the `cleanNLP` package:
 
    1. Make a dataset where one column is the id (line number, chapter number, book+chapter, etc.), and another column is the text itself.
    2. Initialize the NLP tagger. You can use any of these:
@@ -729,7 +539,7 @@ Here’s the general process for tagging (or “annotating”) text with the cle
    3. Feed the data frame from step 1 into the cnlp_annotate() function and wait.
    4. Save the tagged data on your computer so you don’t have to re-tag it every time.
 
-#### Prep HYPHENATED words
+### Prep HYPHENATED words
 ```{r}
 # Replace hyphens with a placeholder before annotation
 pdo_train_to_tag <- projs_train %>%
@@ -745,20 +555,71 @@ pdo_train_to_tag <- projs_train %>%
    )) 
 ```
 
-## ---- [LOOONG] Annotate with `cleanNLP::cnlp_annotate()`
-```{r}
-# install.packages("cleanNLP")
-library(cleanNLP)
- 
-# ---- Initialize the tagger
-cnlp_init_udpipe()
+## [LOOONG] Annotate with `cleanNLP::cnlp_annotate()`
 
-# ---- Use the built-in R-based tagger
-pdo_train_tagged <- cnlp_annotate(pdo_train_to_tag, 
-                                  text_name = "pdo_2", 
-                                  doc_name = "id")
+[Only the 1st time]
+```{r}
+# # ---- Initialize the tagger
+# cleanNLP::cnlp_init_udpipe()
+# 
+# # ---- Use the built-in R-based tagger
+# pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag, 
+#                                   text_name = "pdo_2", 
+#                                   doc_name = "id")
+# 
+# # save the input data as .rds
+# saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
+
 ```
 
+[Conditionally re-annotate]
+```{r}
+# save the input data as .rds
+saveRDS(pdo_train_to_tag, here("data","derived_data","pdo_train_to_tag.rds"))
+# define the path to save the tagged data
+input_path <- here("data","derived_data","pdo_train_to_tag.rds")
+output_path <- here("data","derived_data","pdo_train_tagged.rds")
+```
+
+```{r}
+# ---- Initialize the tagger
+cleanNLP::cnlp_init_udpipe()
+
+# ---- Conditionally annotate the data only if it has changed since the last time
+# Check if previous input data exists; if not, save it for the first time
+if (!file.exists(input_path)) {
+  # Save pdo_train_to_tag to initialize the tracking
+  saveRDS(pdo_train_to_tag, input_path)
+  message("Initial input saved.")
+}
+
+# Load the previous input if it exists
+previous_input <- readRDS(input_path)
+
+# Only re-run if the input data has changed
+if (!identical(pdo_train_to_tag, previous_input)) {
+  # Run the annotation
+  pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag, 
+                                              text_name = "pdo_2", 
+                                              doc_name = "id")
+  
+  # Save the updated input and annotated result
+  saveRDS(pdo_train_to_tag, input_path)
+  saveRDS(pdo_train_tagged, output_path)
+  
+  message("Annotation updated.")
+} else {
+  # Load the previously saved output if data is unchanged
+  if (file.exists(output_path)) {
+    pdo_train_tagged <- readRDS(output_path)
+    message("Loaded previous annotation.")
+  } else {
+    message("No previous annotation found. Please run the annotation first.")
+  }
+}
+```
+
+Manipulate the tagged data
 ```{r}
 # ---- Extract $token & Convert annotations to a tibble (data frame format)
 pdo_train_tag_t <-  pdo_train_tagged$token %>% 
@@ -802,29 +663,20 @@ pdo_train_tag_t <- pdo_train_tag_t %>%
    relocate(word, .after = doc_id) # 225,360
 ```
 
-
-## ---- Check for duplicates
+### Check for duplicates
 ```{r}
-#| eval: false
-#| echo: false
-
 # check  
-projs_train$id %>% n_distinct() # 4413
-pdo_train_tagged$token$doc_id %>% n_distinct() # 4413  OK!
-pdo_train_tag_t$doc_id %>% n_distinct() # 4413  OK! 
+projs_train$id %>% n_distinct() # 4403
+pdo_train_tagged$token$doc_id %>% n_distinct() # 4403  OK!
+pdo_train_tag_t$doc_id %>% n_distinct() # 4403  OK! 
 ```
 
-
-## ---- RE-add 2 `pdo_train_t` cols from `projs_train`
+### Re-add cols from `projs_train` to `pdo_train_t` 
 ```{r}
 # ---- RE-add cols from `projs_train_token ` `
 pdo_train_t <-  pdo_train_tag_t %>% 
    left_join(projs_train, by = c("doc_id" = "id"))  
-```
-
-
-
-```{r}
+# ---- Select cols 
 pdo_train_t <- pdo_train_t %>% 
    select(
       proj_id=  doc_id                ,
@@ -854,17 +706,16 @@ pdo_train_t <- pdo_train_t %>%
       ESrisk                ,
       curr_total_commitment 
    )
-
 ```
 
-## ---- Ensure `tid` is numeric
+### Ensure `tid` is numeric
 ```{r}
 # Ensure token_id is numeric
 pdo_train_t <- pdo_train_t %>% 
   mutate(tid = as.numeric(tid))  # Convert token_id to numeric
 ```
 
-## ----  Add low case token  
+### Add low case token  
 ```{r}
 pdo_train_t <- pdo_train_t %>% 
   mutate(token_l = tolower(token)) %>% 
@@ -872,8 +723,7 @@ pdo_train_t <- pdo_train_t %>%
    select(-token_with_ws) 
 ```
 
-## ----  Restore variations of "hyphenword" with "-"
-
+### Restore variations of "hyphenword" with "-"
 ```{r}
 #Replace variations of "hyphenword" with "-"
 pdo_train_t <- pdo_train_t %>% 
@@ -885,79 +735,81 @@ pdo_train_t <- pdo_train_t %>%
 
 # _______ 
 # Save clean Proj PDO train dataset `pdo_train_t`
-# _______ 
 ```{r}
-saveRDS(projs_train, here("data" , "derived_data", "projs_train.rds"))
-saveRDS(projs_test, here("data" , "derived_data", "proj_test.rds"))
-saveRDS(projs_val, here("data" , "derived_data", "projs_val.rds"))
-saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))
+# inputs 
+saveRDS(projs_train, here("data" , "derived_data", "projs_train.rds"))   #   4403  obs 
+saveRDS(projs_test, here("data" , "derived_data", "proj_test.rds"))      #   2204 obs 
+saveRDS(projs_val, here("data" , "derived_data", "projs_val.rds"))       #   2204 obs 
+# projs_train + annotated pdo train 
+saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))   #  249 k   obs 
 ```
 
-# _______ 
-# [NEXT!!!] NER with `cleanNLP` {spacy} ️⚠️
-# _______ 
+<!-- # _______  -->
+<!-- # [NEXT!!!] NER with `cleanNLP` {spacy} ️⚠️ -->
+<!-- # _______  -->
 
-## iii) PoS tagging + NER with `cleanNLP` {spacy} ✅
-### --- Set Up SpaCy in R Correctly
-```{r}
-#| eval: false
-#| echo: false
-
-
-# Install remotes package if not installed
-#install.packages("remotes")
-
-# Install spacyr from GitHub
-# remotes::install_github("quanteda/spacyr")
-         # (or)  Install spacyr package in R NOPE 
-         #install.packages("spacyr")
-
-# Load the library
-library(spacyr)
-
-# Install spaCy in Python if not already installed
-spacy_install()
-  # Download and installation successful
-  # You can now load the package via spacy.load('en_core_web_sm')
-  # Installation of spaCy version 3.7.6 complete.
-
-# Initialize spaCy (if CleanNLP relies on it)
-spacy_initialize()
-# /Users/luisamimmi/Library/R/x86_64/4.2/library/spacyr/python/spacyr_class.py:148: SyntaxWarning: invalid escape sequence '\s'
-#   regex_trailspace = re.compile('\s+$')
-# successfully initialized (spaCy Version: 3.7.6, language model: en_core_web_sm)
-```
-
-# RE-run  `cleanNLP::cnlp_annotate` with NER
-
-```{r}
-#| eval: false
-#| echo: false
+<!-- ## iii) PoS tagging + NER with `cleanNLP` {spacy} ✅ -->
+<!-- ### --- Set Up SpaCy in R Correctly -->
+<!-- ```{r} -->
+<!-- #| eval: false -->
+<!-- #| echo: false -->
 
 
-# Ensure spacyr is loaded
-library(spacyr) 
+<!-- # Install remotes package if not installed -->
+<!-- #install.packages("remotes") -->
 
-# Initialize spacy with NER
-spacy_initialize()
+<!-- # Install spacyr from GitHub -->
+<!-- # remotes::install_github("quanteda/spacyr") -->
+<!--          # (or)  Install spacyr package in R NOPE  -->
+<!--          #install.packages("spacyr") -->
 
-# Annotate text using CleanNLP after initializing SpaCy with NER
-library(CleanNLP)
+<!-- # Load the library -->
+<!-- library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library # Wrapper to the 'spaCy' 'NLP' Library -->
 
-# Perform annotation with NER included
-pdo_train_annotation <-  pdo_train_to_tag %>% 
-   slice(1:2) %>% 
-   cnlp_annotate(., 
-                 text_name = "pdo_2", 
-                 doc_name = "id",)
+<!-- # Install spaCy in Python if not already installed -->
+<!-- spacy_install() -->
+<!--   # Download and installation successful -->
+<!--   # You can now load the package via spacy.load('en_core_web_sm') -->
+<!--   # Installation of spaCy version 3.7.6 complete. -->
 
- 
-# Check if 'entity' is now included
-str(pdo_train_annotation)
- 
-# Extract named entities
-entities <- pdo_train_annotation$entity
-print(entities)
-```
- 
+<!-- # Initialize spaCy (if CleanNLP relies on it) -->
+<!-- spacy_initialize() -->
+<!-- # /Users/luisamimmi/Library/R/x86_64/4.2/library/spacyr/python/spacyr_class.py:148: SyntaxWarning: invalid escape sequence '\s' -->
+<!-- #   regex_trailspace = re.compile('\s+$') -->
+<!-- # successfully initialized (spaCy Version: 3.7.6, language model: en_core_web_sm) -->
+<!-- ``` -->
+
+<!-- # RE-run  `cleanNLP::cnlp_annotate` with NER -->
+
+<!-- ```{r} -->
+<!-- #| eval: false -->
+<!-- #| echo: false -->
+
+
+<!-- # Ensure spacyr is loaded -->
+<!-- library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library # Wrapper to the 'spaCy' 'NLP' Library  -->
+
+<!-- # Initialize spacy with NER -->
+<!-- spacy_initialize() -->
+
+<!-- # Annotate text using CleanNLP after initializing SpaCy with NER -->
+<!-- library(CleanNLP) # A Tidy Data Model for Natural Language Processing -->
+
+<!-- # Perform annotation with NER included -->
+<!-- pdo_train_annotation <-  pdo_train_to_tag %>%  -->
+<!--    slice(1:2) %>%  -->
+<!--    cnlp_annotate(.,  -->
+<!--                  text_name = "pdo_2",  -->
+<!--                  doc_name = "id",) -->
+
+
+<!-- # Check if 'entity' is now included -->
+<!-- str(pdo_train_annotation) -->
+
+<!-- # Extract named entities -->
+<!-- entities <- pdo_train_annotation$entity -->
+<!-- print(entities) -->
+<!-- ``` -->
+
+
 

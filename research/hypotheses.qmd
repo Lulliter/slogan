@@ -25,6 +25,7 @@ format:
     toc_float: true
     toc-location: left
     toc-title: Outline
+    reference-location: margin
     embed-resources: true # external dependencies embedded (Not in ..._files/)
   # pdf:
   #   toc-depth: 2
@@ -38,8 +39,7 @@ bibliography: ../bib/slogan.bib
 
 # Research questions {#sec-RQ}
 
-In general, a **research question's** nature depends on the goal and type of the pursued analysis [See fig 3.9 in @francom_introduction_2024]: 
-
+In general, a **research question**'s nature depends on the goal and type of the pursued analysis. @tbl-analysis-analysis-types provides a useful framework [Source: fig 3.9 in @francom_introduction_2024].  
 
 ::: {#tbl-analysis-analysis-types tbl-colwidths="[15, 19, 22, 22, 22]"}
 
@@ -55,50 +55,52 @@ Overview of analysis types
 
 ## *EXPLORATORY* Research questions  
 
-### Question 1.1 {#sec-RQ11}
-***Is there a pattern in the WBG project document corpus[^1] that shows non random variation in the incidence of certain words, phrases, or policy *concepts*[^2] over time?*** 
-
-[^1]: *WBG project document* observed in this case are Project Development Objectives (PDO) descriptive short texts. 
-[^2]: *Concepts* encompasse "policy focus", "sector", "strategy" or "emerging priority" in the arena of funding for development  ....
+### Question 1
+***Is there a pattern in the WBG project document corpus[^1] that reveals non-random variation in the frequency of certain words, phrases, or policy *concepts* over time?***
 
 ### Hypothesis
+The hypothesis is that the WBG project document corpus exhibits non-random variation in the frequency of specific policy concepts[^2] over time. This question is approached through a data-driven analysis, where patterns observed in the text data inspire the hypothesis rather than starting with a predetermined assumption.
+   <!-- + (e.g., observing that terms like "pandemic" and "vaccine" surge in PDO texts after 2020 might lead to investigating a correlation with the COVID-19 pandemic shock, rather than beginning with that assumption). -->
 
-The hypothesis being tested here is that the WBG project document corpus shows a non-random variation in the incidence of certain policy concepts over time. 
-
-The launch of a "policy slogan" carries intrinsic motivations to shift the PDO in a certain direction. 
-
-+ This question will be handled in a data-driven way, i.e. starting from patterns observed in the text data and not from predetermined ideas. 
-   <!-- + (i.e. I see that after 2020, the word "pandemic" and "vaccine" peaks within PDOs' texts, so I will look for a correlation with the COVID-19 pandemic shock, instead of the other way around). -->
-
-### Question 1.2 {#sec-RQ12}
-***Could the WDR[^3] publications "explain" or at least have a correlation to the recurrence over time of said concepts?***  
+[^1]: *WBG project documents* refer here to Project Development Objectives (PDOs), which are brief descriptive texts.
+[^2]: *Concepts* include "policy focus," "sector," "strategy," or "emerging priority" within the development funding landscape.
 
 
+### Question 2
+***Is there external input (whether captured in other official documents or not) that could help "explain" or correlate with any observed non-random patterns in the text data?***
 
-[^3]: *WDRs* (World Development Reports) are the flagship reports of the World Bank group that have been published annually since 1978.
-
+For instance, a sudden rise in popularity of a particular "policy slogan" might influence the choice of *Project Development Objectives (PDO)* in operations over a specific period.
 
 ### Hypothesis
-The "alternative" hypothesis being tested here is that the WDR has a "traction effect" on the PDO of the following FYs.
+Framing this question for empirical investigation, I investigated a potential correlation between the World Development Reports (WDR)[^3] and the frequency trends of specific *sector* and *theme* words in the PDO text data. In this analysis, the "alternative" hypothesis being tested is that the WDR has a "traction effect" on the PDOs of subsequent fiscal years.
+
+[^3]: *WDRs* (World Development Reports) are the flagship reports of the World Bank Group that have been publishing annually since 1978.
 
 
-### Question 1.3 {#sec-RQ13}
-***Since the WBG project document corpus data are very incomplete when it comes to `sector` and `theme` tagging: is it possible to overcome the insufficient data completion using TOPIC MODELING?***  
 
-### Hypothesis
+<!-- ### Question 1.3 {#sec-RQ13} -->
+<!-- ***Since the WBG project document corpus data are very incomplete when it comes to `sector` and `theme` tagging: is it possible to overcome the insufficient data completion using TOPIC MODELING?***   -->
 
-The hypothesis being tested here is that some ML techniques can help improving the quality of the "document data collection", e.g. the poor and incomplete sector/theme tagging of the WBG project documents.
+<!-- ### Hypothesis -->
 
-+ Note that for this purpose the available dataset (~ 20 fiscal years worth of project PDOs descriptions) has been splitted into a training + validation + test sets.  
+<!-- The hypothesis being tested here is that some ML techniques can help improving the quality of the "document data collection", e.g. the poor and incomplete sector/theme tagging of the WBG project documents. -->
 
+<!-- + Note that for this purpose the available dataset (~ 20 fiscal years worth of project PDOs descriptions) has been splitted into a training + validation + test sets.   -->
+
+
+
+## *PREDICTIVE* Research questions
  
-___ 
+<!-- Besides investigating the origin, it would be equally important to ***understand the consequences of lessical approximation or reduction***. -->
 
-> For the moment, the study's aim is mainly to **EXPLORE** (e.g., trends over time in phrases occurrence), and possibly to **PREDICT** (e.g., use ML to enhance the quality of metadata variables). 
-Possible follow-up, also depending on the results of the previous exploratory questions.
+### Question 3
+***Given the incomplete feature tagging in the WBG project document corpus, can predictive classification techniques help address such data limitations?***
 
-## *EXPLANATORY* Research questions 
-...
+### Hypothesis
+The hypothesis is that certain machine learning (ML) techniques can serve to enhance the quality of the source data. Some illustrative analysis has been conducted to predict the missing `sector` or `theme` tags, based on the text of the PDO description, plus other available metadata variables, testing various ML algorithms.
+ 
+<!-- ## *EXPLANATORY* Research questions  -->
+<!-- ... -->
 
 <!-- The important question is ***"WHY" does such a deviation from the original meaning of a word/sentence occur?***. Granted, languages evolve on their own, but it can also be subject to manipulation, as George Orwell's "1984" so powerfully depicted illustrating the rules and purpose of fictional Oceania nation's *newspeak*.  -->
 <!-- The risks connected to this potential abuse of language are clearly laid out by Riccardo Garbini in his "Lessico - Uscire da Babele" [@garbini_uscire_2003, p.4] [^4]\ -->
@@ -109,9 +111,10 @@ Possible follow-up, also depending on the results of the previous exploratory qu
 <!--  *In some cases the deviation of the meaning is evidenced by the pure and simple suppression of the term (1984): in such cases, therefore, the analysis does not insist on the reductionist aspect. **The deviations, where present, are dictated above all by ideological intentions, that is, by the superimposition of an interpretative grid with rather rigid meshes on the objective data of reality.** The effect of the superimposition of this interpretative grid called ideology thus results in a reduction of the perceptive and interpretative field of reality. For this reason semantic deviations have been called 'reductionisms'.* -->
 
 <!-- Assuming that we may, at least, form hypotheses on why this "reduction" occurs, then **"HOW" does the the deviation from reality (in the language common use) sparkle and then spread?** Can we detect the mechanisms?  -->
+ 
+___ 
 
-## *PREDICTIVE* Research questions
-...
-<!-- Besides investigating the origin, it would be equally important to ***understand the consequences of lessical approximation or reduction***. -->
+> For now, the primary aim of the study is to **EXPLORE** (e.g., trends over time in phrase occurrence) and, to a lesser extent, to **PREDICT** (e.g., using ML to improve the quality of metadata variables). 
+> Potential follow-up questions will be shaped by the findings of this initial exploratory phase.
 
 

@@ -163,7 +163,7 @@ lulas_theme <- theme_minimal(base_size = 12) +
 # Data sources
 The data used in this analysis comes from the World Bank's Projects & Operations database.
 
-Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/_01a_WB_project_pdo_prep.qmd`), WHERE:  
+Since some pre-processing steps are computationally expensive, I did that in a separate step (`analysis/01a_WB_project_pdo_prep.qmd`), WHERE:  
 
 1. Retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
    + Of these, approximately 50% (**11,322 projects**) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
