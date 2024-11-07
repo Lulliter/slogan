@@ -70,7 +70,7 @@ git commit -m "added analysis/00_intro_NLP.qmd analysis/01_text_data.qmd"
 git push origin master
 
 #=========================================== ALL IN ONE  ================================================#
-git add -u && git commit -a -m "small upd in research/hypotheses.qmd" && git push
+git add -u && git commit -a -m "small upd in targets ⇶" && git push
 
 #=========================================== FIle pubblico  ================================================#
 # https://quarto.org/docs/publishing/quarto-pub.html

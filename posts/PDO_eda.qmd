@@ -5,7 +5,7 @@ description: |
   The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of projects' data itself.  
   
   This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open (still in progress and not fully polished).<br>
-#  NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
+#  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
 #author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
 #date-modified: "2024-10-29"
@@ -69,7 +69,7 @@ showtext_auto()
 
 I have always been fascinated by the idea of analyzing language as data and I finally found some time to study *Natural Language Processing (NLP)* and *Text Analytics* techniques.
 
-In this learning project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of the Bank's projects (loans, grants, technical assistance). The **PDO** outlines, in synthetic form, the proposed objectives of operations, as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
+In this learning project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of World Bank's projects (loans, grants, technical assistance). A **PDO** outlines, in synthetic form, the proposed objectives of operations, as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
 
 Normally, a few objectives are listed in paragraphs that are a couple sentences long. @tbl-pdo_exes shows two examples. 
 
@@ -92,25 +92,27 @@ tibble::tribble(
    column_spec(3, background = "#f1e7d3")
 ```
 
-The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.
+The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.s
 
 ::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
 ### {{< bi terminal-fill color=rgba(155,103,35,1.00) >}} Nerdy Note
 
-I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0). (I made some attempts to make data ingestion automatic via API calls, but at the moment this is apparently beyond my web scraping ability 😬).
+I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0). Such data is classified by the World Bank as **"public"** and accessible under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
 
-Such data is classified by the World Bank as **"public"** and accessible under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+ (I made some attempts to make data ingestion automatic via API calls, but at the moment this is apparently beyond my web scraping ability 😬).
 :::
 
-# Overview of available data
+# Data
 
-The original dataset contained **22,569** WB projects approved **between fiscal years 1947 and 2025** as of *August 31, 2024*. Of these, approximately 50% (**11,322 projects**) had a *viable* **PDO** text in the dataset (not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this subgroup, some projects were dropped: **3 projects** lacking *project status*, **2,176 projects** without *"board approval FY"*, and **332 projects** with approval still pending as of September 2024.
+The original dataset included **22,569 World Bank projects** approved **from fiscal year 1947 through 2025**, as of *August 31, 2024*. Approximately half—**11,322 projects**—had a *viable* Project Development Objective (PDO) text (i.e., not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this group, some projects were excluded due to missing key variables.
 
-As a result, the **usable** data for the analysis include **8,811 projects**.
+This left **8,811 projects** as **usable observations** for analysis.
 
-Surprisingly, within this *clean* subsample, **2,235 unique projects share only 1,006 unique PDOs among them**: *recycled PDOs* seem to appear in cases of follow-up projects or components of a parent project.
+Interestingly, within this refined subset, **2,235 projects share only 1,006 unique PDOs**: *recycled PDOs* often appear in follow-up projects or components of a larger parent project.
 
-Finally, from the remaining pool of 8,811 projects, I drew a representative sample of **4,403 projects with PDO** to work on.
+Finally, from these **8,811 projects**, a representative sample of **4,403 projects with PDOs** was selected for further analysis.
+
+
 
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
 ### PDO text data quality
@@ -140,9 +142,9 @@ In sum, the cleaning process yielded a usable set of **8,811 functional projects
 
 # Preprocessing the PDO text data
 
-Cleaning text data entails extra steps compared to numerical data. A key process is **tokenization**, which breaks text into smaller units like `words`, `bigrams`, `n-grams`, or `sentences`. Another common cleaning task is **normalization**, where text is standardized (e.g., converting to lowercase). Similarly, **data reduction techniques** like *stemming* and *lemmatization* simplify words to their root form (e.g., "running," "ran," and "runs" become "run"). This can help to reduce dimensionality, especially with very large datasets, when the word form is not relevant.
+Cleaning text data entails extra steps compared to numerical data. A key process is **tokenization**, which breaks text into smaller units like `words`, `bigrams`, `n-grams`, or `sentences`. After that, a common cleaning task is **normalization**, where text is standardized (e.g., converting to lowercase). Similarly, **data reduction techniques** like *stemming* and *lemmatization* simplify words to their root form (e.g., "running," "ran," and "runs" become "run"). This can help to reduce dimensionality, especially with very large datasets, when the word form is not relevant.
 
-After tokenization, it is very common to **remove irrelevant elements** like punctuation or `stop words` (unimportant words like "the", "ii)", "at", or repeated ones in context like "PDO") which add noise to the data.
+Upon tokenization, it is very common to **remove irrelevant elements** like punctuation or `stop words` (unimportant words like "the", "ii)", "at", or repeated ones in context like "PDO") which add noise to the data.
 
 In contrast, **data enhancement techniques** like *part-of-speech tagging* add value by identifying grammatical components, allowing focus on meaningful elements like `nouns`, `verbs`, or `adjectives`.
 
@@ -154,7 +156,10 @@ In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, whi
 
 # Term Frequency
 
-@fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. Evidently, after stemming, more words (or `stems`) reach the threshold frequency count of 800 (as they have been combined by root). Despite the pre-processing of PDOs' text data, these aren't particularly informative words.
+@fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. 
+
+## Words and stems 
+Evidently, after stemming, more words (or `stems`) reach the threshold frequency count of 800 (as they have been combined by root). Despite the pre-processing of PDOs' text data, these aren't particularly informative words.
 
 <!-- ![](output/figures/combo_freq.png){#fig-combo_freq} -->
 
@@ -171,8 +176,6 @@ In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, whi
 combo_freq_p <- readRDS(file = here ("analysis", "output", "figures", "combo_freq_p.rds"))
 combo_freq_p 
 ```
-
-# Most frequent combination of words in the PDO text data
 
 ## Bigrams 
 @fig-bigr shows the most frequent bigrams in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"* ,*"institutional capacity"*, *"poverty reduction"* etc., at the top.
@@ -218,14 +221,14 @@ pdo_trigram_freq_plot <- readRDS(file = here ("analysis", "output", "figures", "
 pdo_trigram_freq_plot 
 ```
 
-# Sectors in the PDO text data
-To narrow down the exploration of `tokens`, I looked into the frequency of specific **sector terms** in the PDO text data. To better capture the concept of "sector", I created a **broad SECTOR variable** to encompass all relevant words in a broader definition. 
+# Sectors in the PDO text
+To analyze a meaningful set of `tokens`, I examined the frequency of **sector-related terms** within the PDO text data. To capture the broader concept of "sector," I created a **comprehensive SECTOR variable** that encompasses all relevant words within an expanded definition.
 
 ::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
 ### *Custom* Sector Definitions
-The ***"sector"*** term discussed here is *not* the `sector` variable available in the data, but it is an artificial construct reflecting the occurrence of a group of terms referred to a sector topic. It is based on a logical association of certain words with a sector definition, rooted in the World Bank's own classification of sector and sub-sector.
+The ***"sector"*** term discussed here is *not* the `sector` variable available in the data, but it is an artificial construct reflecting the occurrence of terms referred to the same sector semantic field. Besides conceptual association, these definitions are rooted in the World Bank's own classification of sector and sub-sector.
 
-Here is the approach used to create a *"broad SECTOR" variable* to group the sectors into broader categories:
+Below are the *"broad SECTOR"* definitions used in this analysis:
 
 -   **WAT_SAN** = water\|wastewater\|sanitat\|sewer\|sewage\|irrigat\|drainag\|river basin\|groundwater
 -   **TRANSPORT** = transport\|railway\|road\|airport\|waterway\|bus\|metropolitan\|inter-urban\|aviation\|highway\|transit\|bridge\|port
@@ -241,7 +244,7 @@ Here is the approach used to create a *"broad SECTOR" variable* to group the sec
 -   **IND_TRADE_SERV** = industry\|trade\|service\|manufactur\|tourism\|trade and services\|market\|export\|import\|supply chain\|logistic\|distribut\|e-commerce\|retail\|wholesale\|trade facilitation\|trade policy\|trade agreement\|trade barrier\|trade finance\|trade promotion\|trade integration\|trade liberalization\|trade balance\|trade deficit\|trade surplus\|trade war\|trade dispute\|trade negotiation\|trade cooperation\|trade relation\|trade partner\|trade route\|trade corridor
 -   **INSTIT_SUPP** = government\|public admin\|institution\|central agenc\|sub-national gov\|law\|justice\|governance\|policy\|regulation\|public expenditure\|public investment\|public procurement
 -   **GENDER_EQUAL** = gender\|women\|girl\|woman\|femal\|gender equal\|gender-base\|gender inclus\|gender mainstream\|gender sensit\|gender respons\|gender gap\|gender-based\|gender-sensitive\|gender-responsive\|gender-transform\|gender-equit\|gender-balance
--   **CLIMATE** = climate\|environment\|sustain\|resilience\|adaptation\|mitigation\|green\|eco\|eco-\|carbon\|carbon cycle\|carbon dioxide\|climate change\|ecosystem\|emission\|energy effic\|greenhouse\|greenhouse gas\|temperature anomalies\|zero net\|green growth\|low carbon\|climate resilient\|climate smart\|climate tech\|climate variab
+-   **CLIMATE** = climate chang\|environment\|sustain\|resilience\|adaptation\|mitigation\|green\|eco\|eco-\|carbon\|carbon cycle\|carbon dioxide\|climate change\|ecosystem\|emission\|energy effic\|greenhouse\|greenhouse gas\|temperature anomalies\|zero net\|green growth\|low carbon\|climate resilient\|climate smart\|climate tech\|climate variab
 
 :::
 
@@ -263,16 +266,16 @@ pdo_sect_broad_freq <- readRDS(file = here ("analysis", "output", "figures", "pd
 pdo_sect_broad_freq   
 ```
 
-A possible explanation is that the PDOs may may echo themes from the **World Development Reports (WDR)**, the World Bank’s flagship annual publication that analyzes a key development issue each year. Far from being speculative research, each WDR is grounded in the Bank’s field-based insights and, in turn, it informs the Bank's policy and operational priorities. This would suggest a likely alignment between WDR themes and project objectives in the PDOs.
+A possible explanation is that the PDOs may echo themes from the **World Development Reports (WDR)**, the World Bank’s flagship annual publication that analyzes a key development issue each year. Far from being speculative research, each WDR is grounded in the Bank’s field-based insights and, in turn, it informs the Bank's policy and operational priorities. This would suggest a likely alignment between WDR themes and project objectives in the PDOs.
 
-To some extent, visual exploration (see examples below) seems to support this hypothesis: thematically relevant WDRs consistently *appear* in close proximity to peaks in sector-related term frequencies. However, further validation is necessary. Additionally, preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may naturally include some lag.
+To some extent, visual exploration (see examples below) seems to support this hypothesis: thematically relevant WDRs consistently *appear* in close proximity to peaks in sector-related term frequencies. However, further validation is necessary. Additionally, preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may include some lag.
 
 <!-- Additionally, it’s important to note that: -->
 
 <!-- + Sector terms are not always captured with the same *precision*, which affects the association. -->
 <!-- + Preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may naturally include some lag. -->
 
-## Examples of sector-related term frequency within the PDO text
+## Examples of sectors-term trend
 
 @fig-agr shows a "combined sector" that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**. Perhaps the "alignment" hypothesis is not very meaningful with such a broadly defined sector. 
 
@@ -341,9 +344,9 @@ pdo_gen_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_g
 pdo_gen_WDR_plot 
 ```
 
-# Comparing PDO text against *metadata* elements (`sector`)
+# Comparing PDO text against *variable* `sector`
 
-The available data includes not only text but also relevant metadata, such as the `sector1` variable, which indicates the project’s primary sector. Do the terms in the PDO text align with this sector label? To examine this, I applied the **two-sample Kolmogorov-Smirnov test** to compare the distribution of `sector-related terms` in the PDO text with the distribution of `sector1`.
+The available data includes not only text but also relevant metadata, such as the `sector1` variable, which captures the project’s primary sector. Do the terms in the PDO text align with this sector label? To examine this, I applied the **two-sample Kolmogorov-Smirnov test** to compare the distribution of `sector-related terms` in the PDO text with the distribution of `sector1`.
 
 As shown in @tbl-comp_sec, the results indicate similar distributions across most sectors. This is promising, as it suggests that in cases where metadata is lacking, sector assignments can be reasonably inferred from the PDO text.
 
@@ -411,23 +414,49 @@ comp_pdo_sec_ENE_plot
 ```
 
 
-# Comparing PDO text against *metadata* elements (`amount committed`)
+# Comparing PDO text against *variable* `amount committed`
 
-In line with the previous point, is it just words or do trends observed in PDOs' text actually reflect the allocation of funds to specific sectors? To explore this question, we follow the same approach as before, but this time we compare the distribution of sector-related terms in the PDOs' text with the distribution of variable `amount committed`, provided in the project data.
+Following up on the previous section, do trends observed in PDOs' text also reflect the allocation of funds to specific sectors? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text with the distribution of the sum of the `amount committed` in corresponding projects (filtered by `sector1` category).
 
-let us pick a couple of examples in which a sector/theme is also declared by dedicated variables. In these cases, the dataset enables to identify projects focused on:
+Given the very different ranges, I compared normalized values (using the *Chi Square* test) to evaluate whether two categorical distributions have rescaled the distributions using  **Min-Max Scaling** both `n` and `sum_commit` to a [0, 1] range. This doesn’t assume normality and ensures both distributions are within the same bounds, though it doesn’t account for the shape of the distributions.
 
-+ **EDUCATION**, which is codified as the first *sector* in the metadata accompanying the PDOs.  
-+ **CLIMATE CHANGE**, which is codified as as the first *theme* in the metadata accompanying the PDOs. 
+Let us pick a couple of examples of specific sectors to check visually. 
+
+### ICT sector: words v. funding 
+The distributions in the ICT sector are THE *least similar* (K-S test p-value is = 0.4218). 
+ 
+```{r}
+#| label: fig-comp_commit_ict
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+comp_commit_ict <-  readRDS(file = here ("analysis", "output", "figures", "comp_pdo_comm_ICT_plot.rds"))  
+comp_commit_ict
+```
 
 
-### 🔶 Education sector: words v. funding 
-
-
-### 🔶 Climate change theme: words v. funding 
-
-
-
+### WATER & SANITATION sector: words v. funding 
+The distributions in the "WATER & SANITATION" sector are THE *most similar* (K-S test p-value is = 0.0001). 
+```{r}
+#| label: fig-comp_commit_ws
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+comp_commit_ws <-  readRDS(file = here ("analysis", "output", "figures", "comp_pdo_comm_WAT_SAN_plot.rds"))
+comp_commit_ws
+```
+ 
+The `chi-square test`, in this case, serves to evaluate the similarity of the distributions of sector-related terms in the PDOs' text and the sum of the `amount committed` in corresponding projects. The results suggest that the distributions are similar across all sectors. However, the visual comparison of the ICT and MINING_OIL_GAS sectors shows that the distributions are not identical.
 
 
 # Concordances: a.k.a. keywords in context
