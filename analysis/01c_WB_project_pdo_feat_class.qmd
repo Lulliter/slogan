@@ -43,8 +43,6 @@ WORK IN PROGRESS!
 
 <!-- In this file I address the **research question 1.2**, which is also to learn ML, IS IT POSSIBLE TO IMPROVE THE QUALITY OF THE DATA (E.G. MISSING FEATURES IN METADATA) BY USING TOPIC MODELING?  -->
 
-
-
 # TO DO [COMPL🟠🟡] list 
 
 +  Study the theory of Lasso Regr and Classification with ML on Gabor's book
@@ -134,6 +132,18 @@ sum(!is.na(projs_train$theme1)) /4403 # 71%
 table(projs_train$theme1, useNA = "ifany") # 71 levels
 sum(!is.na(projs_train$env_cat)) / 4403  # 73% 
 table(projs_train$env_cat , useNA = "ifany") # 7 levels
+```
+
+
+```{r}
+#| output: true
+#| tbl-caption: Missing values in the dataset
+
+# source function
+source(here("R","f_recap_values.R")) 
+
+# check candidate lables for classification 
+f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" ) ) %>% kable()
 ```
 
 ### --- Identify features for classification

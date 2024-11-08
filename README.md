@@ -13,3 +13,13 @@
 + Decide whether to show **RESEARCH Plan** or not
 + In `analysis/01b_WB_project_pdo_EDA.qmd`
    - revise the OLD plot -> NEW plot thing
+
+
+<!-- 
+# + mandare a 
+#    + tipo di Data ninja
+#    + tipo Vincenzo
+#    + gianni  
+#    + michele MD a DC 
+-->
+   

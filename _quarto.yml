@@ -10,8 +10,8 @@ execute:
   freeze: auto
 
 website:
-  title: "slogan"
-  description: "Instructions for R + git + AWS etc..."
+  title: "Policy lexicon"
+  #description: "Instructions for R + git + AWS etc..."
   site-url: https://lulliter.github.io/slogan # "{{< var website.site-url >}}" # "https://lulliter.github.io/nerd-help"
   favicon: images/notepad.png
   search: false # no magnifier on navbar
@@ -57,7 +57,7 @@ format:
   html:
     theme: theme/Lulas_theme.scss # cosmo
     fontawesome: true
-    # css: theme/styles.css
+    css: theme/styles.css
     toc: true
     toc-location: "left"
     code-link: true

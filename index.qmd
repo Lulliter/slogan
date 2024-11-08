@@ -1,5 +1,6 @@
 ---
 #title: "Motivation"
+description: "An NLP journey inside World Bank projects' text data"
 author: "Luisa M. Mimmi"
 date: today
 date-format: "ddd MMMM DD, YYYY"
@@ -9,15 +10,16 @@ bibliography: bib/slogan.bib
 
 # Motivation
 
-Through my professional journey as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of **buzzwords**[^1], **catchphrases**[^2] and **slogans**[^3], and to how they suddenly emerge in policy discussions, and—at least for some time—take center stage in strategic planning.\
-Notably, in the organizations I worked with (including World Bank, Inter-American Development Bank, G20, EU, and the Italian Government) catchphrases and slogans often turn into significant funding allocations, thus steering the prioritization of policies and programs. 
+Throughout my career as a consultant in multilateral and governmental institutions, I have been exposed to the phenomenon of **buzzwords**[^1], **catchphrases**[^2] and **slogans**[^3], and to how they suddenly emerge in policy discussions, and—at least for some time—take center stage in strategic planning.\
+Notably, in the organizations I worked with (including World Bank, Inter-American Development Bank, G20, EU, and the Italian Government) catchphrases and slogans often turn into significant funding allocations, as they can steer the prioritization of policies and programs. 
 
 [^1]: **Buzzword**: The term probably originated in the 1940s as jargon used in business and marketing circles. More recently, it has taken on the meaning "fashionable jargon", especially common in business, technology, and politics, where they often signal innovation or forward-thinking but may lack clear, practical applications.
 [^2]: **Catchphrase**: The notion is of a short phrase that will "catch" in the mind of the hearer. The word was used in the 1840s of a line of music that was easy to catch and remember. It describes, in the modern sense, a memorable, often simplistic phrase or expression that becomes widely recognized and associated with a particular individual, group, or concept. It is designed to stick in people's minds and to evoke a specific idea or emotion, usually through repetition in media, advertising, or popular culture.
 [^3]: **Slogan**: from Gaelic *sluagh-ghairm*, i.e. "battle cry", used by Scottish Highland or Irish clans. The metaphoric sense of "distinctive word or phrase used by a political or other group" is attested from 1704. It still carries the connotation of a rallying cry, a motto, or a watchword, deliberately crafted to be persuasive, promote a cause or sell an idea.  
  
 ## Examples in the development economics arena
-Drawing on my experience in development economics, I’ve observed certain phrases rise and decline within the field. Terms like *South-South Cooperation*, *Gender Mainstreaming*, and *Results-Based Financing* were prominent in earlier periods. Now, concepts such as *Sustainable Development*[^4] and *ESG (criteria/reporting/issues)* have become central to the development discourse. Additionally, constructs like *Build Back Better* and *Resilient (institutions/infrastructure/communities)* have gained traction, especially as part of the legacy of the COVID-19 crisis.
+
+Some examples I can recall (drawing on my own experience in development economics) are: *South-South Cooperation*, *Gender Mainstreaming*, and *Results-Based Financing*, which were prominent in earlier periods. More recently, concepts such as *Sustainable Development*[^4] and *ESG (criteria/reporting/issues)* have become quintessential to the development discourse. Understandably, constructs like *Build Back Better* and *Resilient (institutions/infrastructure/communities)* have gained traction, especially as part of the legacy of the COVID-19 crisis.
 
 I've noticed how certain formulaic expressions often make their way into project documentation and policy papers, quickly gaining traction—and sometimes becoming pervasive—in both academic and professional discourse.
 
@@ -62,10 +64,9 @@ This has led me to question how much thought is given to the deliberate selectio
 
 ## The curious case of lexical *domestication*
 
-A further element that interests me is that, often, the meaning of words and phrases progressively detaches from reality and/or from their originally intended meaning, while some *revised meaning* (more or less explicit) starts to live on a journey of its own.\
-For example, I was struck to learn that the Latin motto I heard as a child—*"Mens sana in corpore sano"*—is actually a partial quotation adopted in 1861 by John Hulley for his Liverpool Athletic Club. The phrase originates from Juvenal's *Satire X*: *"Orandum est ut sit mens sana in corpore sano"*. Seen in its entirety, it has a whole different meaning, actually centered on prayer, not fitness!
-
-Such reductions have real consequences, as Giovanni Gentile notes in *"Sommario di pedagogia come scienza filosofica"*: "language is not a garment of thought; it is thought’s own body." Language doesn’t merely communicate ideas but shapes and defines them [@garbini_uscire_2003, p3]. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --> Luca D'Auria similarly asserts that "language is *performative*," as it colors, alters, and produces reality [@dauria_tua_2024]. While language help us categorize, it can also divide—separating good from bad, truth from falsehood, etc. Knowledge itself, much to the dismay of proponents of *political correctness*, depends on clear categories to distinguish and define the realities we discuss.
+A further element that interests me is when the meaning of words and phrases progressively detaches from reality and/or from their original intent, sometimes even adopting new *reinterpreted meanings* that gradually become the dominant interpretation—whether explicitly or subtly. For example, I was struck to learn that the Latin motto I heard as a child—*"Mens sana in corpore sano"*—is actually a partial quotation adopted in 1861 by John Hulley for his Liverpool Athletic Club. The phrase actually quoted Juvenal's *"Orandum est ut sit mens sana in corpore sano"* from *Satire X* [@juvenal_satires_2004, 10.354–357], which, seen in its entirety, has a whole different meaning!\
+<!-- https://www.loebclassics.com/view/juvenal-satires/2004/pb_LCL091.397.xml -->
+Such reductions have real consequences, as Giovanni Gentile notes: "language is not a garment of thought; it is thought’s own body" [@garbini_uscire_2003, p3, quoting *"Sommario di pedagogia come scienza filosofica"*]. Language doesn’t merely communicate ideas but shapes and defines them. <!-- La lingua non è veste del pensiero: è il suo corpo stesso. Possiamo avere pensieri oscuri e quindi una forma oscura; ma quello che è chiaro dentro è chiaro fuori, per la semplice ragione che il fuori è uguale al dentro.  (https://www.treccani.it/enciclopedia/sommario-di-pedagogia-come-scienza-filosofica_%28Croce-e-Gentile%29/) --> Luca D'Auria similarly asserts that "language is *performative*," as it colors, alters, and produces reality [@dauria_tua_2024]. While language help us categorize, it can also divide—separating good from bad, truth from falsehood, etc. Knowledge itself, much to the dismay of proponents of *political correctness*, depends on clear categories to distinguish and define the realities we discuss.
 
 <!-- ## Issues of modern English -->
 
@@ -91,7 +92,7 @@ Such reductions have real consequences, as Giovanni Gentile notes in *"Sommario 
 
 ## So what?
 
-For a while now, I have wondered *why* and *how* certain catchphrases/slogans/buzzwords become so prevalent in a given public policy context at some specific point in time.\
+For a while now, I have wondered ***why*** and ***how*** certain catchphrases/slogans/buzzwords become so prevalent in a given public policy context at some specific point in time.\
 The problem is that if you are (as I was) just a cog in very complex institutional machine, it is difficult to capture the complex dynamics of this process.\
 Therefore, I decided to investigate this phenomenon with a "reverse engineering" approach, starting from the *corpora* of documents themselves to see if I could identify some patterns or trends over time. (Head over to [this page](https://lulliter.github.io/slogan/research/hypotheses.html#sec-RQ) to see my specific research questions.) 
 

@@ -1,3 +1,8 @@
+library(dplyr)
+library(skimr)
+library(tidyr)
+
+
 # ------ Function to count total_rows | n_distinct | n_missing in a subset of columns -----
 f_recap_values <- function(data, columns) {
    # Step 1: Select the subset of columns
@@ -26,7 +31,7 @@ f_recap_values <- function(data, columns) {
       relocate(n_distinct, n_missing, .after = total_rows) %>%
       mutate(missing_perc = round((n_missing/total_rows)*100, 1),
              missing_perc = glue::glue("{missing_perc}%")) %>%
-      arrange(desc(n_distinct))
+      arrange(desc(missing_perc))
 
    # Return the table
    return(missing_table)

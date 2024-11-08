@@ -66,6 +66,10 @@ library(ragg) # Anti-Grain Geometry Graphics)
 
 # TEXT ANALYTICS -------------------------------------
 library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools   
+
+# Set options to prevent scientific notation
+options(scipen = 999)
+
 ```
 
 # Set up ggplot2 theme
@@ -2736,7 +2740,7 @@ The `test statistic` is the maximum difference between the two cumulative distri
 ```{r}
 #| label: tab-comp_sec
 #| eval: true
-#| echo: false
+#| echo: true
 #| output: true
  
 # Function to calculate KS test results and save to a table without plotting
@@ -2747,18 +2751,21 @@ ks_results_k <- sector_broad_combo  %>%
       #   (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
       #   (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
       # )$alternative, 
-      
+ 
+      # a) with normalization     
       ks_statistic = ks.test(
          (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
-      )$statistic, 
+         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag)))$statistic, 
       
       ks_p_value = ks.test(
          (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
-      )$p.value,
-      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
-   ) %>%
+         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag)))$p.value,
+      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
+      
+      # # b) without normalization
+      #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
+      #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
+       ) %>%
    ungroup()  %>% 
    arrange(ks_p_value)
 
@@ -2768,16 +2775,66 @@ write_rds(ks_results_k, here("analysis", "output", "tables" ,"ks_results_k.rds")
 # Count how often the phrase appears in the vicinity of the target bigram
 ks_results_k %>% 
    kable(format = "html", 
-         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
+         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"#, "KS statistic R","KS p-valueR" 
+                       ),
          # Round  to 4 digits) 
-         digits = c(0, 4, 4, 0)) %>% 
+         digits = c(0, 4, 4, 0#, 4,4
+                    )) %>% 
    kable_styling(full_width = FALSE) %>%
    row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
 ```
 
+Additional plots 
+
+#### --- [FIG] Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector
+```{r}
+#| label: fig-KS_pvalue
+#| eval: true
+#| echo: true
+#| output: true
+#| fig.cap: Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector
+
+ks_results_k %>% 
+   ggplot(aes(x = reorder(tok_sector_broad, ks_p_value), y = ks_p_value)) +
+   geom_col(fill = "#0073C2FF") +
+   geom_text(aes(label = round(ks_p_value, 4)), vjust = -0.5) +
+   coord_flip() +
+   labs(
+      title = "Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector",
+      x = "Sector",
+      y = "P-Value"
+   ) +
+   theme_minimal() +
+   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
 #### --- [FIG] Correlation between PDO and TAG by sector
-**Correlation Coefficients**: Display the correlation between `n_pdo` and `n_tag` within each facet.
- 
+**Correlation Coefficients**: Display the correlation between `n_pdo` and `n_tag` within each sector
+
+```{r}
+#| label: fig-correlation
+#| eval: true
+#| echo: true
+#| output: true
+#| fig.cap: Correlation between PDO and TAG by sector
+
+sector_broad_combo %>%
+   ggplot(aes(x = n_pdo, y = n_tag)) +
+   geom_point() +
+   geom_smooth(method = "lm", se = FALSE) +
+   facet_wrap(~tok_sector_broad, scales = "free") +
+   labs(
+      title = "Correlation between PDO and TAG by Sector",
+      x = "Normalized PDO",
+      y = "Normalized TAG"
+   ) +
+   theme_minimal()
+
+```
+
+# 
 #### --- [FIG] KS test for PDO and TAG by sector
 However, for comparing distributions of two continuous variables like n_pdo and n_tag (normalized in this case), the chi-square test may not be directly applicable. Instead, other methods are often more suitable, depending on the nature of the distributions:
 
@@ -2785,6 +2842,7 @@ However, for comparing distributions of two continuous variables like n_pdo and 
    + A low `p-value` (typically < 0.05) suggests the **distributions are significantly different**, while a higher p-value suggests similarity.
    + A high `p-value` does not necessarily mean the distributions are identical, only that there is not enough evidence to reject the null hypothesis of similarity.
    + The `KS test` is non-parametric and makes no assumptions about the underlying distributions, making it a versatile tool for comparing distributions.
+   + We should not standardize the samples if we wish to know if their distributions are identical or not. !!!
 
 #### --- [FUNC] Plot by sector for PDO and TAG by sector
 ```{r}
@@ -2800,10 +2858,10 @@ f_plot_sector_trends <- function(data, sector_name, title = NULL, subtitle = NUL
          n_tag_norm = (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
       )
    
-   # ---- Calculate Spearman correlation and KS test p-value for the selected sector
+   # ---- Calculate  KS test p-value for the selected sector
    sector_stats <- sector_data %>%
       summarize(
-         spearman_cor = cor(n_pdo_norm, n_tag_norm, method = "spearman", use = "complete.obs"),
+         # spearman_cor = cor(n_pdo_norm, n_tag_norm, method = "spearman", use = "complete.obs"),
          ks_p_value = ks.test(n_pdo_norm, n_tag_norm)$p.value,
          similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
       )
@@ -2855,8 +2913,6 @@ f_plot_sector_trends <- function(data, sector_name, title = NULL, subtitle = NUL
       theme(legend.position = "right",
             axis.text.x = element_text(angle = 45, hjust = 1) )
 }
-
-
 ```
 
 
@@ -3070,6 +3126,56 @@ tabyl(sector_broad_commit$FY_appr, show_missing_levels = F, show_na = F)
 # merge the two datasets
 sector_broad_pdo_comm <-  left_join (sector_broad_pdo, sector_broad_commit, by = c("tok_sector_broad" = "sector1_broad", "FY_appr" = "FY_appr"))  
 ```
+#### --- [TAB] Kolmorogov-Smirnov test test of similarity with a table 
+
+In `Kolmorogov-Smirnov test`:
+
++ the **null hypothesis** is that the two distributions are the `same`  
++ The **alternative hypothesis** is that the two distributions are `different.` 
+
+The `test statistic` is the maximum difference between the two cumulative distribution functions. The `p-value` is the probability of observing a test statistic as extreme as the one observed, assuming the null hypothesis is true.
+
+
+```{r}
+#| label: tab-comp_sec_commit
+#| eval: true
+#| echo: true
+#| output: true
+ 
+# Function to calculate KS test results and save to a table without plotting
+ks_results2_k <- sector_broad_pdo_comm  %>%
+   group_by(tok_sector_broad) %>%
+   # min -max normalization
+   mutate(n_scaled = (n - min(n, na.rm = TRUE)) / 
+             (max(n, na.rm = TRUE) - min(n, na.rm = TRUE)),
+          sum_commit_scaled = (sum_commit - min(sum_commit, na.rm = TRUE)) / 
+             (max(sum_commit, na.rm = TRUE) - min(sum_commit, na.rm = TRUE)) ) %>%
+   summarize(
+      # -- a) with normalization     
+      ks_statistic = ks.test(n_scaled, sum_commit_scaled)$statistic,
+      ks_p_value = ks.test(n_scaled, sum_commit_scaled )$p.value,
+      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
+      # -- b) without normalization
+      #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
+      #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
+       ) %>%
+   ungroup()  %>% 
+   arrange(ks_p_value)
+
+# save as object
+write_rds(ks_results2_k, here("analysis", "output", "tables" ,"ks_results2_k.rds"))
+
+# Count how often the phrase appears in the vicinity of the target bigram
+ks_results2_k %>% 
+   kable(format = "html", 
+         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"#, "KS statistic R","KS p-valueR" 
+                       ),
+         # Round  to 4 digits) 
+         digits = c(0, 4, 4, 0#, 4,4
+                    )) %>% 
+   kable_styling(full_width = FALSE) %>%
+   row_spec(which(ks_results2_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
 
 ### --- [FUNC] standardize and plot 
 - **Standardization** is done by subtracting the mean and dividing by the standard deviation. This is done for both the `n` and `sum_commit` columns. In this way we can compare the two distributions on the same scale. 
@@ -3207,8 +3313,5 @@ f_save_plot_obj(f_plot_sector_comm(sector_broad_pdo_comm, sector = "ICT"), "comp
 ```
 
 
-
-# --- 🔴🟢🟠🟡 qui 
- 
 
 

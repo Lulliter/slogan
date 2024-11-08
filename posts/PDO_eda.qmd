@@ -2,9 +2,9 @@
 title: "Exploring the PDO text of World Bank's projects"  
 subtitle: "TL;DR"
 description: |
-  The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of projects' data itself.  
+  The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of projects' data themselves.  
   
-  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open (still in progress and not fully polished).<br>
+  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open (still in progress, not very polished).<br>
 #  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
 #author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
@@ -50,6 +50,7 @@ bibliography: slogan_selected.bib
 nocite: |
   @*
 ---
+
 
 ```{r}
 #| label: load_pkgs
@@ -154,7 +155,8 @@ In contrast, **data enhancement techniques** like *part-of-speech tagging* add v
 In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, which provides a wrapper around the `CoreNLP` Java library. Executing these tasks is very computationally expensive. Based on random checks, the classification of POS tags in the PDO text data was not always accurate, but I considered it good enough for the purpose of this analysis.
 :::
 
-# Term Frequency
+ 
+# TERM FREQUENCY PATTERNS
 
 @fig-combo_freq shows the most recurrent tokens and stems in the PDO text data. 
 
@@ -348,6 +350,12 @@ pdo_gen_WDR_plot
 
 The available data includes not only text but also relevant metadata, such as the `sector1` variable, which captures the project’s primary sector. Do the terms in the PDO text align with this sector label? To examine this, I applied the **two-sample Kolmogorov-Smirnov test** to compare the distribution of `sector-related terms` in the PDO text with the distribution of `sector1`.
 
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+The **Kolmogorov-Smirnov test** is non-parametric and makes no assumptions about the underlying distributions, making it a versatile tool for comparing distributions. The `null hypothesis` is that the two samples are drawn from the same distribution. Hence, if the `p-value` is less than the significance level (0.05), the null hypothesis is rejected, suggesting the observed distributions are in fact different. The `test statistic` is the maximum difference between the *cumulative distribution functions (CDF)* of the two samples.
+
++ **KS statistic**: The vectors of observed distributions have been normalized (bringing `n_pdo` and `n_tag` to a [0, 1] range before applying the Kolmogorov-Smirnov (KS) test). This is useful when distributions differ substantially in scale or units, as it makes them directly comparable in relative terms.
+:::
+
 As shown in @tbl-comp_sec, the results indicate similar distributions across most sectors. This is promising, as it suggests that in cases where metadata is lacking, sector assignments can be reasonably inferred from the PDO text.
 
 ```{r}
@@ -371,11 +379,7 @@ ks_results_k %>%
    row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
 ```
 
-::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
-The **Kolmogorov-Smirnov Test** (KS test) is a non-parametric test that compares the distribution of two samples. The **null hypothesis** is that the two samples are drawn from the same distribution. Notably, this test does not assume any particular underlying distribution. The **test statistic** is the maximum absolute difference between the two cumulative distribution functions. The **p-value** is the probability of observing a test statistic as extreme as the one computed, assuming that the null hypothesis is true. 
-:::
-
-Below is a graphical representation of two illustrative sectors, showing the most similar and the most dissimilar distributions of the **SECTOR** as deducted form text data, versus the proper metadata labeling. 
+Below is a graphical representation of two illustrative sectors, showing the most similar and the most dissimilar distributions of the *sector* as deducted form text data, versus the proper metadata *sector* labeling. 
 
 @fig-comp_transp shows the distributions of the **TRANSPORT** sector in the  PDOs' text and in the metadata. The two distributions are the most similar, as confirmed by the Kolmogorov-Smirnov test with a p-value of 0.641. 
 
@@ -416,14 +420,51 @@ comp_pdo_sec_ENE_plot
 
 # Comparing PDO text against *variable* `amount committed`
 
-Following up on the previous section, do trends observed in PDOs' text also reflect the allocation of funds to specific sectors? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text with the distribution of the sum of the `amount committed` in corresponding projects (filtered by `sector1` category).
+A similar question is: Do word trends observed in PDOs also reflect the allocation of funds to the mentioned sectors? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text against the distribution of the sum of the `amount committed` in corresponding projects (i.e. filtered by `sector1` category). Given the very different ranges, I compared rescaled values (using the *Kolmogorov-Smirnov* two-sample test) to evaluate the independence of these two distributions.
 
-Given the very different ranges, I compared normalized values (using the *Chi Square* test) to evaluate whether two categorical distributions have rescaled the distributions using  **Min-Max Scaling** both `n` and `sum_commit` to a [0, 1] range. This doesn’t assume normality and ensures both distributions are within the same bounds, though it doesn’t account for the shape of the distributions.
+As shown in @tbl-comp_sec_commit, the results indicate less homogeneity of the distributions across key sectors, somthing that could be further investigated. 
+
+```{r}
+#| label: tbl-comp_sec_commit
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Comparing the distributions of SECTOR in text and in corresponding $$ committed
+
+
+# save as object
+ks_results2_k <- readRDS(file =  here("analysis", "output", "tables" ,"ks_results2_k.rds"))
+
+# Count how often the phrase appears in the vicinity of the target bigram
+ks_results2_k %>% 
+   kable(format = "html", 
+         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
+         # Round  to 4 digits) 
+         digits = c(0, 4, 4, 0)) %>% 
+   kable_styling(full_width = FALSE) %>%
+   row_spec(which(ks_results2_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
 
 Let us pick a couple of examples of specific sectors to check visually. 
 
+### WATER & SANITATION sector: words v. funding 
+The distributions in the "WATER & SANITATION" sector are among the *most similar* pairs (K-S test p-value is = 0.4218). 
+```{r}
+#| label: fig-comp_commit_ws
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+ 
+comp_commit_ws <-  readRDS(file = here ("analysis", "output", "figures", "comp_pdo_comm_WAT_SAN_plot.rds"))
+comp_commit_ws
+```
+ 
 ### ICT sector: words v. funding 
-The distributions in the ICT sector are THE *least similar* (K-S test p-value is = 0.4218). 
+The distributions in the ICT sector are among the *least similar* (K-S test p-value is = 0.0001). 
  
 ```{r}
 #| label: fig-comp_commit_ict
@@ -440,23 +481,7 @@ comp_commit_ict
 ```
 
 
-### WATER & SANITATION sector: words v. funding 
-The distributions in the "WATER & SANITATION" sector are THE *most similar* (K-S test p-value is = 0.0001). 
-```{r}
-#| label: fig-comp_commit_ws
-#| eval: true
-#| echo: false
-#| output: true
-#| fig.width: 10 # adjust based on text width in inches
-#| fig.height: 8 #9.382  # adjust based on text width in inches
-#| out.width: "100%" # ensures the figure spans the full text width in HTML
-#| fig-align: "center"
- 
-comp_commit_ws <-  readRDS(file = here ("analysis", "output", "figures", "comp_pdo_comm_WAT_SAN_plot.rds"))
-comp_commit_ws
-```
- 
-The `chi-square test`, in this case, serves to evaluate the similarity of the distributions of sector-related terms in the PDOs' text and the sum of the `amount committed` in corresponding projects. The results suggest that the distributions are similar across all sectors. However, the visual comparison of the ICT and MINING_OIL_GAS sectors shows that the distributions are not identical.
+<!-- The `chi-square test`, in this case, serves to evaluate the similarity of the distributions of sector-related terms in the PDOs' text and the sum of the `amount committed` in corresponding projects. The results suggest that the distributions are similar across all sectors. However, the visual comparison of the ICT and MINING_OIL_GAS sectors shows that the distributions are not identical. -->
 
 
 # Concordances: a.k.a. keywords in context
@@ -465,7 +490,7 @@ Another useful analysis that can be done exploring text data refers to ***concor
 
 
 ## The bigram *"eligible crisis"* in the PDOs
-For example, looking at most recurrent `bigrams` (two-word combinations) in the PDO text, the phrase *"eligible crisis"* caught my attention. It appears in the PDOs of 112 projects, and in 32% of these cases, it is accompanied by either *"respond promptly and effectively"* or *"immediate and effective response"*. @tbl-elgcris shows a few examples of what seems to be a recurring standard phrasing.
+For example, looking at most recurrent `bigrams` (two-word combinations) in the PDO text, the phrase *"eligible crisis"* caught my attention. It appears in the PDOs of 112 projects, and in 32% of these cases, it is accompanied by either *"respond promptly and effectively"* or *"immediate and effective response"*. @tbl-elgcris shows a few examples, suggesting this might be a recurring standard phrasing.
 
 ```{r}
 #| label: tbl-elgcris
@@ -481,7 +506,7 @@ elcr_k
 ```
 
 ## The bigram "climate change" in the PDOs
-Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"*—which I associate with a more *aspirational*, long-term response—appears more frequently than *"adaptation"*, which I view as a more *practical*, short-term response. However, the term *"resilience"* may convey a similar practical intent.
+Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"* (which I associate with a more aspirational, long-term response) appears more frequently than *"adaptation"* (which I view as a more *practical*, short-term response). However, the ratio would flip considering that *"resilience"* may convey a similar practical intent. Another interesting insight worth exploring further in the future.  
 
 ```{r}
 #| label: tbl-clim
@@ -495,7 +520,7 @@ clch_close_k <- readRDS( file = here("analysis", "output", "tables" ,"clch_close
 clch_close_k
 ```
 
-@tbl-clim2 shows examples, with highlighted words in the vicinity of the phrase of interest. 
+@tbl-clim2 shows a few examples for each of the words most frequently found in the vicinity of the bigram *"climate change"*. 
 
 ```{r}
 #| label: tbl-clim2
@@ -508,6 +533,8 @@ clch_close_k
 # READ as object
 sentences_with_climchang2_k <-  readRDS(file = here("analysis", "output", "tables" ,"sentences_with_climchang2_k.rds"))
 
+# Define more contrasting colors for alternating groups
+background_colors <- c("#D6EAF8", "#EBF5FB")  # Use distinct colors for easier differentiation
   
 #paint(sentences_with_climchang2_k)
 
@@ -519,62 +546,92 @@ sentences_with_climchang2_k %>%
   kable(format = "html", 
         escape = FALSE,
         col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
-  kable_styling(full_width = FALSE)   
+  kable_styling(full_width = FALSE)   %>%
+  group_rows(index = table(sentences_with_climchang2_k$contains_what), 
+              label_row_css = "background-color: #D6EAF8;")  # Adjust the color as needed
    # Add subheaders based on the unique values in `contains_what`
   #group_rows(index = table(sentences_with_climchang2$contains_what))
 
 ```
 
-# 🟡  Metadata quality enhancement with ML predictive models
+ 
+# DATA QUALITY ENHANCEMENT
 
-The idea is to predict the missing *tags* (sector, environmental risk category, etc.) in the World Bank project documents, using the text of the Project Development Objective (PDO) section as input data.
+In this section, I recount some attempts to enhance the quality of the metadata by predicting missing features in the World Bank project documents. The idea is to use the text of the Project Development Objective (PDO) section as input data to predict the missing *tags* (`sector`, `environmental risk category`, etc.) for some of the observations.
 
+
+# --- 🔴🟢🟠🟡 qui 
+ 
 
 ## 🟡 Using ML models to predict a missing feature
 
+```{r}
+#| label: tbl-missing_ML
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Missing feature in source dataset
+
+ 
+# source function
+source(here("R","f_recap_values.R")) 
+projs_train <- readRDS(file = here( "data", "derived_data", "projs_train.rds"))
+
+# check candidate lables for classification 
+f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" ) ) %>% kable()
+```
+
+
+
 > Remember that text data is SPARSE!
 
-To predict a missing feature (e.g., sector) based on available features from text data, several supervised machine learning algorithms can be applied. Given that you have a mixture of text and structured data, here are some suitable algorithms:
+To predict a missing feature (e.g., `sector`) based on text data and other available predictors, several supervised machine learning (ML) algorithms can be applied. I tested a few different algorithms suitable when you have a mixture of text and structured data. 
 
-+ **Logistic regression** (LR) is a good starting point for binary classification tasks.
-+ **Random Forest** (RF) is a robust algorithm that can handle a mix of data types.
-+ **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting.
-+ **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources.
-+ **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data.
-+ **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources.
+<!-- to predict the missing `sector` tag in the World Bank project documents.   -->
 
+<!--  Given that you have a mixture of text and structured data, here are some suitable algorithms: -->
+
+<!-- + **Logistic regression** (LR) is a good starting point for binary classification tasks. -->
+<!-- + **Random Forest** (RF) is a robust algorithm that can handle a mix of data types. -->
+<!-- + **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting. -->
+<!-- + **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources. -->
+<!-- + **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data. -->
+<!-- + **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources. -->
+
+
+<!-- > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model. -->
 
 ::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
 ### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
-### Steps of prediction
+### Steps of prediction in ML
 
-1.  `label engineering` Define what we want to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)
-    -   Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best)
+1.  `outcome label engineering` Define what we want to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)
+    - Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best)
+
 2.  `sample design` Select the observations to use .
-    -   For *high external validity* it will have to be as close as possible to the population of interest (patterns of variables' distribution etc.)
-3.  `feature engineering` Define the input data (predictors, $X$) and their format (text, numeric, categorical)
-    -   Deal with *missing* values in $X$ (understand, variable by variable, the reasons for missingness, and decide what to do: keep, impute value if numeric, drop the predictor?)\
-    -   Select the most *relevant* predictors (which $X$ to have and in which form). For text predictor data, there are specific NLP transformations that can be applied (e.g. tokenization, lemmatization, etc.)
-    -   In some cases *interaction* between predictor variables makes sense.
-    -   Alternative models can be build with less predictors in simpler form to compare with others with more predictors in more complex form... Here domain knowledge + EDA are key to decide what to include and what to exclude.
-4.  `model selection` It's impossible to try all possible models (i.e. all possible choices of $X$ variables to include, their possible functional form, and their possible interactions give too many combinations).
-    -   `cross-validation` is similar to training-test method, which basically splits the data into training and test sets, but it does this multiple times (e.g. `k-fold cross-validation` means $k$ = 10 test sets) and it helps selecting the best model without *overfitting*.
-    -   Here we do all the work said above (model building and best model selection) in the *work set*. This will be further divided $k-times$ into $k$ train-test splits, then we use the *holdout set* to evaluate the prediction itself.
-5.  `last_fit` means that, once the best model(s) is/are selected, they are re-run on all of the work set (training data) to evaluate the performance to obtain the final model.
-6.  `post-prediction diagnostic`, lastly, serves to evaluate the model's performance on the *hold-out sample* instead. Here we can
-    -   evaluate the fit of the prediction (using, MSE, RMSE, accuracy, ROC etc. to summarize *goodness of fit*
-    -   (for continuous $y$) we can visualize the prediction interval around the prediction, for discrete $y$ the confusion matrix.
-    -   we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.)
-    -   finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data")
+    - For *high external validity* it will have to be as close as possible to the population of interest (patterns of variables' distribution etc.)
 
+3.  `feature engineering` Define the input data (predictors, $X$) and their format (text, numeric, categorical) 
+    - Deal with *missing* values in $X$ (understand, variable by variable, the reasons for missingness, and decide what to do: keep, impute value if numeric, drop the predictor?)\
+    - Select the most *relevant* predictors (which $X$ to have and in which form). For text predictor data, there are specific NLP transformations that can be applied (e.g. tokenization, lemmatization, etc.)
+    - In some cases *interaction* between predictor variables makes sense.
+    - Alternative models can be build with less predictors in simpler form to compare with others with more predictors in more complex form... Here domain knowledge + EDA are key to decide what to include and what to exclude.
+
+4.  `model selection` It's impossible to try all possible models (i.e. all possible choices of $X$ variables to include, their possible functional form, and their possible interactions give too many combinations).
+    - `cross-validation` is similar to training-test method, which basically splits the data into training and test sets, but it does this multiple times (e.g. `k-fold cross-validation` means $k$ = 10 test sets) and it helps selecting the best model without *overfitting*.
+    - Here we do all the work said above (model building and best model selection) in the *work set*. This will be further divided $k-times$ into $k$ train-test splits, then we use the *holdout set* to evaluate the prediction itself.
+
+5.  `last_fit` means that, once the best model(s) is/are selected, they are re-run on all of the work set (training data) to evaluate the performance to obtain the final model.
+
+6.  `post-prediction diagnostic`, lastly, serves to evaluate the model's performance on the *hold-out sample* instead. Here we can
+    - evaluate the fit of the prediction (using, MSE, RMSE, accuracy, ROC etc. to summarize *goodness of fit*
+    - (for continuous $y$) we can visualize the prediction interval around the prediction, for discrete $y$ the confusion matrix.
+    - we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.)
+    - finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data")
+    
 :::
 
-
-
-> LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model.
-
 ## 🟡 Evaluating the performance of the preferred ML model to predict a missing feature
-
 
 
 # Conclusions and next steps
