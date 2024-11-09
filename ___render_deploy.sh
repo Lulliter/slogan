@@ -65,7 +65,7 @@ git commit -m "fix analysis/01b_WB_project_pdo_EDA.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
 git commit -m "cleanup "
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
-git commit -m "added analysis/00_intro_NLP.qmd analysis/01_text_data.qmd"
+git commit -m "99% done blog 🙌🏻🤟🏻"
 
 # Push local source (master branch) to remote reference (origin)
 #cd .

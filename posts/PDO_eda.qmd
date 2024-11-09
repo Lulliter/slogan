@@ -712,35 +712,6 @@ tibble::tribble(
 The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata infomration to predict the missing `env_cat_f2` in the testing set. The model achieved an accuracy of 0.79 and an ROC-AUC of 0.85.:
 
 
-## Prediction and Interpretation
-
-These results are not impressive by any means, but, once again, my main goal was to explore possible operations that can be done with the data such as the one in this case study, so minimal effort was put into optimizing the model performance (by way of preprocessing, features engineering, algorithm choice, different tuning of the hyperparameters, etc.).
-
-<!-- ## Some considerations on the predicting process -->
-<!-- While I didn't spend much time in increasing the predictive performance, I want to mention some steps that could be taken to improve the model performance:  -->
-
-<!--    + defining data / sample for analysis (preprocessing) -->
-<!--    + defining/label engineering of  y -->
-<!--    + feature engineering of x (dealing with missing data %, what x and in what functional form) -->
-<!--    + model selection -->
-<!--    + model hyperparameters tuning  -->
-
-
-<!-- to predict the missing `sector` tag in the World Bank project documents.   -->
-
-<!--  Given that you have a mixture of text and structured data, here are some suitable algorithms: -->
-
-<!-- + **Logistic regression** (LR) is a good starting point for binary classification tasks. -->
-<!-- + **Random Forest** (RF) is a robust algorithm that can handle a mix of data types. -->
-<!-- + **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting. -->
-<!-- + **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources. -->
-<!-- + **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data. -->
-<!-- + **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources. -->
-
-
-<!-- > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model. -->
-
-
 ## Evaluating the performance of the preferred ML model to predict a missing feature
 @fig-ML_final_fit_cm reports the `confusion matrix` of the preferred ML model to predict the missing `environment risk category` assigned to the World Bank projects, as it displays the breakdown of true and predicted classifications. A strong performing model would show the bulk of the observations (or a darker shade) top-left quadrants (`true positives`), and the  bottom-right quadrants (`true negatives`). In this case, the model seems to be doing a good job in predicting the `environment risk category` in the **High-Med** group, while it struggles with the **Low & Other** group. In fact many of them are wrongly classified as `High-Med Risk` (`false positives`).  
 
@@ -779,6 +750,38 @@ ML_feature_importance_p <- readRDS(file = here ("analysis", "output", "figures",
 ML_feature_importance_p
 ```
 
+## Prediction and Interpretation
+
+These results are not impressive by any means; however, the main objective here was to explore potential analysis that can be conducted with the data at hand. With additional effort put into preprocessing, feature engineering, refined algorithm selection, and hyperparameter tuning, there is significant potential to enhance model performance further.  
+
+While I don't relate it here, I explored also the prediction of a multiclass outcome (`sector`, combined into 7 levels). However, the results were not as good as the binary classification. This is not surprising given that the task become much more complex, especially with imbalanced data or limited sample size. 
+ 
+  
+<!-- ## Some considerations on the predicting process -->
+<!-- While I didn't spend much time in increasing the predictive performance, I want to mention some steps that could be taken to improve the model performance:  -->
+
+<!--    + defining data / sample for analysis (preprocessing) -->
+<!--    + defining/label engineering of  y -->
+<!--    + feature engineering of x (dealing with missing data %, what x and in what functional form) -->
+<!--    + model selection -->
+<!--    + model hyperparameters tuning  -->
+
+
+<!-- to predict the missing `sector` tag in the World Bank project documents.   -->
+
+<!--  Given that you have a mixture of text and structured data, here are some suitable algorithms: -->
+
+<!-- + **Logistic regression** (LR) is a good starting point for binary classification tasks. -->
+<!-- + **Random Forest** (RF) is a robust algorithm that can handle a mix of data types. -->
+<!-- + **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting. -->
+<!-- + **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources. -->
+<!-- + **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data. -->
+<!-- + **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources. -->
+
+
+<!-- > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model. -->
+
+
 <!-- # --- 🔴🟢🟠🟡 qui  -->
 
 # CONCLUSIONS
@@ -790,10 +793,8 @@ ML_feature_importance_p
     -   uncovering surprising patterns and relationships in the data, e.g. recurring phrases or topics,
     -   triggering additional text-related questions that could lead to further research.
 
--   Next steps could include:
-
-    -   delving deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements);
-    -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents.
+-   Next steps could include delving deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements). Also further exploring NLP techniques for topic modeling, sentiment analysis, and other text-driven insights.
+    <!-- -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents. -->
 
 <!-- -   It is quite clear that the described exploratory analysis and topic modeling are most effective when paired with domain expertise that can inform how to interrogate the data and what to look for. -->
 
@@ -801,33 +802,6 @@ ML_feature_importance_p
 
 -   Amid the ongoing hype around AI and Large Language Models (LLMs), this kind of analysis seems like yesterday's news. However, I believe there is still a huge untapped potential for meaningful applications of NLP and text analytics in development studies, policy analysis, and other areas---which will be even more impactful if informed by domain knowledge.
 
-# TOOL
-
-::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
-### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
-
-XXX
-:::
-
-::: {.callout-tip collapse="true" style="background-color: #f6fbf7;"}
-xxx
-:::
-
-::: {.callout-caution collapse="true" style="background-color: #fffcf5;"}
-xxx
-:::
-
-::: {.callout-important collapse="true" style="background-color: #fdf7f7;"}
-xxx
-:::
-
-::: {.callout-warning collapse="true" style="background-color: #fffcf9;"}
-xxx
-:::
-
-::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
-xxx
-:::
 
 # Acknowledgements
 
