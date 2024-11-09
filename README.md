@@ -1,18 +1,24 @@
 # TO DO
 
-+ ~~Re- insert `analysis/_01a_WB_project_pdo_prep.qmd` but make it not run (very computationally intensive)~~
-   + ✅ done! thanks to  `_target` 
 + Clean up the code in: 
-   + ~~`analysis/01a_WB_project_pdo_prep.qmd`~~ 
-   + and `analysis/01b_WB_project_pdo_prep.qmd` 
-   + and `analysis/01c_WB_project_pdo_prep.qmd` bc now they are visible
-      + functions in `R/...`
-+ targets:
-   + `projs_train` and `pdo_train_t` are actually outputs of `prep_data` target 
+
 + Make `TL;DR` in **BLOG** less about input and more about output   
-+ Decide whether to show **RESEARCH Plan** or not
-+ In `analysis/01b_WB_project_pdo_EDA.qmd`
+
+## In `analysis/01b_WB_project_pdo_EDA.qmd`
    - revise the OLD plot -> NEW plot thing
+
+## In `analysis/01c_WB_project_pdo_prep.qmd`
+
++  Study the theory of Lasso Regr and Classification with ML on Gabor's book
+   + BOOK chp 14[Prediction with LASSO](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture22-lasso)
+   + [lelc 25 class ML](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture25-classification-wML)
++ re-write the attempted models in more condensed form
++ tell in plain English the choices available for improving ML pred perormance (even if not run)
+   + defining data / sample for analysis (preprocessing)
+   + defining/label engineering of  y
+   + feature engineering of x (dealing with missing data %, what x and in what functional form)
+   + model selection
+   + model hyperparameters tuning 
 
 
 <!-- 

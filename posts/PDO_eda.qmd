@@ -66,7 +66,7 @@ showtext_auto()
 ```
 
 
-# Motivation
+# MOTIVATION
 
 I have always been fascinated by the idea of analyzing language as data and I finally found some time to study *Natural Language Processing (NLP)* and *Text Analytics* techniques.
 
@@ -103,7 +103,7 @@ I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/
  (I made some attempts to make data ingestion automatic via API calls, but at the moment this is apparently beyond my web scraping ability 😬).
 :::
 
-# Data
+# DATA
 
 The original dataset included **22,569 World Bank projects** approved **from fiscal year 1947 through 2025**, as of *August 31, 2024*. Approximately half—**11,322 projects**—had a *viable* Project Development Objective (PDO) text (i.e., not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this group, some projects were excluded due to missing key variables.
 
@@ -141,7 +141,7 @@ Lastly (and this was quite surprising to me) the **remaining, viable 8,811 uniqu
 In sum, the cleaning process yielded a usable set of **8,811 functional projects**, which was split into a *training subset* (4,403) to explore and test models and a *testing subset* (4408), held out for post-prediction evaluation.
 :::
 
-# Preprocessing the PDO text data
+## Preprocessing the PDO text data
 
 Cleaning text data entails extra steps compared to numerical data. A key process is **tokenization**, which breaks text into smaller units like `words`, `bigrams`, `n-grams`, or `sentences`. After that, a common cleaning task is **normalization**, where text is standardized (e.g., converting to lowercase). Similarly, **data reduction techniques** like *stemming* and *lemmatization* simplify words to their root form (e.g., "running," "ran," and "runs" become "run"). This can help to reduce dimensionality, especially with very large datasets, when the word form is not relevant.
 
@@ -223,7 +223,7 @@ pdo_trigram_freq_plot <- readRDS(file = here ("analysis", "output", "figures", "
 pdo_trigram_freq_plot 
 ```
 
-# Sectors in the PDO text
+## Sectors in the PDO text
 To analyze a meaningful set of `tokens`, I examined the frequency of **sector-related terms** within the PDO text data. To capture the broader concept of "sector," I created a **comprehensive SECTOR variable** that encompasses all relevant words within an expanded definition.
 
 ::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
@@ -346,7 +346,7 @@ pdo_gen_WDR_plot <- readRDS(file = here ("analysis", "output", "figures", "pdo_g
 pdo_gen_WDR_plot 
 ```
 
-# Comparing PDO text against *variable* `sector`
+## Comparing PDO text against *variable* `sector`
 
 The available data includes not only text but also relevant metadata, such as the `sector1` variable, which captures the project’s primary sector. Do the terms in the PDO text align with this sector label? To examine this, I applied the **two-sample Kolmogorov-Smirnov test** to compare the distribution of `sector-related terms` in the PDO text with the distribution of `sector1`.
 
@@ -418,7 +418,7 @@ comp_pdo_sec_ENE_plot
 ```
 
 
-# Comparing PDO text against *variable* `amount committed`
+## Comparing PDO text against *variable* `amount committed`
 
 A similar question is: Do word trends observed in PDOs also reflect the allocation of funds to the mentioned sectors? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text against the distribution of the sum of the `amount committed` in corresponding projects (i.e. filtered by `sector1` category). Given the very different ranges, I compared rescaled values (using the *Kolmogorov-Smirnov* two-sample test) to evaluate the independence of these two distributions.
 
@@ -484,12 +484,12 @@ comp_commit_ict
 <!-- The `chi-square test`, in this case, serves to evaluate the similarity of the distributions of sector-related terms in the PDOs' text and the sum of the `amount committed` in corresponding projects. The results suggest that the distributions are similar across all sectors. However, the visual comparison of the ICT and MINING_OIL_GAS sectors shows that the distributions are not identical. -->
 
 
-# Concordances: a.k.a. keywords in context
+## Concordances: a.k.a. keywords in context
 
 Another useful analysis that can be done exploring text data refers to ***concordance***, which enables a closer look at the context surrounding a word (or combination of words). This approach can help clarify the word’s specific meaning or reveal underlying patterns in the data.
 
 
-## The bigram *"eligible crisis"* in the PDOs
+### The bigram *"eligible crisis"* in the PDOs
 For example, looking at most recurrent `bigrams` (two-word combinations) in the PDO text, the phrase *"eligible crisis"* caught my attention. It appears in the PDOs of 112 projects, and in 32% of these cases, it is accompanied by either *"respond promptly and effectively"* or *"immediate and effective response"*. @tbl-elgcris shows a few examples, suggesting this might be a recurring standard phrasing.
 
 ```{r}
@@ -505,7 +505,7 @@ elcr_k <- readRDS(file = here( "analysis" , "output", "tables", "elcr_k.rds"))
 elcr_k
 ```
 
-## The bigram "climate change" in the PDOs
+### The bigram "climate change" in the PDOs
 Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"* (which I associate with a more aspirational, long-term response) appears more frequently than *"adaptation"* (which I view as a more *practical*, short-term response). However, the ratio would flip considering that *"resilience"* may convey a similar practical intent. Another interesting insight worth exploring further in the future.  
 
 ```{r}
@@ -517,7 +517,7 @@ Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @
 
 # READ as object
 clch_close_k <- readRDS( file = here("analysis", "output", "tables" ,"clch_close_k.rds"))
-clch_close_k
+clch_close_k 
 ```
 
 @tbl-clim2 shows a few examples for each of the words most frequently found in the vicinity of the bigram *"climate change"*. 
@@ -557,13 +557,7 @@ sentences_with_climchang2_k %>%
  
 # DATA QUALITY ENHANCEMENT
 
-In this section, I recount some attempts to enhance the quality of the metadata by predicting missing features in the World Bank project documents. The idea is to use the text of the Project Development Objective (PDO) section as input data to predict the missing *tags* (`sector`, `environmental risk category`, etc.) for some of the observations.
-
-
-# --- 🔴🟢🟠🟡 qui 
- 
-
-## 🟡 Using ML models to predict a missing feature
+In this section, I recount some attempts to enhance the metadata quality by predicting missing features in the World Bank project documents. The idea is to use the text of the Project Development Objective (PDO) section as input data to predict the missing *categorical descriptors*, etc.) for some of the observations (`sector`, `environmental risk category`. @tbl-missing_ML shows some missing features in the source dataset.
 
 ```{r}
 #| label: tbl-missing_ML
@@ -578,14 +572,159 @@ source(here("R","f_recap_values.R"))
 projs_train <- readRDS(file = here( "data", "derived_data", "projs_train.rds"))
 
 # check candidate lables for classification 
-f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" ) ) %>% kable()
+f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" )) %>%
+   kable(format = "html", 
+         col.names = c("Variable", "N obs.", "N Distinct", "N Missing", "N Percent")) %>% 
+   kable_styling(full_width = FALSE) %>% 
+   row_spec(3, background = "#d8e600") # Light yellow background kable() 
 ```
 
+One candidate variable that could be predicted is `env_cat` (*"Environmental Assessment Category"*). This is a categorical variable with 7 levels (A, B, C, F, H, M, U), but, to simplify, I collapsed it into a binary outcome defined as *"High-Med-risk"* and *"Low-risk-Othr"* (as illustrated in @tbl-env_cat_f_f2). 
+
+```{r}
+#| label: tbl-env_cat_f_f2
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Binary outcome obtained from the `env_cat` variable
+
+# Load the Kable table
+env_cat_f_f2_k <- readRDS(file = here( "analysis" , "output", "tables", "env_cat_f_f2_k.rds"))
+env_cat_f_f2_k 
+
+```
+
+## Using ML models to predict a missing feature
+
+The goal at hand has to do with ***text classification***, that is assigning categories to some observations. To predict a missing feature based on text data and other available predictors, several machine learning (ML) algorithms can be applied. I tested a few different algorithms suitable when you have a mixture of text and structured data. 
 
 
-> Remember that text data is SPARSE!
+The sample splitting (necessary in ML to save testing dataset for model evaluation) was done based on the availability of the `env_cat` variable. The sample was actually split into three groups:  
 
-To predict a missing feature (e.g., `sector`) based on text data and other available predictors, several supervised machine learning (ML) algorithms can be applied. I tested a few different algorithms suitable when you have a mixture of text and structured data. 
+1) **Training set** (with `env_cat` available) 2,264 observations
+2) **Testing set** (with `env_cat` available) 972 observations
+3) **Testing 2 set** (with `env_cat` missing) 1,167 observations
+
+![Sampling strategy](../images/Sample_EnvCat2.png){fig-align="center"}
+
+## Choosing the ML algorithm
+
+To predict the missing binary categorical outcome `env_cat_f2`, I tried several algorithms, including: ***Lasso losgistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
+Since text data is sparse and high-dimensional, it is critical to perform some pre-treatment of the `features` (i.e. the *explanatory* variables) before modeling. 
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+#### Models syntethic description 
+
++ **LASSO models (for logistic regression)** is an approach that basically defines `how much of a penalty` to put on some features in order to select only the most useful out of all the original possible variables (tokens). It is a good choice when dealing with a high-dimensional dataset, like text data.
+
++ **Naïve Bayes classification** is a simple and efficient algorithm for text classification. It assumes feature independence, which may not always hold, but it's often a good baseline, particularly with short texts.
+
+Other supervised ML algorithms could be used in this case, such as *Random Forest*, *Support-Vector Machines*, *K-Nearest Neighbors*, but they were not tested here.
+
+#### The steps to predict the missing feature were as follows: 
+
+1.  **Outcome label engineering**: Define what to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)./
+    <!-- - Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best) -->
+
+2.  **Sample design**: Select the observations to use. In ML this is typically done by splitting the sample into training and testing sets.
+    <!-- - For *high external validity* it will have to be as close as possible to the population of interest (patterns of variables' distribution etc.) -->
+    
+3. **Feature Engineering**: Define the input data (predictors, $X$) and their format. Here, text data was combined with other predictors (e.g. `sector`, `region`, `FY approved`, etc.) to create a feature matrix.  
+   + **Text preprocessing**: The text data was preprocessed by `tokenization`, filtering of tokens by frequency, removal of `stopwords`, weighting via `TF-IDF` (Term Frequency-Inverse Document Frequency), to make it suitable for ML algorithms. 
+
+    <!-- - Deal with *missing* values in $X$ (understand, variable by variable, the reasons for missingness, and decide what to do: keep, impute value if numeric, drop the predictor?)\ -->
+    <!-- - Select the most *relevant* predictors (which $X$ to have and in which form). For text predictor data, there are specific NLP transformations that can be applied (e.g. tokenization, lemmatization, etc.) -->
+    <!-- - In some cases *interaction* between predictor variables makes sense. -->
+    <!-- - Alternative models can be build with less predictors in simpler form to compare with others with more predictors in more complex form... Here domain knowledge + EDA are key to decide what to include and what to exclude. -->
+
+4. **Model selection and fitting**: The models were trained on the training set. 
+   + Different algorithms will have different parameters that can be adjusted which can affect the performance of the model (**hyperparameters tuning**, typically done while training the model).
+
+<!-- - `model selection` It's impossible to try all possible models (i.e. all possible choices of $X$ variables to include, their possible functional form, and their possible interactions give too many combinations). -->
+  <!-- - `cross-validation` is similar to training-test method, which basically splits the data into training and test sets, but it does this multiple times (e.g. `k-fold cross-validation` means $k$ = 10 test sets) and it helps selecting the best model without *overfitting*. -->
+  <!-- - Here we do all the work said above (model building and best model selection) in the *work set*. This will be further divided $k-times$ into $k$ train-test splits, then we use the *holdout set* to evaluate the prediction itself. -->
+  <!-- - `last_fit` means that, once the best model(s) is/are selected, they are re-run on all of the work set (training data) to evaluate the performance to obtain the final model. -->
+
+5. **Prediction**: The best model was used to predict the missing `env_cat_f2` and evaluate the model's performance on the *hold-out sample* (testing set).
+
+6. **Evaluation**: The predictions were evaluated on the testing set based on performance metrics:
+   + `accuracy`, which is the proportion of correct predictions, and 
+   + `ROC-AUC` (Receiver Operating Characteristic - Area Under the Curve), which summarizes how well the model can distinguish between classes.
+   
+    <!-- - evaluate the fit of the prediction (using, MSE, RMSE, accuracy, ROC etc. to summarize *goodness of fit* -->
+    <!-- - (for continuous $y$) we can visualize the prediction interval around the prediction, for discrete $y$ the confusion matrix. -->
+    <!-- - we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.) -->
+    <!-- - finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data") -->
+
+7. **Interpretation**: The model was interpreted to understand which features were most important in predicting the outcome.
+
+:::
+
+
+## Models and Results
+@tbl-ML_results reports the specifications of the models and their performance. 
+```{r}
+#| label: tbl-ML_results
+#| eval: true
+#| echo: false
+#| output: true
+#| tbl-cap: Comparison of models and results for binary outcome
+
+tibble::tribble(
+  ~Algorithm                , ~Features    , ~Specification  , ~Accuracy, ~ROC_auc,
+  "LASSO logistic regression", "Text only" , "env_cat_f2 ~ pdo" , 0.750, 0.777,  
+  "LASSO logistic regression \n(more preprocessing)", "Text only" , "env_cat_f2 ~ pdo" , 0.762, 0.807,   # last fit 
+  
+  "LASSO logistic regression \n(more preprocessing)", "Text + other predictors" , "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 0.79, 0.85,  
+  
+  "Naïve Bayes classification"              , "Text + other predictors", "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 0.691, 0.784  
+) %>%  
+   kable(format = "html" ) %>% 
+   kable_styling(full_width = FALSE)  %>% 
+   row_spec(3, background = "#d8e600")  
+
+
+# 1) env_recipe   
+# • Tokenization for: pdo
+# • Text filtering for: pdo
+# • Term frequency-inverse document frequency with: pdo
+
+# 2) env_stop_recipe
+# ── Operations 
+# • Tokenization for: pdo
+# • Stop word removal for: pdo   x 
+# • Text filtering for: pdo
+# • Term frequency-inverse document frequency with: pdo
+
+
+# 3) env_FEAT_recipe
+# ── Operations 
+# • Tokenization for: pdo
+# • Stop word removal for: pdo
+# • Text filtering for: pdo
+# • Term frequency-inverse document frequency with: pdo
+# • Unknown factor level assignment for: sector_f             x 
+# • Unknown factor level assignment for: regionname             x 
+# • Unknown factor level assignment for: boardapprovalFY             x 
+# • Dummy variables from: sector_f, regionname, boardapprovalFY
+```
+
+The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata infomration to predict the missing `env_cat_f2` in the testing set. The model achieved an accuracy of 0.79 and an ROC-AUC of 0.85.:
+
+
+## Prediction and Interpretation
+
+These results are not impressive by any means, but, once again, my main goal was to explore possible operations that can be done with the data such as the one in this case study, so minimal effort was put into optimizing the model performance (by way of preprocessing, features engineering, algorithm choice, different tuning of the hyperparameters, etc.).
+
+<!-- ## Some considerations on the predicting process -->
+<!-- While I didn't spend much time in increasing the predictive performance, I want to mention some steps that could be taken to improve the model performance:  -->
+
+<!--    + defining data / sample for analysis (preprocessing) -->
+<!--    + defining/label engineering of  y -->
+<!--    + feature engineering of x (dealing with missing data %, what x and in what functional form) -->
+<!--    + model selection -->
+<!--    + model hyperparameters tuning  -->
+
 
 <!-- to predict the missing `sector` tag in the World Bank project documents.   -->
 
@@ -601,42 +740,50 @@ To predict a missing feature (e.g., `sector`) based on text data and other avail
 
 <!-- > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model. -->
 
-::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
-### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
-### Steps of prediction in ML
 
-1.  `outcome label engineering` Define what we want to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)
-    - Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best)
+## Evaluating the performance of the preferred ML model to predict a missing feature
+@fig-ML_final_fit_cm reports the `confusion matrix` of the preferred ML model to predict the missing `environment risk category` assigned to the World Bank projects, as it displays the breakdown of true and predicted classifications. A strong performing model would show the bulk of the observations (or a darker shade) top-left quadrants (`true positives`), and the  bottom-right quadrants (`true negatives`). In this case, the model seems to be doing a good job in predicting the `environment risk category` in the **High-Med** group, while it struggles with the **Low & Other** group. In fact many of them are wrongly classified as `High-Med Risk` (`false positives`).  
 
-2.  `sample design` Select the observations to use .
-    - For *high external validity* it will have to be as close as possible to the population of interest (patterns of variables' distribution etc.)
+```{r}
+#| label: fig-ML_final_fit_cm
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+#| 
+ML_final_fit_cm_p <- readRDS(file = here ("analysis", "output", "figures", "ML_final_fit_cm_p.rds"))
+ML_final_fit_cm_p 
+```
 
-3.  `feature engineering` Define the input data (predictors, $X$) and their format (text, numeric, categorical) 
-    - Deal with *missing* values in $X$ (understand, variable by variable, the reasons for missingness, and decide what to do: keep, impute value if numeric, drop the predictor?)\
-    - Select the most *relevant* predictors (which $X$ to have and in which form). For text predictor data, there are specific NLP transformations that can be applied (e.g. tokenization, lemmatization, etc.)
-    - In some cases *interaction* between predictor variables makes sense.
-    - Alternative models can be build with less predictors in simpler form to compare with others with more predictors in more complex form... Here domain knowledge + EDA are key to decide what to include and what to exclude.
+## Inspecting the most important features for predicting the outcome 
 
-4.  `model selection` It's impossible to try all possible models (i.e. all possible choices of $X$ variables to include, their possible functional form, and their possible interactions give too many combinations).
-    - `cross-validation` is similar to training-test method, which basically splits the data into training and test sets, but it does this multiple times (e.g. `k-fold cross-validation` means $k$ = 10 test sets) and it helps selecting the best model without *overfitting*.
-    - Here we do all the work said above (model building and best model selection) in the *work set*. This will be further divided $k-times$ into $k$ train-test splits, then we use the *holdout set* to evaluate the prediction itself.
+It is very interesting also to explore which coefficient values are the most important in the model. This can be done by looking at the `feature importance` plot ( @fig-ML_feature_importance).
 
-5.  `last_fit` means that, once the best model(s) is/are selected, they are re-run on all of the work set (training data) to evaluate the performance to obtain the final model.
+The feature importance plot highlights the top 50 predictors of `environmental risk (binary) category`, ranked by their influence in a LASSO logistic regression model. For better readability the predictors are split according to the level of risk predicted. It should be no surprise that words in the PDO text (those variables starting with `pdo_*`) are the most important predictors given the data. Still some of the other predictors are also important, such as `sector_f_TRANSPORT` (left panel) or `regionname` and `sector_f_FINANCIAL` (right panel). 
 
-6.  `post-prediction diagnostic`, lastly, serves to evaluate the model's performance on the *hold-out sample* instead. Here we can
-    - evaluate the fit of the prediction (using, MSE, RMSE, accuracy, ROC etc. to summarize *goodness of fit*
-    - (for continuous $y$) we can visualize the prediction interval around the prediction, for discrete $y$ the confusion matrix.
-    - we can zoom in on the kinds of observations we care about the most or look at the fit in *certain sub-samples* of the data (e.g. by sector, by year, etc.)
-    - finally we should assess the *external validity* (hold out set helps but is not representative of all the "live data")
-    
-:::
+```{r}
+#| label: fig-ML_feature_importance
+#| eval: true
+#| echo: false
+#| output: true
+#| fig.width: 10 # adjust based on text width in inches
+#| fig.height: 8 #9.382  # adjust based on text width in inches
+#| out.width: "100%" # ensures the figure spans the full text width in HTML
+#| fig-align: "center"
+#| fig-cap: "Top 50 most important features in the preferred ML model"
 
-## 🟡 Evaluating the performance of the preferred ML model to predict a missing feature
+ML_feature_importance_p <- readRDS(file = here ("analysis", "output", "figures", "ML_feature_importance_p.rds"))
+ML_feature_importance_p
+```
 
+<!-- # --- 🔴🟢🟠🟡 qui  -->
 
-# Conclusions and next steps
+# CONCLUSIONS
 
--   Evidently, this project was primarily a learning / proof-of-concept exercise, so I wasn't concerned with in-depth analysis of the data, nor with maximizing ML models' predictive performance. Nevertheless, this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data to uncover valuable insights, such as:
+-   This project was primarily a learning / proof-of-concept exercise, so I wasn't concerned with in-depth analysis of the data, nor with maximizing ML models' predictive performance. Nevertheless, this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data to uncover valuable insights, such as:
 
     -   detecting frequency trends of sector-specific language, and topics over time,
     -   improving documents classification and metadata tagging, via ML predictive models,
@@ -684,7 +831,7 @@ xxx
 
 # Acknowledgements
 
-Below are some valuable resources to learn and implement NLP techniques--geared toward R programmers.
+Below are some great resources to learn and implement NLP techniques--geared toward R programmers.
  
  <!-- 
 - [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)

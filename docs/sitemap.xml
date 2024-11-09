@@ -2,10 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html</loc>
-    <lastmod>2024-11-08T16:25:54.294Z</lastmod>
+    <lastmod>2024-11-09T23:06:26.353Z</lastmod>
   </url>
   <url>
     <loc>https://lulliter.github.io/slogan/analysis/01b_WB_project_pdo_EDA.html</loc>
     <lastmod>2024-11-08T10:34:30.615Z</lastmod>
+  </url>
+  <url>
+    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
+    <lastmod>2024-11-09T22:54:43.282Z</lastmod>
   </url>
 </urlset>

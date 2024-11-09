@@ -23,7 +23,6 @@ tar_config_set(
    script = here::here("_targets.R"))
 
 
-
 # PIPELINE ----------------
 ## each target has a name and an R function to run
 list(
@@ -108,7 +107,10 @@ list(
    ## ML Feature Classification ----
    tar_target(
       feat_class_report,
-      {wdr # Just reference the file to signal dependency without loading them
+      # Just reference the file to signal dependency without loading them
+      { projs_train
+         wdr
+        custom_stop_words_df
          # Render the EDA report
          quarto::quarto_render(here::here("analysis", "01c_WB_project_pdo_feat_class.qmd"))
       },
