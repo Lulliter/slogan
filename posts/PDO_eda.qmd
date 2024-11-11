@@ -38,13 +38,14 @@ format:
     toc-location: left
     toc-title: Outline
     embed-resources: true # external dependencies embedded (Not in ..._files/)
-  # pdf:
-  #   toc-depth: 2
-  #   toc-title: Indice
-  #   highlight-style: github
-  #   #lang: it
-  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+  pdf:
+    toc-depth: 2
+    # toc-title: Indice
+    highlight-style: github
+    #lang: it
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
 format-links: false
+prefer-html: true
 
 bibliography: slogan_selected.bib
 nocite: |
@@ -773,11 +774,11 @@ Although not reported here, I also explored predicting a multiclass outcome (`se
 <!-- -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents. --> 
 -   One pain point with this type of work is accessing document data efficiently. Even with the World Bank’s *"Access to Information"* policy, getting programmatic access to their text data is still tricky (no dedicated API, outdated pages, broken links). This could benefit from an approach similar to the accessible, well-maintained World Development Indicators (WDI) data.
 
--   With all the buzz around AI and Large Language Models (LLMs), this kind of analysis might seem yesterday news. But I think there’s still huge, untapped potential for using NLP in development studies, policy analysis, and beyond—especially when it’s backed by domain expertise.
+-   With all the buzz around AI and Large Language Models (LLMs), this kind of analysis might seem like yesterday's news. But I think there’s still huge, untapped potential for using NLP in development studies, policy analysis, and beyond—especially when it’s backed by domain expertise.
 
 # Acknowledgements
 
-Below are some great resources--geared especially toward [{{< fa brands r-project >}}]{style="color: #3b7697;"} programmers-- to learn and implement NLP techniques (👏🏻👏🏻). 
+Below are some great resources---especially geared toward [{{< fa brands r-project >}}]{style="color: #3b7697;"} programmers---to learn and implement NLP techniques. 
  
  <!-- 
 - [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
