@@ -1,10 +1,10 @@
 ---
-title: "Exploring the PDO text of World Bank's projects"  
+title: "A text exploration of the World Bank's projects objectives (PDO)"  
 subtitle: "TL;DR"
 description: |
-  The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns in text but also ways to enhance the quality of projects' data themselves.  
+  The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns and correlations in text but also solutions to enhance the quality of projects' data themselves.  
   
-  This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open (still in progress, not very polished).<br>
+  (This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished).<br>
 #  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
 #author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
@@ -70,7 +70,7 @@ showtext_auto()
 
 I have always been fascinated by the idea of analyzing language as data and I finally found some time to study *Natural Language Processing (NLP)* and *Text Analytics* techniques.
 
-In this learning project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of World Bank's projects (loans, grants, technical assistance). A **PDO** outlines, in synthetic form, the proposed objectives of operations, as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
+For this learning project, I explore a dataset of World Bank Projects & Operations, with a focus on the text data contained in the **Project Development Objective (PDO) section** of World Bank's projects (loans, grants, technical assistance). A **PDO** outlines, in synthetic form, the proposed objectives of operations, as defined in the early stages of the World Bank project cycle. <!-- This includes: 1) Identification, 2) Preparation, 3) Appraisal, 4) Negotiation/approval, 5) Implementation, and 6) Completion/validation and evaluation.  -->
 
 Normally, a few objectives are listed in paragraphs that are a couple sentences long. @tbl-pdo_exes shows two examples. 
 
@@ -109,7 +109,7 @@ The original dataset included **22,569 World Bank projects** approved **from fis
 
 This left **8,811 projects** as **usable observations** for analysis.
 
-Interestingly, within this refined subset, **2,235 projects share only 1,006 unique PDOs**: *recycled PDOs* often appear in follow-up projects or components of a larger parent project.
+Interestingly, within this refined subset, **2,235 projects share only 1,006 unique PDOs**: *recycled* PDOs often appear in follow-up projects or components of a larger parent project.
 
 Finally, from these **8,811 projects**, a representative sample of **4,403 projects with PDOs** was selected for further analysis.
 
@@ -180,8 +180,8 @@ combo_freq_p
 ```
 
 ## Bigrams 
-@fig-bigr shows the most frequent bigrams in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"* ,*"institutional capacity"*, *"poverty reduction"* etc., at the top.
-Notably, while *"health"* appears in several bigrams (e.g., *"health services"*, *"public health"*, *"health care"*), *"education"* is absent from the top 25. Another intriguing observation is the frequent mention (over 100 instances) of *"eligible crisis"*, which seems somewhat unexpected. 
+@fig-bigr shows the most frequent `bigrams` in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"* ,*"institutional capacity"*, *"poverty reduction"* etc., at the top.
+Notably, while *"health"* appears in several bigrams (e.g., *"health services"*, *"public health"*, *"health care"*), *"education"* is absent from the top 25. Another noteworthy observation is the frequent mention (over 100 instances) of *"eligible crisis"*, which was somewhat unexpected. 
 
 ```{r}
 #| label: fig-bigr
@@ -207,7 +207,8 @@ pdo_bigr_freq
 
 ## Trigrams 
 
-@fig-trigr shows the most frequent trigrams in the PDO text data. Here, the recurrence of phrases involving *"health"* is reiterated, along with a few phrases revolving around *"environmental"* goals, along with other terms that are expected to go together: like *"water resource management"*, *"social safety net"*, etc..
+@fig-trigr shows the most frequent `trigrams` in the PDO text data. Here, the recurrence of phrases involving *"health"* is reiterated, along with a few phrases revolving around *"environmental"* goals, along with terms that 
+inherently belong together: like *"water resource management"*, *"social safety net"*, etc..
 
 ```{r}
 #| label: fig-trigr 
@@ -224,7 +225,7 @@ pdo_trigram_freq_plot
 ```
 
 ## Sectors in the PDO text
-To analyze a meaningful set of `tokens`, I examined the frequency of **sector-related terms** within the PDO text data. To capture the broader concept of "sector," I created a **comprehensive SECTOR variable** that encompasses all relevant words within an expanded definition.
+To focus on a meaningful set of `tokens`, I examined the frequency of **sector-related terms** within the PDO text data. To capture the broader concept of "sector," I created a **comprehensive SECTOR variable** that encompasses all relevant words within an expanded definition.
 
 ::: {.callout-note collapse="true" style="background-color: #e7edfa;"}
 ### *Custom* Sector Definitions
@@ -277,7 +278,7 @@ To some extent, visual exploration (see examples below) seems to support this hy
 <!-- + Sector terms are not always captured with the same *precision*, which affects the association. -->
 <!-- + Preparing each WDR typically takes 2-3 years, so a temporal alignment with project documents may naturally include some lag. -->
 
-## Examples of sectors-term trend
+### Examples of sectors-term trend
 
 @fig-agr shows a "combined sector" that is quite broadly defined (**AGRICULTURE, FORESTRY, FISHING**) with the highest peak in 2010, two years after the publication of the WDR on **"Agriculture for Development"**. Perhaps the "alignment" hypothesis is not very meaningful with such a broadly defined sector. 
 
@@ -353,7 +354,7 @@ The available data includes not only text but also relevant metadata, such as th
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
 The **Kolmogorov-Smirnov test** is non-parametric and makes no assumptions about the underlying distributions, making it a versatile tool for comparing distributions. The `null hypothesis` is that the two samples are drawn from the same distribution. Hence, if the `p-value` is less than the significance level (0.05), the null hypothesis is rejected, suggesting the observed distributions are in fact different. The `test statistic` is the maximum difference between the *cumulative distribution functions (CDF)* of the two samples.
 
-+ **KS statistic**: The vectors of observed distributions have been normalized (bringing `n_pdo` and `n_tag` to a [0, 1] range before applying the Kolmogorov-Smirnov (KS) test). This is useful when distributions differ substantially in scale or units, as it makes them directly comparable in relative terms.
++ **KS statistic**: The vectors of observed distributions have been rescaled (bringing `n_pdo` and `n_tag` to a [0, 1] range before applying the Kolmogorov-Smirnov (KS) test). This is useful when distributions differ substantially in scale or units, as it makes them directly comparable in relative terms.
 :::
 
 As shown in @tbl-comp_sec, the results indicate similar distributions across most sectors. This is promising, as it suggests that in cases where metadata is lacking, sector assignments can be reasonably inferred from the PDO text.
@@ -420,7 +421,7 @@ comp_pdo_sec_ENE_plot
 
 ## Comparing PDO text against *variable* `amount committed`
 
-A similar question is: Do word trends observed in PDOs also reflect the allocation of funds to the mentioned sectors? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text against the distribution of the sum of the `amount committed` in corresponding projects (i.e. filtered by `sector1` category). Given the very different ranges, I compared rescaled values (using the *Kolmogorov-Smirnov* two-sample test) to evaluate the independence of these two distributions.
+A similar question is: do word trends observed in PDOs also reflect the allocation of funds by sector? I explored this question with the same approach as before, but this time I compared the distribution of sector-related terms in the PDOs' text against the distribution of the sum of the `amount committed` in corresponding projects (i.e. filtered by `sector1` category). Given the very different ranges, I compared rescaled values (using the *Kolmogorov-Smirnov* two-sample test) to evaluate the independence of these two distributions.
 
 As shown in @tbl-comp_sec_commit, the results indicate less homogeneity of the distributions across key sectors, somthing that could be further investigated. 
 
@@ -490,7 +491,7 @@ Another useful analysis that can be done exploring text data refers to ***concor
 
 
 ### The bigram *"eligible crisis"* in the PDOs
-For example, looking at most recurrent `bigrams` (two-word combinations) in the PDO text, the phrase *"eligible crisis"* caught my attention. It appears in the PDOs of 112 projects, and in 32% of these cases, it is accompanied by either *"respond promptly and effectively"* or *"immediate and effective response"*. @tbl-elgcris shows a few examples, suggesting this might be a recurring standard phrasing.
+For instance, among the most frequent `bigrams` (two-word combinations) in the PDO text (illustrated in @fig-bigr), the phrase *"eligible crisis"* stands out. Besides appearing in the PDOs of 112 projects, this phrase is often used in a similar context. Specifically, in 32% of these cases, it is paired with phrases like *"respond promptly and effectively"* or *"immediate and effective response"*. As shown in @tbl-elgcris, this suggests a sort of recurring standard phrasing.
 
 ```{r}
 #| label: tbl-elgcris
@@ -506,7 +507,7 @@ elcr_k
 ```
 
 ### The bigram "climate change" in the PDOs
-Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"* (which I associate with a more aspirational, long-term response) appears more frequently than *"adaptation"* (which I view as a more *practical*, short-term response). However, the ratio would flip considering that *"resilience"* may convey a similar practical intent. Another interesting insight worth exploring further in the future.  
+Another frequently occurring `bigram` is *"climate change"*, found in 92 PDOs. @tbl-clim displays words that commonly appear near this bigram. Notably, the word *"mitigation"* (which I associate with a more aspirational, long-term response) appears more frequently than *"adaptation"* (which I view as a more *practical*, short-term response). However, the ratio would flip considering that *"resilience"* may convey a similar practical intent as *"adaptation"*. Another interesting insight worth exploring further in the future.  
 
 ```{r}
 #| label: tbl-clim
@@ -554,17 +555,18 @@ sentences_with_climchang2_k %>%
 
 ```
 
- 
+---
+
 # DATA QUALITY ENHANCEMENT
 
-In this section, I recount some attempts to enhance the metadata quality by predicting missing features in the World Bank project documents. The idea is to use the text of the Project Development Objective (PDO) section as input data to predict the missing *categorical descriptors*, etc.) for some of the observations (`sector`, `environmental risk category`. @tbl-missing_ML shows some missing features in the source dataset.
+This section shifts focus to a new area of exploration: the possibility to enhance the metadata quality by predicting missing features in the World Bank project documents. The idea is to use the Project Development Objective (PDO) words as input to predict the missing *categorical descriptors* (`sector`, `environmental risk category`, etc.) for some of the observations . @tbl-missing_ML shows some missing features in the source dataset.
 
 ```{r}
 #| label: tbl-missing_ML
 #| eval: true
 #| echo: false
 #| output: true
-#| tbl-cap: Missing feature in source dataset
+#| tbl-cap: Missing features in source dataset
 
  
 # source function
@@ -596,20 +598,19 @@ env_cat_f_f2_k
 
 ## Using ML models to predict a missing feature
 
-The goal at hand has to do with ***text classification***, that is assigning categories to some observations. To predict a missing feature based on text data and other available predictors, several machine learning (ML) algorithms can be applied. I tested a few different algorithms suitable when you have a mixture of text and structured data. 
-
+The goal at hand has to do with ***text classification***, that is assigning categories to some observations. To predict a missing feature based on a mix of text data and other available predictors, several machine learning (ML) algorithms can be applied. I tested a few suitable algorithms.
 
 The sample splitting (necessary in ML to save testing dataset for model evaluation) was done based on the availability of the `env_cat` variable. The sample was actually split into three groups:  
 
 1) **Training set** (with `env_cat` available) 2,264 observations
 2) **Testing set** (with `env_cat` available) 972 observations
-3) **Testing 2 set** (with `env_cat` missing) 1,167 observations
+3) **Validation set** (with `env_cat` missing) 1,167 observations
 
-![Sampling strategy](../images/Sample_EnvCat2.png){fig-align="center"}
+<!-- ![Sampling strategy](../images/Sample_EnvCat2.png){fig-align="center"} -->
 
 ## Choosing the ML algorithm
 
-To predict the missing binary categorical outcome `env_cat_f2`, I tried several algorithms, including: ***Lasso losgistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
+To predict the missing binary categorical outcome `env_cat_f2`, I tried several models, including: ***Lasso losgistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
 Since text data is sparse and high-dimensional, it is critical to perform some pre-treatment of the `features` (i.e. the *explanatory* variables) before modeling. 
 
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
@@ -621,7 +622,7 @@ Since text data is sparse and high-dimensional, it is critical to perform some p
 
 Other supervised ML algorithms could be used in this case, such as *Random Forest*, *Support-Vector Machines*, *K-Nearest Neighbors*, but they were not tested here.
 
-#### The steps to predict the missing feature were as follows: 
+#### The steps to predict the missing feature 
 
 1.  **Outcome label engineering**: Define what to predict (outcome variable, $y$), and its functional form (binary or multiclass, log form or not if numeric)./
     <!-- - Deal with *missing* value in $y$ (understand if there are systematic reasons for missingness, and if so, how to address them) + Deal *with* extreme values of $y$ (conservatively is best) -->
@@ -658,6 +659,7 @@ Other supervised ML algorithms could be used in this case, such as *Random Fores
 
 7. **Interpretation**: The model was interpreted to understand which features were most important in predicting the outcome.
 
+> ML is an iterative process, so it is common to revise (some of) the above steps multiple times to refine the model. 
 :::
 
 
@@ -709,11 +711,16 @@ tibble::tribble(
 # • Dummy variables from: sector_f, regionname, boardapprovalFY
 ```
 
-The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata infomration to predict the missing `env_cat_f2` in the testing set. The model achieved an accuracy of 0.79 and an ROC-AUC of 0.85.:
+The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata information to predict the missing `env_cat_f2` in the testing set. The model achieved an accuracy of 0.79 and an ROC-AUC of 0.85, whereas:
 
++ `accuracy` is the proportion of correct predictions made by the model out of all predictions or, in other words, how often the model is correct overall.
++ `ROC-AUC` (*Receiver Operating Characteristic - Area Under the Curve*) goes further by evaluating the model's ability to distinguish between classes across various thresholds. It summarizes how well the model can separates the classes, providing a more nuanced view of its performance, especially useful when the class distribution is uneven.
 
-## Evaluating the performance of the preferred ML model to predict a missing feature
-@fig-ML_final_fit_cm reports the `confusion matrix` of the preferred ML model to predict the missing `environment risk category` assigned to the World Bank projects, as it displays the breakdown of true and predicted classifications. A strong performing model would show the bulk of the observations (or a darker shade) top-left quadrants (`true positives`), and the  bottom-right quadrants (`true negatives`). In this case, the model seems to be doing a good job in predicting the `environment risk category` in the **High-Med** group, while it struggles with the **Low & Other** group. In fact many of them are wrongly classified as `High-Med Risk` (`false positives`).  
+## Performance of the preferred ML model
+
+@fig-ML_final_fit_cm presents the `confusion matrix` for the preferred ML model used to predict the missing *environment risk category* assigned to World Bank projects. This matrix shows the distribution of true and predicted classifications. Ideally, a high-performing model would have most observations (or darker shading) along the diagonal, indicating correct classifications—specifically, `true positives` in the top-left quadrant and `true negatives` in the bottom-right quadrant.
+
+In this case, the model performs well in predicting the `environment risk category` for the **High-Med** group but struggles with the **Low & Other** group. Many of these cases are *incorrectly* classified as **High-Med Risk** (`false positives`). This result is understandable, as the **Low & Other** category is more loosely defined and even includes **Missing** observations (which, in hindsight, could have been excluded from the prediction).
 
 ```{r}
 #| label: fig-ML_final_fit_cm
@@ -729,11 +736,11 @@ ML_final_fit_cm_p <- readRDS(file = here ("analysis", "output", "figures", "ML_f
 ML_final_fit_cm_p 
 ```
 
-## Inspecting the most important features for predicting the outcome 
+## Most important features for prediction 
+It’s also insightful to examine which coefficients are most influential in the model. This can be done visually through the `feature importance` plot (see @fig-ML_feature_importance).
 
-It is very interesting also to explore which coefficient values are the most important in the model. This can be done by looking at the `feature importance` plot ( @fig-ML_feature_importance).
+The feature importance plot displays the top 50 predictors of the `environmental risk (binary) category`, ranked by their impact in a LASSO logistic regression model. For clarity, predictors are divided according to the risk level they predict. As expected, given the structure of the data, words from the PDO text (those variables starting with `pdo_*`) are among the most important predictors. However, other predictors also play a significant role, such as `sector_f_TRANSPORT` (left panel), `regionname`, and `sector_f_FINANCIAL` (right panel).
 
-The feature importance plot highlights the top 50 predictors of `environmental risk (binary) category`, ranked by their influence in a LASSO logistic regression model. For better readability the predictors are split according to the level of risk predicted. It should be no surprise that words in the PDO text (those variables starting with `pdo_*`) are the most important predictors given the data. Still some of the other predictors are also important, such as `sector_f_TRANSPORT` (left panel) or `regionname` and `sector_f_FINANCIAL` (right panel). 
 
 ```{r}
 #| label: fig-ML_feature_importance
@@ -752,60 +759,28 @@ ML_feature_importance_p
 
 ## Prediction and Interpretation
 
-These results are not impressive by any means; however, the main objective here was to explore potential analysis that can be conducted with the data at hand. With additional effort put into preprocessing, feature engineering, refined algorithm selection, and hyperparameter tuning, there is significant potential to enhance model performance further.  
+While the model's prediction performance is not particularly remarkable, it is sufficient to illustrate the potential of this analysis to **enhance the quality of incomplete datasets**. With further improvements in preprocessing, feature engineering, algorithm selection, and hyperparameter tuning, there is significant potential to optimize a similar ML model.
 
-While I don't relate it here, I explored also the prediction of a multiclass outcome (`sector`, combined into 7 levels). However, the results were not as good as the binary classification. This is not surprising given that the task become much more complex, especially with imbalanced data or limited sample size. 
- 
-  
-<!-- ## Some considerations on the predicting process -->
-<!-- While I didn't spend much time in increasing the predictive performance, I want to mention some steps that could be taken to improve the model performance:  -->
-
-<!--    + defining data / sample for analysis (preprocessing) -->
-<!--    + defining/label engineering of  y -->
-<!--    + feature engineering of x (dealing with missing data %, what x and in what functional form) -->
-<!--    + model selection -->
-<!--    + model hyperparameters tuning  -->
-
-
-<!-- to predict the missing `sector` tag in the World Bank project documents.   -->
-
-<!--  Given that you have a mixture of text and structured data, here are some suitable algorithms: -->
-
-<!-- + **Logistic regression** (LR) is a good starting point for binary classification tasks. -->
-<!-- + **Random Forest** (RF) is a robust algorithm that can handle a mix of data types. -->
-<!-- + **Gradient Boosting Machine** (GBM) is a powerful algorithm that can handle a mix of data types and is less prone to overfitting. -->
-<!-- + **Deep Learning** (DL) models, such as neural networks, can be used for more complex tasks, but they require more data and computational resources. -->
-<!-- + **Naive Bayes** (NB) is a simple algorithm that can be used for text data, but it assumes that the features are independent, which is not always the case with text data. -->
-<!-- + **Support Vector Machine** (SVM) is a powerful algorithm that can be used for text data, but it requires more data and computational resources. -->
-
-
-<!-- > LASSO (Least Absolute Shrinkage and Selection Operator) is a sort of "add-on" to linear regression models which, by adding a *penalty system*, finds a way to get better predictions from regressions with many predictors, by selecting a subset of the predicting variables that helps to avoid overfitting. The output of the LASSO algorithm is the values of the coefficients of the predictors that are kept in the model. In the formula $λ$ is the **tuning parameter** term, which is a parameter that can be tuned to get the best model. -->
-
-
-<!-- # --- 🔴🟢🟠🟡 qui  -->
+Although not reported here, I also explored predicting a multiclass outcome (`sector`, grouped into 7 levels). However, the results were less favorable compared to the binary classification. This outcome is expected, as multiclass classification is inherently more challenging, particularly with imbalanced data or limited sample sizes.
 
 # CONCLUSIONS
 
--   This project was primarily a learning / proof-of-concept exercise, so I wasn't concerned with in-depth analysis of the data, nor with maximizing ML models' predictive performance. Nevertheless, this initial exploration demonstrated the potential of applying NLP techniques to unstructured text data to uncover valuable insights, such as:
+-   This project was primarily a proof-of-concept for learning purposes, so optimizing ML performance and conducting in-depth data analysis were not priorities. Nevertheless, it showcased the potential of applying NLP techniques to unstructured text data, uncovering insights such as:
 
-    -   detecting frequency trends of sector-specific language, and topics over time,
-    -   improving documents classification and metadata tagging, via ML predictive models,
-    -   uncovering surprising patterns and relationships in the data, e.g. recurring phrases or topics,
-    -   triggering additional text-related questions that could lead to further research.
+    -   identifying trends in sector-specific language and topics over time,
+    -   revealing unexpected patterns and relationships, like recurring phrases or topics,
+    -   enhancing text classification and metadata tagging with ML models,
+    -   sparking additional text-based questions that could guide further research.
 
--   Next steps could include delving deeper into hypothetical explanations for the patterns observed, e.g. by combining NLP on this document corpus with other data sources (e.g. information on other WB official documents and policy statements). Also further exploring NLP techniques for topic modeling, sentiment analysis, and other text-driven insights.
-    <!-- -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents. -->
+-   Future steps could include exploring explanations for observed patterns by combining this NLP analysis with other data sources (e.g., World Bank official statements or project data) and experimenting with advanced NLP techniques for topic modeling.
+<!-- -   exploring more advanced NLP techniques, such as *Named Entity Recognition (NER)*, *Structural Topic Modeling (STM)*, or *BERTopic*, to enhance the analysis and insights drawn from World Bank project documents. --> 
+-   One pain point with this type of work is accessing document data efficiently. Even with the World Bank’s *"Access to Information"* policy, getting programmatic access to their text data is still tricky (no dedicated API, outdated pages, broken links). This could benefit from an approach similar to the accessible, well-maintained World Development Indicators (WDI) data.
 
-<!-- -   It is quite clear that the described exploratory analysis and topic modeling are most effective when paired with domain expertise that can inform how to interrogate the data and what to look for. -->
-
--   A pain point in this type of work is efficiently retrieving input data from document corpora. Despite the World Bank's generous *"Access to Information"* policy, programmatic access to its extensive text data resources is still quite hard (no dedicated API, various stale pages and broken links). This should be addressed, perhaps following the model of the World Development Indicators (WDI) data, much more accessible and well-curated.
-
--   Amid the ongoing hype around AI and Large Language Models (LLMs), this kind of analysis seems like yesterday's news. However, I believe there is still a huge untapped potential for meaningful applications of NLP and text analytics in development studies, policy analysis, and other areas---which will be even more impactful if informed by domain knowledge.
-
+-   With all the buzz around AI and Large Language Models (LLMs), this kind of analysis might seem yesterday news. But I think there’s still huge, untapped potential for using NLP in development studies, policy analysis, and beyond—especially when it’s backed by domain expertise.
 
 # Acknowledgements
 
-Below are some great resources to learn and implement NLP techniques--geared toward R programmers.
+Below are some great resources to learn and implement NLP techniques---geared toward R programmers.
  
  <!-- 
 - [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)

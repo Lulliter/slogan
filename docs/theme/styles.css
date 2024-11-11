@@ -1,0 +1,12 @@
+/* css styles */
+/* Lula's decription part  */
+
+/* Target description in the Quarto header */
+.description, .quarto-description, .quarto-metadata-description {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+  font-size: 1em; /* Adjust font size */
+  font-weight: normal; /* Make it bold */
+  font-style: italic; /* Make it italic */
+  color: #9b8623;       /* Set a custom color */
+  margin-bottom: 1em; /* Add spacing below */
+}

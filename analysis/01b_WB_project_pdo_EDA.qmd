@@ -2181,15 +2181,19 @@ close_words_sort <-  close_words %>%
    arrange(desc(count))
 
 # Specify the words to highlight
-highlight_words <- c("mitigate", "adapt")
+highlight_words <- c("mitigate")
+highlight_words2 <- c(  "resilience", "adapt")
 
 
 clch_close_k <- close_words_sort %>% 
    kable(format = "html", 
          col.names = c("Near 'climate change'", "Count", "Percentage")) %>% 
    kable_styling(full_width = FALSE) %>% 
+    # Light yellow background
    row_spec(which(close_words_sort$contains_what %in% highlight_words), 
-            background = "#d8e600") # Light yellow background
+            background = "#d8e600") %>% 
+   row_spec(which(close_words_sort$contains_what %in% highlight_words2), 
+            background = "#a6bd23")  
 
 clch_close_k
 
@@ -2377,7 +2381,7 @@ names(outputs_key)
 ```{r}
 # Iterate `quanteda::kwic` over a vector of phrases/bigrams 
 keywords_phrase <- c("pro-poor", "gender equality", "gender mainstreaming" )
-
+ 
 # Step 1) tokens
 # (done above) -> abs_q_tokens
 
@@ -2412,7 +2416,7 @@ outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
 
 # -------------- print all 
 #  walk + print -
-walk(.x = outputs_bigrams2, .f = print)
+#walk(.x = outputs_bigrams2, .f = print)
 ```
 
 

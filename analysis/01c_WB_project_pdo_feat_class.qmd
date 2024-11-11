@@ -283,7 +283,9 @@ tabyl(projs_train, sector_f, show_na = TRUE) # 7 levels
 
 ## 2) Split sample based on `env_cat` variable
 
-![Sampling strategy](/images/Sample_EnvCat.pdf){fig-align="center"}
+<!-- ![Sampling strategy](/images/Sample_EnvCat.pdf){fig-align="center"} -->
+![Sampling strategy](../images/Sample_EnvCat2.png){fig-align="center"} 
+
 
 ### --- [1/2] Proportional sub-set `dplyr::slice_sample`
 

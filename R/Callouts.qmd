@@ -1,0 +1,31 @@
+---
+title: "Callouts"
+---
+
+# TOOL
+
+::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
+
+XXX
+:::
+
+::: {.callout-tip collapse="true" style="background-color: #f6fbf7;"}
+xxx
+:::
+
+::: {.callout-caution collapse="true" style="background-color: #fffcf5;"}
+xxx
+:::
+
+::: {.callout-important collapse="true" style="background-color: #fdf7f7;"}
+xxx
+:::
+
+::: {.callout-warning collapse="true" style="background-color: #fffcf9;"}
+xxx
+:::
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+xxx
+:::
