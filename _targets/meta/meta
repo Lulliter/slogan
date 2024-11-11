@@ -1,5 +1,5 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|18f3fdca01bbeabf|||||||||||||||
+.Random.seed|object|0a04883fd5c00cb5|||||||||||||||
 all_pages|stem|c510cd7d2d723f31|8aa8e2c4a6cbf123|3ebb59fc30964110|564791516||t20033.380224812s|c3d3b541ede7844e|46|rds|local|vector|||0||
 analysis_reports|stem|c510cd7d2d723f31|2420a50adb0bc714|e862af067f685881|-1344709957||t20033.6534737449s|c3d3b541ede7844e|46|rds|local|vector|||0||
 custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20038.4914326463s|378c305854a4daa0|440|file|local|vector|||0||

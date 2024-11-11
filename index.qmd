@@ -106,11 +106,6 @@ The World Bank simply presented, from my point of view, a convenient "study case
 4. Last but not least, I am familiar with the Bank's documents' nature, structure and jargon, having worked there for several years.
 
 
-::: {.callout-warning collapse="true" style="background-color: #fffcf9;"}
-### WORK IN PROGRESS!
-(Please expect unfinished sections, and unpolished code)
-:::
-
 ::: {.custom-border style="border: 1px solid #5b8bac; padding: 10px; border-radius: 15px; background-color: #9cc6e3;"}
 :::: {.columns}
 

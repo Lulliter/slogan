@@ -95,12 +95,9 @@ tibble::tribble(
 
 The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.s
 
-::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
-### {{< bi terminal-fill color=rgba(155,103,35,1.00) >}} Nerdy Note
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
 
 I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0). Such data is classified by the World Bank as **"public"** and accessible under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
-
- (I made some attempts to make data ingestion automatic via API calls, but at the moment this is apparently beyond my web scraping ability 😬).
 :::
 
 # DATA
@@ -149,11 +146,11 @@ Upon tokenization, it is very common to **remove irrelevant elements** like punc
 
 In contrast, **data enhancement techniques** like *part-of-speech tagging* add value by identifying grammatical components, allowing focus on meaningful elements like `nouns`, `verbs`, or `adjectives`.
 
-::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
+<!-- ::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
 ### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
 
 In R, Part-of-Speech (POS) tagging can be done using the `cleanNLP` package, which provides a wrapper around the `CoreNLP` Java library. Executing these tasks is very computationally expensive. Based on random checks, the classification of POS tags in the PDO text data was not always accurate, but I considered it good enough for the purpose of this analysis.
-:::
+::: -->
 
  
 # TERM FREQUENCY PATTERNS
@@ -780,7 +777,7 @@ Although not reported here, I also explored predicting a multiclass outcome (`se
 
 # Acknowledgements
 
-Below are some great resources to learn and implement NLP techniques---geared toward R programmers.
+Below are some great resources--geared especially toward [{{< fa brands r-project >}}]{style="color: #3b7697;"} programmers-- to learn and implement NLP techniques (👏🏻👏🏻). 
  
  <!-- 
 - [SLIDES intro to Tidymodels](https://workshops.tidymodels.org/)
