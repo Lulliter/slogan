@@ -1,9 +1,9 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|40a4e66432ef8389|||||||||||||||
+.Random.seed|object|18f3fdca01bbeabf|||||||||||||||
 all_pages|stem|c510cd7d2d723f31|8aa8e2c4a6cbf123|3ebb59fc30964110|564791516||t20033.380224812s|c3d3b541ede7844e|46|rds|local|vector|||0||
 analysis_reports|stem|c510cd7d2d723f31|2420a50adb0bc714|e862af067f685881|-1344709957||t20033.6534737449s|c3d3b541ede7844e|46|rds|local|vector|||0||
-custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20038.4866176492s|378c305854a4daa0|440|file|local|vector|||0||
-custom_stop_words_df|stem|a4ba2befa1980ac1|d415925623dcd41d|d82ec1261c0152e5|-1547741128|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words_df.rds|t20038.4866176554s|9e4fbd1b8a0232ce|516|file|local|vector|||0||
+custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20038.4914326463s|378c305854a4daa0|440|file|local|vector|||0||
+custom_stop_words_df|stem|a4ba2befa1980ac1|d415925623dcd41d|d82ec1261c0152e5|-1547741128|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words_df.rds|t20038.4914326519s|9e4fbd1b8a0232ce|516|file|local|vector|||0||
 data|stem|8744ccd58d306b8e|b65fa36814e991ef|c34d42c10b3c37c5|33550471||t20033.377248005s|af2f5518db55c56b|2395592|rds|local|vector|||0.468||
 data_file|stem|283a4aed2e154bb3|68df3f3bf994d0ec|2c530c1562a7fbd1|-679625259|/Users/luisamimmi/Github/slogan/data/raw_data/project2/all_projects_as_of29ago2024.xls|t19964.6636342593s|60dddb8bd61b15fd|16567296|file|local|vector|||0||
 eda_report|stem|08d5f59e833de599|9a5876cde47030ea|6889aa1657cec7e1|-690365211||t0s|a10b0861f057ffab|0|file|local|vector|||47.964||
@@ -16,4 +16,4 @@ projs_train|stem|32b9d1dc94fb5243|f62ba75a44ef596f|8e1f9cecbb48639a|-958184839|/
 render_website|stem|c510cd7d2d723f31|845ac6134c3157c9|2702651c636d6170|379097287||t20033.9596634075s|c3d3b541ede7844e|46|rds|local|vector|||0.001||
 research_page|stem|08d5f59e833de599|26339212c59940bf|2c530c1562a7fbd1|844215892||t0s|a10b0861f057ffab|0|file|local|vector|||2.754||
 wdr|stem|8f01b29135b6a7b4|103412fc68c132bd|2c530c1562a7fbd1|-1060017006|/Users/luisamimmi/Github/slogan/data/derived_data/wdr.rds|t20017.3726587004s|91cc0d3d8f532ae2|120370|file|local|vector|||0||
-wdr2|stem|47475e493cf5b170|6a5067d86b6c94ff|2342d0f8ce1d3e35|-1785450563|/Users/luisamimmi/Github/slogan/data/derived_data/wdr2.rds|t20038.4866776649s|1118bb14cd00e029|115194|file|local|vector|||0.001||
+wdr2|stem|47475e493cf5b170|6a5067d86b6c94ff|2342d0f8ce1d3e35|-1785450563|/Users/luisamimmi/Github/slogan/data/derived_data/wdr2.rds|t20038.4915051138s|1118bb14cd00e029|115194|file|local|vector|||0.001||
