@@ -38,12 +38,12 @@ format:
     toc-location: left
     toc-title: Outline
     embed-resources: true # external dependencies embedded (Not in ..._files/)
-  pdf:
-    toc-depth: 2
-    # toc-title: Indice
-    highlight-style: github
-    #lang: it
-    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   # toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
 format-links: false
 prefer-html: true
 
