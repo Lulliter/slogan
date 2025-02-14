@@ -63,7 +63,7 @@ git commit -m "$msg"
 =======
 git commit -m "fix analysis/01b_WB_project_pdo_EDA.qmd"
 git commit -m "major reorg structure" -m "see especially analysis/*"
-git commit -m "cleanup 2"
+git commit -m "small upd Home"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "100% done blog  🍾🥂"
 
