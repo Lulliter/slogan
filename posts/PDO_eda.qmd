@@ -608,7 +608,7 @@ The sample splitting (necessary in ML to save testing dataset for model evaluati
 
 ## Choosing the ML algorithm
 
-To predict the missing binary categorical outcome `env_cat_f2`, I tried several models, including: ***Lasso losgistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
+To predict the missing binary categorical outcome `env_cat_f2`, I tried several models, including: ***Lasso logistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
 Since text data is sparse and high-dimensional, it is critical to perform some pre-treatment of the `features` (i.e. the *explanatory* variables) before modeling. 
 
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
