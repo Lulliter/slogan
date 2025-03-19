@@ -1,6 +1,6 @@
 ---
 title: "WB Project PDO features classification"
-# author: "Luisa M. Mimmi"
+author: "Luisa M. Mimmi"
 # date: "Last run: `r format(Sys.time(), '%F')`"
 lang: en
 editor: source
@@ -2508,13 +2508,16 @@ cnlp_init_spacy()
 
 The Structural Topic Model is a general framework for topic modeling with document-level covariate information. The covariates can improve inference and qualitative interpretability and are allowed to affect topical prevalence, topical content or both.
 
-MAIN REFERENCE `stm` R package http://www.structuraltopicmodel.com/ EXAMPLE UN corpus https://content-analysis-with-r.com/6-topic_models.html STM 1/2 https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-i-2da2b353d362 STM 2/2 https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-ii-462e6e07328
+MAIN REFERENCE `stm` R package [Ref. on STM 1](http://www.structuraltopicmodel.com/) EXAMPLE UN corpus 
+[Ref. on STM 2](https://content-analysis-with-r.com/6-topic_models.html STM 1/2) 
+[Ref. on STM 3](https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-i-2da2b353d362 STM 2/2) 
+[Ref. on STM 4](https://jovantrajceski.medium.com/structural-topic-modeling-with-r-part-ii-462e6e07328)
 
 # BERTopic
 
 Developed by Maarten Grootendorst, BERTopic enhances the process of discovering topics by using document embeddings and a class-based variation of Term Frequency-Inverse Document Frequency (TF-IDF).
 
-https://medium.com/@supunicgn/a-beginners-guide-to-bertopic-5c8d3af281e8
+[Ref. on STM 5](https://medium.com/@supunicgn/a-beginners-guide-to-bertopic-5c8d3af281e8)
 
 # __________
 

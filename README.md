@@ -29,3 +29,18 @@
 #    + michele MD a DC 
 -->
    
+
+
+# Abstract 
+
+## Exploring World Bank Project Development Objectives (PDO) text data
+This ongoing project serves as a proof-of-concept for applying text analytics to World Bank Projects & Operations data. Focusing on ~4,000 projects, I analyze the short texts that define *Project Development Objectives (PDOs)*—concise summaries of each project's goals. This exploration has uncovered intriguing insights, including:  
+
+- Trends in sector-specific language and thematic shifts over time,  
+- Unexpected patterns, such as recurring topics, phrases and conceptual relationships,  
+- Enhanced text classification and metadata tagging through machine learning,  
+- Novel text-based questions that could inform further research.  
+
+The analysis is conducted in R, integrating text mining, natural language processing, and machine learning techniques.  
+
+(This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished). 

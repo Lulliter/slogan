@@ -72,7 +72,7 @@ git commit -m "100% done blog  🍾🥂"
 git push origin master
 
 #=========================================== ALL IN ONE  ================================================#
-git add -u && git commit -a -m "small upd Home 👇🏻" && git push
+git add -u && git commit -a -m "small upd Home 👇🏻👇🏻" && git push
 
 #=========================================== FIle pubblico  ================================================#
 # https://quarto.org/docs/publishing/quarto-pub.html

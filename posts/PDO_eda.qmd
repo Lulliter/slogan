@@ -1,7 +1,8 @@
 ---
 title: "A text exploration of the World Bank's projects objectives (PDO)"  
-subtitle: "TL;DR"
+#subtitle: "TL;DR"
 description: |
+  TL;DR <br>
   The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns and correlations in text but also solutions to enhance the quality of projects' data themselves.  
   
   (This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished).<br>
