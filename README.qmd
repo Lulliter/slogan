@@ -21,9 +21,19 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 # TO DO
 
++  Access all tidy tuesday port for week 12 2025
+  [bluesky](https://bsky.app/search?q=week+12+%23tidytuesday)
+- Read:
+   + [R pckg to use LLm to summarize from PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
+   + [Tidy tuesday on TExt analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
+      + [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
+
+
 ### In `analysis/01a_WB_project_pdo_prep.qmd`
 
-+ 
++ I added fresh (2025) info on sector theme etc (attached to 2024 proj list).. see what can be done with it
++ revise the OLD plot -> NEW plot thing
+
 
 ### In `analysis/01b_WB_project_pdo_EDA.qmd`
    - revise the OLD plot -> NEW plot thing

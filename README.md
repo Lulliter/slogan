@@ -15,15 +15,26 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 # TO DO
 
-### 0. HTTPS
-not working in Aruba domain 
+- Access all tidy tuesday port for week 12 2025
+  [bluesky](https://bsky.app/search?q=week+12+%23tidytuesday)
+- Read:
+  - [R pckg to use LLm to summarize from
+    PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
+  - [Tidy tuesday on TExt
+    analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
+    - [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
 
-### 1. `analysis/01b_WB_project_pdo_EDA.qmd`
+### In `analysis/01a_WB_project_pdo_prep.qmd`
 
-- I added fresh (2025) info on sector theme etc (attached to 2024 proj list).. see what can be done with it
+- I added fresh (2025) info on sector theme etc (attached to 2024 proj
+  list).. see what can be done with it
 - revise the OLD plot -\> NEW plot thing
 
-### 2. `analysis/01c_WB_project_pdo_prep.qmd`
+### In `analysis/01b_WB_project_pdo_EDA.qmd`
+
+- revise the OLD plot -\> NEW plot thing
+
+### In `analysis/01c_WB_project_pdo_prep.qmd`
 
 - Study the theory of Lasso Regr and Classification with ML on Gabor’s
   book
@@ -33,7 +44,7 @@ not working in Aruba domain
     ML](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture25-classification-wML)
 - re-write the attempted models in more condensed form
 - tell in plain English the choices available for improving ML pred
-  performance (even if not run)
+  perormance (even if not run)
   - defining data / sample for analysis (preprocessing)
   - defining/label engineering of y
   - feature engineering of x (dealing with missing data %, what x and in
