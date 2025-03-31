@@ -3,16 +3,21 @@ project:
   output-dir: docs
   # exclude by putting `_file_name.qmd` in analysis/*
 # Exclude specific files or directories from the website
-  # render:
-  #   - "!intro_NLP.qmd"
+
+  render:
+    # Render all .qmd files
+    - "**/*.qmd"
+
+    # Don't render anything in R/ folder (there is one *.qmd file)
+    - "!R/"
 
 execute:
-  freeze: auto
+  freeze: auto # Re-render only when source changes
 
 website:
   title: "Policy lexicon"
   #description: "Instructions for R + git + AWS etc..."
-  site-url: https://lulliter.github.io/slogan # "{{< var website.site-url >}}" # "https://lulliter.github.io/nerd-help"
+  site-url: https://lulliter.github.io/slogan # "{{< var website.site-url >}}"
   favicon: images/notepad.png
   search: false # no magnifier on navbar
   page-navigation: true
@@ -22,8 +27,8 @@ website:
     left: |
       {{< fa brands creative-commons >}} 2024 [Luisa M. Mimmi](https://luisamimmi.org/) <br>
       License {{< fa brands creative-commons >}}
-      {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}} {{< fa brands creative-commons-sa >}}
-      [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+      {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-nc >}}
+      [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)
     right: |
       Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)<br>
       [Source code at {{< fa brands github >}}](https://github.com/Lulliter/slogan)
@@ -61,6 +66,8 @@ format:
     toc: true
     toc-location: "left"
     code-link: true
+    code-fold: true
+    # code-tools: true
     anchor-sections: true
     fig-cap-location: margin
     reference-location: document # margin

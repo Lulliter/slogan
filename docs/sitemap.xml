@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://lulliter.github.io/slogan/research/hypotheses.html</loc>
+    <lastmod>2024-11-09T23:29:42.727Z</lastmod>
+  </url>
+  <url>
     <loc>https://lulliter.github.io/slogan/index.html</loc>
     <lastmod>2025-02-14T10:32:19.328Z</lastmod>
   </url>
@@ -13,19 +17,11 @@
     <lastmod>2024-11-06T15:16:07.818Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/research/hypotheses.html</loc>
-    <lastmod>2024-11-09T23:29:42.727Z</lastmod>
-  </url>
-  <url>
-    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
-    <lastmod>2025-03-19T14:14:40.847Z</lastmod>
-  </url>
-  <url>
     <loc>https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html</loc>
     <lastmod>2025-03-19T14:59:51.445Z</lastmod>
   </url>
   <url>
-    <loc>https://lulliter.github.io/slogan/R/Callouts.html</loc>
-    <lastmod>2024-11-09T23:20:00.592Z</lastmod>
+    <loc>https://lulliter.github.io/slogan/posts/PDO_eda.html</loc>
+    <lastmod>2025-03-26T15:06:30.700Z</lastmod>
   </url>
 </urlset>

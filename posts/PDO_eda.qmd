@@ -1,5 +1,5 @@
 ---
-title: "A text exploration of the World Bank's projects objectives (PDO)"  
+title: "Tracing policy signals in text: Exploring development priorities in World Bank operational documents with R"
 #subtitle: "TL;DR"
 description: |
   TL;DR <br>

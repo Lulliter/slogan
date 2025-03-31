@@ -1,22 +1,26 @@
-
-# Quarto files
-/.quarto/
-_freeze/
-# might contain intermediate or output files.
-
-# Other files
-.Rproj.user/
-
-# RStudio files
+# R stuff
+.Rproj.user
 .Rhistory
-
-# Session Data files
 .RData
-
-# User-specific files
 .Ruserdata
 
-# Private or old
+# Quarto stuff
+.quarto/
+_freeze/
+**/*_cache/*
+# might contain intermediate or output files.
+
+# Targets stuff
+_targets
+_targets.yaml
+
+posts/*_files/
+analysis/*_files/
+
+# Data stuff
+# (here I keep it bc it is all public data)
+
+# Private or old stuff
 _my_stuff/*
 _intro_NLP.qmd
 analysis/_zz_old_files/*
@@ -30,6 +34,7 @@ data/raw_data/project2/_all_projects_as_of29ago2024descr-stats.md
 *.aux
 README_files/
 
-# target files
-_targets.yaml
 
+
+
+/.quarto/
