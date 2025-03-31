@@ -2,22 +2,28 @@
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
+# CORE files
+
+``` bash
+tree analysis -C -L 2 # then https://carbon.now.sh/
+ 
+ #or 
+#tree -n  --noreport analysis  -L 2 | silicon --language bash -o images/tree.png
+```
+
+<img src="images/tree.png" style="width:50.0%" alt="tree" />
+
 # TO DO
 
-- Clean up the code in:
+### 0. HTTPS
+not working in Aruba domain 
 
-- Make `TL;DR` in **BLOG** less about input and more about output
+### 1. `analysis/01b_WB_project_pdo_EDA.qmd`
 
-- Read:
-   + [R pckg to use LLm to summarize from PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
-   + [Tidy tuesday on TExt analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
-      + [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
-
-## In `analysis/01b_WB_project_pdo_EDA.qmd`
-
+- I added fresh (2025) info on sector theme etc (attached to 2024 proj list).. see what can be done with it
 - revise the OLD plot -\> NEW plot thing
 
-## In `analysis/01c_WB_project_pdo_prep.qmd`
+### 2. `analysis/01c_WB_project_pdo_prep.qmd`
 
 - Study the theory of Lasso Regr and Classification with ML on Gabor’s
   book
@@ -27,7 +33,7 @@
     ML](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture25-classification-wML)
 - re-write the attempted models in more condensed form
 - tell in plain English the choices available for improving ML pred
-  perormance (even if not run)
+  performance (even if not run)
   - defining data / sample for analysis (preprocessing)
   - defining/label engineering of y
   - feature engineering of x (dealing with missing data %, what x and in

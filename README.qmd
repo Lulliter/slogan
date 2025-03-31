@@ -7,16 +7,28 @@ format:
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
 
+# CORE files 
+
+```bash
+tree analysis -C -L 2 # then https://carbon.now.sh/
+ 
+ #or 
+#tree -n  --noreport analysis  -L 2 | silicon --language bash -o images/tree.png
+
+```
+![tree](images/tree.png){width=50%}
+
+
 # TO DO
 
-+ Clean up the code in: 
+### In `analysis/01a_WB_project_pdo_prep.qmd`
 
-+ Make `TL;DR` in **BLOG** less about input and more about output   
++ 
 
-## In `analysis/01b_WB_project_pdo_EDA.qmd`
+### In `analysis/01b_WB_project_pdo_EDA.qmd`
    - revise the OLD plot -> NEW plot thing
 
-## In `analysis/01c_WB_project_pdo_prep.qmd`
+### In `analysis/01c_WB_project_pdo_prep.qmd`
 
 +  Study the theory of Lasso Regr and Classification with ML on Gabor's book
    + BOOK chp 14[Prediction with LASSO](https://github.com/gabors-data-analysis/da-coding-rstats/tree/main/lecture22-lasso)

@@ -17,7 +17,7 @@ execute:
 website:
   title: "Policy lexicon"
   #description: "Instructions for R + git + AWS etc..."
-  site-url: https://lulliter.github.io/slogan # "{{< var website.site-url >}}"
+  site-url: policy_lexicon.com # https://lulliter.github.io/slogan # "{{< var website.site-url >}}"
   favicon: images/notepad.png
   search: false # no magnifier on navbar
   page-navigation: true

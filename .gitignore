@@ -26,7 +26,9 @@ _intro_NLP.qmd
 analysis/_zz_old_files/*
 buzzwords.bib
 slogan.bib
-data/raw_data/project2/_all_projects_as_of29ago2024descr-stats.md
+
+data/raw_data/project/*    # the original work changed
+data/raw_data/project3/*  # later chack in 2025
 
 
 # Temporary files

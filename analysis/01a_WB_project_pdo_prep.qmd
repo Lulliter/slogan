@@ -58,11 +58,18 @@ library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
 library(rsample) # General Resampling Infrastructure
 library(rvest) # Easily Harvest (Scrape) Web Pages
 library(cleanNLP) # A Tidy Data Model for Natural Language Processing #
+
+# non scientific notation 
+options(scipen=999)
 ```
 
 ---
 
 # Data sources
+
+# _______ 
+
+# LOADING FILES 
 
 # WB Projects & Operations
 **World Bank Projects & Operations** can be explored at: 
@@ -74,7 +81,7 @@ The Accessibility Classification is **public** under [Creative Commons Attributi
  
 # Process to ingest & preprocess raw PDO text data
 
-1. Retrieve manually ALL WB projects approved *between FY 1947 and 2026* as of *31/08/2024* using simply the `Excel button` on this page: [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
+1. Retrieve manually ALL WB projects (22,569) listed (approval obtained or requested *between FY 1947 and 2026* as of *31/08/2024*) using the `Excel button` on this page: [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
 2. Split the dataset and keep only `projs_train` (50% of projects with PDO text, i.e. **4413 PDOs**)
 3. Clean the `projs_train` dataset 
 4. Obtain **PoS tagging** + **tokenization** with `cleanNLP` package (functions  `cnlp_init_udpipe()` + `cnlp_annotate()`) and saved `projs_train_t` (cleaned version of `projs_train` dataset).
@@ -88,16 +95,19 @@ I had made a prior attempt to ingest the WB document data using the `rvest` pack
 ## ✅ Ingest Projects data (manually  from `*.xlsx`  file)
 
 ```{r}
-all_projects_as_of29ago2024 <- read_excel(here::here ("data", "raw_data", "project2","all_projects_as_of29ago2024.xls"), 
-                                            col_names = FALSE,
-                                            skip = 1) 
-# Nomi delle colonne
+# Load the data
+all_projects_as_of29ago2024 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project2","all_projects_as_of29ago2024.xls"), 
+   col_names = FALSE,
+   skip = 1) 
+
+# Column names only
 cnames <- read_excel(here::here("data", "raw_data", "project2", 
                                 "all_projects_as_of29ago2024.xls"), 
-                         col_names = FALSE,
-                         skip = 1,
+                     col_names = FALSE,
+                     skip = 1,
                      n_max = 2) 
-# file completo
+# Complete file
 all_proj <- read_excel(here::here("data", "raw_data", "project2", 
                                   "all_projects_as_of29ago2024.xls"), 
                          col_names = TRUE,
@@ -110,16 +120,122 @@ rm(all_projects_as_of29ago2024)
 
 # Explore Project mega file 
 
+Checking the completeness of the columns for key information.
 ```{r}
 paint::paint(cnames)
 paint::paint(all_proj)
 
-skimr::skim(all_proj$id) # complete_rate 1
+skimr::skim(all_proj$id) # complete_rate 1 = 100%
 skimr::skim(all_proj$pdo)  # complete_rate 0.503
 skimr::skim(all_proj$boardapprovaldate) # complete_rate 0.779
 skimr::skim(all_proj$closingdate) # complete_rate 0.707 
- 
 ```
+
+# [later addition]
+On March 31, 2025, I retrieved the same dataset from the WB website. The dataset now carries additional sheets ("Themes", "Sectors", "GEO locations" and "Financiers") which I retrieve and save as `all_proj_themes`, `all_proj_sectors`, `all_proj_geo` and `all_proj_financiers` respectively.
+
+
+## 🟡 themes 
+```{r}
+all_proj_themes_25 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Themes", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+   
+# save next to the original file 
+save(all_proj_themes_25, file = here::here("data", "raw_data", "project2", 
+                                           "all_proj_themes_2025.Rdata") )
+```
+
+Extract matching project IDs with the largest percentage of `level_1` (theme) for each project.
+```{r}
+# keep only row with level_1 !=na
+
+all_proj_theme_1_25 <- all_proj_themes_25 %>% 
+   filter(is.na(level_2) & is.na(level_3)) %>% 
+   # keep the largest value of percentage_1 among the rows with the same project_id
+   group_by(project_id) %>%
+   filter(percentage_1 == max(percentage_1)) %>% 
+   # keep just one row for each project_id
+   slice(1) %>% 
+   # drop empty cols
+   select(project_id, level_1, percentage_1) %>% 
+   rename(
+      theme_1_25 =  level_1,
+      theme1_perc_25 = percentage_1
+   )
+
+```
+
+## 🟡 sectors 
+
+```{r}
+all_proj_sectors_25 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Sectors", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+
+# save next to the original file
+save(all_proj_sectors_25, file = here::here("data", "raw_data", "project2", 
+                                           "all_proj_sectors_2025.Rdata") )
+```
+
+Extract matching project IDs with the largest percentage of `sector_percent` (sector) for each project.
+
+```{r}
+# keep only row with sector_percent !=na
+all_proj_sector_1_25 <- all_proj_sectors_25 %>% 
+   filter(!is.na(sector_percent)) %>% 
+   # keep the largest value of sector_percent among the rows with the same project_id
+   group_by(project_id) %>%
+   filter(sector_percent == max(sector_percent)) %>% 
+   # keep just one row for each project_id
+   slice(1) %>% 
+   rename(
+      major_sector1_25 = major_sector  ,
+      sector1_25 = sector ,
+      sector1_perc_25 = sector_percent
+   )
+```   
+   
+## 🟠 GEO locations
+
+```{r}
+# multiple loc per ID 
+all_proj_geo_25 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "GEO Locations", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+
+# save next to the original file
+save(all_proj_geo_25, file = here::here("data", "raw_data", "project2", 
+                                           "all_proj_geo_2025.Rdata") )
+```
+ 
+
+## 🟠 Financiers
+
+```{r}
+all_proj_financiers_25 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Financers", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project %in% all_proj$id) %>% 
+   rename (project_id = project)
+
+# save next to the original file
+save(all_proj_financiers_25, file = here::here("data", "raw_data", "project2", 
+                                           "all_proj_financiers_2025.Rdata") )
+
+```
+
 
 # _______ 
 # CLEANING FILE PDOs  
@@ -132,36 +248,55 @@ This data set has a lot of blank values, probably also bc some information was n
 # Mess of data format weird in different ways in 2 cols: 
     # 1947-12-31 12:00:00 # closingdate
     # 8/3/1948 12:00:00 AM # closingdate
-    # 
     # 1955-03-15T00:00:00Z # boardapprovaldate
  
+# List of possible inconsistent date formats
+common_date_formats <- c(
+  "ymd HMS", "ymd HM", "ymd",           # ISO: 2023-03-15 12:30:00
+  "ymd_HMS", "ymd_HM", "ymd T",         # ISO with underscore/T separator
+  "mdy HMS", "mdy HM",                  # U.S. style with AM/PM
+  "mdy HMSp",                           # "MM/DD/YYYY HH:MM AM/PM"
+  "dmy HMS", "dmy HM",                  # European style
+  "Ymd HMS", "BdY IMS p",               # Weird but possible
+  "Y-m-d", "m/d/Y", "d/m/Y"             # Fallback basics
+)
+
+# set date columns
+date_columns_exe <- c("closingdate", "boardapprovaldate")
+
+# function to parse messy, inconsistent date formats for list of date col 
+f_parse_date <- function(data, date_columns) {
+  data %>%
+    mutate(across(
+      .cols = all_of(date_columns),
+      .fns = ~ if_else(
+        .x == "" | is.na(.x),
+        as.POSIXct(NA),
+        parse_date_time(.x, orders = common_date_formats)
+      )
+    ))
+}
+
+
 # Mutate the date columns to parse the dates, handling different formats and blanks
 all_proj_t <- all_proj %>%
-   # 1) Parsed using parse_date_time() with mdy HMS and mdy HMSp to handle "MM/DD/YYYY HH:MM AM/PM" formats.
-  mutate(across("closingdate", ~ if_else(
-    . == "", 
-    NA_POSIXct_,  # Return NA for blank entries
-    parse_date_time(., orders = c("mdy HMS", "mdy HMSp"))
-  )),
-    # 2) Parsed using ymd_hms() because it follows the ISO 8601 format (e.g., "1952-04-29T00:00:00Z").
-  across("boardapprovaldate", ~ if_else(
-    . == "", 
-    NA_POSIXct_,  # Return NA for blank entries
-    ymd_hms(., tz = "UTC")  # Handle ISO 8601 format (e.g., "1952-04-29T00:00:00Z")
-  ))) %>% 
+   # CALL my function !
+   f_parse_date(date_columns = date_columns_exe) %>%
+   # SPLIT date into year and month
    mutate(boardapproval_year = year(boardapprovaldate),
           boardapproval_month = month(boardapprovaldate)) %>% 
    mutate(boardapprovalFY = case_when( 
-             boardapproval_month >= 1 & boardapproval_month < 7 ~ boardapproval_year,
-             boardapproval_month >= 7 & boardapproval_month <= 12 ~ boardapproval_year +1)) %>% 
+      boardapproval_month >= 1 & boardapproval_month < 7 ~ boardapproval_year,
+      boardapproval_month >= 7 & boardapproval_month <= 12 ~ boardapproval_year +1)) %>% 
    relocate(boardapprovalFY, .after = boardapprovaldate ) %>% 
    mutate(closingdate_year = year(closingdate),
           closingdate_month = month(closingdate)) %>% 
    mutate(closingdateFY = case_when( 
-             closingdate_month >= 1 & closingdate_month < 7 ~ closingdate_year,
-             closingdate_month >= 7 & closingdate_month <= 12 ~ closingdate_year +1)) %>% 
+      closingdate_month >= 1 & closingdate_month < 7 ~ closingdate_year,
+      closingdate_month >= 7 & closingdate_month <= 12 ~ closingdate_year +1)) %>% 
    relocate(closingdateFY, .after = closingdate ) 
 
+# Check the results
 tabyl(all_proj$closingdate)   
 tabyl(all_proj_t$closingdateFY)
 
@@ -170,6 +305,7 @@ tabyl(all_proj_t$boardapprovalFY)
 
 skimr::skim(all_proj_t$boardapprovalFY) # complete_rate 0.779
 skimr::skim(all_proj_t$closingdateFY) # complete_rate 0.707
+skimr::skim(all_proj_t$pdo) # complete_rate 0.707
 ```
 
 ## Recap content 
@@ -222,10 +358,28 @@ f_recap_values <- function(data, columns) {
 ```
 
 
+
+## 🟢 Join sector1 and theme1 to `all_proj_t`
+
 ```{r}
-# Use the function on a subset of columns
-f_recap_values(all_proj_t, c("id","pdo", "projectstatusdisplay", "boardapprovalFY", "regionname","sector1", "theme1", "projectfinancialtype"))
+all_proj_t <- left_join(all_proj_t, all_proj_theme_1_25, by = c("id" = "project_id")) %>% 
+   left_join(all_proj_sector_1_25, by = c("id" = "project_id")) %>% 
+   relocate(theme_1_25, theme1_perc_25,  .after = theme1) %>% 
+   relocate(major_sector1_25, sector1_25, sector1_perc_25, .after = sector1)
 ```
+
+With the updated data from 2025, the tagging of `sector1_25` (4.4% missing instead of 16.6%) and `theme1_25` (30.9% missing instead of 51.9%) is more complete!
+
+```{r}
+# CALL  the function on a subset of columns
+f_recap_values(all_proj_t, c("id","pdo", "projectstatusdisplay", 
+                             "boardapprovalFY", "regionname",
+                             "sector1","sector1_25",
+                             "theme1", "theme_1_25",   
+                             "theme1", "projectfinancialtype"))
+```
+
+# qui 🟧🟨🟩🟦🟪🟫🟥 
 
 ## Which PDOs are missing? 
 Ideally, the PDOs are missing in a *non systematic* way. To check it, I compare the distributions across some key features of **ALL PROJs** v. **NON-missing-PDO-PROJs**
@@ -247,6 +401,7 @@ tabyl(missing_pdo$boardapprovalFY) %>%  adorn_pct_formatting()
 # too many sectors... (seem same)
 tabyl(all_proj_t$sector1)  %>% adorn_pct_formatting() 
 tabyl(missing_pdo$sector1)  %>% adorn_pct_formatting() 
+
 # too little filled themes
 tabyl(all_proj_t$theme1)  %>% adorn_pct_formatting() # 51.9% NA
 tabyl(missing_pdo$theme1)  %>% adorn_pct_formatting() # 67.4%  NA
@@ -267,45 +422,52 @@ tabyl(missing_pdo$lendinginstr)  %>% adorn_pct_formatting() # Spec Inv Loan 4928
 ### [Chi-Squared Test in the case of `projectfinancialtype`]
 <!-- See [expl Equitable Equations](https://www.youtube.com/watch?v=n5c11B5FJ24) -->
 
+Goodness of fit test to see if the distribution of `projectfinancialtype` in the sample is significantly different from the population.
 ```{r}
 # Chi-Square Test: if a discrete distribution of a sample reflects the population, you can use a chi-square goodness-of-fit test
 
-# by fin instrum 
-pop <- tabyl(all_proj_t$projectfinancialtype, show_na = TRUE)  %>% 
-   adorn_pct_formatting() %>% 
-   mutate(across(ends_with("percent"), ~parse_number(.)))
-obs <- tabyl(missing_pdo$projectfinancialtype, show_na = TRUE)  %>% 
-   adorn_pct_formatting() %>% 
-   mutate(across(ends_with("percent"), ~parse_number(.)))
+# by financialtype 
+# Population distribution (excluding NAs)
+pop <- all_proj_t %>%
+  filter(!is.na(projectfinancialtype)) %>%
+  count(projectfinancialtype, name = "n") %>%
+  mutate(percent = n / sum(n))
 
-# ---- Sample data (observed counts)
-# Sample counts for categories A, B, and C
-observed <- obs[,"n"]
+# Observed distribution (excluding NAs)
+obs <- missing_pdo %>%
+  filter(!is.na(projectfinancialtype)) %>%
+  count(projectfinancialtype, name = "n") %>% 
+  mutate(percent = n / sum(n))
+
+# Ensure both pop and obs are aligned by category
+combined <- obs %>%
+  inner_join(pop, by = "projectfinancialtype", suffix = c("_obs", "_pop"))
+
+
+# Extract observed counts and expected proportions (from the population)
+observed <- combined$n_obs
+expected_prop <- combined$percent_pop
 observed
-# ---- Population data (expected proportions or counts)
-# Proportions of A, B, C in the population
-expected_proportions <- pop[, ("percent")]/100   
-expected_proportions
-
-# Total number of observations in the sample
-total_sample_size <- sum(observed)  
+expected_prop
 
 # Perform the chi-square test
-chisq_test <- chisq.test(observed, p = expected_proportions)
+chisq_test <- chisq.test(observed, p = expected_prop)
 
 # Display the results
 chisq_test
 # data:  observed
-# X-squared = 3421.4, df = 4, p-value < 2.2e-16
+# X-squared = 3421.4, df = 4, p-value < 0.00000000000000022
 
 # low p-value (typically < 0.05) suggests that the sample distribution is significantly different from the population!!!!
 ```
 
+
 ### [Chi-Squared Test in the case of `lendinginstr`]
+Goodness of fit test to see if the distribution of `lendinginstr` in the sample is significantly different from the population.
 ```{r}
 # Chi-Square Test: if a discrete distribution of a sample reflects the population, you can use a chi-square goodness-of-fit test
 
-# by fin instrum 
+# by fin lendinginstr 
 pop2 <- tabyl(all_proj_t$lendinginstr, show_na = TRUE)  %>% 
    adorn_pct_formatting() %>% 
    mutate(across(ends_with("percent"), ~parse_number(.)))
@@ -331,7 +493,7 @@ chisq_test2 <- chisq.test(observed2, p = expected_proportions2)
 # Display the results
 chisq_test2
 # data:  observed
-# X-squared = 3421.4, df = 4, p-value < 2.2e-16
+# X-squared = Inf, df = 18, p-value < 0.00000000000000022
 
 # low p-value (typically < 0.05) suggests that the sample distribution is significantly different from the population!!!!
 ```
@@ -342,7 +504,43 @@ Based on some available project features, I would say that even if many projects
 + `projectfinancialtype` (Grants, IBRD, etc) but there are many missing type (many more in with-PDO sample)...
 + `lendinginstr` **specific Investment Loan** are missing PDO in 4928 pr (43.9%). 
 
-Why? 
+> Why? 
+   + Chi-square tests are sensitive to sample size. Even small percentage differences can become statistically significant when the sample size is large (which is the case here!)
+
+
+```{r}
+#| output: TRUE
+
+# Prep data for plotting
+combined_long <- combined %>%
+  select(projectfinancialtype, percent_obs, percent_pop) %>%
+  pivot_longer(
+    cols = starts_with("percent"),
+    names_to = "source",
+    values_to = "percent"
+  ) %>%
+  mutate(
+    source = recode(source,
+      "percent_obs" = "Sample (missing PDO)",
+      "percent_pop" = "Population"
+    )
+  )
+
+# Plot
+# Plot
+ggplot(combined_long, aes(x = projectfinancialtype, y = percent, fill = source)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Distribution of Project Financial Type",
+    x = "Financial Type",
+    y = "Percentage",
+    fill = "Source"
+  ) +
+  theme_minimal(base_size = 13)
+
+```
+
 
 # _______ 
 # TEXT PREPROCESSING 
