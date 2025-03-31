@@ -58,13 +58,23 @@ website:
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
         href: posts/PDO_eda.qmd
 
+
+  sidebar:
+    - title: "Blog"
+      contents:
+        - section: "Blog posts"
+          contents:
+            - posts/PDO_eda.qmd # uguale a sopra (il primo)
+      toc: true
+      toc-location: "right"
+
+
 format:
   html:
     theme: theme/Lulas_theme.scss # cosmo
     fontawesome: true
     css: theme/styles.css
-    toc: true
-    toc-location: "left"
+    toc: false
     code-link: true
     code-fold: true
     # code-tools: true

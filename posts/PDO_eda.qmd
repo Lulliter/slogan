@@ -1,6 +1,6 @@
 ---
-title: "Tracing policy signals in text: Exploring development priorities in World Bank operational documents with R"
-#subtitle: "TL;DR"
+title: "Tracing policy signals in text"
+subtitle: "Exploring development priorities in World Bank operational documents with R"
 description: |
   TL;DR <br>
   The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns and correlations in text but also solutions to enhance the quality of projects' data themselves.  
@@ -28,17 +28,19 @@ execute:
   # include: false   # R still runs but code and results DON"T appear in output  
   cache: false # normalmnte false
 toc: true
+toc-location: "right"
+toc_float: true
 fig-cap-location: top
 tbl-cap-location: top
 format:
   html:
     #theme: callout.scss
     code-fold: false # redundant bc echo false 
-    toc-depth: 3
-    toc_float: true
-    toc-location: left
-    toc-title: Outline
     embed-resources: true # external dependencies embedded (Not in ..._files/)
+    toc: true  # disables the TOC at the top of the main body
+    sidebar:
+      right: 
+        nav: "Outline"  # enables TOC (outline) in the sidebar
   # pdf:
   #   toc-depth: 2
   #   # toc-title: Indice
