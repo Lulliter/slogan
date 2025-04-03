@@ -46,6 +46,9 @@ website:
       - text: "Research Plan"
         icon: clipboard-data-fill
         file: research/hypotheses.qmd
+      - text: "Data"
+        icon: bar-chart-line-fill
+        file: analysis/00_data.qmd
       - text: "WB case study"
         icon: globe-europe-africa #  archive-fill # https://icons.getbootstrap.com/?q=home
         menu:

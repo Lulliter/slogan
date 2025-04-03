@@ -1,0 +1,166 @@
+---
+title: "Data"
+#author: "Luisa M. Mimmi"
+#date: "Last run: `r format(Sys.time(), '%F')`"
+lang: en
+editor: source
+engine: knitr
+tbl-cap-location: top
+format:
+  html:
+    # theme: flatly #spacelab
+    code-fold: false # redundant bc echo false 
+    toc-depth: 2
+    toc_float: true
+    toc-location: left
+    toc-title: Outline
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+  # pdf:
+  #   toc-depth: 2
+  #   toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+---
+
+# Where do these files come from?
+
+The **raw** and **derived** data files are accessible from the [Github Repo {{< fa brands github >}}](https://github.com/Lulliter/slogan) for this project. 
+
+## WB Projects & Operations
+**World Bank Projects & Operations** were obtained from: 
+
++ [World Bank Projects & Operations Data Catalog](https://datacatalog.worldbank.org/search/dataset/0037800) - links + some metadata
++ [World Bank Projects & Operations Advanced Search](https://projects.worldbank.org/en/projects-operations/project-search) - search engine with filters.  
+
+The Accessibility Classification is **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
+ 
+## Process to ingest & preprocess raw PDO text data
+
+1. Retrieve ALL WB projects (22,571) listed (approval obtained or requested *between FY 1947 and 2026* as of *31/08/2024*) using the `Excel button` on this page: [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
+2. Split the dataset and keep only `projs_train` (~50% of projects with PDO text, i.e. **5,637 PDOs**)
+3. Clean the `projs_train` dataset 
+4. Further processing of the column `pdo`...
+
+<!-- ::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"} -->
+<!-- ### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note -->
+<!-- I had made a prior attempt to ingest the WB document data using the `rvest` package, following the work of [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project who created the function `R/f_scrape_WB-OKR.R`. However the WB website has changed and the function is not working anymore. -->
+<!-- ::: -->
+
+## Input data files 
+These files in the folder `data/raw_data/` are downloaded from the World Bank website.
+
+
+```{r}
+#| label: project-files-table
+#| echo: false
+#| warning: false
+#| message: false
+#| asis-output: true
+
+library(knitr)
+library(kableExtra)
+
+# Use <code style="font-size: 85%"> to reduce font size slightly and ensure fixed width
+data.frame(
+  `Source File Name` = c(
+    "project2/all_projects_as_of29ago2024.xls",
+    "project3/all_projects_as_of31mar2025.xlsx (Sheet World Bank Projects)",
+    "project3/all_projects_as_of31mar2025.xlsx (Sheet Themes)",
+    "project3/all_projects_as_of31mar2025.xlsx (Sheet Sectors)",
+    "project3/all_projects_as_of31mar2025.xlsx (Sheet GEOLocations)",
+    "project3/all_projects_as_of31mar2025.xlsx (Sheet Financers)",
+    "wdr.rds"
+  ) |> 
+    (\(x) sprintf('<code style="font-family: monospace; font-size: 85%%">%s</code>', x))(),
+  
+  Details = c(
+    "22,571 obs (projects)",
+    rep("22,210 obs (projects)", 5),
+    "44 obs (WDRs)"
+  ),
+  
+  Retrieved = c(
+    "29 of August 2024",
+    rep("31 of March 2025", 5),
+    "from 2022, then completed manually"
+  ),
+  check.names = FALSE  # << this keeps the column name as-is
+) |>
+  kable(format = "html", escape = FALSE, caption = "List of Source Files and Retrieval Dates") |>
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover")) |>
+  column_spec(1, width = "25em")  # narrow but readable first column
+```
+
+
+## Output data files
+These files in the folder `data/derived_data/` are created in different scripts and saved here to be reused in other scripts.
+
+
+```{r}
+#| label: rds-summary-table
+#| echo: false
+#| message: false
+#| warning: false
+#| asis-output: true
+
+library(knitr)
+library(kableExtra)
+
+data.frame(
+  `File *.rds name` = c(
+    "traking.rds",
+    "traking_k.rds",
+    "all_proj_t.rds",
+    "projs_train.rds",
+    "projs_test.rds",
+    "projs_val.rds",
+    "pdo_train_to_tag.rds",
+    "pdo_train_tagged.rds",
+    "pdo_train_t.rds",
+    "projs_train2.rds",
+    "custom_stop_words.rds",
+    "custom_stop_words_df.rds",
+    "wdr.rds",
+    "wdr2.rds"
+  ) |> (\(x) sprintf('<code style="font-family: monospace; font-size: 85%%">%s</code>', x))(),
+
+  `Source File Name` = c(
+    rep("analysis/01a_WB_project_pdo_prep.qmd", 9),
+    rep("analysis/01b_WB_project_pdo_EDA.qmd", 3),
+    paste(
+      "[imported from OLD repo <code>~/Github/slogan_old/</code>]",
+      "- <code>slogan_old/_my_stuff/WDR-data-ingestion.Rmd</code>",
+      "  - <em>problem, bc API changed so now not reproducible</em>",
+      "  - result as <code>slogan_old/data/raw_data/WDR.rds</code>",
+      "- <code>slogan_old/01b_WDR_data-exploration_abstracts.Rmd</code>",
+      "  - result as <code>slogan_old/data/raw_data/wdr.rds</code>",
+      sep = "<br>"
+    ),
+    "[added WDR 2023/2024 manually]<br>analysis/01b_WB_project_pdo_EDA.qmd"
+  ),
+
+  Details = c(
+    "recap of missing elements",
+    "recap of missing elements (kable tbl)",
+    "11,279 obs (projects)",
+    "5,637 obs (projects)<br>4,425 if &lt; 2001 FY",
+    "2,821 obs (projects)",
+    "2,820 obs (projects)",
+    "5,637 obs intermediate step (input)<br>Post split",
+    "LARGE <code>cnlp</code> thing ....<br>intermediate step (OUTPUT)<br>Post split",
+    "314,821 obs (tokens)<br>248,256 if &lt; 2001 FY<br>Post split",
+    "4,425 obs (projects)<br>changed",
+    "as vector",
+    "as df",
+    "as df (44)<br>WDR abstracts processed ~ like PDOs",
+    "as df (46)"
+  ),
+  check.names = FALSE
+) |>
+  kable(format = "html", escape = FALSE, caption = "List of Intermediate `.rds` Files") |>
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover")) |>
+  column_spec(1, width = "25em")
+```
+

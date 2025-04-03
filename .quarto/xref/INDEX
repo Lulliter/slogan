@@ -106,5 +106,8 @@
   },
   "posts/blog2.qmd": {
     "blog2.html": "853509e2"
+  },
+  "analysis/00_data.qmd": {
+    "00_data.html": "649f2a0e"
   }
 }

@@ -23,6 +23,9 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
   - [Tidy tuesday on TExt
     analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
     - [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
+- creare branch con e senza la parte dei dati ?
+- fare una pagina con `targets::tar_visnetwork()` e la tabella
+  `data/pprovenance.md`
 
 ### In `analysis/01a_WB_project_pdo_prep.qmd`
 
@@ -36,6 +39,7 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 ### In `analysis/01c_WB_project_pdo_prep.qmd`
 
+- tutto da rivedere ….
 - Study the theory of Lasso Regr and Classification with ML on Gabor’s
   book
   - BOOK chp 14[Prediction with

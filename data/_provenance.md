@@ -1,18 +1,21 @@
 # Where do these files come from?
 
 ## Input data (`data/raw_data/`)
+These files in the folder `data/raw_data/` are downloaded from the World Bank website.
 
-+-----------------------------------------------------------------+------------------------------------+
-| Source File Name                                                | Details                            |
-+=================================================================+====================================+
-| project2/all_projects_as_of29ago2024.xls                        | 22,571 obs (projects)  from 2024   |
-+-----------------------------------------------------------------+------------------------------------+
-| project3/all_projects_as_of31mar2025.xlsx (Sheet Projects)      | 22,210 obs (projects)  from 2025   |
-| project3/all_projects_as_of31mar2025.xlsx (Sheet Themes)        | 22,210 obs (projects)  from 2025   |
-| project3/all_projects_as_of31mar2025.xlsx (Sheet Sectors)       | 22,210 obs (projects)  from 2025   |
-| project3/all_projects_as_of31mar2025.xlsx (Sheet GEOLocations)  | 22,210 obs (projects)  from 2025   |
-| project3/all_projects_as_of31mar2025.xlsx (Sheet Financers)     | 22,210 obs (projects)  from 2025   |
-+-----------------------------------------------------------------+------------------------------------+
++-----------------------------------------------------------------+----------------------+--------------------------------------+
+| Source File Name                                                | Details              | Retrieved                            |
++=================================================================+======================+======================================+
+| project2/all_projects_as_of29ago2024.xls                        | 22,571 obs (projects)| 29 of august 2024                    |
++-----------------------------------------------------------------+----------------------+--------------------------------------+
+| project3/all_projects_as_of31mar2025.xlsx (Sheet Projects)      | 22,210 obs (projects)| 31 of march 2025                     |
+| project3/all_projects_as_of31mar2025.xlsx (Sheet Themes)        | 22,210 obs (projects)| 31 of march 2025                     |
+| project3/all_projects_as_of31mar2025.xlsx (Sheet Sectors)       | 22,210 obs (projects)| 31 of march 2025                     |
+| project3/all_projects_as_of31mar2025.xlsx (Sheet GEOLocations)  | 22,210 obs (projects)| 31 of march 2025                     |
+| project3/all_projects_as_of31mar2025.xlsx (Sheet Financers)     | 22,210 obs (projects)| 31 of march 2025                     |
++-----------------------------------------------------------------+----------------------+--------------------------------------+
+| wdr.rds                                                         | 45 obs (WDRs)        | from 2022, then completed manually   |
++-----------------------------------------------------------------+----------------------+--------------------------------------+
 
 ## Output data (`data/derived_data/`)
 These files in the folder `data/derived_data/` are created in different scripts and saved here to be reused in other scripts.
@@ -20,9 +23,9 @@ These files in the folder `data/derived_data/` are created in different scripts 
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | File `*.rds` name          | Source File Name                                  | Details                                                            |
 +============================+===================================================+====================================================================+
-| `traking.rds    `          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements                                          |
+| `traking.rds`          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements                                          |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
-| `traking_k.rds  `          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements (kable tbl)                              |
+| `traking_k.rds`          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements (kable tbl)                              |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | `all_proj_t.rds`           | analysis/01a_WB_project_pdo_prep.qmd              | 11,279 obs (projects)                                              |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+

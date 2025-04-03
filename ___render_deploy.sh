@@ -21,7 +21,7 @@ Rscript -e "targets::tar_make(eda_report)"  # 01b_....qmd
 
 Rscript -e "targets::tar_make(feat_class_report)"  # 01c_....qmd
 
-Rscript -e "targets::tar_make(analysis_reports)" # error
+Rscript -e "targets::tar_make(analysis_reports)" #
 Rscript -e "targets::tar_make(post_page)"
 
 Rscript -e "targets::tar_make(index_page)"
@@ -29,7 +29,7 @@ Rscript -e "targets::tar_make(research_page)"
 Rscript -e "targets::tar_make(render_website)"
 
 # GRAPH
-Rscript -e "targets::tar_visnetwork()"
+Rscript -e "targets::tar_visnetwork()" (dalla console)
 
 # ====== RENDER the entire site (not needed if you run tar_make)
          # quarto preview
@@ -69,7 +69,7 @@ fi
 git commit -m "$msg"
 =======
 git commit -m "fix analysis/01b_WB_project_pdo_EDA.qmd"
-git commit -m "new 2025 data + revision started" -m "see especially analysis/01a_WB_project_pdo_prep.qmd"
+git commit -m "maj revision analysis/ _targets" -m "added 2025 data 🥵 and messeu up some stuff"
 git commit -m "small upd Home 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "100% done blog  🍾🥂"
