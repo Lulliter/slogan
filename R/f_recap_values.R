@@ -30,8 +30,8 @@ f_recap_values <- function(data, columns) {
       left_join(distinct_counts, by = "skim_variable") %>%
       relocate(n_distinct, n_missing, .after = total_rows) %>%
       mutate(missing_perc = round((n_missing/total_rows)*100, 1),
-             missing_perc = glue::glue("{missing_perc}%")) %>%
-      arrange(desc(missing_perc))
+             missing_perc = glue::glue("{missing_perc}%")) #%>%
+      #arrange(desc(missing_perc))
 
    # Return the table
    return(missing_table)

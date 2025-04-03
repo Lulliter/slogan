@@ -9,11 +9,18 @@ quarto install extension schochastics/academicons # https://jpswalsh.github.io/a
 # ====== RUN tar_make() to render reports in ./analysis/*    !!!!!!!!
 Rscript -e "targets::tar_make(callr_function = NULL)"
 # EACH
-Rscript -e "targets::tar_make(prep_report)"
+Rscript -e "targets::tar_make(all_proj)" # DATA dep
+Rscript -e "targets::tar_make(all_proj_25)" # DATA dep
+Rscript -e "targets::tar_make(all_proj_themes_25_l)"
+Rscript -e "targets::tar_make(all_proj_sectors_25_l)"
+Rscript -e "targets::tar_make(prep_report)"  # 01a_....qmd
+
 Rscript -e "targets::tar_make(projs_train)" # DATA dep
 Rscript -e "targets::tar_make(pdo_train_t)" # DATA dep
-Rscript -e "targets::tar_make(eda_report)"
-Rscript -e "targets::tar_make(feat_class_report)"
+Rscript -e "targets::tar_make(eda_report)"  # 01b_....qmd
+
+Rscript -e "targets::tar_make(feat_class_report)"  # 01c_....qmd
+
 Rscript -e "targets::tar_make(analysis_reports)" # error
 Rscript -e "targets::tar_make(post_page)"
 

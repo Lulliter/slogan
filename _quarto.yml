@@ -21,6 +21,7 @@ website:
   favicon: images/notepad.png
   search: false # no magnifier on navbar
   page-navigation: true
+  bread-crumbs: false # avoid the path on top of the page (sidebar!)
   page-footer:
     # left: |
     #   {{< fa regular copyright >}} Luisa M. Mimmi 2024
@@ -58,23 +59,21 @@ website:
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home
         href: posts/PDO_eda.qmd
 
-
   sidebar:
-    - title: "Blog"
+    - title: "Blog posts"
+      style: "docked"
+      background: light
       contents:
-        - section: "Blog posts"
-          contents:
-            - posts/PDO_eda.qmd # uguale a sopra (il primo)
-      toc: true
-      toc-location: "right"
-
+        - posts/PDO_eda.qmd # uguale a sopra (il primo)
+        - posts/blog2.qmd
 
 format:
   html:
     theme: theme/Lulas_theme.scss # cosmo
     fontawesome: true
     css: theme/styles.css
-    toc: false
+    toc: true
+    toc-location: "right"
     code-link: true
     code-fold: true
     # code-tools: true

@@ -1,3 +1,5 @@
+# SET UP ------------------------------------------------------------------
+
 # Load the targets package
 library(here)
 # install.packages("igraph", type = "binary") https://r.igraph.org/articles/installation-troubleshooting.html
@@ -5,15 +7,19 @@ library(here)
 library(igraph)
 library(targets)
 library(tarchetypes)
+library(tidyverse)
 library(quarto)
 library(readxl)
 library(purrr)  # For walk function
 
-# --- from 01a_WB_project_pdo_prep.qmd
-#source(here("R","f_recap_values.R"))
-# --- from 01b_WB_project_pdo_EDA.qmd
-#source(here("R","fs_plotting.R"))
 
+tar_option_set(
+   packages = c("readxl", "janitor", "dplyr", "purrr", "here", "quarto"),
+   format = "rds"
+)
+
+tar_source(here::here("R", "f_recap_values.R"))
+tar_source(here::here("R", "f_parse_date.R"))
 
 # This hardcodes the absolute path in _targets.yaml, so to make this more
 # portable, we rewrite it every time this pipeline is run (and we don't track
@@ -24,98 +30,213 @@ tar_config_set(
 
 
 # PIPELINE ----------------
-## each target has a name and an R function to run
 list(
    # RAW DATA INPUT ----------------
+   # Load the raw data from older XLS file
    tar_target(
-      data_file,
-      here::here("data", "raw_data", "project2", "all_projects_as_of29ago2024.xls"),
-      format = "file"),
+      all_proj,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project2", "all_projects_as_of29ago2024.xls"),
+         col_names = FALSE,
+         skip = 1
+      )
+   ),
+   # Load World Bank Projects sheet (March 2025)
    tar_target(
-      data,
-      read_excel(data_file, col_names = TRUE, skip = 2)),
-
+      all_proj_25,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project3", "all_projects_as_of31mar2025.xlsx"),
+         sheet = "World Bank Projects",
+         skip = 1
+      ) %>%
+         janitor::clean_names() %>%
+         filter(project_id %in% all_proj$id)
+   ),
+   # Load Themes sheet
+   tar_target(
+      all_proj_themes_25_l,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project3", "all_projects_as_of31mar2025.xlsx"),
+         sheet = "Themes",
+         skip = 1
+      ) %>%
+         janitor::clean_names() %>%
+         filter(project_id %in% all_proj$id)
+   ),
+   # Load Sectors sheet
+   tar_target(
+      all_proj_sectors_25_l,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project3", "all_projects_as_of31mar2025.xlsx"),
+         sheet = "Sectors",
+         skip = 1
+      ) %>%
+         janitor::clean_names() %>%
+         filter(project_id %in% all_proj$id)
+   ),
+   # Load GEO Locations sheet
+   tar_target(
+      all_proj_geo_25,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project3", "all_projects_as_of31mar2025.xlsx"),
+         sheet = "GEO Locations",
+         skip = 1
+      ) %>%
+         janitor::clean_names() %>%
+         filter(project_id %in% all_proj$id)
+   ),
+   # Load Financiers sheet
+   tar_target(
+      all_proj_financiers_25_l,
+      readxl::read_excel(
+         here::here("data", "raw_data", "project3", "all_projects_as_of31mar2025.xlsx"),
+         sheet = "Financers",
+         skip = 1
+      ) %>%
+         janitor::clean_names() %>%
+         filter(project %in% all_proj$id) %>%
+         rename(project_id = project)
+   ),
    # wrd data from OLD SLOGAN PROJECT
    tar_target(
       wdr,
       here::here("data", "derived_data", "wdr.rds"),
       format = "file"),
 
+
+
+
    # ANALYSIS FILES ----------------
-   ## Process and clean data ----
-   tar_target(
+   ## 1) Process and clean data ----
+ tar_target(
       prep_report,
       {
-         # Use `data` directly in the target to ensure dependency tracking
          quarto::quarto_render(
             here::here("analysis", "01a_WB_project_pdo_prep.qmd"),
-            execute_params = list(data = data)  # Pass data as a parameter if used in the report
+            execute_params = list(
+               all_proj = all_proj,
+               all_proj_25 = all_proj_25,
+               all_proj_themes_25_l = all_proj_themes_25_l,
+               all_proj_sectors_25_l = all_proj_sectors_25_l
+            )
          )
       },
-      format = "file"),
+      format = "file"
+   ),
 
-   ## OUTPUTs from  `prep_report` ----
+   ## OUTPUTs from `prep_report` ----
    ### ___ projs_train.rds ----
    tar_target(
       projs_train,
       {
          # Ensure dependency on `prep_report`
          prep_report
-         here::here("data", "derived_data", "projs_train.rds")
+         return(here::here("data", "derived_data", "projs_train.rds"))
       },
       format = "file"),
-
    ### ___ pdo_train_t.rds ----
    tar_target(
       pdo_train_t,
       {
          # Ensure dependency on `prep_report`
          prep_report
-         here::here("data", "derived_data", "pdo_train_t.rds")
+         return(here::here("data", "derived_data", "pdo_train_t.rds"))
       },
       format = "file"),
-
-
-   ## Exploratory data analysis ----
+   ### ___ projs_val.rds [NOT really used yet!] ----
    tar_target(
-      eda_report,
-      {# Just reference the file paths to signal dependency without loading them
-         projs_train
-         pdo_train_t
-         # Render the EDA report
-         quarto::quarto_render(here::here("analysis", "01b_WB_project_pdo_EDA.qmd"))
+      projs_val,
+      {
+         prep_report
+         here::here("data", "derived_data", "projs_val.rds")
       },
-      format = "file"),
+      format = "file"
+   ),
+
+   ### ___ proj_test.rds [NOT really used yet!] ----
+   tar_target(
+      proj_test,
+      {
+         prep_report
+         here::here("data", "derived_data", "proj_test.rds")
+      },
+      format = "file"
+   ),
+   ### ___ intermediate file  ----
+   tar_target(
+      tracking,
+      {
+         prep_report
+         here::here("data", "derived_data", "tracking.rds")
+      },
+      format = "file"
+   ),
+
+   # [------------------]-------------
+
+   ## 2) Exploratory data analysis ----
+ tar_target(
+    eda_report,
+    {
+       # Establish dependencies so changes in these files trigger re-rendering:
+       projs_train
+       pdo_train_t
+       # Render the EDA report and pass file paths as parameters
+       quarto::quarto_render(
+          here::here("analysis", "01b_WB_project_pdo_EDA.qmd"),
+          execute_params = list(
+             projs_train = projs_train,
+             pdo_train_t = pdo_train_t
+          )
+       )
+    },
+    format = "file"
+ ),
    ## OUTPUTs from  `eda_report` ----
-   ### ___ custom_stop_words.rds ----
-   tar_target(
+   ### ___ projs_train2.rds ----
+ tar_target(
+    projs_train2, # Ensure dependency on `eda_report`
+    {eda_report
+       here::here("data", "derived_data", "projs_train2.rds")
+    },
+    format = "file"),
+
+
+ tar_target(
       custom_stop_words, # Ensure dependency on `eda_report`
       {eda_report
-         eda_report
          here::here("data", "derived_data", "custom_stop_words.rds")
       },
       format = "file"),
 
-   ### ___ pcustom_stop_words_df.rds ----
+   ### ___ custom_stop_words_df.rds ----
    tar_target(
       custom_stop_words_df, # Ensure dependency on `eda_report`
       {eda_report
          here::here("data", "derived_data", "custom_stop_words_df.rds")
       },
       format = "file"),
-
-   ## ML Feature Classification ----
-   tar_target(
-      feat_class_report,
-      # Just reference the file to signal dependency without loading them
-      { projs_train
-         wdr
-        custom_stop_words_df
-         # Render the EDA report
-         quarto::quarto_render(here::here("analysis", "01c_WB_project_pdo_feat_class.qmd"))
-      },
-      format = "file"
-   ),
+ # [------------------]-------------
+   ## 3) ML Feature Classification ----
+ tar_target(
+    feat_class_report,
+    {
+       # Declare dependencies so that changes in these files trigger re-rendering:
+       projs_train2
+       wdr
+       custom_stop_words_df
+       # Render the feature classification report and pass parameters
+       quarto::quarto_render(
+          here::here("analysis", "01c_WB_project_pdo_feat_class.qmd"),
+          execute_params = list(
+             projs_train = projs_train,
+             wdr = wdr,
+             custom_stop_words_df = custom_stop_words_df
+          )
+       )
+    },
+    format = "file"
+ ),
    ## OUTPUTs from  `feat_class_report` ----
    ### ___ custom_stop_words.rds ----
    tar_target(
@@ -130,8 +251,9 @@ list(
    tar_target(
       analysis_reports,
       c(prep_report, eda_report, feat_class_report)),
-
-   # POST page (resulting from above) ----
+ # [------------------]-------------
+ # [------------------]-------------
+# POST page (resulting from above) ----
    tar_target(
       post_page,
       {analysis_reports # Reference analysis_reports to create dependency
@@ -172,3 +294,4 @@ list(
 
 )
 
+#targets::tar_visnetwork()

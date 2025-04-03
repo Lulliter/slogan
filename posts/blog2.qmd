@@ -1,0 +1,56 @@
+---
+title: "Using LLM for metadata enhancing"
+subtitle: "Comparing different approaches..... "
+description: |
+  TL;DR <br>
+  .......  
+  
+  (This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished).<br>
+#  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
+#author: "Luisa M. Mimmi"
+categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
+#date-modified: "2024-10-29"
+date: today
+lang: en
+number-sections: false
+
+draft: FALSE
+
+editor: source
+engine: knitr
+## ------  general Output Options
+execute:     
+  eval: false    # actually run? 
+  echo: true     #  include source code in output
+  warning: false  #  include warning code in output
+  error: false    #  include error code in output
+  output: false   # include output code in output (CHG in BLOCKS)
+  # include: false   # R still runs but code and results DON"T appear in output  
+  cache: false # normalmnte false
+toc: true
+toc-location: "right"
+toc_float: true
+fig-cap-location: top
+tbl-cap-location: top
+format:
+  html:
+    #theme: callout.scss
+    code-fold: false # redundant bc echo false 
+    embed-resources: true # external dependencies embedded (Not in ..._files/)
+    toc: true  # disables the TOC at the top of the main body
+    sidebar:
+      right: 
+        nav: "Outline"  # enables TOC (outline) in the sidebar
+  # pdf:
+  #   toc-depth: 2
+  #   # toc-title: Indice
+  #   highlight-style: github
+  #   #lang: it
+  #   embed-resources: true # external dependencies embedded (Not in ..._files/)
+format-links: false
+prefer-html: true
+
+# bibliography: slogan_selected.bib
+# nocite: |
+#   @*
+---

@@ -1,19 +1,29 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|0db023252014bb04|||||||||||||||
-all_pages|stem|c510cd7d2d723f31|8aa8e2c4a6cbf123|3ebb59fc30964110|564791516||t20033.380224812s|c3d3b541ede7844e|46|rds|local|vector|||0||
-analysis_reports|stem|c510cd7d2d723f31|2420a50adb0bc714|e862af067f685881|-1344709957||t20033.6534737449s|c3d3b541ede7844e|46|rds|local|vector|||0||
-custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20038.4914326463s|378c305854a4daa0|440|file|local|vector|||0||
-custom_stop_words_df|stem|a4ba2befa1980ac1|d415925623dcd41d|d82ec1261c0152e5|-1547741128|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words_df.rds|t20038.4914326519s|9e4fbd1b8a0232ce|516|file|local|vector|||0||
-data|stem|8744ccd58d306b8e|b65fa36814e991ef|c34d42c10b3c37c5|33550471||t20033.377248005s|af2f5518db55c56b|2395592|rds|local|vector|||0.468||
-data_file|stem|283a4aed2e154bb3|68df3f3bf994d0ec|2c530c1562a7fbd1|-679625259|/Users/luisamimmi/Github/slogan/data/raw_data/project2/all_projects_as_of29ago2024.xls|t19964.6636342593s|60dddb8bd61b15fd|16567296|file|local|vector|||0||
-eda_report|stem|08d5f59e833de599|9a5876cde47030ea|6889aa1657cec7e1|-690365211||t0s|a10b0861f057ffab|0|file|local|vector|||47.964||
-feat_class_report|stem|08d5f59e833de599|099d2742dd3a670d|7eeb514c9f49eb89|-1708048460||t0s|a10b0861f057ffab|0|file|local|vector|||85.047||
-index_page|stem|08d5f59e833de599|369ff240947dd68d|2c530c1562a7fbd1|40237298||t0s|a10b0861f057ffab|0|file|local|vector|||1.035||
-pdo_train_t|stem|58f395ab21a2db66|0238ec2fcc8be6ee|8e1f9cecbb48639a|-1458755856|/Users/luisamimmi/Github/slogan/data/derived_data/pdo_train_t.rds|t20033.6363373333s|91ede757047d3f42|5820724|file|local|vector|||0.001||
-post_page|stem|08d5f59e833de599|cf1b05a0a5846d36|b02b7b6bb9b380fa|-1933830623||t0s|a10b0861f057ffab|0|file|local|vector|||7.503||
-prep_report|stem|08d5f59e833de599|f06d2815aeeb3e32|e7e50988e47520c8|-2139184625||t0s|a10b0861f057ffab|0|file|local|vector|||117.478||
-projs_train|stem|32b9d1dc94fb5243|f62ba75a44ef596f|8e1f9cecbb48639a|-958184839|/Users/luisamimmi/Github/slogan/data/derived_data/projs_train.rds|t20033.636310831s|36a9e5dab42ff29e|591655|file|local|vector|||0.001||
-render_website|stem|c510cd7d2d723f31|845ac6134c3157c9|2702651c636d6170|379097287||t20033.9596634075s|c3d3b541ede7844e|46|rds|local|vector|||0.001||
-research_page|stem|08d5f59e833de599|26339212c59940bf|2c530c1562a7fbd1|844215892||t0s|a10b0861f057ffab|0|file|local|vector|||2.754||
-wdr|stem|8f01b29135b6a7b4|103412fc68c132bd|2c530c1562a7fbd1|-1060017006|/Users/luisamimmi/Github/slogan/data/derived_data/wdr.rds|t20017.3726587004s|91cc0d3d8f532ae2|120370|file|local|vector|||0||
-wdr2|stem|47475e493cf5b170|6a5067d86b6c94ff|2342d0f8ce1d3e35|-1785450563|/Users/luisamimmi/Github/slogan/data/derived_data/wdr2.rds|t20038.4915051138s|1118bb14cd00e029|115194|file|local|vector|||0.001||
+research_page|stem|08d5f59e833de599|26339212c59940bf|2c530c1562a7fbd1|844215892||t0s|s0b|0|file|local|vector|||13.12||
+index_page|stem|08d5f59e833de599|369ff240947dd68d|2c530c1562a7fbd1|40237298||t0s|s0b|0|file|local|vector|||1.649||
+wdr|stem|8f01b29135b6a7b4|103412fc68c132bd|2c530c1562a7fbd1|-1060017006|/Users/luisamimmi/Github/slogan/data/derived_data/wdr.rds|t20017.3726587004s|s120370b|120370|file|local|vector|||0.001||
+data_file|stem|5819a1b9feb75091|68df3f3bf994d0ec|2c530c1562a7fbd1|-679625259|/Users/luisamimmi/Github/slogan/data/raw_data/project2/all_projects_as_of29ago2024.xls|t20178.8407569955s|s16567296b|16567296|file|local|vector|||0||
+data|stem|8744ccd58d306b8e|b65fa36814e991ef|65fd4b7523b42fcd|33550471||t20179.3034297519s|s2395592b|2395592|rds|local|vector|||0.502||
+analysis_reports|stem|c510cd7d2d723f31|2420a50adb0bc714|e862af067f685881|-1344709957||t20179.3055901515s|s46b|46|rds|local|vector|||0||
+wdr2|stem|47475e493cf5b170|6a5067d86b6c94ff|2342d0f8ce1d3e35|-1785450563|/Users/luisamimmi/Github/slogan/data/derived_data/wdr2.rds|t20179.3039862967s|s115194b|115194|file|local|vector|||0.001||
+post_page|stem|08d5f59e833de599|cf1b05a0a5846d36|b02b7b6bb9b380fa|-1933830623||t0s|s0b|0|file|local|vector|||19.273||
+all_pages|stem|c510cd7d2d723f31|8aa8e2c4a6cbf123|3ebb59fc30964110|564791516||t20179.3058133572s|s46b|46|rds|local|vector|||0||
+render_website|stem|c510cd7d2d723f31|845ac6134c3157c9|2702651c636d6170|379097287||t20179.3058134079s|s46b|46|rds|local|vector|||0.002||
+custom_stop_words|stem|c85f391936e9c4c7|70b451304e5383fb|d82ec1261c0152e5|-917079914|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words.rds|t20179.6966440118s|s440b|440|file|local|vector|||0.001||
+data_file_2025|stem|76317092c889bedc|1469865e956c9eb9|2c530c1562a7fbd1|-1923814436|/Users/luisamimmi/Github/slogan/data/raw_data/project3/all_projects_as_of31mar2025.xlsx|t20178.8407585674s|s21008223b|21008223|file|local|vector|||0||
+data_2025|stem|61cb7265377634f7|8d19fc2bc2f13535|a2b261d8205a7ee4|-1709074049||t20179.8066043179s|s2616295b|2616295|rds|local|vector|||0.549||
+all_proj|stem|8209285f6751993b|05d80cbd9783a185|2c530c1562a7fbd1|1679561766||t20181.4410844565s|s2391517b|2391517|rds|local|vector|||0.706||
+all_proj_25|stem|14685cf7324f777d|8f9f88921477d016|fd1f17397320a876|-1783434575||t20181.4505299032s|s416b|416|rds|local|vector|||0.716|There was 1 warning in filter.ℹ In argument project_id in all_projid.Caused by warning Unknown or uninitialised column id.|
+all_proj_themes_25_l|stem|a39e4c83d2c2031c|55b35bd94189f6f7|fd1f17397320a876|-1563269505||t20181.4506661231s|s172b|172|rds|local|vector|||1.317|There was 1 warning in filter.ℹ In argument project_id in all_projid.Caused by warning Unknown or uninitialised column id.|
+all_proj_sectors_25_l|stem|3d436a4a39b17baa|49aa93f6fdf69949|fd1f17397320a876|-1463208629||t20181.4507822413s|s165b|165|rds|local|vector|||0.332|There was 1 warning in filter.ℹ In argument project_id in all_projid.Caused by warning Unknown or uninitialised column id.|
+prep_report|stem|08d5f59e833de599|3aa15c4ff6a373ea|54f5db387122f927|-2139184625||t0s|s0b|0|file|local|vector|||38.845||
+projs_train|stem|7a2adfcfc3fd8394|83d61aff083f456f|8e1f9cecbb48639a|-958184839|/Users/luisamimmi/Github/slogan/data/derived_data/projs_train.rds|t20181.7378574767s|s1040355b|1040355|file|local|vector|||0.001||
+eda_report|stem|08d5f59e833de599|d85a8afd9c2d1998|474ead9ca1e1c303|-690365211||t0s|s0b|0|file|local|vector|||55.129||
+pdo_train_t|stem|a1f470551758f553|c75d158fe5910531|8e1f9cecbb48639a|-1458755856|/Users/luisamimmi/Github/slogan/data/derived_data/pdo_train_t.rds|t20181.7457029934s|s6608758b|6608758|file|local|vector|||0.001||
+custom_stop_words_df|stem|a4ba2befa1980ac1|d415925623dcd41d|d82ec1261c0152e5|-1547741128|/Users/luisamimmi/Github/slogan/data/derived_data/custom_stop_words_df.rds|t20181.7454179593s|s516b|516|file|local|vector|||0.002||
+projs_train2|stem|42527e256921fecc|a018b459548d7fbc|d82ec1261c0152e5|618362856|/Users/luisamimmi/Github/slogan/data/derived_data/projs_train2.rds|t20181.7456820681s|s835718b|835718|file|local|vector|||0||
+feat_class_report|stem|08d5f59e833de599|1e79c1aae78665d5|470b3b7b89038c68|-1708048460||t0s|s0b|0|file|local|vector|||89.744||
+common_date_formats|object|520512b9223e4c2c
+f_recap_values|function|d7bff40eb3fbf03f
+.Random.seed|object|59ccb3a4458b373d
+f_parse_date|function|892c4984cb0e685c

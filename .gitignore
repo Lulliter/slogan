@@ -17,6 +17,9 @@ _targets.yaml
 posts/*_files/
 analysis/*_files/
 
+data/_provenance.html
+data/_provenance_files/
+
 # Data stuff
 # (here I keep it bc it is all public data)
 
@@ -27,8 +30,8 @@ analysis/_zz_old_files/*
 buzzwords.bib
 slogan.bib
 
-data/raw_data/project/*    # the original work changed
-data/raw_data/project3/*  # later chack in 2025
+# the original work changed
+
 
 
 # Temporary files

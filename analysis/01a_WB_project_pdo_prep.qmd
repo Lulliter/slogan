@@ -58,9 +58,12 @@ library(SnowballC) # Snowball Stemmers Based on the C 'libstemmer' UTF-8 Library
 library(rsample) # General Resampling Infrastructure
 library(rvest) # Easily Harvest (Scrape) Web Pages
 library(cleanNLP) # A Tidy Data Model for Natural Language Processing #
-
+library(rlang) # Functions for Base Types and Core R and 'Tidyverse' Features
+library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax
 # non scientific notation 
 options(scipen=999)
+# load functions
+source(here::here("R", "f_recap_values.R")) # load functions
 ```
 
 ---
@@ -131,116 +134,8 @@ skimr::skim(all_proj$boardapprovaldate) # complete_rate 0.779
 skimr::skim(all_proj$closingdate) # complete_rate 0.707 
 ```
 
-# [later addition]
-On March 31, 2025, I retrieved the same dataset from the WB website. The dataset now carries additional sheets ("Themes", "Sectors", "GEO locations" and "Financiers") which I retrieve and save as `all_proj_themes`, `all_proj_sectors`, `all_proj_geo` and `all_proj_financiers` respectively.
 
-
-## 🟡 themes 
-```{r}
-all_proj_themes_25 <- readxl::read_excel(here::here (
-   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
-      sheet = "Themes", skip = 1) %>% 
-   janitor::clean_names() %>% 
-   # keep only project_id with match in all_proj
-   filter(project_id %in% all_proj$id)
-   
-# save next to the original file 
-save(all_proj_themes_25, file = here::here("data", "raw_data", "project2", 
-                                           "all_proj_themes_2025.Rdata") )
-```
-
-Extract matching project IDs with the largest percentage of `level_1` (theme) for each project.
-```{r}
-# keep only row with level_1 !=na
-
-all_proj_theme_1_25 <- all_proj_themes_25 %>% 
-   filter(is.na(level_2) & is.na(level_3)) %>% 
-   # keep the largest value of percentage_1 among the rows with the same project_id
-   group_by(project_id) %>%
-   filter(percentage_1 == max(percentage_1)) %>% 
-   # keep just one row for each project_id
-   slice(1) %>% 
-   # drop empty cols
-   select(project_id, level_1, percentage_1) %>% 
-   rename(
-      theme_1_25 =  level_1,
-      theme1_perc_25 = percentage_1
-   )
-
-```
-
-## 🟡 sectors 
-
-```{r}
-all_proj_sectors_25 <- readxl::read_excel(here::here (
-   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
-      sheet = "Sectors", skip = 1) %>% 
-   janitor::clean_names() %>% 
-   # keep only project_id with match in all_proj
-   filter(project_id %in% all_proj$id)
-
-# save next to the original file
-save(all_proj_sectors_25, file = here::here("data", "raw_data", "project2", 
-                                           "all_proj_sectors_2025.Rdata") )
-```
-
-Extract matching project IDs with the largest percentage of `sector_percent` (sector) for each project.
-
-```{r}
-# keep only row with sector_percent !=na
-all_proj_sector_1_25 <- all_proj_sectors_25 %>% 
-   filter(!is.na(sector_percent)) %>% 
-   # keep the largest value of sector_percent among the rows with the same project_id
-   group_by(project_id) %>%
-   filter(sector_percent == max(sector_percent)) %>% 
-   # keep just one row for each project_id
-   slice(1) %>% 
-   rename(
-      major_sector1_25 = major_sector  ,
-      sector1_25 = sector ,
-      sector1_perc_25 = sector_percent
-   )
-```   
-   
-## 🟠 GEO locations
-
-```{r}
-# multiple loc per ID 
-all_proj_geo_25 <- readxl::read_excel(here::here (
-   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
-      sheet = "GEO Locations", skip = 1) %>% 
-   janitor::clean_names() %>% 
-   # keep only project_id with match in all_proj
-   filter(project_id %in% all_proj$id)
-
-# save next to the original file
-save(all_proj_geo_25, file = here::here("data", "raw_data", "project2", 
-                                           "all_proj_geo_2025.Rdata") )
-```
- 
-
-## 🟠 Financiers
-
-```{r}
-all_proj_financiers_25 <- readxl::read_excel(here::here (
-   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
-      sheet = "Financers", skip = 1) %>% 
-   janitor::clean_names() %>% 
-   # keep only project_id with match in all_proj
-   filter(project %in% all_proj$id) %>% 
-   rename (project_id = project)
-
-# save next to the original file
-save(all_proj_financiers_25, file = here::here("data", "raw_data", "project2", 
-                                           "all_proj_financiers_2025.Rdata") )
-
-```
-
-
-# _______ 
-# CLEANING FILE PDOs  
-
-# Recode `all_proj`
+# Recode dates `all_proj`
 
 This data set has a lot of blank values, probably also bc some information was not collected way back in 1947... (e.g. PDO) 
 
@@ -279,7 +174,7 @@ f_parse_date <- function(data, date_columns) {
 
 
 # Mutate the date columns to parse the dates, handling different formats and blanks
-all_proj_t <- all_proj %>%
+all_proj_temp <- all_proj %>%
    # CALL my function !
    f_parse_date(date_columns = date_columns_exe) %>%
    # SPLIT date into year and month
@@ -298,15 +193,276 @@ all_proj_t <- all_proj %>%
 
 # Check the results
 tabyl(all_proj$closingdate)   
-tabyl(all_proj_t$closingdateFY)
+tabyl(all_proj_temp$closingdateFY)
 
 tabyl(all_proj$boardapprovaldate)   
-tabyl(all_proj_t$boardapprovalFY)
+tabyl(all_proj_temp$boardapprovalFY)
 
-skimr::skim(all_proj_t$boardapprovalFY) # complete_rate 0.779
-skimr::skim(all_proj_t$closingdateFY) # complete_rate 0.707
-skimr::skim(all_proj_t$pdo) # complete_rate 0.707
+skimr::skim(all_proj_temp$boardapprovalFY) # complete_rate 0.779
+skimr::skim(all_proj_temp$closingdateFY) # complete_rate 0.707
+skimr::skim(all_proj_temp$pdo) # complete_rate 0.707
 ```
+
+# [Later (2025) data dump ]
+On March 31, 2025, I retrieved the same dataset from the WB website. The dataset now carries additional sheets ("Themes", "Sectors", "GEO locations" and "Financiers") which I retrieve and save as `all_proj_themes`, `all_proj_sectors`, `all_proj_geo` and `all_proj_financiers` respectively.
+
+## 🟠 projects as of 31/03/2025
+```{r}
+all_proj_25_temp <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "World Bank Projects", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+   
+names(all_proj_temp)
+names(all_proj_25_temp)
+
+
+all_proj_25 <- all_proj_25_temp %>% 
+   # new = old
+   dplyr::rename("id"  = "project_id" ,
+          "project_name"  =     "project_name"                      ,
+          "pdo_2025"    =     "project_development_objective"     ,
+          "impagency"  =     "implementing_agency"               ,
+          "cons_serv_reqd_ind"  =     "consultant_services_required"      ,
+         # NO url
+          "regionname"  =     "region"                            ,
+          "countryname" =     "country"                           ,
+          
+         "projectstatusdisplay"  =     "project_status"                    ,
+         "last_stage_reached_name" =     "last_stage_reached_name"           ,
+         # "public_disclosure_date"           ,
+         "boardapprovaldate"  =     "board_approval_date"               ,
+         #"loan_effective_date"              ,
+         "closingdate"  =     "project_closing_date"              ,
+           
+         "projectfinancialtype" = "financing_type" ,
+         
+         "curr_project_cost" =     "current_project_cost"              ,
+         "curr_ibrd_commitment" =     "ibrd_commitment"                   ,
+         "curr_ida_commitment"  =     "ida_commitment"                    ,
+          "curr_total_commitment"    = "total_ibrd_ida_and_grant_commitment",
+         "grantamt"  =     "grant_amount"                      ,
+
+          "borrower"  =     "borrower"                          ,
+          "lendinginstr" =     "lending_instrument"                ,
+          "envassesmentcategorycode" =     "environmental_assessment_category" ,
+          "esrc_ovrl_risk_rate" =     "environmental_and_social_risk"     
+          # "associated_project"               ,
+          # NO "sector1",
+          # NO "sector2",
+          # NO "sector3",
+          # NO "theme1",
+          # NO "theme2"
+) |> 
+   dplyr::select(
+      id, project_name, pdo_2025, impagency, cons_serv_reqd_ind,
+      regionname, countryname, projectstatusdisplay, last_stage_reached_name,
+      boardapprovaldate, 
+      closingdate,
+      projectfinancialtype, curr_project_cost, curr_ibrd_commitment,
+      curr_ida_commitment, curr_total_commitment, grantamt,
+      borrower, lendinginstr, 
+      envassesmentcategorycode, esrc_ovrl_risk_rate,
+   )
+
+```
+
+```{r}
+# keep only row with level_1 !=na
+all_proj_25_t <- all_proj_25 %>% 
+   # keep only project_id with match in all_proj
+   filter(id %in% all_proj$id)
+```
+
+# Recode dates `all_proj_25_t`
+
+```{r}
+# Mutate the date columns to parse the dates, handling different formats and blanks
+all_proj_25_t <- all_proj_25_t %>%
+   # CALL my function !
+   f_parse_date(date_columns = date_columns_exe) %>%
+   # SPLIT date into year and month
+   mutate(boardapproval_year = year(boardapprovaldate),
+          boardapproval_month = month(boardapprovaldate)) %>% 
+   mutate(boardapprovalFY = case_when( 
+      boardapproval_month >= 1 & boardapproval_month < 7 ~ boardapproval_year,
+      boardapproval_month >= 7 & boardapproval_month <= 12 ~ boardapproval_year +1)) %>% 
+   relocate(boardapprovalFY, .after = boardapprovaldate ) %>% 
+   mutate(closingdate_year = year(closingdate),
+          closingdate_month = month(closingdate)) %>% 
+   mutate(closingdateFY = case_when( 
+      closingdate_month >= 1 & closingdate_month < 7 ~ closingdate_year,
+      closingdate_month >= 7 & closingdate_month <= 12 ~ closingdate_year +1)) %>% 
+   relocate(closingdateFY, .after = closingdate ) 
+
+# Check the results
+skimr::skim(all_proj_25_t$boardapprovalFY) # complete_rate 0.779
+skimr::skim(all_proj_25_t$closingdateFY) # complete_rate 0.707
+skimr::skim(all_proj_25_t$pdo_2025) # complete_rate 0.707
+```
+
+> interesting there are 22,210 (i.e. less than 22,569) projects in the 2025 dataset.
+
+## 🟠 themes 
+
+[No clear why there are so many rows per Project ID in the `Themes` sheet --> not mooving until understood]
+```{r}
+all_proj_themes_25_l <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Themes", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+   
+# # save next to the original file 
+# save(all_proj_themes_25, file = here::here("data", "raw_data", "project2", 
+#                                            "all_proj_themes_2025.Rdata") )
+
+# convert to wide format with one row per project_id
+# all_proj_themes_25 <- all_proj_themes_25_l %>%
+#   tidyr::pivot_wider(
+#     id_cols = project_id,
+#     names_from = theme_no,
+#     values_from = c(level, percentage)
+#   )               
+ 
+```
+
+### ✅ Theme 1 from 2025 data
+Extract matching project IDs with the largest percentage of `level_1` (theme) for each project.
+```{r}
+# keep only row with level_1 !=na
+
+all_proj_theme_1_25 <- all_proj_themes_25_l %>% 
+   filter(is.na(level_2) & is.na(level_3)) %>% 
+   # keep the largest value of percentage_1 among the rows with the same project_id
+   group_by(project_id) %>%
+   filter(percentage_1 == max(percentage_1)) %>% 
+   # keep just one row for each project_id
+   slice(1) %>% 
+   # drop empty cols
+   select(project_id, level_1, percentage_1) %>% 
+   rename(
+      theme_1_25 =  level_1,
+      theme1_perc_25 = percentage_1
+   )
+
+```
+
+## 🟠 sectors 
+
+[Here too, it seems in long fomr but it is  not very clear why there are so many rows per Project ID in the `Sectors` sheet --> not mooving until understandood]
+```{r}
+all_proj_sectors_25_l <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Sectors", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+
+# convert to wide format with one row per project_id
+all_proj_sectors_25 <- all_proj_sectors_25_l %>%
+  tidyr::pivot_wider(
+    id_cols = project_id,
+    names_from = major_sector,
+    values_from = c(sector, sector_percent)
+  )
+
+# # save next to the original file
+# save(all_proj_sectors_25, file = here::here("data", "raw_data", "project2", 
+#                                            "all_proj_sectors_2025.Rdata") )
+```
+
+### ✅ Sector 1 from 2025 data
+Extract matching project IDs with the largest percentage of `sector_percent` (sector) for each project.
+
+```{r}
+# keep only row with sector_percent !=na
+all_proj_sector_1_25 <- all_proj_sectors_25_l %>% 
+   filter(!is.na(sector_percent)) %>% 
+   # keep the largest value of sector_percent among the rows with the same project_id
+   group_by(project_id) %>%
+   filter(sector_percent == max(sector_percent)) %>% 
+   # keep just one row for each project_id
+   slice(1) %>% 
+   rename(
+      major_sector1_25 = major_sector  ,
+      sector1_25 = sector ,
+      sector1_perc_25 = sector_percent
+   )
+```   
+   
+## 🟠 GEO locations
+In long form? 
+```{r}
+# multiple loc per ID 
+all_proj_geo_25 <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "GEO Locations", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project_id %in% all_proj$id)
+
+# # save next to the original file
+# save(all_proj_geo_25, file = here::here("data", "raw_data", "project3", 
+#                                            "all_proj_geo_2025.Rdata") )
+```
+ 
+
+## 🟠 Financiers
+
+In long form? 
+```{r}
+all_proj_financiers_25_l <- readxl::read_excel(here::here (
+   "data", "raw_data", "project3","all_projects_as_of31mar2025.xlsx"), 
+      sheet = "Financers", skip = 1) %>% 
+   janitor::clean_names() %>% 
+   # keep only project_id with match in all_proj
+   filter(project %in% all_proj$id) %>% 
+   rename (project_id = project)
+
+# # save next to the original file
+# save(all_proj_financiers_25, file = here::here("data", "raw_data", "project2", 
+#                                            "all_proj_financiers_2025.Rdata") )
+
+```
+
+## ✅ Join `pdo`, `sector1` and `theme1` to `all_proj_t`
+
+This info may help so I will attach to the existin gfile (but not change ooriginal project list)
+
+```{r}
+# select only the columns of interest
+all_proj_theme_1_25 <- all_proj_theme_1_25 %>% 
+   select(project_id, theme_1_25, theme1_perc_25)
+
+all_proj_sector_1_25 <- all_proj_sector_1_25 %>%
+   select(project_id, major_sector1_25, sector1_25, sector1_perc_25)
+
+all_proj_25_t <- all_proj_25_t %>% 
+   select(id, pdo_2025)
+
+# join the data to the original file
+all_proj_t <- left_join(
+   # add theme1 rom 2025
+   all_proj_temp, all_proj_theme_1_25, by = c("id" = "project_id")) %>% 
+   relocate(theme_1_25, theme1_perc_25,  .after = theme1) %>% 
+   
+   # add sector1 from 2025
+   left_join(all_proj_sector_1_25, by = c("id" = "project_id")) %>% 
+   relocate(major_sector1_25, sector1_25, sector1_perc_25, .after = sector1) %>% 
+   
+   # add pdo from 2025
+   left_join(all_proj_25_t, by = c("id" = "id"))  %>% 
+   relocate(pdo_2025, .after = pdo)
+```
+
+With the updated data from 2025, the tagging of `sector1_25` (4.4% missing instead of 16.6%) and `theme1_25` (30.9% missing instead of 51.9%) is more complete!
+
+# _______ 
+# LOOKING @ FILE PDOs  
 
 ## Recap content 
 
@@ -317,69 +473,99 @@ skimr::skim(all_proj_t$pdo) # complete_rate 0.707
 + 22,569-4981 = **17,588** (non missing) board approval FY  ... 22.1% are missing
    + ranging from 1947 - 2026
 
-### [FUN] Count missing/distinct values of columns
+### [FUN] Count missing/distinct values `all_proj_t`
 
 ```{r}
-# Function to count missing values and distinct values in a subset of columns
-f_recap_values <- function(data, columns) {
-   # Select the subset of columns
-   df_subset <- data %>% select(all_of(columns))
-
-   # 1) Use skimr to skim the data
-   skimmed <- skim(df_subset)
-   
-   # 2) Get the number of rows in the dataset
-   total_rows <- nrow(df_subset)
-
-   
-   # 3) Calculate the number of distinct values for each column
-   distinct_counts <- df_subset %>%
-      summarise(across(everything(), n_distinct)) %>%
-      pivot_longer(everything(), names_to = "skim_variable", values_to = "n_distinct")
-   
-   # Extract the relevant columns for column names, missing values, and distinct counts
-   missing_table <- skimmed %>%  # 1) 
-      select(skim_variable, n_missing) %>%
-      # Add the total number of rows
-      mutate(total_rows = total_rows) %>%  # 2) 
-      # Join with distinct counts
-      left_join(distinct_counts, by = "skim_variable") %>%  # 3) 
-      relocate(n_distinct, n_missing, .after = total_rows) %>%
-      mutate(missing_perc = round((n_missing/total_rows)*100, 1), 
-             missing_perc = glue::glue("{missing_perc}%")) %>%
-      arrange(desc(n_distinct))
-   
-   # Return the table
-   return(missing_table) 
-}
-
-# exe use 
-#f_recap_values(df, c("col1","col2"))
+# # Function to count missing values and distinct values in a subset of columns
+# f_recap_values <- function(data, columns) {
+#    # Select the subset of columns
+#    df_subset <- data %>% select(all_of(columns))
+# 
+#    # 1) Use skimr to skim the data
+#    skimmed <- skim(df_subset)
+#    
+#    # 2) Get the number of rows in the dataset
+#    total_rows <- nrow(df_subset)
+# 
+#    
+#    # 3) Calculate the number of distinct values for each column
+#    distinct_counts <- df_subset %>%
+#       summarise(across(everything(), n_distinct)) %>%
+#       pivot_longer(everything(), names_to = "skim_variable", values_to = "n_distinct")
+#    
+#    # Extract the relevant columns for column names, missing values, and distinct counts
+#    missing_table <- skimmed %>%  # 1) 
+#       select(skim_variable, n_missing) %>%
+#       # Add the total number of rows
+#       mutate(total_rows = total_rows) %>%  # 2) 
+#       # Join with distinct counts
+#       left_join(distinct_counts, by = "skim_variable") %>%  # 3) 
+#       relocate(n_distinct, n_missing, .after = total_rows) %>%
+#       mutate(missing_perc = round((n_missing/total_rows)*100, 1), 
+#              missing_perc = glue::glue("{missing_perc}%")) %>%
+#       arrange(desc(n_distinct))
+#    
+#    # Return the table
+#    return(missing_table) 
+# }
+# 
+# # exe use 
+# #f_recap_values(df, c("col1","col2"))
 ```
-
-
-
-## 🟢 Join sector1 and theme1 to `all_proj_t`
-
-```{r}
-all_proj_t <- left_join(all_proj_t, all_proj_theme_1_25, by = c("id" = "project_id")) %>% 
-   left_join(all_proj_sector_1_25, by = c("id" = "project_id")) %>% 
-   relocate(theme_1_25, theme1_perc_25,  .after = theme1) %>% 
-   relocate(major_sector1_25, sector1_25, sector1_perc_25, .after = sector1)
-```
-
-With the updated data from 2025, the tagging of `sector1_25` (4.4% missing instead of 16.6%) and `theme1_25` (30.9% missing instead of 51.9%) is more complete!
 
 ```{r}
 # CALL  the function on a subset of columns
-f_recap_values(all_proj_t, c("id","pdo", "projectstatusdisplay", 
+f_recap_values(all_proj_t, c("id","pdo","pdo_2025",
+                             "projectstatusdisplay", 
                              "boardapprovalFY", "regionname",
                              "sector1","sector1_25",
                              "theme1", "theme_1_25",   
                              "theme1", "projectfinancialtype"))
 ```
 
-# qui 🟧🟨🟩🟦🟪🟫🟥 
+## Combine PDO from 2024 and 2025
+
+```{r}
+# Combine the PDOs from 2024 and 2025
+all_proj_t <- all_proj_t %>%
+   dplyr::mutate(pdo = coalesce(pdo, pdo_2025)) %>%
+   # sector 
+   mutate(sector1 = coalesce(sector1, major_sector1_25, sector1_25))  %>% 
+   # theme
+   mutate(theme1 = coalesce(theme1, theme_1_25)) %>% 
+   # drop the 2025 columns
+   select(-c(pdo_2025, major_sector1_25, sector1_25, theme_1_25))
+ 
+```
+
+```{r}
+# CALL  the function on a subset of columns
+f_recap_values(all_proj_t, c("id",
+                             "project_name",
+                             "pdo", 
+                             "projectstatusdisplay", 
+                             "boardapprovalFY", 
+                             "regionname",
+                             "sector1", 
+                             "theme1",   
+                             "envassesmentcategorycode",
+                             "esrc_ovrl_risk_rate",                             "projectfinancialtype"))
+
+# A tibble: 9 × 5   
+#   skim_variable             missing_perc
+# id                            0%          
+# project_name                  7.9%        
+# pdo                          31.1%       
+# projectstatusdisplay          7.9%        
+# regionname                    7.9%        
+# sector1                       4.2%        
+# theme1                       28.5%       
+# envassesmentcategorycode     45.9%       
+# esrc_ovrl_risk_rate          92.1%       
+# projectfinancialtype         45.2%       
+# boardapprovalFY              22.1%  
+```
+
 
 ## Which PDOs are missing? 
 Ideally, the PDOs are missing in a *non systematic* way. To check it, I compare the distributions across some key features of **ALL PROJs** v. **NON-missing-PDO-PROJs**
@@ -468,32 +654,36 @@ Goodness of fit test to see if the distribution of `lendinginstr` in the sample 
 # Chi-Square Test: if a discrete distribution of a sample reflects the population, you can use a chi-square goodness-of-fit test
 
 # by fin lendinginstr 
-pop2 <- tabyl(all_proj_t$lendinginstr, show_na = TRUE)  %>% 
-   adorn_pct_formatting() %>% 
-   mutate(across(ends_with("percent"), ~parse_number(.)))
-obs2 <- tabyl(missing_pdo$lendinginstr, show_na = TRUE)  %>% 
-   adorn_pct_formatting() %>% 
-   mutate(across(ends_with("percent"), ~parse_number(.)))
+# Population distribution (excluding NAs)
+pop2 <- all_proj_t %>%
+  filter(!is.na(lendinginstr)) %>%
+  count(lendinginstr, name = "n") %>%
+  mutate(percent = n / sum(n))
 
-# ---- Sample data (observed counts)
-# Sample counts for categories A, B, and C
-observed2 <- obs2[,"n"]
-observed2
-# ---- Population data (expected proportions or counts)
-# Proportions of A, B, C in the population
-expected_proportions2 <- pop2[, ("percent")]/100   
-expected_proportions2
+# Observed distribution (excluding NAs)
+obs2 <- missing_pdo %>%
+  filter(!is.na(lendinginstr)) %>%
+  count(lendinginstr, name = "n") %>% 
+  mutate(percent = n / sum(n))
 
-# Total number of observations in the sample
-total_sample_size <- sum(observed2)  
+# Ensure both pop and obs are aligned by category
+combined2 <- obs2 %>%
+  inner_join(pop2, by = "lendinginstr", suffix = c("_obs", "_pop"))
+
+combined2
+
+# Extract observed counts and expected proportions (from the population)
+observed2 <- combined2$n_obs
+# Normalize expected_prop2 so they sum to 1
+expected_prop2 <- combined2$percent_pop / sum(combined2$percent_pop)
 
 # Perform the chi-square test
-chisq_test2 <- chisq.test(observed2, p = expected_proportions2)
+chisq_test2 <- chisq.test(observed2, p = expected_prop2)
 
 # Display the results
 chisq_test2
 # data:  observed
-# X-squared = Inf, df = 18, p-value < 0.00000000000000022
+#X-squared = 5659.6, df = 15, p-value < 0.00000000000000022
 
 # low p-value (typically < 0.05) suggests that the sample distribution is significantly different from the population!!!!
 ```
@@ -541,11 +731,66 @@ ggplot(combined_long, aes(x = projectfinancialtype, y = percent, fill = source))
 
 ```
 
+```{r}
+#| output: TRUE
+
+# Prep data for plotting
+combined_long2 <- combined2 %>%
+  select(lendinginstr, percent_obs, percent_pop) %>%
+  pivot_longer(
+    cols = starts_with("percent"),
+    names_to = "source",
+    values_to = "percent"
+  ) %>%
+  mutate(
+    source = recode(source,
+      "percent_obs" = "Sample (missing PDO)",
+      "percent_pop" = "Population"
+    )
+  )
+
+# plot
+ggplot(combined_long2, aes(x = lendinginstr, y = percent, fill = source)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "Distribution of Lending Instrument",
+    x = "Lending Instrument",
+    y = "Percentage",
+    fill = "Source"
+  ) +
+  theme_minimal(base_size = 13) +
+   # Rotate x-axis labels
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
 # _______ 
 # TEXT PREPROCESSING 
 
+## Save intermediate data
+
+```{r}
+# origin
+saveRDS(all_proj_t, here("data" , "derived_data", "all_proj_t.rds"))#  11,279 obs
+
+```
+
+
 # Obtain Reduced df `projs` ✅
+
+
+```{r}
+# check which years are missing pdos 
+pdo_by_year <- all_proj_t %>%
+  group_by(boardapprovalFY) %>%
+  summarise(
+    pdo_missing = sum(is.na(pdo)),
+    pdo_not_missing = sum(!is.na(pdo)),
+    .groups = "drop"
+  )
+```
+
+
 For my purposes, it is safe to drop all the projects with missing PDO !
 
 + it turns out there are no **Project Development Objectives** spelled out until FY2001, so the **usable population of projects (with PDO text) spans from FY 2001 to FY 2023**.
@@ -553,33 +798,96 @@ For my purposes, it is safe to drop all the projects with missing PDO !
 + ... and `boardapprovalFY` (year of approval) > 2024 as incomplete data
 
 ```{r}
-projs <- all_proj_t %>%                    # 22,659
-   filter(!is.na(pdo)) %>%                 # 11,353  = 11306 MISSING
-   # filter(boardapprovalFY < 2001) %>%  # 7548
-   # 4 proj have PDO == "." 
-   filter( pdo != ".") %>%                  # 11,346
-   filter( pdo != "-") %>%                  # 11,344
-   filter( pdo != "NA") %>%                  # 11,344
-   filter( pdo != "N/A") %>%                   # 11,342
-   filter( pdo != "No change") %>%                # 11,340
-   filter( pdo != "No change to PDO following restructuring.") %>%   # 11,337
-   filter( pdo != "PDO remains the same.") %>%  # 11,335
-   filter(!(pdo %in% c("TBD", "TBD.", "Objective to be Determined."))) %>%   # 11,326
-   filter(!(pdo %in% c("XXXXXX", "XXXXX", "XXXX", "a"))) %>%   # 11,322 = VALID PDO AVAILABLE
-   # No proj without status 
-   filter(!is.na(projectstatusdisplay)) %>%  # 11,319  ---- 3 missing
-   # No proj without approval FY 
-   filter(!is.na(boardapprovalFY)) %>% # 9,143   ---- 2,176 missing
-   # No project with approval FY >= 2024  
-   filter(boardapprovalFY < 2024)  %>% # 8811  ----- 2508 
-   select(id, pr_name = project_name, pdo, boardapprovalFY, closingdateFY,status = projectstatusdisplay, regionname, countryname, sector1, theme1 ,
-          lendinginstr,env_cat = envassesmentcategorycode, ESrisk = esrc_ovrl_risk_rate ,curr_total_commitment  )   
+projs <- all_proj_t %>%                      # 22,659
+   filter(!is.na(pdo)) %>%                   # 11,353  -> 15,539
+   filter( pdo != ".") %>%                   # 11,346 -> 15,532
+   filter( pdo != "-") %>%                   # 11,344 -> 15,530
+    filter( pdo != "NA") %>%                  # 11,344 -> 15,530
+    filter( pdo != "N/A") %>%                 # 11,342 -> 15,527
+    filter( pdo != "No change") %>%           # 11,340 -> 15,525
+    filter( pdo != "No change to PDO following restructuring.") %>%   # 11,337 -> 15,522
+    filter( pdo != "PDO remains the same.") %>%  # 11,335 -> 15,520
+    filter(!(pdo %in% c("TBD", "TBD.", "Objective to be Determined."))) %>%   # 11,326 --> 15,500
+    filter(!(pdo %in% c("XXXXXX", "XXXXX", "XXXX", "a"))) %>%   # 11,322 --> 15,496 = VALID PDO AVAILABLE
+    filter(!is.na(projectstatusdisplay)) %>%  # 11,319  --> 14,076 [diff 1420]
+    filter(!is.na(boardapprovalFY)) %>% # 9,143  --> 11,656 [diff 2420]
+    filter(boardapprovalFY < 2024)   # 8811    --> 11,279 [diff 377]
+   # # --- keep only the columns of interest
+   # select(id, 
+   #        pr_name = project_name, 
+   #        pdo, 
+   #        boardapprovalFY, 
+   #        closingdateFY,
+   #        status = projectstatusdisplay, 
+   #        regionname, countryname, 
+   #        sector1, 
+   #        #sector1_perc_25, sector2, sector3, 
+   #        theme1 ,
+   #        #theme1_perc_25, theme2,  
+   #        lendinginstr,
+   #        env_cat = envassesmentcategorycode, 
+   #        ESrisk = esrc_ovrl_risk_rate ,
+   #        curr_total_commitment)   
 
-tabyl(projs$boardapprovalFY)  %>% adorn_pct_formatting() # most NA
+```
 
-nrow(projs) # 8829 
-paint(cnames) 
-paint(projs)
+### [Tbl] for recapping missing `tracking`
+```{r}
+# Define a named list of filtering steps using anonymous functions (lambdas).
+# Each step applies a filter condition to remove unwanted values in the data.
+steps <- list(
+  "Remove pdo NA" = ~ filter(.x, !is.na(pdo)),
+  "Remove pdo '.'" = ~ filter(.x, pdo != "."),
+  "Remove pdo '-'" = ~ filter(.x, pdo != "-"),
+  "Remove pdo 'NA'" = ~ filter(.x, pdo != "NA"),
+  "Remove pdo 'N/A'" = ~ filter(.x, pdo != "N/A"),
+  "Remove pdo 'No change'" = ~ filter(.x, pdo != "No change"),
+  "Remove pdo full 'No change' sentence" = ~ filter(.x, pdo != "No change to PDO following restructuring."),
+  "Remove 'PDO remains the same.'" = ~ filter(.x, pdo != "PDO remains the same."),
+  "Remove pdo TBD values" = ~ filter(.x, !pdo %in% c("TBD", "TBD.", "Objective to be Determined.")),
+  "Remove pdo XXX placeholders" = ~ filter(.x, !pdo %in% c("XXXXXX", "XXXXX", "XXXX", "XXX", "a")),
+  "Remove NA projectstatusdisplay" = ~ filter(.x, !is.na(projectstatusdisplay)),
+  "Remove NA boardapprovalFY" = ~ filter(.x, !is.na(boardapprovalFY)),
+  "Filter boardapprovalFY < 2024" = ~ filter(.x, boardapprovalFY < 2024)
+)
+
+# Initialize an empty tracking table
+tracking <- tibble(step = character(), n_rows = integer(), excluded = integer())
+
+# Start with the full dataset
+current <- all_proj_t
+# 
+tracking <- add_row(tracking, step = "Start", n_rows = nrow(current), excluded = NA)
+
+# Loop over each step, applying the filter and tracking row counts
+for (i in seq_along(steps)) {
+  name <- names(steps)[i]
+  fn <- as_function(steps[[i]])  # Convert formula to function
+  before <- nrow(current)
+  current <- fn(current)         # Apply the filter
+  after <- nrow(current)
+  
+  tracking <- add_row(
+    tracking,
+    step = name,
+    n_rows = after,
+    excluded = before - after
+  )
+}
+
+# Final cleaned dataset
+projs <- current
+saveRDS(tracking, here("data" , "derived_data", "tracking.rds"))#  11,279 obs
+```
+
+
+```{r}
+#| output: true
+# Summary of row counts at each filtering step
+tracking_k <-  tracking %>%  kable()
+tracking_k 
+
+saveRDS(t, here("data" , "derived_data", "tracking_k.rds"))#  11,279 obs
 ```
 
 ```{r}
@@ -590,11 +898,11 @@ rm(list=setdiff(ls(), c("projs", "cnames" )))
 ## Duplicated PDOs 🤯
 ```{r}
 str(projs)
-skim(projs$id)
-skim(projs$pdo)
+skim(projs$id) # 11,278
+skim(projs$pdo) # 9914
 
-n_distinct(projs$id) # 8811
-n_distinct(projs$pdo) # 7582  !!!!!!!! 
+n_distinct(projs$id) # 11,278
+n_distinct(projs$pdo) # 9914 !!!!!!!! 
 
 # Detect duplicated PDOs and the corresponding IDs
 duplicates <- projs %>%
@@ -603,21 +911,21 @@ duplicates <- projs %>%
   select(id, pdo)       # Select only id and pdo columns
 
 # View the duplicated PDOs and their corresponding IDs
-nrow(duplicates) # 2235
+nrow(duplicates) # 2461
 
 # Count duplicates per each unique ID based on duplicated PDOs
 count_dp <- duplicates %>%          # Filter PDOs that appear more than once
   group_by(pdo) %>%             # Group by id
   summarise(dup_count = n())   # Count occurrences of duplicated PDOs per id
 
-min(count_dp$dup_count) # 2
-max(count_dp$dup_count) # 9
-mean(count_dp$dup_count) # 2.22332
-n_distinct(duplicates$id)  # 2235
-n_distinct(duplicates$pdo)  # 1006
+min(count_dp$dup_count)    # 2
+max(count_dp$dup_count)    # 13
+mean(count_dp$dup_count)   # 2.243391
+n_distinct(duplicates$id)  # 2461 projectes with duplicated PDOs
+n_distinct(duplicates$pdo) # 1097 unique PDOs are duplicated in the dataset
 ```
 
-There are `r nrow(duplicates)` projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
+There are `r nrow(duplicates)` projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 13 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
 
 # Manual correction text [`projs`] 🤚🏻
 
@@ -709,9 +1017,9 @@ projs_train <- rsample::training(projs_split)
 projs_val <- rsample::validation(projs_split)
 projs_test <- rsample::testing(projs_split)
 
-nrow(projs_train)
-nrow(projs_val)
-nrow(projs_test)
+nrow(projs_train) # 5,637
+nrow(projs_val) # 2,820
+nrow(projs_test) # 2,821
 tabyl(projs_train$regionname)
 tabyl(projs_val$regionname)
 tabyl(projs_test$regionname)
@@ -761,11 +1069,11 @@ pdo_train_to_tag <- projs_train %>%
 # cleanNLP::cnlp_init_udpipe()
 # 
 # # ---- Use the built-in R-based tagger
-# pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag, 
-#                                   text_name = "pdo_2", 
+# pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag,
+#                                   text_name = "pdo_2",
 #                                   doc_name = "id")
 # 
-# # save the input data as .rds
+# # ---- save the input data as .rds
 # saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
 
 ```
@@ -863,10 +1171,10 @@ pdo_train_tag_t <- pdo_train_tag_t %>%
 
 ### Check for duplicates
 ```{r}
-# check  
-projs_train$id %>% n_distinct() # 4403
-pdo_train_tagged$token$doc_id %>% n_distinct() # 4403  OK!
-pdo_train_tag_t$doc_id %>% n_distinct() # 4403  OK! 
+# check  (old =4403)
+projs_train$id %>% n_distinct() #  5637
+pdo_train_tagged$token$doc_id %>% n_distinct() #  5637 OK!
+pdo_train_tag_t$doc_id %>% n_distinct() #  5637 OK! 
 ```
 
 ### Re-add cols from `projs_train` to `pdo_train_t` 
@@ -874,35 +1182,39 @@ pdo_train_tag_t$doc_id %>% n_distinct() # 4403  OK!
 # ---- RE-add cols from `projs_train_token ` `
 pdo_train_t <-  pdo_train_tag_t %>% 
    left_join(projs_train, by = c("doc_id" = "id"))  
+
 # ---- Select cols 
 pdo_train_t <- pdo_train_t %>% 
    select(
       proj_id=  doc_id                ,
-      pdo,
-      sid                   , # sentence ID
-      tid                   , # token ID within sentence
-      word         ,
-      token                 , # Tokenized form of the token.
-      token_with_ws         , # Token with trailing whitespace.
-      lemma                 , # Lemmatized form of the token.
-      upos                  , # Universal part-of-speech tag.
-      xpos                  , # Language-specific part-of-speech tag
-      feats                 , # Morphological features of the token.
-      tid_source            , # Token ID in the source document.
-      relation              , # Dependency relation to the head of the token.
-      pr_name               , # Name of the parent token.
-      pdo                   ,
-      FY_appr = boardapprovalFY       ,
-      FY_clos = closingdateFY         ,
-      status                ,
+      pdo,                                               # [FROM projs_train]
+      sid , # sentence ID
+      tid , # token ID within sentence
+      word,
+      token, # Tokenized form of the token.
+      token_with_ws, # Token with trailing whitespace.
+      lemma, # Lemmatized form of the token.
+      upos, # Universal part-of-speech tag.
+      xpos, # Language-specific part-of-speech tag
+      feats, # Morphological features of the token.
+      tid_source, # Token ID in the source document.
+      relation, # Dependency relation to the head of the token.
+      project_name,  # Name of the parent token.        # [FROM projs_train]
       regionname            ,
       countryname           ,
-      sector1               ,
-      theme1                ,
-      lendinginstr          ,
-      env_cat               ,
-      ESrisk                ,
-      curr_total_commitment 
+      projectstatusdisplay,                             # [FROM projs_train] 
+      boardapprovaldate,                   # [FROM projs_train]
+      boardapprovalFY,                    # [FROM projs_train] 
+      closingdate,                         # [FROM projs_train]
+      closingdateFY,                      # [FROM projs_train]
+      sector1               ,       # [FROM projs_train]
+      theme1                ,       # [FROM projs_train]
+      borrower,                    # [FROM projs_train]
+      lendinginstr          ,       # [FROM projs_train]
+      envassesmentcategorycode ,       # [FROM projs_train]
+      esrc_ovrl_risk_rate ,       # [FROM projs_train]
+      
+      curr_total_commitment        # [FROM projs_train]
    )
 ```
 
@@ -935,11 +1247,11 @@ pdo_train_t <- pdo_train_t %>%
 # Save clean Proj PDO train dataset `pdo_train_t`
 ```{r}
 # inputs 
-saveRDS(projs_train, here("data" , "derived_data", "projs_train.rds"))   #   4403  obs 
-saveRDS(projs_test, here("data" , "derived_data", "proj_test.rds"))      #   2204 obs 
-saveRDS(projs_val, here("data" , "derived_data", "projs_val.rds"))       #   2204 obs 
-# projs_train + annotated pdo train 
-saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))   #  249 k   obs 
+saveRDS(projs_train, here("data" , "derived_data", "projs_train.rds"))#   4403 -> 5637  obs 
+saveRDS(projs_test, here("data" , "derived_data", "proj_test.rds"))   #   2204 --> 2821 obs 
+saveRDS(projs_val, here("data" , "derived_data", "projs_val.rds"))    #   2204 --> 2820 obs 
+# projs_train + annotated pdo train --> 
+saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))#  249K --> 314K obs
 ```
 
 <!-- # _______  -->

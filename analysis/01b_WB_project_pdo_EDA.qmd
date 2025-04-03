@@ -55,7 +55,7 @@ WORK IN PROGRESS!
 library(fs) # Cross-Platform File System Operations Based on 'libuv'
 library(here) # A Simpler Way to Find Your Files
 library(paint) # paint data.frames summaries in colour
-library(tidyverse) # Easily Install and Load the 'Tidyverse' 
+library(tidyverse) # Easily Install and Load the 'Tidyverse'
 library(stringr) # Simple, Consistent Wrappers for Common String Operations
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(skimr) # Compact and Flexible Summaries of Data
@@ -63,13 +63,12 @@ library(readxl) # Read Excel Files
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
 library(patchwork) # The Composer of Plots
 library(ragg) # Anti-Grain Geometry Graphics)
-
+library(rlang) # Functions for Base Types and Core R and 'Tidyverse' Features
 # TEXT ANALYTICS -------------------------------------
-library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools   
+library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
 
 # Set options to prevent scientific notation
 options(scipen = 999)
-
 ```
 
 # Set up ggplot2 theme
@@ -82,9 +81,9 @@ options(scipen = 999)
 # library(showtext)
 # font_add_google("Roboto Condensed", "roboto_condensed")
 # showtext_auto()
-# 
+#
 # # 1) --- Set the font as the default for ggplot2
-# # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html 
+# # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html
 # my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
 #   theme(panel.grid.minor = element_blank(),
 #         # Bold, bigger title
@@ -92,7 +91,7 @@ options(scipen = 999)
 #         # Plain, slightly bigger subtitle that is grey
 #         plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
 #         # Italic, smaller, grey caption that is left-aligned
-#         plot.caption = element_text(face = "italic", size = rel(0.7), 
+#         plot.caption = element_text(face = "italic", size = rel(0.7),
 #                                     color = "#A6A6A6", hjust = 0),
 #         # Bold legend titles
 #         legend.title = element_text(face = "bold"),
@@ -101,9 +100,9 @@ options(scipen = 999)
 #         # Bold axis titles
 #         axis.title = element_text(face = "bold"),
 #         # Change X-axis label size
-#         axis.text.x = element_text(size = rel(1.5)),   
+#         axis.text.x = element_text(size = rel(1.5)),
 #         # Change Y-axis label size
-#         axis.text.y = element_text(size = 14),   
+#         axis.text.y = element_text(size = 14),
 #         # Add some space above the x-axis title and make it left-aligned
 #         axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
 #         # Add some space to the right of the y-axis title and make it top-aligned
@@ -112,8 +111,8 @@ options(scipen = 999)
 #         strip.background = element_rect(fill = "grey90", color = NA),
 #         # Add a thin grey border around all the plots to tie in the facet titles
 #         panel.border = element_rect(color = "grey90", fill = NA))
-# 
-# # 2) --- use 
+#
+# # 2) --- use
 # # ggplot + my_pretty_theme
 ```
 
@@ -122,56 +121,116 @@ options(scipen = 999)
 #| eval: TRUE
 
 # 1) --- Set the font as the default for ggplot2
-# Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html 
+# Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html
 lulas_theme <- theme_minimal(base_size = 12) +
-  theme(panel.grid.minor = element_blank(),
-        # Bold, bigger title
-        plot.title = element_text(face = "bold", size = rel(1.6)),
-        # Plain, slightly bigger subtitle that is grey
-        plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
-        # Italic, smaller, grey caption that is left-aligned
-        plot.caption = element_text(face = "italic", size = rel(0.7), 
-                                    color = "#A6A6A6", hjust = 0),
-        # Bold legend titles
-        legend.title = element_text(face = "bold"),
-        # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
-        strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
-        # Bold axis titles
-        axis.title = element_text(face = "bold"),
-        # Change X-axis label size
-        axis.text.x = element_text(size = rel(1.4)),   
-        # Change Y-axis label size
-        axis.text.y = element_text(size = 14),   
-        # Add some space above the x-axis title and make it left-aligned
-        axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
-        # Add some space to the right of the y-axis title and make it top-aligned
-        axis.title.y = element_text(margin = margin(r = 10), hjust = 1),
-        # Add a light grey background to the facet titles, with no borders
-        strip.background = element_rect(fill = "grey90", color = NA),
-        # Add a thin grey border around all the plots to tie in the facet titles
-        panel.border = element_rect(color = "grey90", fill = NA))
+  theme(
+    panel.grid.minor = element_blank(),
+    # Bold, bigger title
+    plot.title = element_text(face = "bold", size = rel(1.6)),
+    # Plain, slightly bigger subtitle that is grey
+    plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
+    # Italic, smaller, grey caption that is left-aligned
+    plot.caption = element_text(
+      face = "italic", size = rel(0.7),
+      color = "#A6A6A6", hjust = 0
+    ),
+    # Bold legend titles
+    legend.title = element_text(face = "bold"),
+    # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
+    strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
+    # Bold axis titles
+    axis.title = element_text(face = "bold"),
+    # Change X-axis label size
+    axis.text.x = element_text(size = rel(1.4)),
+    # Change Y-axis label size
+    axis.text.y = element_text(size = 14),
+    # Add some space above the x-axis title and make it left-aligned
+    axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
+    # Add some space to the right of the y-axis title and make it top-aligned
+    axis.title.y = element_text(margin = margin(r = 10), hjust = 1),
+    # Add a light grey background to the facet titles, with no borders
+    strip.background = element_rect(fill = "grey90", color = NA),
+    # Add a thin grey border around all the plots to tie in the facet titles
+    panel.border = element_rect(color = "grey90", fill = NA)
+  )
 
-# 2) --- use 
+# 2) --- use
 # ggplot + lulas_theme
 ```
 
 
 ### ----------------------------------------------------------------------------
 
+# Load pre-processed Projs' dataset + PDO dataset
+Here I will just load the pre-processed data (training set only).
+
+## [Saved file `projs_train_t`  & `pdo_train_t`]
+
+```{r}
+#projs_train_old <- readRDS(here::here("data",  "projs_train_old.rds")) # to check 4403
+```
+
+
+```{r}
+# Load Proj train dataset `projs_train_t`
+projs_train_bef2001 <- readRDS(here::here("data", "derived_data", "projs_train.rds")) # 5637
+
+names(projs_train_bef2001)
+projs_train <- projs_train_bef2001  |> 
+      # 2001 was to be sure there are pdo  (2024 is the last year with complete data)
+   dplyr::filter(.data$boardapprovalFY > 2001) |>    # 4425
+   dplyr::rename(
+      # new = old
+      proj_id = id,
+      status = projectstatusdisplay ,
+      pr_name = project_name,
+      env_cat = envassesmentcategorycode ,
+      ESrisk = esrc_ovrl_risk_rate  ,
+      FY_appr = boardapprovalFY,
+      FY_clos = closingdateFY
+   )
+#names(projs_train) 
+
+
+# Load clean tokenized-PDO dataset `pdo_train_t`
+pdo_train_t <- readRDS(here::here("data", "derived_data", "pdo_train_t.rds")) %>%           # 314 k 
+   # 2001 was to be shure there are pdo  (2024 is the last year with complete data)
+   dplyr::filter(FY_appr > 2001)  #|>           # 252 k  
+   # dplyr::rename(
+   #    # new = old
+   #    #proj_id = id,
+   #    #status = projectstatusdisplay ,
+   #    pr_name = project_name,
+   #    env_cat = envassesmentcategorycode ,
+   #    ESrisk = esrc_ovrl_risk_rate  ,
+   #    #FY_appr = boardapprovalFY,
+   #    FY_clos = closingdateFY
+   # )
+
+#names(pdo_train_t) 
+```
+
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+tracking <- readRDS(here("data", "derived_data", "tracking.rds")) # projs_train_t
+```
+
 # Data sources
 The data used in this analysis comes from the World Bank's Projects & Operations database.
 
 Since some pre-processing steps are computationally expensive, I did that in a separate read-only notebook (`analysis/01a_WB_project_pdo_prep.qmd`), where:  
 
-1. Retrieved manually ALL WB projects (**22,569**) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0)
-   + Of these, approximately 50% (**11,322 projects**) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
+1. Retrieved manually ALL WB projects (<!--**22,569**--> `r tracking[1,2]`) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) -->
+   + Of these, `r tracking[11,2]` (approximately `r (tracking[11,2]/tracking[1,2])*100`% ) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
    + There are no **Project Development Objectives** available in projects approved before FY2001
    + However, other than approval year, based on some tests on available projects' features, PDO texts' missingness seems to happen at random.
 
-2. Dropped from the analysis: projects with no PDO text (including those approved before FY2001), and projects with missing status, FY of approval --> **8,811 usable projects** selected.
+2. Dropped from the analysis: projects with no PDO text (including those approved before FY2001), and projects with **missing status** ( `r tracking[12,3]`) or **FY of approval** ( `r tracking[13,3]`); leaving **`r tracking[14,2]` usable projects** selected.
 
 3. Split the dataset into training / validation / test subsets (proportional to FY and regional distribution). 
-   + Here I work only on ***training set*** (~50% of usable ones, i.e. **4,403 PDOs**).
+   + Here I work only on ***training set*** (~50% of usable ones, i.e. ** `r nrow(projs_train)` PDOs**).
 
 4. Cleaned the data (parse dates, recode variables, etc.), fix typos, unwanted special characters, and other unimportant issues in PDOs.
 
@@ -196,15 +255,16 @@ when you initialize a back-end (like CoreNLP) in `cleanNLP`, it stays active for
 #| echo: true
 
 # ---- 1) Initialize the CoreNLP backend
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing  
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing
 cnlp_init_corenlp()
 # If you want to specify a language or model path:
-cnlp_init_corenlp(language = "en", 
-                  # model_path = "/path/to/corenlp-models"
-                  )
+cnlp_init_corenlp(
+  language = "en",
+  # model_path = "/path/to/corenlp-models"
+)
 
-# ---- 2) Initialize the spaCy backend 
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing  
+# ---- 2) Initialize the spaCy backend
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing
 library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library
 # Initialize spaCy in cleanNLP
 cnlp_init_spacy()
@@ -212,12 +272,11 @@ cnlp_init_spacy()
 cnlp_init_spacy(model_name = "en_core_web_sm")
 
 # ---- 3) Initialize the udpipe backend
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing # 
+library(cleanNLP) # A Tidy Data Model for Natural Language Processing #
 # Initialize udpipe backend
 cnlp_init_udpipe(model_name = "english")
 
 # ---- 4) Initialize the stanza backend
-
 ```
 :::
 
@@ -229,60 +288,45 @@ cnlp_init_udpipe(model_name = "english")
 #| output: true
 
 tibble::tribble(
-   ~Project_ID, ~Project_Name, ~Project_Development_Objective,
-   "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
-   
-   "P069934", "PERNAMBUCO INTEGRATED DEVELOPMENT: EDUCATION QUALITY IMPROVEMENT PROJECT", "The development objectives of the Pernambuco Integrated Development: Education Quality Improvement Project are to (a) improve the quality, efficiency, and inclusiveness of the public education system; (b) modernize and strengthen the managerial, financial, and administrative capacity of the Secretariat of Education to set policies and guidelines for the sector and deliver public education efficiently; and (c) support the overall state modernization effort through interventions to be carried out in the Secretariat of Education and to be replicated in other state institutions.") %>% 
-   kable()
+  ~Project_ID, ~Project_Name, ~Project_Development_Objective,
+  "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
+  "P069934", "PERNAMBUCO INTEGRATED DEVELOPMENT: EDUCATION QUALITY IMPROVEMENT PROJECT", "The development objectives of the Pernambuco Integrated Development: Education Quality Improvement Project are to (a) improve the quality, efficiency, and inclusiveness of the public education system; (b) modernize and strengthen the managerial, financial, and administrative capacity of the Secretariat of Education to set policies and guidelines for the sector and deliver public education efficiently; and (c) support the overall state modernization effort through interventions to be carried out in the Secretariat of Education and to be replicated in other state institutions."
+) %>%
+  kable()
 ```
 
 
 # Notes on PDO text data quality 
 
-First, it is important to notice that **all 7,548 projects approved before FY2001** had no PDO text available. 
+First, it is important to notice that **all projects approved before the early 1984** had no PDO text available, so I consider only projects with FY >=2001, when supposedly the PDO had become a standard feature in the WBG project documentation. 
 
-The exploratory analysis of the **11,353 projects WITH PDO text** revealed some interesting findings:
+The exploratory analysis of the **`r tracking[2,2]` projects WITH PDO text** revealed some interesting findings:
 
 1. **PDO text length**: The PDO text is quite short, with a median of 2 sentences and a maximum of 9 sentences.
 <!-- From 22,659 Proj -->
 <!-- all_proj_t %>% filter(pdo %in% c(".","-","NA", "N/A")) %>% nrow() -->
-2. **PDO text missingness**: besides **11,306** projects with missing PDOs, **31 projects** had some invalid PDO values, namely:
-   <!-- + **11,216** have missing PDO -->
-   + **11** have PDO as one of: *".","-","NA", "N/A"*
-   + **7** have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
-   + **9** have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
-   + **4** have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "a"*
+2. **PDO text missingness**: besides **`r tracking[2,3]`** projects with missing (i.e. `NA`) PDOs, **`r sum(tracking[3:11,3])` projects** had some invalid PDO values, namely:
+   + `r sum(tracking[3:6,3])` have PDO as one of: *".","-","NA", "N/A"*
+   + `r sum(tracking[7:9,3])` have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
+   + `r sum(tracking[10,3])` have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
+   + `r sum(tracking[11,3])` have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "XXX, "a"*
   
-<!-- FROM 22,659 total - 11,306 MISSING PDOs = 11,353 WITH PDO - 31 = 11,322 with *VALID* PDO -->
-Of the **remaining 11,322 projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
+<!-- FROM 22,659 total - 7,030 MISSING PDOs = 15,539 WITH PDO - 44 (wrong)  = 15,495 with *VALID* PDO -->
+Of the **remaining `r sum(tracking[11,3])` projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
 
-   + **3 projects** without *"project status"* 
-   + **2,176 projects** without *"board approval FY"* 
-   + **332 projects** approved in FY >= FY2024  (for incomplete approval stage) 
+   + **`r sum(tracking[12,3])` projects** without *"project status"* 
+   + **`r sum(tracking[13,3])` projects** without *"board approval FY"* 
+   + **`r sum(tracking[14,3])` projects** approved in FY >= FY2024  (for incomplete approval stage) 
 
-Lastly (and this was quite surprising to me) the **remaining, viable 8,811 unique projects**, were matched by **only 7,582 unique PDOs**!
-In fact, **2,235 projects share 1,006 NON-UNIQUE PDO text** in the "cleaned" dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
+Lastly (and this was quite surprising to me) the **remaining, viable `r sum(tracking[14,2])` unique projects**, were matched by **only 9,914 unique PDOs**!
+In fact, **2,461 projects share 1,097 NON-UNIQUE PDO text** in the "cleaned" dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 13 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
 
-In sum, the cleaning process yielded a usable set of **8,811 functional projects**, which was split into a *training subset* (4,403) to explore and test models and a *testing subset* (4408), held out for post-prediction evaluation. 
+In sum, the cleaning process yielded a usable set of **`r sum(tracking[14,2])` functional projects**, which was split into a *training subset* (`r nrow(projs_train)`) to explore and test models and a *testing subset* (`r sum(tracking[14,2])-nrow(projs_train)`), held out for post-prediction evaluation. 
 
 ::: {.callout-note}
-Evidently, in some cases,the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 9 time!!!), most likely when there is a *parent* project or subsequent phases of the same lending program.
+Evidently, in some cases,the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 13 time!!!), most likely when there is a *parent* project or subsequent phases of the same lending program.
 :::
 
-### ---------------------------------------------------------------------------
- 
-# Load pre-processed Projs' dataset + PDO dataset
-Here I will just load the pre-processed data (training set only).
-
-## [Saved file `projs_train_t`  & `pdo_train_t`]
-
-```{r}
-# Load Proj train dataset `projs_train_t`
-projs_train <- readRDS("~/Github/slogan/data/derived_data/projs_train.rds")  
-
-# Load clean tokenized-PDO dataset `pdo_train_t`
-pdo_train_t <- readRDS(here::here("data" , "derived_data", "pdo_train_t.rds"))
-```
 
 ## Previous Tokenization and PoS Tagging
 Typically, one of the first steps in this transformation from natural language to feature, or any of kind of text analysis, is *tokenization*. 
@@ -318,33 +362,33 @@ Here I have a training dataset file with:
 #| echo: false
 
 train_pdo_desc <- tribble(
-  ~Variable, ~ Type,           ~Provenance,           ~Description, ~Example,
-"proj_id              ", "chr", "original PDO data" , "","",
-"pdo                  ", "chr", "original PDO data" , "","",
-"word                  ", "chr", "original PDO data" , "","Governments",
-"sid                  ", "int", "output cleanNLP"   , "sentence ID","",
-"tid                  ", "chr", "output cleanNLP"   , "token ID within sentence", "",
-"token                ", "chr", "output cleanNLP"   , "Tokenized form of the token.", "government",
-"token_with_ws        ", "chr", "output cleanNLP"   , "Token with trailing whitespace", "government ",
-"lemma                ", "chr", "output cleanNLP"   , "The base form of the token", "government",
-"stem                 ", "chr", "output SnowballC"   , "The base form of the token", "govern",
-"upos                 ", "chr", "output cleanNLP"   , "Universal part-of-speech tag (e.g., NOUN, VERB, ADJ).","",
-"xpos                 ", "chr", "output cleanNLP"   , "Language-specific part-of-speech tags.","",
-"feats                ", "chr", "output cleanNLP"   , "Morphological features of the token","",
-"tid_source           ", "chr", "output cleanNLP"   , "Token ID in the source document","",
-"relation             ", "chr", "output cleanNLP"   , "Dependency relation between the token and its head token", "",
-"pr_name              ", "chr", "output cleanNLP"   , "Name of the parent token", "",
-"FY_appr              ", "dbl", "original PDO data" , "", "",
-"FY_clos              ", "dbl", "original PDO data" , "", "",
-"status               ", "chr", "original PDO data" , "", "",
-"regionname           ", "chr", "original PDO data" , "", "",
-"countryname          ", "chr", "original PDO data" , "", "",
-"sector1              ", "chr", "original PDO data" , "", "",
-"theme1               ", "chr", "original PDO data" , "", "",
-"lendinginstr         ", "chr", "original PDO data" , "", "",
-"env_cat              ", "chr", "original PDO data" , "", "",
-"ESrisk               ", "chr", "original PDO data" , "", "",
-"curr_total_commitment", "dbl", "original PDO data" , "" ,""
+  ~Variable, ~Type, ~Provenance, ~Description, ~Example,
+  "proj_id              ", "chr", "original PDO data", "", "",
+  "pdo                  ", "chr", "original PDO data", "", "",
+  "word                  ", "chr", "original PDO data", "", "Governments",
+  "sid                  ", "int", "output cleanNLP", "sentence ID", "",
+  "tid                  ", "chr", "output cleanNLP", "token ID within sentence", "",
+  "token                ", "chr", "output cleanNLP", "Tokenized form of the token.", "government",
+  "token_with_ws        ", "chr", "output cleanNLP", "Token with trailing whitespace", "government ",
+  "lemma                ", "chr", "output cleanNLP", "The base form of the token", "government",
+  "stem                 ", "chr", "output SnowballC", "The base form of the token", "govern",
+  "upos                 ", "chr", "output cleanNLP", "Universal part-of-speech tag (e.g., NOUN, VERB, ADJ).", "",
+  "xpos                 ", "chr", "output cleanNLP", "Language-specific part-of-speech tags.", "",
+  "feats                ", "chr", "output cleanNLP", "Morphological features of the token", "",
+  "tid_source           ", "chr", "output cleanNLP", "Token ID in the source document", "",
+  "relation             ", "chr", "output cleanNLP", "Dependency relation between the token and its head token", "",
+  "pr_name              ", "chr", "output cleanNLP", "Name of the parent token", "",
+  "FY_appr              ", "dbl", "original PDO data", "", "",
+  "FY_clos              ", "dbl", "original PDO data", "", "",
+  "status               ", "chr", "original PDO data", "", "",
+  "regionname           ", "chr", "original PDO data", "", "",
+  "countryname          ", "chr", "original PDO data", "", "",
+  "sector1              ", "chr", "original PDO data", "", "",
+  "theme1               ", "chr", "original PDO data", "", "",
+  "lendinginstr         ", "chr", "original PDO data", "", "",
+  "env_cat              ", "chr", "original PDO data", "", "",
+  "ESrisk               ", "chr", "original PDO data", "", "",
+  "curr_total_commitment", "dbl", "original PDO data", "", ""
 )
 
 kableExtra::kable(train_pdo_desc)
@@ -356,26 +400,26 @@ kableExtra::kable(train_pdo_desc)
 #| output: true
 #| echo: false
 
-upos_t <- tabyl(pdo_train_t, upos) %>% 
-   add_column(explan = c(
-      "Adjective", 
-      "Adposition", 
-      "Adverb", 
-      "Auxiliary", 
-      "Coordinating conjunction",
-      "Determiner", 
-      "Interjection",
-      "Noun", 
-      "Numeral", 
-      "Particle", 
-      "Pronoun", 
-      "Proper noun",
-      "Punctuation", 
-      "Subordinating conjunction", 
-      "Symbol", 
-      "Verb",
-      "Other" 
-      )) 
+upos_t <- tabyl(pdo_train_t, upos) %>%
+  add_column(explan = c(
+    "Adjective",
+    "Adposition",
+    "Adverb",
+    "Auxiliary",
+    "Coordinating conjunction",
+    "Determiner",
+    "Interjection",
+    "Noun",
+    "Numeral",
+    "Particle",
+    "Pronoun",
+    "Proper noun",
+    "Punctuation",
+    "Subordinating conjunction",
+    "Symbol",
+    "Verb",
+    "Other"
+  ))
 kableExtra::kable(upos_t)
 ```
 
@@ -392,26 +436,26 @@ Remove stop words, which are the most common words in a language.
 ```{r}
 # Custom list of articles, prepositions, and pronouns
 custom_stop_words <- c(
-   # Articles
-   "the", "a", "an",   
-   "and", "but", "or", "yet", "so", "for", "nor", "as", "at", "by", "per",  
-   # Prepositions
-   "of", "in", "on", "at", "by", "with", "about", "against", "between", "into", "through", 
-   "during", "before", "after", "above", "below", "to", "from", "up", "down", "under",
-   "over", "again", "further", "then", "once",  
-   # Pronouns
-   "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
-   "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her", 
-   "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves" ,
-   "this", "that", "these", "those", "which", "who", "whom", "whose", "what", "where",
-   "when", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other",
-   # "some", "such", "no",  "not", 
-   # "too", "very",   
-   # verbs
-   "is", "are", "would", "could", "will", "be", "e.g", "e.g.", "i.e.",
-   "i", "ii", "iii", "iv", "v",
-   # because tautology
-   "pdo"
+  # Articles
+  "the", "a", "an",
+  "and", "but", "or", "yet", "so", "for", "nor", "as", "at", "by", "per",
+  # Prepositions
+  "of", "in", "on", "at", "by", "with", "about", "against", "between", "into", "through",
+  "during", "before", "after", "above", "below", "to", "from", "up", "down", "under",
+  "over", "again", "further", "then", "once",
+  # Pronouns
+  "i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "your",
+  "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "her",
+  "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves",
+  "this", "that", "these", "those", "which", "who", "whom", "whose", "what", "where",
+  "when", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other",
+  # "some", "such", "no",  "not",
+  # "too", "very",
+  # verbs
+  "is", "are", "would", "could", "will", "be", "e.g", "e.g.", "i.e.",
+  "i", "ii", "iii", "iv", "v",
+  # because tautology
+  "pdo"
 )
 
 # Convert to a data frame if needed for consistency with tidytext
@@ -419,8 +463,8 @@ custom_stop_words_df <- tibble(word = custom_stop_words)
 ```
 
 ```{r}
-saveRDS(custom_stop_words, here("data" , "derived_data", "custom_stop_words.rds"))
-saveRDS(custom_stop_words_df, here("data" , "derived_data", "custom_stop_words_df.rds"))
+saveRDS(custom_stop_words, here("data", "derived_data", "custom_stop_words.rds"))
+saveRDS(custom_stop_words_df, here("data", "derived_data", "custom_stop_words_df.rds"))
 ```
 
 ### iv) Stemming 
@@ -431,9 +475,9 @@ Often documents contain different versions of one base word, often called a `ste
 
 ```{r}
 # Using `SnowballC::wordStem` to stem the words. e.g.
-pdo_train_t <- pdo_train_t %>% 
-   mutate(stem = SnowballC::wordStem(token_l)) %>%
-   relocate(stem, .after = lemma)
+pdo_train_t <- pdo_train_t %>%
+  mutate(stem = SnowballC::wordStem(token_l)) %>%
+  relocate(stem, .after = lemma)
 ```
 
 ***Why Stemming?***: For example, in topic modeling, *stemming* reduces noise by making it easier for the model to identify core topics without being distracted by grammatical variations. (*Lemmatization* is more computationally intensive as it requires linguistic context and dictionaries, making it slower, especially on large datasets)
@@ -458,10 +502,10 @@ pdo_train_t <- pdo_train_t %>%
   
 ```{r}
 # create document-word matrix
-DTM <- pdo_train_t %>% 
-   anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>% 
-   count(proj_id, token_l) %>%
-   tidytext::cast_dtm(proj_id, token_l, n) # HIGH!!!
+DTM <- pdo_train_t %>%
+  anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>%
+  count(proj_id, token_l) %>%
+  tidytext::cast_dtm(proj_id, token_l, n) # HIGH!!!
 
 DTM
 # <<DocumentTermMatrix (documents: 4403, terms: 11029)>>
@@ -486,17 +530,17 @@ $$
 
 ### --- TF-IDF matrix on train pdo 
 ```{r}
-# reduce size 
+# reduce size
 
 pdo_train_4_tf_idf <- pdo_train_t %>% # 255964
-   # Keep only content words [very restrictive for now]
-   # normally c("NOUN", "VERB", "ADJ", "ADV")
-   filter(upos %in% c("NOUN")) %>% #    72,668 
-   filter(!token_l %in% c("development", "objective", "project")) %>%   #  66,741
-   # get rid of stop words (from default list)   
-   filter(!token_l %in% custom_stop_words_df$word) %>%   #  66,704
-   # Optional: Remove lemmas of length 1 or shorter
-   filter(nchar(lemma) > 1)  #  66,350
+  # Keep only content words [very restrictive for now]
+  # normally c("NOUN", "VERB", "ADJ", "ADV")
+  filter(upos %in% c("NOUN")) %>% #    72,668
+  filter(!token_l %in% c("development", "objective", "project")) %>% #  66,741
+  # get rid of stop words (from default list)
+  filter(!token_l %in% custom_stop_words_df$word) %>% #  66,704
+  # Optional: Remove lemmas of length 1 or shorter
+  filter(nchar(lemma) > 1) #  66,350
 ```
 
 Now, count the occurrences of each `lemma` for each document. (This is the term frequency or `tf`)
@@ -508,7 +552,7 @@ Now, count the occurrences of each `lemma` for each document. (This is the term 
 lemma_counts <- pdo_train_4_tf_idf %>%
   count(proj_id, lemma, sort = TRUE)
 # Preview the result
-head(lemma_counts) 
+head(lemma_counts)
 ```
 
 With the lemma counts prepared, the `bind_tf_idf()` function from the tidytext package computes the TF-IDF scores.
@@ -542,22 +586,22 @@ General Preference in Real-World NLP:
 
 # Count words
 counts_pdo <- pdo_train_t %>%
-     count(pdo, sort = TRUE)  # 4,071
+  count(pdo, sort = TRUE) # 4004
 
 counts_words <- pdo_train_t %>%
-     count(word, sort = TRUE)  # 13,197
+  count(word, sort = TRUE) # 13006
 
 counts_token <- pdo_train_t %>%
-  count(token, sort = TRUE)   # 13,177
+  count(token, sort = TRUE) # 12994
 
 counts_lemma <- pdo_train_t %>%
-  count(lemma, sort = TRUE)   # 11,440
+  count(lemma, sort = TRUE) # 11340
 
 counts_stem <- pdo_train_t %>%
-  count(stem, sort = TRUE)   # 8,781
+  count(stem, sort = TRUE) # 8743
 ```
 
-We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo_train_t)` rows and `r ncol(pdo_train_t)` columns obtained from 4,403 PDOs (of which `r n_distinct(pdo_train_t$pdo)` unique) of `r n_distinct(pdo_train_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train_t$FY_appr)` to `r max(pdo_train_t$FY_appr)`. 
+We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo_train_t)` rows and `r ncol(pdo_train_t)` columns obtained from `r nrow(projs_train)` PDOs (of which `r n_distinct(pdo_train_t$pdo)` unique) of `r n_distinct(pdo_train_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train_t$FY_appr)` to `r max(pdo_train_t$FY_appr)`. 
 
 ### [TBL] Frequencies of documents/words/stems   
 ```{r}
@@ -567,14 +611,16 @@ We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo
 
 # Create a tibble
 train_recap <- tibble(
-  entity = c("N proj", "N PDOs", "N words","N token", "N lemma", "N stem"),
-  counts = c(n_distinct(pdo_train_t$proj_id),
-              n_distinct(pdo_train_t$pdo),
-              n_distinct(pdo_train_t$word),
-              n_distinct(pdo_train_t$token_l),
-              n_distinct(pdo_train_t$lemma),
-              n_distinct(pdo_train_t$stem)
-              ))
+  entity = c("N proj", "N PDOs", "N words", "N token", "N lemma", "N stem"),
+  counts = c(
+    n_distinct(pdo_train_t$proj_id),
+    n_distinct(pdo_train_t$pdo),
+    n_distinct(pdo_train_t$word),
+    n_distinct(pdo_train_t$token_l),
+    n_distinct(pdo_train_t$lemma),
+    n_distinct(pdo_train_t$stem)
+  )
+)
 
 # Pipe the tibble into kable
 train_recap %>%
@@ -599,29 +645,28 @@ Pointless bc does not render in the HTML output.
 #    width <- 8         # Width in inches
 #    height <- 6        # Height in inches
 #    dpi <- 320         # Resolution in DPI
-# 
+#
 #    # Save the plot as PDF
-#    ggsave(plot_object, 
+#    ggsave(plot_object,
 #           filename = here("analysis", "output", "figures", paste0(plot_name, ".pdf")),
 #           device = "pdf", #cairo_pdf,
-#           width = width, 
-#           height = height, 
+#           width = width,
+#           height = height,
 #           units = "in")
-#    
+#
 #    # Save the plot as PNG
-#    ggsave(plot_object, 
+#    ggsave(plot_object,
 #           filename = here("analysis", "output", "figures", paste0(plot_name, ".png")),
-#           # type = "cairo", 
+#           # type = "cairo",
 #           device = "png",
 #           dpi = dpi,      # Set DPI
-#           width = width, 
-#           height = height, 
+#           width = width,
+#           height = height,
 #           units = "in")
 # }
 
 # Example of using the function
 # f_save_plot("proj_wrd_freq", proj_wrd_freq)
-
 ```
 
 ### [FUNC] save plot Object
@@ -630,13 +675,13 @@ Pointless bc does not render in the HTML output.
 #| echo: false
 
 f_save_plot_obj <- function(plot_object, plot_obj_name) {
-   # Save the plot object
-   saveRDS(plot_object, here("analysis", "output", "figures", paste0(plot_obj_name, ".rds")))
+  # Save the plot object
+  saveRDS(plot_object, here("analysis", "output", "figures", paste0(plot_obj_name, ".rds")))
 }
 
 # Example of using the function
 # f_save_plot_obj("proj_wrd_freq", proj_wrd_freq)
-# Dopo 
+# Dopo
 # proj_wrd_freq <- readRDS(file = here ("analysis", "output", "figures", "plot_object.rds"))
 # proj_wrd_freq
 ```
@@ -649,31 +694,35 @@ f_save_plot_obj <- function(plot_object, plot_obj_name) {
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent TOKEN in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+title_text <- glue::glue("Most frequent TOKEN in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
 
-pdo_wrd_freq <- pdo_train_t %>%   # 123,927
-   # include only content words
-   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
-   #filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
-   filter (!(relation %in% c("nummod" ))) %>% # 173,686 
- filter (!(token_l %in% c("pdo","project", "development", "objective","objectives", "i", "ii", "iii",
-                          "is"))) %>% # whne it is VERB
-   count(token_l) %>% 
-   filter(n > 800) %>% 
-   mutate(token_l = reorder(token_l, n))   # reorder values by frequency
+pdo_wrd_freq <- pdo_train_t %>% # 123,927
+  # include only content words
+  filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+  # filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
+  filter(!(relation %in% c("nummod"))) %>% # 173,686
+  filter(!(token_l %in% c(
+    "pdo", "project", "development", "objective", "objectives", "i", "ii", "iii",
+    "is"
+  ))) %>% # whne it is VERB
+  count(token_l) %>%
+  filter(n > 800) %>%
+  mutate(token_l = reorder(token_l, n)) # reorder values by frequency
 
-# plot 
-pdo_wrd_freq_p <- pdo_wrd_freq %>% 
-   ggplot(aes(token_l, n)) +
-   geom_col(fill = "#d7b77b") +
-   scale_y_continuous(breaks = seq(0, max(pdo_wrd_freq$n), by = 400)) + # directly use 'n' instead of .data$n
-   coord_flip() + # flip x and y coordinates so we can read the words better
-   labs(#title = title_text,
-      subtitle = "[TOKEN with count > 800]", y = "", x = "")+
-   geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
-   lulas_theme +
-   theme(# Adjust angle and alignment of x labels
-      axis.text.x = element_text(angle = 45, hjust = 1)) 
+# plot
+pdo_wrd_freq_p <- pdo_wrd_freq %>%
+  ggplot(aes(token_l, n)) +
+  geom_col(fill = "#d7b77b") +
+  scale_y_continuous(breaks = seq(0, max(pdo_wrd_freq$n), by = 400)) + # directly use 'n' instead of .data$n
+  coord_flip() + # flip x and y coordinates so we can read the words better
+  labs( # title = title_text,
+    subtitle = "[TOKEN with count > 800]", y = "", x = ""
+  ) +
+  geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
+  lulas_theme +
+  theme( # Adjust angle and alignment of x labels
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 ```{r}
@@ -692,36 +741,37 @@ f_save_plot_obj(pdo_wrd_freq_p, "pdo_wrd_freq_p")
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
 
 # Plot
-pdo_stem_freq <- pdo_train_t %>%   # 256,632
-   # include only content words
-   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
-   filter (!(relation %in% c("nummod" ))) %>% # 173,686 
-   filter (!(stem %in% c("pdo", "project", "develop", "object", "i", "ii", "iii"))) %>%
-   count(stem) %>% 
-   filter(n > 800) %>%
-   mutate(stem = reorder(stem, n))    # reorder values by frequency
-   
-# plot 
-pdo_stem_freq_p <-    pdo_stem_freq %>% 
-   ggplot(aes(stem, n)) +
-   geom_col(fill = "#d7b77b") +
-   scale_y_continuous(breaks = seq(0, max(pdo_stem_freq$n), by = 400)) + # directly use 'n' instead of .data$n
-   coord_flip() + # flip x and y coordinates so we can read the words better
-   labs(#title = title_text,
-      subtitle = "[STEM with count > 800]", y = "", x = "") +
-   geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
-   lulas_theme +
-   theme(# Adjust angle and alignment of x labels
-      axis.text.x = element_text(angle = 45, hjust = 1)) 
+pdo_stem_freq <- pdo_train_t %>% # 256,632
+  # include only content words
+  filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
+  filter(!(relation %in% c("nummod"))) %>% # 173,686
+  filter(!(stem %in% c("pdo", "project", "develop", "object", "i", "ii", "iii"))) %>%
+  count(stem) %>%
+  filter(n > 800) %>%
+  mutate(stem = reorder(stem, n)) # reorder values by frequency
 
+# plot
+pdo_stem_freq_p <- pdo_stem_freq %>%
+  ggplot(aes(stem, n)) +
+  geom_col(fill = "#d7b77b") +
+  scale_y_continuous(breaks = seq(0, max(pdo_stem_freq$n), by = 400)) + # directly use 'n' instead of .data$n
+  coord_flip() + # flip x and y coordinates so we can read the words better
+  labs( # title = title_text,
+    subtitle = "[STEM with count > 800]", y = "", x = ""
+  ) +
+  geom_hline(yintercept = 800, linetype = "dashed", color = "#873c4a") +
+  lulas_theme +
+  theme( # Adjust angle and alignment of x labels
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 ```
 
 ```{r}
 #| echo: false
-#f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
+# f_save_plot("pdo_stem_freq_p", pdo_stem_freq_p)
 f_save_plot_obj(pdo_stem_freq_p, "pdo_stem_freq_p")
 ```
 
@@ -731,25 +781,28 @@ f_save_plot_obj(pdo_stem_freq_p, "pdo_stem_freq_p")
 ```{r}
 #| output: TRUE
 
-title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train_t$proj_id)} PDOs") 
+title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train_t$proj_id)} PDOs")
 
-subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
 
-combo_freq_p <-  pdo_wrd_freq_p + pdo_stem_freq_p + 
-   plot_annotation(title = title2_text,
-                    subtitle = subtitle2_text,
-                   # caption = "Source: World Bank Project Documents",
-                   theme = theme(plot.title = element_text(size = 12, face = "bold"),
-                                 plot.subtitle = element_text(size = 10, face = "italic"),
-                                 plot.caption = element_text(size = 10, face = "italic"))
-                   )  
+combo_freq_p <- pdo_wrd_freq_p + pdo_stem_freq_p +
+  plot_annotation(
+    title = title2_text,
+    subtitle = subtitle2_text,
+    # caption = "Source: World Bank Project Documents",
+    theme = theme(
+      plot.title = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 10, face = "italic"),
+      plot.caption = element_text(size = 10, face = "italic")
+    )
+  )
 
 combo_freq_p
 ```
 
 
 ```{r}
-#f_save_plot("combo_freq_p", combo_freq_p)
+# f_save_plot("combo_freq_p", combo_freq_p)
 f_save_plot_obj(combo_freq_p, "combo_freq_p")
 ```
 
@@ -780,26 +833,27 @@ From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in br
  
 ```{r}
 pdo_train_t <- pdo_train_t %>%
-   # dealing with water/watershed/waterway
-   mutate(tok_sector_broad = case_when(
-      stringr::str_detect(token_l, regex("water|wastewater|sanitat|Sewer|sewage|Irrigat|Drainag|river basin|groundwater", ignore_case = T)) ~ "WAT_SAN",
-      stringr::str_detect(token_l, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation|highway|transit|bridge|port", ignore_case = T)) ~ "TRANSPORT",
-      stringr::str_detect(token_l, regex("urban|housing|inter-urban|peri-urban|waste manag|slum|city|megacity|intercity|inter-city|town", ignore_case = T)) ~ "URBAN",
-      stringr::str_detect(token_l, regex("energ|electri|hydroele|hydropow|renewable|transmis|grid|transmission|electric power|geothermal|solar|wind|thermal|nuclear power|energy generation", ignore_case = T)) ~ "ENERGY",   
-      stringr::str_detect(token_l, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin|immuniz|diseas|malaria|HIV|AIDS|TB|maternal|clinic|nutrition", ignore_case = T))  ~ "HEALTH",
-      stringr::str_detect(token_l, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul|pedagog", ignore_case = T)) ~ "EDUCATION",
-      # not infra 
-      stringr::str_detect(token_l, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|fishery|land|soil", ignore_case = T)) ~ "AGR_FOR_FISH",
-      stringr::str_detect(token_l, regex("Minin|oil|gas|mineral|quarry|extract|coal|natural gas|mine|petroleum|hydrocarbon", ignore_case = T)) ~ "MINING_OIL_GAS",
-      stringr::str_detect(token_l, regex("Social Protec|social risk|social assistance|living standard|informality|insurance|social choes|gig economy|human capital|employment|unemploy|productivity|wage lev|intergeneration|lifelong learn|vulnerab|empowerment|sociobehav", ignore_case = T)) ~ "SOCIAL_PROT",
-      stringr::str_detect(token_l, regex("Bank|finan|Investment|credit|microfinan|loan|financial stability|banking|financial intermed|fintech", ignore_case = T)) ~ "FINANCIAL",
-      stringr::str_detect(token_l, regex("Information|Communication|ICT|Internet|telecom|cyber|data|AI|artificial intelligence|blockchain|e-learn|platform|software|hardware|digital", ignore_case = T)) ~ "ICT",
-      stringr::str_detect(token_l, regex("Industry|Trade|Service|manufactur|Tourism|Trade and Services|market|export|import|supply chain|logistic|distribut|e-commerce|retail|wholesale|trade facilitation|trade policy|trade agreement|trade barrier|trade finance|trade promotion|trade integration|trade liberalization|trade balance|trade deficit|trade surplus|trade war|trade dispute|trade negotiation|trade cooperation|trade relation|trade partner|trade route|trade corridor", ignore_case = T)) ~ "IND_TRADE_SERV",
-      stringr::str_detect(token_l, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance|Policy|Regulation|Public Expenditure|Public Investment|Public Procurement", ignore_case = T)) ~ "INSTIT_SUPP",
-      stringr::str_detect(token_l, regex("Gender|Women|Girl|Woman|femal|Gender Equal|gender-base|gender inclus|gender mainstream|gender sensit|gender respons|gender gap|gender-based|gender-sensitive|gender-responsive|gender-transform|gender-equit|gender-balance", ignore_case = T)) ~  "GENDER_EQUAL" ,
-            stringr::str_detect(token_l, regex("Climate chan|Environment|Sustain|Resilience|Adaptation|Mitigation|Green|Eco|Eco-|carbon|carbon cycle|carbon dioxide|climate change|ecosystem|emission|energy effic|greenhouse|greenhouse gas|temperature anomalies|zero net|green growth|low carbon|climate resilient|climate smart|climate tech|climate variab", ignore_case = T)) ~ "CLIMATE" ,
-      TRUE ~ NA_character_)) %>% 
-   relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
+  # dealing with water/watershed/waterway
+  mutate(tok_sector_broad = case_when(
+    stringr::str_detect(token_l, regex("water|wastewater|sanitat|Sewer|sewage|Irrigat|Drainag|river basin|groundwater", ignore_case = T)) ~ "WAT_SAN",
+    stringr::str_detect(token_l, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation|highway|transit|bridge|port", ignore_case = T)) ~ "TRANSPORT",
+    stringr::str_detect(token_l, regex("urban|housing|inter-urban|peri-urban|waste manag|slum|city|megacity|intercity|inter-city|town", ignore_case = T)) ~ "URBAN",
+    stringr::str_detect(token_l, regex("energ|electri|hydroele|hydropow|renewable|transmis|grid|transmission|electric power|geothermal|solar|wind|thermal|nuclear power|energy generation", ignore_case = T)) ~ "ENERGY",
+    stringr::str_detect(token_l, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin|immuniz|diseas|malaria|HIV|AIDS|TB|maternal|clinic|nutrition", ignore_case = T)) ~ "HEALTH",
+    stringr::str_detect(token_l, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul|pedagog", ignore_case = T)) ~ "EDUCATION",
+    # not infra
+    stringr::str_detect(token_l, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|fishery|land|soil", ignore_case = T)) ~ "AGR_FOR_FISH",
+    stringr::str_detect(token_l, regex("Minin|oil|gas|mineral|quarry|extract|coal|natural gas|mine|petroleum|hydrocarbon", ignore_case = T)) ~ "MINING_OIL_GAS",
+    stringr::str_detect(token_l, regex("Social Protec|social risk|social assistance|living standard|informality|insurance|social choes|gig economy|human capital|employment|unemploy|productivity|wage lev|intergeneration|lifelong learn|vulnerab|empowerment|sociobehav", ignore_case = T)) ~ "SOCIAL_PROT",
+    stringr::str_detect(token_l, regex("Bank|finan|Investment|credit|microfinan|loan|financial stability|banking|financial intermed|fintech", ignore_case = T)) ~ "FINANCIAL",
+    stringr::str_detect(token_l, regex("Information|Communication|ICT|Internet|telecom|cyber|data|AI|artificial intelligence|blockchain|e-learn|platform|software|hardware|digital", ignore_case = T)) ~ "ICT",
+    stringr::str_detect(token_l, regex("Industry|Trade|Service|manufactur|Tourism|Trade and Services|market|export|import|supply chain|logistic|distribut|e-commerce|retail|wholesale|trade facilitation|trade policy|trade agreement|trade barrier|trade finance|trade promotion|trade integration|trade liberalization|trade balance|trade deficit|trade surplus|trade war|trade dispute|trade negotiation|trade cooperation|trade relation|trade partner|trade route|trade corridor", ignore_case = T)) ~ "IND_TRADE_SERV",
+    stringr::str_detect(token_l, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance|Policy|Regulation|Public Expenditure|Public Investment|Public Procurement", ignore_case = T)) ~ "INSTIT_SUPP",
+    stringr::str_detect(token_l, regex("Gender|Women|Girl|Woman|femal|Gender Equal|gender-base|gender inclus|gender mainstream|gender sensit|gender respons|gender gap|gender-based|gender-sensitive|gender-responsive|gender-transform|gender-equit|gender-balance", ignore_case = T)) ~ "GENDER_EQUAL",
+    stringr::str_detect(token_l, regex("Climate chan|Environment|Sustain|Resilience|Adaptation|Mitigation|Green|Eco|Eco-|carbon|carbon cycle|carbon dioxide|climate change|ecosystem|emission|energy effic|greenhouse|greenhouse gas|temperature anomalies|zero net|green growth|low carbon|climate resilient|climate smart|climate tech|climate variab", ignore_case = T)) ~ "CLIMATE",
+    TRUE ~ NA_character_
+  )) %>%
+  relocate(tok_sector_broad, .after = token_l) # move the new column to the right of token_l
 ```
 
 ### Data prep for sector plots
@@ -808,48 +862,51 @@ tabyl(pdo_train_t$tok_sector_broad)
 
 # Create a custom color list for each sector
 sector_colors <- c(
-   "WAT_SAN" = "#26BDE2",  # SDG 6
-   "ENERGY" = "#FCC30B", # 7SDG 
-   "MINING_OIL_GAS" = "#23399b", # no SDG! 
-   "URBAN" = "#FD9D24", # SDG 11
-   "ICT" = "#0f7184",    # no SDG!
-   "HEALTH" = "#4C9F38", # SDG 3
-   "EDUCATION" = "#C5192D", # SDG 4
-   # SDGS 
-   "POVERTY" = "#E5243B", # SDG 1
-   "ZERO_HUNGER" = "#DDA63A", # SDG 2
-   "GENDER_EQUAL" = "#FF3A21", # SDG 5
-   "WORK" = "#A21942", # SDG 8
-   "INDUSTRY" = "#FD9D24", # SDG 9
-   "INEQUALITY" =  "#DD1367", # SDG 10
-   "CONSUMPTION" = "#BF8B2E", # SDG 12
-   "CLIMATE" = "#3F7E44", # SDG 13
-   "OCEANS" = "#0A97D9", # SDG 14
-   "BIODIVERSITY" = "#56C02B", # SDG 15
-   "PEACE" = "#00689D", # SDG 16
-   "PARTNERSHIP" = "#19486A", # SDG 17
-   # MINE
-   "TRANSPORT" =  "#A6A6A6", 
-   "AGR_FOR_FISH" = "#56C02B" , 
-   "SOCIAL_PROT" = "#e28293", 
-   "FINANCIAL" =  "#e60066",
-   "IND_TRADE_SERV" = "#85239b",
-   "INSTIT_SUPP" = "#49239b"
-   )
+  "WAT_SAN" = "#26BDE2", # SDG 6
+  "ENERGY" = "#FCC30B", # 7SDG
+  "MINING_OIL_GAS" = "#23399b", # no SDG!
+  "URBAN" = "#FD9D24", # SDG 11
+  "ICT" = "#0f7184", # no SDG!
+  "HEALTH" = "#4C9F38", # SDG 3
+  "EDUCATION" = "#C5192D", # SDG 4
+  # SDGS
+  "POVERTY" = "#E5243B", # SDG 1
+  "ZERO_HUNGER" = "#DDA63A", # SDG 2
+  "GENDER_EQUAL" = "#FF3A21", # SDG 5
+  "WORK" = "#A21942", # SDG 8
+  "INDUSTRY" = "#FD9D24", # SDG 9
+  "INEQUALITY" = "#DD1367", # SDG 10
+  "CONSUMPTION" = "#BF8B2E", # SDG 12
+  "CLIMATE" = "#3F7E44", # SDG 13
+  "OCEANS" = "#0A97D9", # SDG 14
+  "BIODIVERSITY" = "#56C02B", # SDG 15
+  "PEACE" = "#00689D", # SDG 16
+  "PARTNERSHIP" = "#19486A", # SDG 17
+  # MINE
+  "TRANSPORT" = "#A6A6A6",
+  "AGR_FOR_FISH" = "#56C02B",
+  "SOCIAL_PROT" = "#e28293",
+  "FINANCIAL" = "#e60066",
+  "IND_TRADE_SERV" = "#85239b",
+  "INSTIT_SUPP" = "#49239b"
+)
 
 # prepare data for plotting (count)
-sector_broad_pdo <- pdo_train_t %>% 
-   filter(!is.na(tok_sector_broad)) %>% 
-   filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION", 
-                                  # not infrastructure
-                                  "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE",  "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP" )) %>%
-   count(tok_sector_broad, FY_appr) %>% 
-   #filter(n > 0) %>% 
-   mutate(tok_sector_broad = factor(tok_sector_broad, levels = c(
-      "WAT_SAN", "ENERGY", "TRANSPORT","URBAN","MINING_OIL_GAS","ICT", "HEALTH", "EDUCATION",
-      # not infrastructure
-       "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE",  "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP"))) # reorder values by frequency
-#df$FY
+sector_broad_pdo <- pdo_train_t %>%
+  filter(!is.na(tok_sector_broad)) %>%
+  filter(tok_sector_broad %in% c(
+    "WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION",
+    # not infrastructure
+    "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE", "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP"
+  )) %>%
+  count(tok_sector_broad, FY_appr) %>%
+  # filter(n > 0) %>%
+  mutate(tok_sector_broad = factor(tok_sector_broad, levels = c(
+    "WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION",
+    # not infrastructure
+    "AGR_FOR_FISH", "GENDER_EQUAL", "CLIMATE", "SOCIAL_PROT", "FINANCIAL", "IND_TRADE_SERV", "INSTIT_SUPP"
+  ))) # reorder values by frequency
+# df$FY
 ```
 
 ### [FIG] faceted sector (`tok_sector_broad`) freq ggplot
@@ -857,47 +914,53 @@ sector_broad_pdo <- pdo_train_t %>%
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
 
 # Plot
-pdo_sect_broad_freq <- sector_broad_pdo %>% 
-   # only the "original group
-  filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION" )) %>% 
-   ggplot(.,
-          aes(x = FY_appr, y = n, 
-              group = tok_sector_broad, color = tok_sector_broad)) +
-   geom_line(linetype = "dotted", alpha = 0.5, size = 1) +
-   geom_point(size = 2) +
-   scale_x_continuous(breaks =  seq(2001, 2023, by=  1)) +
-   scale_y_continuous(breaks =  seq(0,300, by=  25)) +
-   # ~ SDG colors 
-    # scale_color_viridis_d(option = "magma", end = 0.9) + 
-   scale_color_manual(values = sector_colors) +
-   facet_wrap(~tok_sector_broad, ncol = 3, scales = "free")+ 
-   guides(color = FALSE) +
-   lulas_theme +
-   theme(# Adjust angle and alignment of x labels
-      axis.text.x = element_text(angle = 45, hjust = 1)) + 
-   labs(title = "Sector words frequency in PDOs by fiscal years of approval",
-        subtitle = "[Using \"custom\" broad sector definition]",
-        x =  "",# "Board approval FY", 
-        y = ""#"Counts of 'sector' word (tok_sector_broad)"
-   ) + 
-   # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
-   geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.40)   
-   # geom_vline(data = subset(sector_broad_pdo, tok_sector_broad == "HEALTH"), 
-   #            aes(xintercept = 2020), 
-   #            linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   # geom_text(data = subset(sector_broad_pdo, tok_sector_broad == "HEALTH"), 
-   #           aes(x = 2020, y = max(sector_broad_pdo$n)*0.65, label = "Covid"), 
-   #           angle = 90, vjust = -0.5, color = "#9b6723") 
+pdo_sect_broad_freq <- sector_broad_pdo %>%
+  # only the "original group
+  filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION")) %>%
+  ggplot(
+    .,
+    aes(
+      x = FY_appr, y = n,
+      group = tok_sector_broad, color = tok_sector_broad
+    )
+  ) +
+  geom_line(linetype = "dotted", alpha = 0.5, linewidth = 1) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+  scale_y_continuous(breaks = seq(0, 300, by = 25)) +
+  # ~ SDG colors
+  # scale_color_viridis_d(option = "magma", end = 0.9) +
+  scale_color_manual(values = sector_colors) +
+  facet_wrap(~tok_sector_broad, ncol = 3, scales = "free") +
+  guides(color = "none") +
+  lulas_theme +
+  theme( # Adjust angle and alignment of x labels
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  labs(
+    title = "Sector words frequency in PDOs by fiscal years of approval",
+    subtitle = "[Using \"custom\" broad sector definition]",
+    x = "", # "Board approval FY",
+    y = "" # "Counts of 'sector' word (tok_sector_broad)"
+  ) +
+  # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+  geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.40)
+# geom_vline(data = subset(sector_broad_pdo, tok_sector_broad == "HEALTH"),
+#            aes(xintercept = 2020),
+#            linetype = "solid", color = "#9b6723",alpha = 0.35) +
+# geom_text(data = subset(sector_broad_pdo, tok_sector_broad == "HEALTH"),
+#           aes(x = 2020, y = max(sector_broad_pdo$n)*0.65, label = "Covid"),
+#           angle = 90, vjust = -0.5, color = "#9b6723")
 
 pdo_sect_broad_freq
 ```
 
 ```{r}
 #| echo: false
-#f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
+# f_save_plot("pdo_sect_broad_freq", pdo_sect_broad_freq)
 f_save_plot_obj(pdo_sect_broad_freq, "pdo_sect_broad_freq")
 ```
 
@@ -909,39 +972,44 @@ PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sec
 
 # --- Create a function to plot for each sector with custom colors
 f_plot_sector <- function(data) {
-   # Get the sector name
-   sector <- unique(data$tok_sector_broad)
-   # Create the plot
-   p <-ggplot(data = data, 
-              aes(x = FY_appr, y = n, 
-                  group = tok_sector_broad, color = tok_sector_broad)) +
-      # By sector ... 
-      geom_line(color = sector_colors[sector], linetype = "dotted", alpha = 0.5, size = 1) +   
-      geom_point(color = sector_colors[sector], size = 3) +               
-      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-      scale_y_continuous(breaks = seq(0, max(data$n), by = 25)) +
-      # custom
-      lulas_theme + 
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      labs(
-         title = paste("\"",sector,"\" in PDOs by fiscal years of approval"),  # Use facet-specific title
-         subtitle = "[Using a \"custom\" broad sector definition &\nshowing relevant WDR publication(s)]",
-         x = "", 
-         y = ""  # Remove y-axis label
-      ) +
-      # Ensure y-axis limit includes 50
-      expand_limits(y = 50) + 
-      # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
-      geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
-   # # Add vline and text annotation only for the HEALTH sector
-   if (sector == "HEALTH") {
-      p <- p +
-         geom_vline(aes(xintercept = 2020), linetype = "solid", color = "#9b6723",alpha = 0.35) +
-         geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"),
-                   angle = 90, vjust = -0.5, color = "#9b6723")
-   }
+  # Get the sector name
+  sector <- unique(data$tok_sector_broad)
+  # Create the plot
+  p <- ggplot(
+    data = data,
+    aes(
+      x = FY_appr, y = n,
+      group = tok_sector_broad, color = tok_sector_broad
+    )
+  ) +
+    # By sector ...
+    geom_line(color = sector_colors[sector], linetype = "dotted", alpha = 0.5, size = 1) +
+    geom_point(color = sector_colors[sector], size = 3) +
+    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+    scale_y_continuous(breaks = seq(0, max(data$n), by = 25)) +
+    # custom
+    lulas_theme +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(
+      title = paste("\"", sector, "\" in PDOs by fiscal years of approval"), # Use facet-specific title
+      subtitle = "[Using a \"custom\" broad sector definition &\nshowing relevant WDR publication(s)]",
+      x = "",
+      y = "" # Remove y-axis label
+    ) +
+    # Ensure y-axis limit includes 50
+    expand_limits(y = 50) +
+    # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+    geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
+  # # Add vline and text annotation only for the HEALTH sector
+  if (sector == "HEALTH") {
+    p <- p +
+      geom_vline(aes(xintercept = 2020), linetype = "solid", color = "#9b6723", alpha = 0.35) +
+      geom_text(aes(x = 2020, y = max(n) * 0.75, label = "Covid"),
+        angle = 90, vjust = -0.5, color = "#9b6723"
+      )
+  }
 
-   return(p)
+  return(p)
 }
 ```
 
@@ -951,10 +1019,10 @@ f_plot_sector <- function(data) {
 sector_plots <- map(PDOsector_list, f_plot_sector)
 
 # --- (exe) Extract the first plot to display
-#sector_plots$HEALTH
+# sector_plots$HEALTH
 
 # ---- Optionally print each plot to the console
-#walk(sector_plots, print)
+# walk(sector_plots, print)
 ```
 
 ```{r}
@@ -962,14 +1030,16 @@ sector_plots <- map(PDOsector_list, f_plot_sector)
 output_dir <- here("analysis", "output", "figures")
 
 ## Save each plot to a file in the specified directory
-#walk2(sector_plots, names(PDOsector_list), 
+# walk2(sector_plots, names(PDOsector_list),
 #      ~ggsave(filename = file.path(output_dir, paste0(.y, "_sector_plot.png")), plot = .x))
 
 # Save iteratively the plots' objects as RDS files
-walk2(sector_plots, names(PDOsector_list), 
-      ~f_save_plot_obj(.x, paste0("pdo_", .y, "_sect_p")))
+walk2(
+  sector_plots, names(PDOsector_list),
+  ~ f_save_plot_obj(.x, paste0("pdo_", .y, "_sect_p"))
+)
 
-#pdo_FINANCIAL_sect_p
+# pdo_FINANCIAL_sect_p
 ```
 
 # _______
@@ -991,7 +1061,7 @@ Previously created, as explained in `data/derived_data/_provenance.md`
 
 ```{r}
 # Read the WDR data
-wdr <- readRDS(here("data","derived_data", "wdr.rds"))
+wdr <- readRDS(here("data", "derived_data", "wdr.rds"))
 ```
 
 ### --- Manually add WDR 2023 ✍🏻
@@ -1007,10 +1077,10 @@ wdr <- wdr %>%
   add_row(
     date_issued = 2023,
     decade = "2020s",
-    id = NA, # ? 
+    id = NA, # ?
     ISBN = "978-1-4648-1941-4",
     title = "Migrants, Refugees, and Societies",
-    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/39696", #? 
+    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/39696", # ?
     subject_miss = NA,
     abstract = "Migration is a development challenge. About 184 million people-2.3 percent of the world’s population-live outside of their country of nationality. Almost half of them are in low- and middle-income countries. But what lies ahead? As the world struggles to cope with global economic imbalances, diverging demographic trends, and climate change, migration will become a necessity in the decades to come for countries at all levels of income. If managed well, migration can be a force for prosperity and can help achieve the United Nations’ Sustainable Development Goals. World Development Report 2023 proposes an innovative approach to maximize the development impacts of cross-border movements on both destination and origin countries and on migrants and refugees themselves. The framework it offers, drawn from labor economics and international law, rests on a “Match and Motive Matrix” that focuses on two factors: how closely migrants’ skills and attributes match the needs of destination countries and what motives underlie their movements. This approach enables policy makers to distinguish between different types of movements and to design migration policies for each. International cooperation will be critical to the effective management of migration.",
     url_keys = "https://openknowledge.worldbank.org/handle/10986/39696",
@@ -1028,7 +1098,7 @@ wdr <- wdr %>%
     subj_9 = "refugee-hosting country",
     subj_10 = "irregular migration",
     subj_11 = "international cooperation",
-    !!!na_values  # Unpack the NA values for subj_12 to subj_46
+    !!!na_values # Unpack the NA values for subj_12 to subj_46
   )
 ```
 
@@ -1048,28 +1118,28 @@ wdr <- wdr %>%
   add_row(
     date_issued = 2024,
     decade = "2020s",
-    id = NA, # ? 
+    id = NA, # ?
     ISBN = "978-1-4648-2078-6",
     title = "The Middle-Income Trap",
-    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/41919", #? 
+    doc_mt_identifier_1 = "oai:openknowledge.worldbank.org:10986/41919", # ?
     subject_miss = NA,
     abstract = "Middle-income countries are in a race against time. Many of them have done well since the 1990s to escape low-income levels and eradicate extreme poverty, leading to the perception that the last three decades have been great for development. But the ambition of the more than 100 economies with incomes per capita between US$1,100 and US$14,000 is to reach high-income status within the next generation. When assessed against this goal, their record is discouraging. Since the 1970s, income per capita in the median middle-income country has stagnated at less than a tenth of the US level. With aging populations, growing protectionism, and escalating pressures to speed up the energy transition, today’s middle-income economies face ever more daunting odds. To become advanced economies despite the growing headwinds, they will have to make miracles. Drawing on the development experience and advances in economic analysis since the 1950s, World Development Report 2024 identifies pathways for developing economies to avoid the “middle-income trap.” It points to the need for not one but two transitions for those at the middle-income level: the first from investment to infusion and the second from infusion to innovation. Governments in lower-middle-income countries must drop the habit of repeating the same investment-driven strategies and work instead to infuse modern technologies and successful business processes from around the world into their economies. This requires reshaping large swaths of those economies into globally competitive suppliers of goods and services. Upper-middle-income countries that have mastered infusion can accelerate the shift to innovation—not just borrowing ideas from the global frontiers of technology but also beginning to push the frontiers outward. This requires restructuring enterprise, work, and energy use once again, with an even greater emphasis on economic freedom, social mobility, and political contestability. Neither transition is automatic. The handful of economies that made speedy transitions from middle- to high-income status have encouraged enterprise by disciplining powerful incumbents, developed talent by rewarding merit, and capitalized on crises to alter policies and institutions that no longer suit the purposes they were once designed to serve. Today’s middle-income countries will have to do the same.",
     url_keys = "https://openknowledge.worldbank.org/handle/10986/41919",
     altmetric = 13,
-   all_topic = "Macroeconomics,Economic Growth,Business Cycles and Stabilization Policies,Poverty Reduction,Achieving Shared Growth,Science and Technology Development,Innovation",
+    all_topic = "Macroeconomics,Economic Growth,Business Cycles and Stabilization Policies,Poverty Reduction,Achieving Shared Growth,Science and Technology Development,Innovation",
     all_subj = "middle-income trap,investment,infusion,innovation,technologies,competitive suppliers,economic freedom",
-    subj_1   = "middle-income trap",
-    subj_2   = "investment",
-    subj_3   = "infusion",
-    subj_4   = "innovation",
-    subj_5   = "technologies",
-    subj_6   = "competitive suppliers",
-    subj_7   = "economic freedom",
-    subj_8   = NA,
-    subj_9   = NA,
-    subj_10  = NA,
-    subj_11  = NA,
-    !!!na_values  # Unpack the NA values for subj_12 to subj_46
+    subj_1 = "middle-income trap",
+    subj_2 = "investment",
+    subj_3 = "infusion",
+    subj_4 = "innovation",
+    subj_5 = "technologies",
+    subj_6 = "competitive suppliers",
+    subj_7 = "economic freedom",
+    subj_8 = NA,
+    subj_9 = NA,
+    subj_10 = NA,
+    subj_11 = NA,
+    !!!na_values # Unpack the NA values for subj_12 to subj_46
   )
 ```
 
@@ -1078,14 +1148,13 @@ wdr <- wdr %>%
 <!-- this was a weird case in slogan OLD which I corrected manually, subjects were invented (taking from abstracts-->
 
 ```{r}
+wdr$url_keys[wdr$id == "4389"] <- "https://openknowledge.worldbank.org/handle/10986/4389"
 
-wdr$url_keys [wdr$id == "4389"] <- "https://openknowledge.worldbank.org/handle/10986/4389"
+wdr$altmetric[wdr$id == "4389"] <- "210"
 
-wdr$altmetric [wdr$id == "4389"] <- "210"
+wdr$abstract[wdr$id == "4389"] <- "The 2011 World development report looks across disciplines and experiences drawn from around the world to offer some ideas and practical recommendations on how to move beyond conflict and fragility and secure development. The key messages are important for all countries-low, middle, and high income-as well as for regional and global institutions: first, institutional legitimacy is the key to stability. When state institutions do not adequately protect citizens, guard against corruption, or provide access to justice; when markets do not provide job opportunities; or when communities have lost social cohesion-the likelihood of violent conflict increases. Second, investing in citizen security, justice, and jobs is essential to reducing violence. But there are major structural gaps in our collective capabilities to support these areas. Third, confronting this challenge effectively means that institutions need to change. International agencies and partners from other countries must adapt procedures so they can respond with agility and speed, a longer-term perspective, and greater staying power. Fourth, need to adopt a layered approach. Some problems can be addressed at the country level, but others need to be addressed at a regional level, such as developing markets that integrate insecure areas and pooling resources for building capacity Fifth, in adopting these approaches, need to be aware that the global landscape is changing. Regional institutions and middle income countries are playing a larger role. This means should pay more attention to south-south and south-north exchanges, and to the recent transition experiences of middle income countries."
 
-wdr$abstract [wdr$id == "4389"] <- "The 2011 World development report looks across disciplines and experiences drawn from around the world to offer some ideas and practical recommendations on how to move beyond conflict and fragility and secure development. The key messages are important for all countries-low, middle, and high income-as well as for regional and global institutions: first, institutional legitimacy is the key to stability. When state institutions do not adequately protect citizens, guard against corruption, or provide access to justice; when markets do not provide job opportunities; or when communities have lost social cohesion-the likelihood of violent conflict increases. Second, investing in citizen security, justice, and jobs is essential to reducing violence. But there are major structural gaps in our collective capabilities to support these areas. Third, confronting this challenge effectively means that institutions need to change. International agencies and partners from other countries must adapt procedures so they can respond with agility and speed, a longer-term perspective, and greater staying power. Fourth, need to adopt a layered approach. Some problems can be addressed at the country level, but others need to be addressed at a regional level, such as developing markets that integrate insecure areas and pooling resources for building capacity Fifth, in adopting these approaches, need to be aware that the global landscape is changing. Regional institutions and middle income countries are playing a larger role. This means should pay more attention to south-south and south-north exchanges, and to the recent transition experiences of middle income countries."
-
-wdr$all_topic [wdr$id == "4389"] <- tolower("Justice,Jobs,Political Violence and Civil War,Political Violence and War,Organized Crime,Fragility,Conflict and Violence,Crime,Social Cohesion,Public Sector Management,Social Development,Law and Development, Social Protections and Labor,Conflict and Development,Water Supply and Sanitation,Judicial System Reform, Labor Markets,Armed Conflict,Urban Solid Waste Management") 
+wdr$all_topic[wdr$id == "4389"] <- tolower("Justice,Jobs,Political Violence and Civil War,Political Violence and War,Organized Crime,Fragility,Conflict and Violence,Crime,Social Cohesion,Public Sector Management,Social Development,Law and Development, Social Protections and Labor,Conflict and Development,Water Supply and Sanitation,Judicial System Reform, Labor Markets,Armed Conflict,Urban Solid Waste Management")
 
 # Define the subjects to be added for the specific row
 subjects <- c(
@@ -1100,21 +1169,26 @@ subjects <- c(
   "Political Instability",
   "Post-Conflict Reconstruction",
   "Security and Development"
-) %>% tolower()  # Convert subjects to lowercase
+) %>% tolower() # Convert subjects to lowercase
 
 # Ensure id is handled as character and enforce lowercase comparison
 wdr <- wdr %>%
-   mutate(across(starts_with("subj_"),
-                 ~ ifelse(id == "4389", 
-                          subjects[as.numeric(sub("^subj_", "", cur_column()))], 
-                          NA_character_))) %>% 
-   mutate (all_subj = if_else(id == "4389", paste0(subjects, collapse = ","), all_subj)) 
+  mutate(across(
+    starts_with("subj_"),
+    ~ ifelse(id == "4389",
+      subjects[as.numeric(sub("^subj_", "", cur_column()))],
+      NA_character_
+    )
+  )) %>%
+  mutate(all_subj = if_else(id == "4389", paste0(subjects, collapse = ","), all_subj))
 
 # Check the result for the row with id == "4389"
-wdr %>% filter(id == "4389") %>% select(starts_with("subj_"))  # Display the updated subject columns
+wdr %>%
+  filter(id == "4389") %>%
+  select(starts_with("subj_")) # Display the updated subject columns
 
 
-# check <- wdr[wdr$id == "4389",] 
+# check <- wdr[wdr$id == "4389",]
 ```
 
 ### --- Remove extra space in title column
@@ -1127,8 +1201,8 @@ wdr <- wdr %>%
 
 ### --- Re-save (upon correction) `wrd2.rds`
 ```{r}
-wdr2 <-  wdr
-write_rds(x = wdr2, file = here::here("data", "derived_data","wdr2.rds"))
+wdr2 <- wdr
+write_rds(x = wdr2, file = here::here("data", "derived_data", "wdr2.rds"))
 ```
 
 ### [TBL] World Develompent Reports 2000-2024
@@ -1141,19 +1215,19 @@ Below are the titles of the World Development Reports from 2000 to 2024.
 #| echo: false
 
 # Filter the data
-wdr2_set <- wdr2 %>% 
-   as.data.frame() %>% 
-  filter(date_issued >= 2000) %>% 
-  select(date_issued, title, url_keys) #%>%
-  #mutate(url_keys = kableExtra::cell_spec(url_keys, link = as.character(url_keys)))
-  #mutate(url_keys = paste0('<a href="', url_keys, '">Link</a>'))
+wdr2_set <- wdr2 %>%
+  as.data.frame() %>%
+  filter(date_issued >= 2000) %>%
+  select(date_issued, title, url_keys) # %>%
+# mutate(url_keys = kableExtra::cell_spec(url_keys, link = as.character(url_keys)))
+# mutate(url_keys = paste0('<a href="', url_keys, '">Link</a>'))
 
 
 # Pipe the tibble into kable
-wdr2_set %>% 
-  kableExtra::kable(escape = FALSE) %>%  # escape = FALSE allows HTML rendering
-  kableExtra::column_spec(2, width = "30em") %>%  # Adjust width of 'title'
-  kableExtra::column_spec(3, width = "30em")      # Adjust width of 'url_keys'
+wdr2_set %>%
+  kableExtra::kable(escape = FALSE) %>% # escape = FALSE allows HTML rendering
+  kableExtra::column_spec(2, width = "30em") %>% # Adjust width of 'title'
+  kableExtra::column_spec(3, width = "30em") # Adjust width of 'url_keys'
 ```
 
 ### Qualify: peak or trend (by sector) 
@@ -1161,21 +1235,21 @@ wdr2_set %>%
 ## Add `geomvline` to sector plots v WDR title [CMPL 🟠] 
 ```{r}
 tabyl(pdo_train_t$tok_sector_broad)
-# pdo_train_t$tok_sector_broad      n  WDR 
+# pdo_train_t$tok_sector_broad      n  WDR
 
 #                  AGR_FOR_FISH    665 WDR 2008  Agriculture for Development
 #                     EDUCATION   1180 WDR 2004 Making Services Work for Poor People
-#                        ENERGY    886 WDR 
-#                     FINANCIAL   1843 WDR 
+#                        ENERGY    886 WDR
+#                     FINANCIAL   1843 WDR
 #                  GENDER_EQUAL    213 WDR 2012  Gender Equality and Development
-#                        HEALTH    946 WDR 
-#                           ICT    548 WDR 
-#                IND TRADE SERV     60 WDR 
-#           INSTITUTIONAL SUPP.   2171 WDR 
-#                 MINING_OIL_GAS    299 WDR 
-#                     TRANSPORT   1371 WDR 
-#                         URBAN    553 WDR 
-#                       WAT_SAN   1069 WDR 
+#                        HEALTH    946 WDR
+#                           ICT    548 WDR
+#                IND TRADE SERV     60 WDR
+#           INSTITUTIONAL SUPP.   2171 WDR
+#                 MINING_OIL_GAS    299 WDR
+#                     TRANSPORT   1371 WDR
+#                         URBAN    553 WDR
+#                       WAT_SAN   1069 WDR
 ```
 
 ### --- ✅ AGR_FOR_FISH ( Agriculture, forestry, and fishing)  
@@ -1186,21 +1260,22 @@ The WDR of 2008 was titled **"Agriculture for Development"**, [link](`r wdr2$url
 #| output: TRUE
 # --- Get a LIST of unique sectors (facets) and split the data
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
-# Specific split df 
-#PDOsector_list$'AGR_FOR_FISH'
+# Specific split df
+# PDOsector_list$'AGR_FOR_FISH'
 
-# Specific plot 
-pdo_agr_WDR_plot <- sector_plots$'AGR_FOR_FISH' +  
-  geom_vline(xintercept = 2008, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2008, y = max(n) * 0.5, label = "WDR Agric"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_agr_WDR_plot <- sector_plots$"AGR_FOR_FISH" +
+  geom_vline(xintercept = 2008, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2008, y = max(n) * 0.5, label = "WDR Agric"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 pdo_agr_WDR_plot
 ```
 
 
 ```{r}
-#f_save_plot("pdo_agr_plot", pdo_agr_plot)
-f_save_plot_obj (pdo_agr_WDR_plot, "pdo_agr_WDR_plot")
+# f_save_plot("pdo_agr_plot", pdo_agr_plot)
+f_save_plot_obj(pdo_agr_WDR_plot, "pdo_agr_WDR_plot")
 ```
 
 ### --- ✅ EDUCATION
@@ -1209,25 +1284,26 @@ WDR 2007 was titled **"Development and the Next Generation"**
 WDR 2018 was titled **"Learning to Realize Education's Promise"** 
 ```{r}
 #| output: TRUE
-# Specific split df 
-#PDOsector_list$EDUCATION
+# Specific split df
+# PDOsector_list$EDUCATION
 
-# Specific plot 
-pdo_edu_WDR_plot <- sector_plots$EDUCATION + 
-  geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2007, y = max(n) * 0.45, label = "WDR Youth"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723") +
-  geom_vline(xintercept = 2018, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2018, y = max(n) * 0.30, label = "WDR Educ"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_edu_WDR_plot <- sector_plots$EDUCATION +
+  geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2007, y = max(n) * 0.45, label = "WDR Youth"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  ) +
+  geom_vline(xintercept = 2018, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2018, y = max(n) * 0.30, label = "WDR Educ"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_edu_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_edu_plot", pdo_edu_plot)
-f_save_plot_obj (pdo_edu_WDR_plot, "pdo_edu_WDR_plot")
-
+# f_save_plot("pdo_edu_plot", pdo_edu_plot)
+f_save_plot_obj(pdo_edu_WDR_plot, "pdo_edu_WDR_plot")
 ```
 
 ### --- ✅ CLIMATE (climate change)
@@ -1238,24 +1314,25 @@ The WDR of 2010 was titled **" Development and Climate Change"**, [link](`r wdr2
 #| output: TRUE
 # --- Get a LIST of unique sectors (facets) and split the data
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
-# GENDER split df 
-#PDOsector_list$'CLIMATE'
+# GENDER split df
+# PDOsector_list$'CLIMATE'
 
-# Specific plot 
-pdo_clim_WDR_plot <- sector_plots$'CLIMATE' + 
-   # geom_vline(xintercept = 2003, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   # geom_text(aes(x = 2003, y = max(n) * 0.5, label = "WDR Sust Dev"), 
-   #           angle = 90, vjust = -0.5, color = "#9b6723")+ 
-   geom_vline(xintercept = 2010, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2010, y = max(n) * 0.45, label = "WDR Climate change"), 
-             angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_clim_WDR_plot <- sector_plots$"CLIMATE" +
+  # geom_vline(xintercept = 2003, linetype = "solid", color = "#9b6723",alpha = 0.35) +
+  # geom_text(aes(x = 2003, y = max(n) * 0.5, label = "WDR Sust Dev"),
+  #           angle = 90, vjust = -0.5, color = "#9b6723")+
+  geom_vline(xintercept = 2010, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2010, y = max(n) * 0.45, label = "WDR Climate change"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_clim_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_clim_plot", pdo_clim_plot)
-f_save_plot_obj (pdo_clim_WDR_plot, "pdo_clim_WDR_plot")
+# f_save_plot("pdo_clim_plot", pdo_clim_plot)
+f_save_plot_obj(pdo_clim_WDR_plot, "pdo_clim_WDR_plot")
 ```
 
 ### --- ✅ GENDER EQUALITY
@@ -1266,21 +1343,22 @@ the WDR of 2012 was titled **"Gender Equality and Development"**, [link](`r wdr2
 #| output: TRUE
 # --- Get a LIST of unique sectors (facets) and split the data
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
-# GENDER split df 
-#PDOsector_list$GENDER_EQUAL
+# GENDER split df
+# PDOsector_list$GENDER_EQUAL
 
-# Specific plot 
+# Specific plot
 pdo_gen_WDR_plot <- sector_plots$GENDER_EQUAL +
-  geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2012, y = max(n) * 0.45, label = "WDR Gender equal"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723")
+  geom_vline(xintercept = 2012, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2012, y = max(n) * 0.45, label = "WDR Gender equal"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_gen_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_gen_plot", pdo_gen_plot)
-f_save_plot_obj (pdo_gen_WDR_plot, "pdo_gen_WDR_plot")
+# f_save_plot("pdo_gen_plot", pdo_gen_plot)
+f_save_plot_obj(pdo_gen_WDR_plot, "pdo_gen_WDR_plot")
 ```
 
 
@@ -1289,45 +1367,48 @@ WDR 2004 " Making Services Work for Poor People"
  
 ```{r}
 #| output: TRUE
-# Specific split df 
-#PDOsector_list$SOCIAL_PROT
+# Specific split df
+# PDOsector_list$SOCIAL_PROT
 
-# Specific plot 
-pdo_soc_WDR_plot <- sector_plots$SOCIAL_PROT + 
-  geom_vline(xintercept = 2004, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2004, y = max(n) * 0.75, label = "WDR Services"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_soc_WDR_plot <- sector_plots$SOCIAL_PROT +
+  geom_vline(xintercept = 2004, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2004, y = max(n) * 0.75, label = "WDR Services"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_soc_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_soc_plot", pdo_soc_plot)
-f_save_plot_obj (pdo_soc_WDR_plot, "pdo_soc_WDR_plot")
+# f_save_plot("pdo_soc_plot", pdo_soc_plot)
+f_save_plot_obj(pdo_soc_WDR_plot, "pdo_soc_WDR_plot")
 ```
 
 ### --- INSTITUTIONAL SUPPORT
 WDR 2002 " Building Institutions for Markets"
 WDR 2007 " Governance and the Law"
 ```{r}
-# Specific split df 
+# Specific split df
 # PDOsector_list$INSTIT_SUP
 
-# Specific plot 
-pdo_inst_WDR_plot <- sector_plots$INSTIT_SUPP + 
-   geom_vline(xintercept = 2002, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2002, y = max(n) * 0.75, label = "WDR Institutions"), 
-             angle = 90, vjust = -0.5, color = "#9b6723") + 
-   geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2007, y = max(n) * 0.75, label = "WDR Governance"), 
-             angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_inst_WDR_plot <- sector_plots$INSTIT_SUPP +
+  geom_vline(xintercept = 2002, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2002, y = max(n) * 0.75, label = "WDR Institutions"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  ) +
+  geom_vline(xintercept = 2007, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2007, y = max(n) * 0.75, label = "WDR Governance"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_inst_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_inst_plot", pdo_inst_plot)
-f_save_plot_obj (pdo_inst_WDR_plot, "pdo_inst_WDR_plot")
+# f_save_plot("pdo_inst_plot", pdo_inst_plot)
+f_save_plot_obj(pdo_inst_WDR_plot, "pdo_inst_WDR_plot")
 ```
 
 
@@ -1336,24 +1417,26 @@ WDR 2016 " Digital Dividends"
 WDR 2021 " Data for Better Lives"
 
 ```{r}
-# Specific split df 
+# Specific split df
 # PDOsector_list$ICT
 
-# Specific plot 
-pdo_ict_WDR_plot <- sector_plots$ICT + 
-   geom_vline(xintercept = 2016, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2016, y = max(n) * 0.75, label = "WDR Digital Div"), 
-             angle = 90, vjust = -0.5, color = "#9b6723") + 
-   geom_vline(xintercept = 2021, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-   geom_text(aes(x = 2021, y = max(n) * 0.75, label = "WDR Data"), 
-             angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_ict_WDR_plot <- sector_plots$ICT +
+  geom_vline(xintercept = 2016, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2016, y = max(n) * 0.75, label = "WDR Digital Div"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  ) +
+  geom_vline(xintercept = 2021, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2021, y = max(n) * 0.75, label = "WDR Data"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 
 pdo_ict_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_ict_plot", pdo_ict_plot)
-f_save_plot_obj (pdo_ict_WDR_plot, "pdo_ict_WDR_plot")
+# f_save_plot("pdo_ict_plot", pdo_ict_plot)
+f_save_plot_obj(pdo_ict_WDR_plot, "pdo_ict_WDR_plot")
 ```
 
 
@@ -1362,23 +1445,25 @@ WDR 2005 " A Better Investment Climate for Everyone"
 WDR 2022 " Finance for an Equitable Recovery"
 
 ```{r}
-# Specific split df 
-#PDOsector_list$FINANCIAL
+# Specific split df
+# PDOsector_list$FINANCIAL
 
-# Specific plot 
-pdo_fin_WDR_plot <- sector_plots$FIN + 
-  geom_vline(xintercept = 2005, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2005, y = max(n) * 0.80, label = "WDR Inv Clim"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723") +
-  geom_vline(xintercept = 2022, linetype = "solid", color = "#9b6723",alpha = 0.35) +
-  geom_text(aes(x = 2022, y = max(n) * 0.75, label = "WDR Finance"), 
-                   angle = 90, vjust = -0.5, color = "#9b6723")
+# Specific plot
+pdo_fin_WDR_plot <- sector_plots$FIN +
+  geom_vline(xintercept = 2005, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2005, y = max(n) * 0.80, label = "WDR Inv Clim"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  ) +
+  geom_vline(xintercept = 2022, linetype = "solid", color = "#9b6723", alpha = 0.35) +
+  geom_text(aes(x = 2022, y = max(n) * 0.75, label = "WDR Finance"),
+    angle = 90, vjust = -0.5, color = "#9b6723"
+  )
 pdo_fin_WDR_plot
 ```
 
 ```{r}
-#f_save_plot("pdo_fin_plot", pdo_fin_plot)
-f_save_plot_obj (pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
+# f_save_plot("pdo_fin_plot", pdo_fin_plot)
+f_save_plot_obj(pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
 ```
 
 
@@ -1390,25 +1475,27 @@ f_save_plot_obj (pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
 ```{r}
 # Create bigrams by pairing consecutive tokens by sentence ID and token IDs
 bigrams <- pdo_train_t %>%
-   # keeping FY with tokens
-   group_by(FY_appr, proj_id, pdo, sid ) %>%
-   arrange(tid) %>%
-   # Using mutate() and lead(), we create bigrams from consecutive tokens 
-   mutate(next_token = lead(token), 
-          bigram = paste(token, next_token)) %>%
-   # make bigram low case
-   mutate(bigram = tolower(bigram)) %>%
-   # only includes the rows where valid bigrams are formed
-   filter(!is.na(next_token)) %>%
-   ungroup() %>%
-   arrange(FY_appr, proj_id, sid, tid) %>%
-   select(FY_appr,proj_id, pdo,sid, tid, token, bigram) 
+  # keeping FY with tokens
+  group_by(FY_appr, proj_id, pdo, sid) %>%
+  arrange(tid) %>%
+  # Using mutate() and lead(), we create bigrams from consecutive tokens
+  mutate(
+    next_token = lead(token),
+    bigram = paste(token, next_token)
+  ) %>%
+  # make bigram low case
+  mutate(bigram = tolower(bigram)) %>%
+  # only includes the rows where valid bigrams are formed
+  filter(!is.na(next_token)) %>%
+  ungroup() %>%
+  arrange(FY_appr, proj_id, sid, tid) %>%
+  select(FY_appr, proj_id, pdo, sid, tid, token, bigram)
 ```
 
 ```{r}
-# most frequent bigrams 
-count_bigram <- bigrams %>% 
-   count(bigram, sort = TRUE)  
+# most frequent bigrams
+count_bigram <- bigrams %>%
+  count(bigram, sort = TRUE)
 ```
 
 ## Clean bigrams
@@ -1420,17 +1507,19 @@ bigrams_cleaned <- bigrams %>%
 
 # Remove stopwords and bigrams in EACH component word containing punctuation
 bigrams_cleaned <- bigrams_cleaned %>%
-   # custom stop words
-   filter(!word1 %in% custom_stop_words_df$word, !word2 %in% custom_stop_words_df$word) %>% 
-   # Remove punctuation   
-   filter(!stringr::str_detect(word1, "[[:punct:]]"), !stringr::str_detect(word2, "[[:punct:]]"))  
+  # custom stop words
+  filter(!word1 %in% custom_stop_words_df$word, !word2 %in% custom_stop_words_df$word) %>%
+  # Remove punctuation
+  filter(!stringr::str_detect(word1, "[[:punct:]]"), !stringr::str_detect(word2, "[[:punct:]]"))
 
 # Reunite the component cleaned words into the bigram column
 bigrams_cleaned <- bigrams_cleaned %>%
-   unite(bigram, word1, word2, sep = " ") %>% 
-   # Remove too obvious bigrams 
-   filter(!bigram %in% c("development objective", "development objectives", 
-                         "proposed project", "project development", "program development"))
+  unite(bigram, word1, word2, sep = " ") %>%
+  # Remove too obvious bigrams
+  filter(!bigram %in% c(
+    "development objective", "development objectives",
+    "proposed project", "project development", "program development"
+  ))
 
 # View the cleaned dataframe
 bigrams_cleaned
@@ -1452,52 +1541,61 @@ bigram_freq <- bigrams_cleaned %>%
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
-title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}") 
+title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
 
 # Define the bigrams you want to highlight
-bigrams_to_highlight <- c("public sector", "private sector", "eligible crisis",
-                          "health care", "health services", "public health")   
+bigrams_to_highlight <- c(
+  "public sector", "private sector", "eligible crisis",
+  "health care", "health services", "public health"
+)
 
- 
+
 # ---- Plot the most frequent bigrams
 pdo_bigr_freq <- bigram_freq %>%
-   slice_max(n, n = 25) %>%
-   ggplot(aes(x = reorder(bigram, n), y = n,
-              fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
-   geom_col() +
-   # coord flipped so n is Y axis
-   scale_y_continuous(breaks = seq(min(bigram_freq$n)-1, max(bigram_freq$n), by = 50)) +
-   scale_fill_manual(values = c("public sector" = "#005ca1", 
-                                "private sector" = "#9b2339", 
-                                "eligible crisis"= "#8e550a", 
-                                "health care"= "#4C9F38",
-                                "health services"= "#4C9F38",
-                                "public health"= "#4C9F38", 
-                                "Other" = "grey")) +
-   guides(fill = "none") +
-   coord_flip() +
-   labs(title = title_text, subtitle = "(top 25 bigrams)",
-        x = "", y = "") +
-   theme(axis.text.y = element_text(
-            # obtain vector of colors 2 match x axis labels color to fill
-            color = bigram_freq %>%
-               slice_max(n, n = 25) %>%
-               # mutate(color = ifelse(bigram %in% bigrams_to_highlight,
-               #                       ifelse(bigram == "public sector", "#005ca1",
-               #                              ifelse(bigram == "private sector", "#9b2339", "#8e550a")),
-               #                       "#4c4c4c")) 
-               mutate(color = dplyr::case_when (
-                  bigram == "public sector" ~ "#005ca1",
-                  bigram == "private sector" ~ "#9b2339",
-                  bigram == "eligible crisis" ~ "#8e550a",
-                  bigram %in% c("health care", "health services", "public health") ~ "#4C9F38",
-                  TRUE ~ "#4c4c4c")) %>%
-               # Ensure the order matches the reordered bigrams (AS BINS)
-               arrange(reorder(bigram, n)) %>%  
-               # Extract the color column in bin order as vector to be passed to element_text()
-               pull(color)
-            )
-         ) + lulas_theme
+  slice_max(n, n = 25) %>%
+  ggplot(aes(
+    x = reorder(bigram, n), y = n,
+    fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other")
+  )) +
+  geom_col() +
+  # coord flipped so n is Y axis
+  scale_y_continuous(breaks = seq(min(bigram_freq$n) - 1, max(bigram_freq$n), by = 50)) +
+  scale_fill_manual(values = c(
+    "public sector" = "#005ca1",
+    "private sector" = "#9b2339",
+    "eligible crisis" = "#8e550a",
+    "health care" = "#4C9F38",
+    "health services" = "#4C9F38",
+    "public health" = "#4C9F38",
+    "Other" = "grey"
+  )) +
+  guides(fill = "none") +
+  coord_flip() +
+  labs(
+    title = title_text, subtitle = "(top 25 bigrams)",
+    x = "", y = ""
+  ) +
+  theme(axis.text.y = element_text(
+    # obtain vector of colors 2 match x axis labels color to fill
+    color = bigram_freq %>%
+      slice_max(n, n = 25) %>%
+      # mutate(color = ifelse(bigram %in% bigrams_to_highlight,
+      #                       ifelse(bigram == "public sector", "#005ca1",
+      #                              ifelse(bigram == "private sector", "#9b2339", "#8e550a")),
+      #                       "#4c4c4c"))
+      mutate(color = dplyr::case_when(
+        bigram == "public sector" ~ "#005ca1",
+        bigram == "private sector" ~ "#9b2339",
+        bigram == "eligible crisis" ~ "#8e550a",
+        bigram %in% c("health care", "health services", "public health") ~ "#4C9F38",
+        TRUE ~ "#4c4c4c"
+      )) %>%
+      # Ensure the order matches the reordered bigrams (AS BINS)
+      arrange(reorder(bigram, n)) %>%
+      # Extract the color column in bin order as vector to be passed to element_text()
+      pull(color)
+  )) +
+  lulas_theme
 
 pdo_bigr_freq
 ```
@@ -1505,8 +1603,8 @@ pdo_bigr_freq
 
 ```{r}
 #| echo: false
-#f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
-f_save_plot_obj(pdo_bigr_freq , "pdo_bigr_freq")
+# f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+f_save_plot_obj(pdo_bigr_freq, "pdo_bigr_freq")
 ```
 
 Results are not surprising in terms of frequent bigram recurrence:
@@ -1520,34 +1618,34 @@ Besides huge, counter intuitive, difference between *"health"* and *"education"*
 
 ```{r}
 #| output: false
-# 
+#
 # ## too busy to be useful
-# 
+#
 # # Step 1: Count the frequency of each bigram by year
 # top_bigrams_1FY <- bigrams_cleaned %>%
 #    group_by(FY_appr, bigram) %>%
 #    summarise(count = n(), .groups = 'drop') %>%
 #    arrange(FY_appr, desc(count)) %>%
-#    # ---  +/- top 10  
+#    # ---  +/- top 10
 #    group_by(FY_appr) %>%
 #    top_n(10, count) %>%
 #    ungroup()
-#    # # ---  STRICT  top 10  
+#    # # ---  STRICT  top 10
 #    # mutate(rank = dense_rank(desc(count))) %>%  # Rank bigrams by frequency
 #    # filter(rank <= 10) %>%  # Keep only the top 10 by rank
 #    # ungroup()
-# 
-#   
+#
+#
 # # Add specific bigrams to highlight, if any
 # bigrams_to_highlight <- c("climate change",  "climate resilience", "public sector", "private sector")
-# 
-# # Step 2: Plot the top bigrams by frequency over time   
-# pdo_bigr_FY_freq  <-  top_bigrams_1FY %>% 
-#  ggplot(aes(x = reorder(bigram, count), 
+#
+# # Step 2: Plot the top bigrams by frequency over time
+# pdo_bigr_FY_freq  <-  top_bigrams_1FY %>%
+#  ggplot(aes(x = reorder(bigram, count),
 #              y = count,
 #              fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
 #   geom_col() +
-#   scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066", 
+#   scale_fill_manual(values = c("public sector" = "#005ca1", "private sector" = "#e60066",
 #                                "climate change" = "#399B23", "climate resilience" = "#d8e600",
 #                                "Other" = "grey")) +
 #   guides(fill = "none") +
@@ -1561,7 +1659,7 @@ Besides huge, counter intuitive, difference between *"health"* and *"education"*
 #   theme(plot.title.position = "plot",
 #         axis.text.x = element_text(angle = 45, hjust = 1))+
 #      lulas_theme
-# 
+#
 # pdo_bigr_FY_freq
 ```
 
@@ -1569,77 +1667,84 @@ Besides huge, counter intuitive, difference between *"health"* and *"education"*
 To reduce the noise and make the plot more readable, we can group the data by 3 fiscal years (FY) intervals. 
  
 ```{r}
-# generate FY group 
+# generate FY group
 f_generate_year_groups <- function(years, interval) {
-  breaks <- seq(floor(min(years, na.rm = TRUE) / interval) * interval, 
-                ceiling(max(years, na.rm = TRUE) / interval) * interval, 
-                by = interval)
-  
+  breaks <- seq(floor(min(years, na.rm = TRUE) / interval) * interval,
+    ceiling(max(years, na.rm = TRUE) / interval) * interval,
+    by = interval
+  )
+
   labels <- paste(breaks[-length(breaks)], "-", breaks[-1] - 1)
-  
+
   return(list(breaks = breaks, labels = labels))
 }
-
 ```
 
 ```{r}
 # --- Step 1: Create n-year groups (using `f_generate_year_groups`)
-interval_i = 3 # decide the interval
+interval_i <- 3 # decide the interval
 year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
-top_n_i = 12 # decide the top n bigrams to show
+top_n_i <- 12 # decide the top n bigrams to show
 
 # --- Step 2: Add the generated FY breaks and labels to data frame
 top_bigrams_FYper <- bigrams_cleaned %>%
-   # cut divides the range of x into intervals
-   mutate(FY_group = base::cut(FY_appr, 
-                               breaks = year_groups$breaks, 
-                               include.lowest = TRUE, 
-                               right = FALSE, 
-                               labels = year_groups$labels)) %>% 
-   # Count the frequency of each bigram by n-year groups
-   group_by(FY_group, bigram) %>%
-   summarise(count = n(), .groups = 'drop') %>%
-   arrange(FY_group, desc(count)) %>%
-   # Top ? bigrams for each n-year period
-   group_by(FY_group) %>%
-   top_n(top_n_i, count) %>%
-   ungroup()
+  # cut divides the range of x into intervals
+  mutate(FY_group = base::cut(FY_appr,
+    breaks = year_groups$breaks,
+    include.lowest = TRUE,
+    right = FALSE,
+    labels = year_groups$labels
+  )) %>%
+  # Count the frequency of each bigram by n-year groups
+  group_by(FY_group, bigram) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  arrange(FY_group, desc(count)) %>%
+  # Top ? bigrams for each n-year period
+  group_by(FY_group) %>%
+  top_n(top_n_i, count) %>%
+  ungroup()
 
 # --- Step 3: Add specific bigrams to highlight, if any
-bigrams_to_highlight <- c("climate change",  "climate resilience", 
-                          "eligible crisis",  
-                          "public sector", "private sector",
-                          "water supply", "sanitation services",
-                          "health care", "health services", "public health", "health preparedness"
-                          )
+bigrams_to_highlight <- c(
+  "climate change", "climate resilience",
+  "eligible crisis",
+  "public sector", "private sector",
+  "water supply", "sanitation services",
+  "health care", "health services", "public health", "health preparedness"
+)
 
 # --- Step 4: Plot the top bigrams by frequency over n-year periods
-pdo_bigr_FY_freq  <-  top_bigrams_FYper %>% 
- ggplot(aes(x = reorder(bigram, count), 
-             y = count,
-             fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other"))) +
+pdo_bigr_FY_freq <- top_bigrams_FYper %>%
+  ggplot(aes(
+    x = reorder(bigram, count),
+    y = count,
+    fill = ifelse(bigram %in% bigrams_to_highlight, bigram, "Other")
+  )) +
   geom_col() +
   scale_fill_manual(values = c(
-     # "public sector" = "#005ca1", 
-     # "private sector" = "#e60066", 
-     "water supply" = "#26BDE2",
-      "sanitation services" = "#26BDE2",
-     "climate change" = "#3F7E44", 
-     "climate resilience" = "#a6bd23",
-     "eligible crisis" = "#e68000",  
-     "health care" = "#E5243B",
-     "health services" = "#E5243B",
-     "public health" = "#E5243B",
-     "Other" = "grey")) +
+    # "public sector" = "#005ca1",
+    # "private sector" = "#e60066",
+    "water supply" = "#26BDE2",
+    "sanitation services" = "#26BDE2",
+    "climate change" = "#3F7E44",
+    "climate resilience" = "#a6bd23",
+    "eligible crisis" = "#e68000",
+    "health care" = "#E5243B",
+    "health services" = "#E5243B",
+    "public health" = "#E5243B",
+    "Other" = "grey"
+  )) +
   guides(fill = "none") +
   coord_flip() +
-  facet_wrap(~ FY_group, ncol = 3 , scales = "free_y" )+ 
-              #strip.position = "top") +  # Facet wrap with columns
-  labs(title = glue::glue("Top 12 Bigrams by Frequency Over {interval_i}-Year Periods"),
-       subtitle =  "(Some sectors highlighted)",
-       x = "",
-       y = "") +
-     lulas_theme
+  facet_wrap(~FY_group, ncol = 3, scales = "free_y") +
+  # strip.position = "top") +  # Facet wrap with columns
+  labs(
+    title = glue::glue("Top 12 Bigrams by Frequency Over {interval_i}-Year Periods"),
+    subtitle = "(Some sectors highlighted)",
+    x = "",
+    y = ""
+  ) +
+  lulas_theme
 ```
 
 
@@ -1655,8 +1760,8 @@ pdo_bigr_FY_freq
 
 ```{r}
 #| echo: false
-#f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
-f_save_plot_obj(pdo_bigr_FY_freq , "pdo_bigr_FY_freq")
+# f_save_plot("pdo_bigr_FY_freq", pdo_bigr_FY_freq)
+f_save_plot_obj(pdo_bigr_FY_freq, "pdo_bigr_FY_freq")
 ```
 
 > Frequency observed over FY intervals is very revealing. 
@@ -1677,26 +1782,27 @@ f_save_plot_obj(pdo_bigr_FY_freq , "pdo_bigr_FY_freq")
 # ------------------------------[REPEATED just to see the table]
 
 # --- Step 1: Create n-year groups (using `f_generate_year_groups`)
-interval_i = 3 # decide the interval
+interval_i <- 3 # decide the interval
 year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
-top_n_i = 12 # decide the top n bigrams to show
+top_n_i <- 12 # decide the top n bigrams to show
 
 # --- Step 2: Add the generated FY breaks and labels to data frame
 top_bigrams_FYper <- bigrams_cleaned %>%
-   # cut divides the range of x into intervals
-   mutate(FY_group = base::cut(FY_appr, 
-                               breaks = year_groups$breaks, 
-                               include.lowest = TRUE, 
-                               right = FALSE, 
-                               labels = year_groups$labels)) %>% 
-   # Count the frequency of each bigram by n-year groups
-   group_by(FY_group, bigram) %>%
-   summarise(count = n(), .groups = 'drop') %>%
-   arrange(FY_group, desc(count)) %>%
-   # Top ? bigrams for each n-year period
-   group_by(FY_group) %>%
-   top_n(top_n_i, count) %>%
-   ungroup()
+  # cut divides the range of x into intervals
+  mutate(FY_group = base::cut(FY_appr,
+    breaks = year_groups$breaks,
+    include.lowest = TRUE,
+    right = FALSE,
+    labels = year_groups$labels
+  )) %>%
+  # Count the frequency of each bigram by n-year groups
+  group_by(FY_group, bigram) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  arrange(FY_group, desc(count)) %>%
+  # Top ? bigrams for each n-year period
+  group_by(FY_group) %>%
+  top_n(top_n_i, count) %>%
+  ungroup()
 ```
 
 > sd() returns NA for bigrams that are not present in any periods (or are present in just 1 period). 
@@ -1704,18 +1810,20 @@ top_bigrams_FYper <- bigrams_cleaned %>%
 ```{r}
 # Calculate the mean frequency and standard deviation of the counts for each bigram across periods
 stable_and_frequent_bigrams_per <- top_bigrams_FYper %>%
-   group_by(bigram) %>%
-   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
-             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
-             count_non_na = sum(!is.na(count)),  # Count non-NA values
-             sd_count2 = if_else(count_non_na >= 1, sd(count, na.rm = TRUE), NA_real_),  # Only calculate sd if >= 3 non-NA
-             total_count = sum(count)) %>%               # Total count across all periods (optional)
-   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
-   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
-   # Focus on the top 25% most frequent bigrams
-   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
-   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
-   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+  group_by(bigram) %>%
+  summarise(
+    mean_count = mean(count, na.rm = TRUE), # Mean frequency across periods
+    sd_count = sd(count, na.rm = TRUE), # Stability (lower sd = more stable)
+    count_non_na = sum(!is.na(count)), # Count non-NA values
+    sd_count2 = if_else(count_non_na >= 1, sd(count, na.rm = TRUE), NA_real_), # Only calculate sd if >= 3 non-NA
+    total_count = sum(count)
+  ) %>% # Total count across all periods (optional)
+  arrange(desc(mean_count)) %>% # Sort by frequency and then stability
+  # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+  # Focus on the top 25% most frequent bigrams
+  filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) # %>%
+# Focus on the most stable 50% (lower sd) ---> NO bc NA values
+# filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
 ```
 
 #### [TBL] Bigrams Over Time [3FY]
@@ -1723,50 +1831,54 @@ stable_and_frequent_bigrams_per <- top_bigrams_FYper %>%
 #| output: TRUE
 
 # View the most frequent and stable bigrams
-stable_and_frequent_bigrams_per %>% 
-   slice_head(n = 15)  %>% kableExtra::kable()
+stable_and_frequent_bigrams_per %>%
+  slice_head(n = 15) %>%
+  kableExtra::kable()
 ```
 
 + Using `top_bigrams_1FY` which had breaks of 1FY 
 
 ```{r}
 # --- Step 1: Create n-year groups (using `f_generate_year_groups`)
-interval_i = 1 # decide the interval
+interval_i <- 1 # decide the interval
 year_groups <- f_generate_year_groups(bigrams_cleaned$FY_appr, interval = interval_i)
-top_n_i = 12 # decide the top n bigrams to show
+top_n_i <- 12 # decide the top n bigrams to show
 
 # --- Step 2: Add the generated FY breaks and labels to data frame
 top_bigrams_1FY <- bigrams_cleaned %>%
-   # cut divides the range of x into intervals
-   mutate(FY_group = base::cut(FY_appr, 
-                               breaks = year_groups$breaks, 
-                               include.lowest = TRUE, 
-                               right = FALSE, 
-                               labels = year_groups$labels)) %>% 
-   # Count the frequency of each bigram by n-year groups
-   group_by(FY_group, bigram) %>%
-   summarise(count = n(), .groups = 'drop') %>%
-   arrange(FY_group, desc(count)) %>%
-   # Top ? bigrams for each n-year period
-   group_by(FY_group) %>%
-   top_n(top_n_i, count) %>%
-   ungroup()
+  # cut divides the range of x into intervals
+  mutate(FY_group = base::cut(FY_appr,
+    breaks = year_groups$breaks,
+    include.lowest = TRUE,
+    right = FALSE,
+    labels = year_groups$labels
+  )) %>%
+  # Count the frequency of each bigram by n-year groups
+  group_by(FY_group, bigram) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  arrange(FY_group, desc(count)) %>%
+  # Top ? bigrams for each n-year period
+  group_by(FY_group) %>%
+  top_n(top_n_i, count) %>%
+  ungroup()
 ```
 
 
 ```{r}
 # Calculate the mean frequency and standard deviation of the counts for each bigram across periods
 stable_and_frequent_bigrams_1FY <- top_bigrams_1FY %>%
-   group_by( bigram) %>%
-   summarise(mean_count = mean(count, na.rm = TRUE),     # Mean frequency across periods
-             sd_count = sd(count, na.rm = TRUE),         # Stability (lower sd = more stable)
-             total_count = sum(count)) %>%               # Total count across all periods (optional)
-   arrange(desc(mean_count)) %>%                      # Sort by frequency and then stability
-   # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
-   # Focus on the top 25% most frequent bigrams
-   filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) #%>% 
-   # Focus on the most stable 50% (lower sd) ---> NO bc NA values
-   #filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
+  group_by(bigram) %>%
+  summarise(
+    mean_count = mean(count, na.rm = TRUE), # Mean frequency across periods
+    sd_count = sd(count, na.rm = TRUE), # Stability (lower sd = more stable)
+    total_count = sum(count)
+  ) %>% # Total count across all periods (optional)
+  arrange(desc(mean_count)) %>% # Sort by frequency and then stability
+  # Filter out bigrams with low mean frequency or high instability (you can adjust thresholds)
+  # Focus on the top 25% most frequent bigrams
+  filter(mean_count > quantile(mean_count, 0.70, na.rm = TRUE)) # %>%
+# Focus on the most stable 50% (lower sd) ---> NO bc NA values
+# filter( sd_count < quantile(sd_count, 0.5, na.rm = TRUE))
 ```
 
 #### [TBL] Bigrams Over Time [1FY]
@@ -1775,8 +1887,9 @@ stable_and_frequent_bigrams_1FY <- top_bigrams_1FY %>%
 #| output: TRUE
 
 # View the most frequent and stable bigrams
-stable_and_frequent_bigrams_1FY %>% 
-   slice_head(n = 15)   %>% kableExtra::kable()
+stable_and_frequent_bigrams_1FY %>%
+  slice_head(n = 15) %>%
+  kableExtra::kable()
 ```
   
 # _______ 
@@ -1797,16 +1910,16 @@ So, I narrow down to consecutive *bigrams* **"public sector"** and **"private se
 ```{r}
 # Filter for the specific bigrams "public sector" and "private sector"
 bigrams_pub_priv_sec <- bigrams %>%
-   filter(bigram %in% c("public sector", "private sector"))
+  filter(bigram %in% c("public sector", "private sector"))
 
 # Display the result
-#bigrams_pub_priv_sec
+# bigrams_pub_priv_sec
 
 # prepare data for plotting (count)
-sector_bigr_df <- bigrams_pub_priv_sec %>% 
-   count(FY_appr, bigram) %>% 
-   # reorder values by frequency
-   mutate(bigram = factor(bigram, levels = c("public sector", "private sector")))
+sector_bigr_df <- bigrams_pub_priv_sec %>%
+  count(FY_appr, bigram) %>%
+  # reorder values by frequency
+  mutate(bigram = factor(bigram, levels = c("public sector", "private sector")))
 ```
 
 
@@ -1818,41 +1931,47 @@ sector_bigr_df <- bigrams_pub_priv_sec %>%
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
-title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over FY {min(sector_bigr_df$FY_appr)}-{max(sector_bigr_df$FY_appr)}") 
+title_text <- glue::glue("Frequency of bigrams \"public sector\" and \"private sector\" in PDOs over FY {min(sector_bigr_df$FY_appr)}-{max(sector_bigr_df$FY_appr)}")
 
-two_col_contrast <- c( "#005ca1",  "#e60066" )
+two_col_contrast <- c("#005ca1", "#e60066")
 
 # Create a named vector for the legend labels with totals in a single pipeline
 legend_labels <- sector_bigr_df %>%
-   group_by(bigram) %>%
-   # Calculate total counts for each bigram
-   summarize(total_n = sum(n)) %>% 
-   # Append totals to bigram names
-   mutate(label = paste0(bigram, " (", total_n, ")")) %>%  
-   # Create a named vector with bigram as names and labels as values
-   {setNames(.$label, .$bigram)} # curly braces {} in a dplyr pipeline using . as ouptu from previous..
+  group_by(bigram) %>%
+  # Calculate total counts for each bigram
+  summarize(total_n = sum(n)) %>%
+  # Append totals to bigram names
+  mutate(label = paste0(bigram, " (", total_n, ")")) %>%
+  # Create a named vector with bigram as names and labels as values
+  {
+    setNames(.$label, .$bigram)
+  } # curly braces {} in a dplyr pipeline using . as ouptu from previous..
 
 # ---- Plot
 pdo_pub_pri_bigr <- ggplot(data = sector_bigr_df, aes(x = FY_appr, y = n, group = bigram, color = bigram)) +
-   geom_line(linetype = "solid", alpha = 0.75, size = .5) +
-   geom_point(size = 3) +
-   scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-   scale_color_manual(values = two_col_contrast, 
-                      labels = legend_labels) +  # Use modified labels
-   lulas_theme +
-   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-   labs(title = title_text, 
-        x = "", 
-        y = "", 
-        color = "") 
-   
+  geom_line(linetype = "solid", alpha = 0.75, size = .5) +
+  geom_point(size = 3) +
+  scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+  scale_color_manual(
+    values = two_col_contrast,
+    labels = legend_labels
+  ) + # Use modified labels
+  lulas_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = title_text,
+    x = "",
+    y = "",
+    color = ""
+  )
+
 
 pdo_pub_pri_bigr
 ```
 
 ```{r}
 # Save the plot
-#f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
+# f_save_plot("pdo_pub_pri_bigr", pdo_pub_pri_bigr)
 f_save_plot_obj(pdo_pub_pri_bigr, "pdo_pub_pri_bigr")
 ```
 
@@ -1867,27 +1986,28 @@ f_save_plot_obj(pdo_pub_pri_bigr, "pdo_pub_pri_bigr")
 ```{r}
 # Create bigrams by pairing consecutive tokens by sentence ID and token IDs
 trigrams <- pdo_train_t %>%
-   # keeping FY with tokens
-   group_by(FY_appr, proj_id, pdo, sid ) %>%
-   arrange(tid) %>%
-   # Using mutate() and lead(), we create bigrams from consecutive tokens 
-   mutate(next_token = lead(token), 
-          next_next_token = lead(next_token),
-          trigram = paste(token, next_token, next_next_token)) %>%
-   # make  tri-grams lower case
-   mutate(trigram = tolower(trigram)) %>%
-   # remove NA values
-   filter(!is.na(trigram)) %>%
-   ungroup() %>% 
-   arrange(FY_appr, proj_id, sid, tid ) %>% 
-   select (FY_appr, proj_id, pdo, sid, tid, token, trigram)
-   
+  # keeping FY with tokens
+  group_by(FY_appr, proj_id, pdo, sid) %>%
+  arrange(tid) %>%
+  # Using mutate() and lead(), we create bigrams from consecutive tokens
+  mutate(
+    next_token = lead(token),
+    next_next_token = lead(next_token),
+    trigram = paste(token, next_token, next_next_token)
+  ) %>%
+  # make  tri-grams lower case
+  mutate(trigram = tolower(trigram)) %>%
+  # remove NA values
+  filter(!is.na(trigram)) %>%
+  ungroup() %>%
+  arrange(FY_appr, proj_id, sid, tid) %>%
+  select(FY_appr, proj_id, pdo, sid, tid, token, trigram)
 ```
 
 ```{r}
 # most frequent  trigrams
-count_trigram <- trigrams %>% 
-   count(trigram, sort = TRUE) 
+count_trigram <- trigrams %>%
+  count(trigram, sort = TRUE)
 ```
 
 ## Clean trigrams
@@ -1895,29 +2015,35 @@ The challenge is to clean but without separating consecutive words... so I do th
 
 ```{r}
 # Split the trigrams into three tokens
-trigrams_split <- trigrams %>% 
-   separate(trigram, c("token1", "token2", "token3"), sep = " ")  
+trigrams_split <- trigrams %>%
+  separate(trigram, c("token1", "token2", "token3"), sep = " ")
 
 # Remove stopwords and punctuation
-trigrams_clean <- trigrams_split %>% 
-   filter(!token1 %in% custom_stop_words,
-          !token2 %in% custom_stop_words,
-          !token3 %in% custom_stop_words) %>%
-   filter(token1 != "na",
-          token2 != "na",
-          token3 != "na") %>%
-   # Remove punctuation   
-   filter(!stringr::str_detect(token1, "[[:punct:]]"), 
-          !stringr::str_detect(token2, "[[:punct:]]"),
-          !stringr::str_detect(token3, "[[:punct:]]"))  %>% 
-   unite(trigram, token1, token2, token3, sep = " ") %>%
-   select(FY_appr, proj_id, pdo, sid, tid, trigram)
+trigrams_clean <- trigrams_split %>%
+  filter(
+    !token1 %in% custom_stop_words,
+    !token2 %in% custom_stop_words,
+    !token3 %in% custom_stop_words
+  ) %>%
+  filter(
+    token1 != "na",
+    token2 != "na",
+    token3 != "na"
+  ) %>%
+  # Remove punctuation
+  filter(
+    !stringr::str_detect(token1, "[[:punct:]]"),
+    !stringr::str_detect(token2, "[[:punct:]]"),
+    !stringr::str_detect(token3, "[[:punct:]]")
+  ) %>%
+  unite(trigram, token1, token2, token3, sep = " ") %>%
+  select(FY_appr, proj_id, pdo, sid, tid, trigram)
 ```
 
 ```{r}
 # Count the frequency of each trigram
-trigram_freq <- trigrams_clean %>% 
-   count(trigram, sort = TRUE) 
+trigram_freq <- trigrams_clean %>%
+  count(trigram, sort = TRUE)
 ```
 
 
@@ -1933,42 +2059,48 @@ trigram_freq <- trigrams_clean %>%
 
 # Evaluate the title with glue first
 title_text <- glue::glue("Most frequent trigrams in PDOs over FY {min(trigrams_clean$FY_appr)}-{max(trigrams_clean$FY_appr)}")
- 
+
 # Define colors for specific highlights
-highlight_colors <- c("Health" =  "#d02e4c", "Environment" ="#3F7E44", "Other" = "grey")
+highlight_colors <- c("Health" = "#d02e4c", "Environment" = "#3F7E44", "Other" = "grey")
 
 
 # Plot the most frequent trigrams
 pdo_trigram_freq_plot <- trigram_freq %>%
-   dplyr::filter(!trigram %in% c("project development objective",
-                          "project development objectives",
-                          "overall development objective",
-                          "program development objective",
-                          "program development objectives",
-                          "proposed project development", 
-                          "proposed development objectives", 
-                          "proposed development objective",
-                          "revised project development"
-                          )) %>%
-   top_n(25) %>%
-   # plot the top 25 trigrams
-   ggplot(aes(x = reorder(trigram, n), y = n,
-              fill = dplyr::case_when(
-                 stringr::str_detect(trigram, "health") ~ "Health",
-                 stringr::str_detect(trigram, "environment") ~ "Environment",
-                 stringr::str_detect(trigram, "climate") ~ "Environment",
-                 stringr::str_detect(trigram, "greenhouse") ~ "Environment",
-                 # stringr::str_detect(trigram, "sustain") ~ "Environment",
-                 TRUE ~ "Other"))) +
-   geom_col() +
-   # coord flipped so n is Y axis
-   scale_y_continuous(breaks = seq(min(trigram_freq$n)-1, max(trigram_freq$n), by = 50)) +
-   coord_flip() +
-   labs(title = title_text, subtitle = "(top 25 trigrams)",
-        x = "", y = "") +
-   scale_fill_manual(values = highlight_colors) +
-   guides(fill = "none") +
-   lulas_theme
+  dplyr::filter(!trigram %in% c(
+    "project development objective",
+    "project development objectives",
+    "overall development objective",
+    "program development objective",
+    "program development objectives",
+    "proposed project development",
+    "proposed development objectives",
+    "proposed development objective",
+    "revised project development"
+  )) %>%
+  top_n(25) %>%
+  # plot the top 25 trigrams
+  ggplot(aes(
+    x = reorder(trigram, n), y = n,
+    fill = dplyr::case_when(
+      stringr::str_detect(trigram, "health") ~ "Health",
+      stringr::str_detect(trigram, "environment") ~ "Environment",
+      stringr::str_detect(trigram, "climate") ~ "Environment",
+      stringr::str_detect(trigram, "greenhouse") ~ "Environment",
+      # stringr::str_detect(trigram, "sustain") ~ "Environment",
+      TRUE ~ "Other"
+    )
+  )) +
+  geom_col() +
+  # coord flipped so n is Y axis
+  scale_y_continuous(breaks = seq(min(trigram_freq$n) - 1, max(trigram_freq$n), by = 50)) +
+  coord_flip() +
+  labs(
+    title = title_text, subtitle = "(top 25 trigrams)",
+    x = "", y = ""
+  ) +
+  scale_fill_manual(values = highlight_colors) +
+  guides(fill = "none") +
+  lulas_theme
 
 pdo_trigram_freq_plot
 ```
@@ -1976,8 +2108,8 @@ pdo_trigram_freq_plot
 
 ```{r}
 #| echo: false
-#f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
-f_save_plot_obj(pdo_trigram_freq_plot , "pdo_trigram_freq_plot")
+# f_save_plot("pdo_bigr_freq", pdo_bigr_freq)
+f_save_plot_obj(pdo_trigram_freq_plot, "pdo_trigram_freq_plot")
 ```
 
 
@@ -1996,11 +2128,13 @@ A **concordance** list is a list of all contexts in which a particular token app
 
 ```{r}
 # reduce back to the original data
-pdo_t <- pdo_train_t %>% 
-   select(proj_id, pdo,pr_name, FY_appr, FY_clos, status, regionname, countryname,
-          sector1, theme1,lendinginstr, env_cat, ESrisk, curr_total_commitment) %>%
-   group_by(proj_id) %>% 
-   slice(1)
+pdo_t <- pdo_train_t %>%
+  select(
+    proj_id, pdo, pr_name, FY_appr, FY_clos, status, regionname, countryname,
+    sector1, theme1, lendinginstr, env_cat, ESrisk, curr_total_commitment
+  ) %>%
+  group_by(proj_id) %>%
+  slice(1)
 ```
 
 First of all, let's see what are the sentence that contain the bigram "eligible crisis" in the PDOs. 
@@ -2008,15 +2142,15 @@ First of all, let's see what are the sentence that contain the bigram "eligible 
 ```{r}
 # Tokenize the text data into sentences
 sentences <- pdo_t %>%
-   unnest_tokens(sentence, pdo, token = "sentences", drop = FALSE)
+  unnest_tokens(sentence, pdo, token = "sentences", drop = FALSE)
 
 # Count the number of sentences in each document
 sentence_count <- sentences %>%
-   group_by(proj_id) %>%
-   summarise(num_sentences = n())
+  group_by(proj_id) %>%
+  summarise(num_sentences = n())
 
-n_distinct(sentence_count$proj_id)  # number of projects
-sum(sentence_count$num_sentences)   # total number of sentences
+n_distinct(sentence_count$proj_id) # number of projects
+sum(sentence_count$num_sentences) # total number of sentences
 ```
 
 
@@ -2027,38 +2161,45 @@ target_bigram <- "eligible crisis"
 
 # Filter sentences that contain the specific bigram
 sentences_with_targ <- sentences %>%
-   filter(stringr::str_detect(sentence, target_bigram))
+  filter(stringr::str_detect(sentence, target_bigram))
 
 # Define how many characters before and after the bigram to extract
-chars_before <- 60  # Number of characters before the bigram
-chars_after <- 60   # Number of characters after the bigram
+chars_before <- 60 # Number of characters before the bigram
+chars_after <- 60 # Number of characters after the bigram
 
 # Add the extracted bigram and surrounding characters to the same dataframe
 sentences_with_eligcris <- sentences_with_targ %>%
-   mutate(closest_text = str_extract(sentence, paste0(".{0,", chars_before, "}", target_bigram, ".{0,", chars_after, "}"))) %>% 
-   # View the updated dataframe with the closest_text column
-   select(proj_id, #sentence, 
-          closest_text)
+  mutate(closest_text = str_extract(sentence, paste0(".{0,", chars_before, "}", target_bigram, ".{0,", chars_after, "}"))) %>%
+  # View the updated dataframe with the closest_text column
+  select(
+    proj_id, # sentence,
+    closest_text
+  )
 
 
 # Define how many words before and after the bigram to extract
-words_before <- 8  # Number of words before the bigram
-words_after <- 8   # Number of words after the bigram
+words_before <- 8 # Number of words before the bigram
+words_after <- 8 # Number of words after the bigram
 
 # Add the extracted bigram and surrounding words to the same dataframe
 sentences_with_eligcris2 <- sentences_with_targ %>%
-   mutate(closest_text = str_extract(sentence, 
-                                     paste0("(", # Start a capture group
-                                            # Match preceding words
-                                            "(?:\\S+\\s+){0,", words_before, "}", 
-                                            target_bigram, 
-                                            # Match following words
-                                            "(?:\\s+\\S+){0,", words_after, "}", 
-                                            ")"
-                                           ))) %>% 
-   # View the updated dataframe with the closest_text column
-   select(proj_id,  sentence, 
-          closest_text)
+  mutate(closest_text = str_extract(
+    sentence,
+    paste0(
+      "(", # Start a capture group
+      # Match preceding words
+      "(?:\\S+\\s+){0,", words_before, "}",
+      target_bigram,
+      # Match following words
+      "(?:\\s+\\S+){0,", words_after, "}",
+      ")"
+    )
+  )) %>%
+  # View the updated dataframe with the closest_text column
+  select(
+    proj_id, sentence,
+    closest_text
+  )
 
 n_distinct(sentences_with_eligcris2$proj_id)
 ```
@@ -2075,8 +2216,8 @@ phrase_to_search <- "respond promptly and effectively"
 
 # Count how often the phrase appears in the vicinity of the target bigram
 phrase_count <- sentences_with_eligcris2 %>%
-  mutate(contains_phrase = stringr::str_detect(closest_text, phrase_to_search)) %>%  # Check if the phrase is present
-  summarise(count = sum(contains_phrase))  # Count how many times the phrase is found
+  mutate(contains_phrase = stringr::str_detect(closest_text, phrase_to_search)) %>% # Check if the phrase is present
+  summarise(count = sum(contains_phrase)) # Count how many times the phrase is found
 
 # View the result
 tabyl(phrase_count$count)
@@ -2088,35 +2229,38 @@ Here are a few examples of the sentences containing the bigram *"eligible crisis
 
 ```{r}
 #| output: true
- 
+
 set.seed(555)
 # Filter the sentences that contain the phrase
-sample_with_eligcris2 <- sentences_with_eligcris2 %>% 
-   ungroup() %>% 
-   # take a random sample of 5 sentences
-   sample_n(10) %>%
-   select(proj_id, closest_text) %>% 
-   mutate(
-     closest_text = paste0("(...) ", closest_text),
-     # Make "eligible crisis" bold by adding <b> tags
-     closest_text = gsub("eligible crisis", "<b>eligible crisis</b>", closest_text),
-     # Highlight by adding <mark> tags
-     closest_text = gsub("(?i)(promptly and effectively|immediate and effective response)", # (?i) makes the match case-insensitive.
-                         "<mark style='background-color: #d8e600;'>\\1</mark>", closest_text, perl = TRUE)
-     )
+sample_with_eligcris2 <- sentences_with_eligcris2 %>%
+  ungroup() %>%
+  # take a random sample of 5 sentences
+  sample_n(10) %>%
+  select(proj_id, closest_text) %>%
+  mutate(
+    closest_text = paste0("(...) ", closest_text),
+    # Make "eligible crisis" bold by adding <b> tags
+    closest_text = gsub("eligible crisis", "<b>eligible crisis</b>", closest_text),
+    # Highlight by adding <mark> tags
+    closest_text = gsub("(?i)(promptly and effectively|immediate and effective response)", # (?i) makes the match case-insensitive.
+      "<mark style='background-color: #d8e600;'>\\1</mark>", closest_text,
+      perl = TRUE
+    )
+  )
 
-# Print out sample in a kable 
-elcr_k <- kable(sample_with_eligcris2, format = "html", 
-                # Display the table with bold formatting
-                escape = FALSE,
-                col.names = c("WB Project ID","Excerpt of PDO Sentences with 'Eligible Crisis'")) %>% 
-   kable_styling(full_width = FALSE)
+# Print out sample in a kable
+elcr_k <- kable(sample_with_eligcris2,
+  format = "html",
+  # Display the table with bold formatting
+  escape = FALSE,
+  col.names = c("WB Project ID", "Excerpt of PDO Sentences with 'Eligible Crisis'")
+) %>%
+  kable_styling(full_width = FALSE)
 
 elcr_k
 
 # Save the table as an HTML file
-write_rds(elcr_k, here("analysis", "output", "tables" ,"elcr_k.rds"))
-
+write_rds(elcr_k, here("analysis", "output", "tables", "elcr_k.rds"))
 ```
 
 ### --- *climate change* ~ notable bigrams over FY [CMPL 🟠]
@@ -2130,26 +2274,31 @@ target_bigram <- "climate change"
 # # Filter sentences that contain the specific bigram
 # sentences_with_targ <- sentences %>%
 #    filter(stringr::str_detect(sentence, target_bigram))
-# 
+#
 # # Define how many words before and after the bigram to extract
 # words_before <- 8  # Number of words before the bigram
 # words_after <- 8   # Number of words after the bigram
 
 # Add the extracted bigram and surrounding words to the same dataframe
 sentences_with_climchang <- sentences %>%
-   filter(stringr::str_detect(sentence, target_bigram)) %>% 
-   mutate(closest_text = str_extract(sentence, 
-                                     paste0("(", # Start a capture group
-                                            # Match preceding words
-                                            "(?:\\S+\\s+){0,", words_before, "}", 
-                                            target_bigram, 
-                                            # Match following words
-                                            "(?:\\s+\\S+){0,", words_after, "}", 
-                                            ")"
-                                           ))) %>% 
-   # View the updated dataframe with the closest_text column
-   select(proj_id, pdo, sentence,
-          closest_text)
+  filter(stringr::str_detect(sentence, target_bigram)) %>%
+  mutate(closest_text = str_extract(
+    sentence,
+    paste0(
+      "(", # Start a capture group
+      # Match preceding words
+      "(?:\\S+\\s+){0,", words_before, "}",
+      target_bigram,
+      # Match following words
+      "(?:\\s+\\S+){0,", words_after, "}",
+      ")"
+    )
+  )) %>%
+  # View the updated dataframe with the closest_text column
+  select(
+    proj_id, pdo, sentence,
+    closest_text
+  )
 ```
 
 > There are 92 projects, for which the PDO has a sentences containing the bigram "climate change"in the PDOs. 
@@ -2165,105 +2314,117 @@ I want to know which of these commonly used phrases are most often found in the 
 # Count how often the phrase appears in the vicinity of the target bigram
 close_words <- sentences_with_climchang %>%
   mutate(contains_what = dplyr::case_when(
-     stringr::str_detect(sentence, "mitigat") ~ "mitigate",
-     stringr::str_detect(sentence, "adapt") ~ "adapt",
-     stringr::str_detect(sentence, "vulnerab") ~ "vulnerability",
-     stringr::str_detect(sentence, "hazard") ~ "hazard",
-     stringr::str_detect(sentence, "resil") ~ "resilience",
-     TRUE ~ "..."))
- 
+    stringr::str_detect(sentence, "mitigat") ~ "mitigate",
+    stringr::str_detect(sentence, "adapt") ~ "adapt",
+    stringr::str_detect(sentence, "vulnerab") ~ "vulnerability",
+    stringr::str_detect(sentence, "hazard") ~ "hazard",
+    stringr::str_detect(sentence, "resil") ~ "resilience",
+    TRUE ~ "..."
+  ))
+
 # Count how often the phrase is found
-close_words_sort <-  close_words %>% 
-   filter(contains_what != "...") %>% 
-  group_by(contains_what) %>% 
-  summarise(count = n()) %>% 
-  mutate(percentage = scales::percent(count/sum(count))) %>% 
-   arrange(desc(count))
+close_words_sort <- close_words %>%
+  filter(contains_what != "...") %>%
+  group_by(contains_what) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = scales::percent(count / sum(count))) %>%
+  arrange(desc(count))
 
 # Specify the words to highlight
 highlight_words <- c("mitigate")
-highlight_words2 <- c(  "resilience", "adapt")
+highlight_words2 <- c("resilience", "adapt")
 
 
-clch_close_k <- close_words_sort %>% 
-   kable(format = "html", 
-         col.names = c("Near 'climate change'", "Count", "Percentage")) %>% 
-   kable_styling(full_width = FALSE) %>% 
-    # Light yellow background
-   row_spec(which(close_words_sort$contains_what %in% highlight_words), 
-            background = "#d8e600") %>% 
-   row_spec(which(close_words_sort$contains_what %in% highlight_words2), 
-            background = "#a6bd23")  
+clch_close_k <- close_words_sort %>%
+  kable(
+    format = "html",
+    col.names = c("Near 'climate change'", "Count", "Percentage")
+  ) %>%
+  kable_styling(full_width = FALSE) %>%
+  # Light yellow background
+  row_spec(which(close_words_sort$contains_what %in% highlight_words),
+    background = "#d8e600"
+  ) %>%
+  row_spec(which(close_words_sort$contains_what %in% highlight_words2),
+    background = "#a6bd23"
+  )
 
 clch_close_k
 
 # save as object
-write_rds(clch_close_k, here("analysis", "output", "tables" ,"clch_close_k.rds"))
+write_rds(clch_close_k, here("analysis", "output", "tables", "clch_close_k.rds"))
 
 
-#   <chr>         <int>       <chr>     
-# 1 vulnerab         18       32.1%     
-# 2 mitigate         12       21.4%     
-# 3 resil            12       21.4%     
-# 4 hazard            9       16.1%     
-# 5 adapt             5       8.9% 
+#   <chr>         <int>       <chr>
+# 1 vulnerab         18       32.1%
+# 2 mitigate         12       21.4%
+# 3 resil            12       21.4%
+# 4 hazard            9       16.1%
+# 5 adapt             5       8.9%
 ```
 
 Here are a few examples of the sentences containing the bigram "climate change" and the words "mitigate|adaptation":
 
 ```{r}
-
 set.seed(888)
 # Filter the sentences that contain the phrase
-sentences_with_climchang2_k <-  sentences_with_climchang %>%
-   filter(proj_id != "P125447") %>%
-   # add a column to identify the phrases
-   mutate(contains_what = case_when(
-      stringr::str_detect(closest_text, "mitig") ~ "mitig",
-      stringr::str_detect(closest_text, "adapt") ~ "adapt",
-      stringr::str_detect(closest_text, "vulnerab") ~ "vulnerab",
-      stringr::str_detect(closest_text, "hazard") ~ "hazard",
-      stringr::str_detect(closest_text, "resil") ~ "resil",
-      TRUE ~ "...")) %>% 
-   filter(contains_what != "...") %>% 
-   # take a random sample of 3  by word 
-   group_by(contains_what) %>% 
-   slice_sample(n = 3, replace = FALSE ) %>%
-   select(contains_what, proj_id, closest_text) %>%
-   mutate(closest_text = paste0("(...) ", closest_text),
-          # Make "mutate" bold by adding <b> tags
-          closest_text = gsub("climate change", "<b>climate change</b>", closest_text), 
-          # highlight the phrases by adding <mark> tags (adapt, mitigate, etc.)
-          closest_text = gsub("(?i)(adaptation|resilience)", # (?i) makes the match case-insensitive.
-                              "<mark style='background-color: #a6bd23;'>\\1</mark>", closest_text, perl = TRUE),
-          closest_text = gsub("(?i)(mitigation|mitigate)",  
-                              "<mark style='background-color: #8e94d6;'>\\1</mark>", closest_text, perl = TRUE),
-          closest_text = gsub("(?i)(hazard|vulnerability)", 
-                              "<mark style='background-color: #e28293;'>\\1</mark>", closest_text, perl = TRUE)
-          )
+sentences_with_climchang2_k <- sentences_with_climchang %>%
+  filter(proj_id != "P125447") %>%
+  # add a column to identify the phrases
+  mutate(contains_what = case_when(
+    stringr::str_detect(closest_text, "mitig") ~ "mitig",
+    stringr::str_detect(closest_text, "adapt") ~ "adapt",
+    stringr::str_detect(closest_text, "vulnerab") ~ "vulnerab",
+    stringr::str_detect(closest_text, "hazard") ~ "hazard",
+    stringr::str_detect(closest_text, "resil") ~ "resil",
+    TRUE ~ "..."
+  )) %>%
+  filter(contains_what != "...") %>%
+  # take a random sample of 3  by word
+  group_by(contains_what) %>%
+  slice_sample(n = 3, replace = FALSE) %>%
+  select(contains_what, proj_id, closest_text) %>%
+  mutate(
+    closest_text = paste0("(...) ", closest_text),
+    # Make "mutate" bold by adding <b> tags
+    closest_text = gsub("climate change", "<b>climate change</b>", closest_text),
+    # highlight the phrases by adding <mark> tags (adapt, mitigate, etc.)
+    closest_text = gsub("(?i)(adaptation|resilience)", # (?i) makes the match case-insensitive.
+      "<mark style='background-color: #a6bd23;'>\\1</mark>", closest_text,
+      perl = TRUE
+    ),
+    closest_text = gsub("(?i)(mitigation|mitigate)",
+      "<mark style='background-color: #8e94d6;'>\\1</mark>", closest_text,
+      perl = TRUE
+    ),
+    closest_text = gsub("(?i)(hazard|vulnerability)",
+      "<mark style='background-color: #e28293;'>\\1</mark>", closest_text,
+      perl = TRUE
+    )
+  )
 
 # save as object
-write_rds(sentences_with_climchang2_k, here("analysis", "output", "tables" ,"sentences_with_climchang2_k.rds"))
-
+write_rds(sentences_with_climchang2_k, here("analysis", "output", "tables", "sentences_with_climchang2_k.rds"))
 ```
 
 ```{r}
 #| output: true
- 
-#paint(sentences_with_climchang2_k)
+
+# paint(sentences_with_climchang2_k)
 
 # Prepare the kable table with subheaders based on 'contains_what'
 sentences_with_climchang2_k %>%
   ungroup() %>%
   arrange(contains_what) %>%
   select(contains_what, proj_id, closest_text) %>%
-  kable(format = "html", 
-        escape = FALSE,
-        col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
-  kable_styling(full_width = FALSE)   
-   # Add subheaders based on the unique values in `contains_what`
-  #group_rows(index = table(sentences_with_climchang2$contains_what))
-
+  kable(
+    format = "html",
+    escape = FALSE,
+    col.names = c("Near word (root)", "WB Project ID", "Closest Text")
+  ) %>%
+  kable_styling(full_width = FALSE)
+# Add subheaders based on the unique values in `contains_what`
+# group_rows(index = table(sentences_with_climchang2$contains_what))
 ```
  
 <!-- ## Analyzing bigrams: tf-idf -->
@@ -2316,107 +2477,121 @@ Typically, these extractions are displayed through **keyword-in-context displays
 
 file:///Users/luisamimmi/Github/slogan_old/docs/01b_WDR_data-exploration_abstracts.html
 
+```{r}
+# ----  Create a corpus from the data frame containing the `pdo` column
+pdo_q_corpus <- quanteda::corpus(as.data.frame(projs_train),
+  docid_field = "proj_id",
+  text_field = "pdo",
+  meta = list("pr_name", "FY_appr")
+)
+# I obtain a `corpus` == a `character vector` class(pdo_q_corpus)
+# --- example with individual keyword
+
+# Step 1) tokens
+pdo_q_tokens <- quanteda::tokens(
+  x = pdo_q_corpus,
+  remove_punct = TRUE,
+  remove_symbols = TRUE
+  # ,remove_numbers = TRUE
+) %>%
+  quanteda::tokens_tolower() # %>%
+# quanteda::tokens_remove(pattern = custom_stop_words) %>%
+# quanteda::tokens_remove(pattern = c("project", "development", "bank", "world", "project", "projects"))
+
+# #______ Step 2) kwic (individual exe )
+kwic_pdo_data <- quanteda::kwic(x = pdo_q_tokens, # define text(s)
+                                 # define pattern
+                                 pattern = quanteda::phrase(c("gender", "climate", "sustainab*")),
+                                 # define window size
+                                 window = 5) %>%
+    # convert into a data frame
+    as_tibble() %>%
+    left_join(projs_train, by = c("docname" =  "proj_id")) %>%
+    # remove superfluous columns
+     dplyr::select( 'Year' = FY_appr, 'Prj title' = pr_name, pre, keyword, post) %>%
+  #  slice_sample( n = 50) %>%
+   kbl(align = "c") # %>% kable_styling()
+```
+
 
 ```{r}
-# I use again data = pdo_words
-pdo_q_corpus <- quanteda::corpus(as.data.frame(projs_train), 
-                               docid_field = "id",
-                               text_field = "pdo",
-                               meta = list("pr_name", "boardApprovalFY")
-)
- 
-# --- example with individual keyword 
-# Step 1) tokens
-pdo_q_tokens <- quanteda::tokens(x = pdo_q_corpus,
-                       remove_punct = TRUE,
-                       remove_symbols = TRUE#,remove_numbers = TRUE
- ) %>% 
-  quanteda::tokens_tolower() #%>%
- #quanteda::tokens_remove(pattern = custom_stop_words) %>%
- #quanteda::tokens_remove(pattern = c("project", "development", "bank", "world", "project", "projects"))
-                                      
-# #______ Step 2) kwic (individual exe )
-# kwic_pdo_data <- quanteda::kwic(x = pdo_q_tokens, # define text(s)
-#                                  # define pattern
-#                                  pattern = quanteda::phrase(c("gender", "climate", "sustainab*")),
-#                                  # define window size
-#                                  window = 5) %>%
-#     # convert into a data frame
-#     as_tibble() %>%
-#     left_join(projs_train, by = c("docname" =  "id")) %>%
-#     # remove superfluous columns
-#      dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post) %>%
-#   #  slice_sample( n = 50) %>%
-#    kbl(align = "c") # %>% kable_styling()
- 
 # ____ Step 2) kwic (on vector)
 # Iterate `quanteda::kwic` over a vector of tokens | regex-modified-keywords
-keywords <- c("gender", "climate", "sustainab*", "conditional*" )
+keywords <- c("gender", "climate", "sustainab*", "conditional*")
 
-# apply iteratively kwic over a vector of keywords
-outputs_key <-  map(keywords, 
-      ~quanteda::kwic(pdo_q_tokens,
-                      pattern =  .x,
-                      window = 5) %>% 
-        as_tibble() %>%
-        left_join(projs_train, by = c("docname" =  "id")) %>%  
-        # remove superfluous columns
-       dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post)
+# [ERROR] apply iteratively kwic over a vector of keywords
+# outputs_key <-  map(keywords,
+#       ~quanteda::kwic(pdo_q_tokens,
+#                       pattern =  .x,
+#                       window = 5)) %>%
+#         as_tibble() %>%
+#         left_join(projs_train, by = c("docname" =  "proj_id")) %>%
+#         # remove superfluous columns
+#      dplyr::select( 'Year' = FY_appr, 'Prj title' = pr_name, pre, keyword, post)  
+
+
+# [CORRECTED CHATGPT] apply iteratively kwic over a vector of keywords
+kwic_tokens <- keywords %>%
+  set_names() %>%  # names the list using the keywords
+  map(~ quanteda::kwic(
+          x = pdo_q_tokens,
+          pattern = quanteda::phrase(.x),
+          window = 5
+      ) %>%
+      as_tibble() %>%
+      left_join(projs_train, by = c("docname" =  "proj_id")) %>%
+      dplyr::select('Year' = FY_appr, 'Prj title' = pr_name, pre, keyword, post)
   )
 
-# # all togetha 3
-n = length(keywords)
 
-# check the first element  
-outputs_key[[1]] %>%
-   kbl(align = "c")
-outputs_key[[2]] %>%
-   kbl(align = "c")
+# # all togetha 4
+n <- length(keywords)
+n
 
-# this list  has no element names 
-names(outputs_key)
+# check the first element
+kwic_tokens$climate %>% kbl(align = "c")
+kwic_tokens$gender %>% kbl(align = "c")
+
 ```
+
 
 #### --- create kwic with phrases | purrr + print + save png
 ```{r}
-# Iterate `quanteda::kwic` over a vector of phrases/bigrams 
-keywords_phrase <- c("pro-poor", "gender equality", "gender mainstreaming" )
- 
+# Iterate `quanteda::kwic` over a vector of phrases/bigrams
+keywords_phrase <- c("pro-poor", "gender equality", "gender mainstreaming")
+
 # Step 1) tokens
 # (done above) -> abs_q_tokens
 
-# Step 2) kwic 
+# Step 2) kwic
 # apply iteratively kwic over a vector of bigrams
-outputs_bigrams <- map(keywords_phrase,
-                       ~quanteda::kwic(x = pdo_q_tokens, # define text(s) 
-                                       # define pattern
-                                       pattern = quanteda::phrase(.x),
-                                       # define window size
-                                       window = 5) %>%
-                          # convert into a data frame
-                          as_tibble() %>%
-                          left_join(projs_train, by = c("docname" =  "id")) %>%  
-                          ## remove superfluous columns
-                          dplyr::select( 'Year' = boardapprovalFY, 'Prj title' = pr_name, pre, keyword, post)
-)  
+# Create KWIC tables for each phrase
+kwic_bigrams <- keywords_phrase %>%
+  set_names() %>%
+  map(~ quanteda::kwic(
+          x = pdo_q_tokens,
+          pattern = quanteda::phrase(.x),  # treat each string as a full phrase
+          window = 5
+      ) %>%
+      as_tibble() %>%
+      left_join(projs_train, by = c("docname" =  "proj_id")) %>%
+      dplyr::select('Year' = FY_appr, 'Prj title' = pr_name, pre, keyword, post)
+  ) |> 
+# drop empty tables
+  discard(~ nrow(.x) == 0)
 
-#  number ofo cbigrams 
-n_bi = length(keywords_phrase)
-n_bi # 7
-# name this list's elements 
-outputs_bigrams <- outputs_bigrams %>% 
-  set_names(paste0("kwic_", keywords_phrase))  
 
-# get rid of empty output dfs in list  
-outputs_bigrams2 <- outputs_bigrams[sapply(
-  outputs_bigrams, function(x) dim(x)[1]) > 0] # 4 left!
- 
-#or 
-outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
+#  number ofo cbigrams
+n_bi <- length(keywords_phrase)
+n_bi # 3
 
-# -------------- print all 
+# Render the KWIC table for "gender equality":
+kwic_bigrams[["gender mainstreaming"]] %>%
+  kbl(align = "c")
+
+# -------------- print all
 #  walk + print -
-#walk(.x = outputs_bigrams2, .f = print)
+# walk(.x = outputs_bigrams2, .f = print)
 ```
 
 
@@ -2424,17 +2599,17 @@ outputs_bigrams3 <- purrr::keep(outputs_bigrams, ~nrow(.) > 0)  # 4 left!
 # -------------- save  all -> create multiple tables from a single dataframe and save them as images
 # https://stackoverflow.com/questions/69323569/how-to-save-multiple-tables-as-images-using-kable-and-map/69323893#69323893
 
-out_dir_tab <-  here::here("analysis", "output","tables")
- 
-outputs_bigrams2  %>%
-  imap(~save_kable(file = paste0(out_dir_tab, '/', 'pdo_', .y, '_.png'),
-                   # bs_theme = 'journal', 
-                   self_contained = T, 
-                   x = kbl(.x, booktabs = T, align = c('l','l', 'c')) %>%
-                     kable_styling() 
-  )
-  )
+out_dir_tab <- here::here("analysis", "output", "tables")
 
+kwic_bigrams %>%
+  # save_kable(..., file = "file.png") relies on the webshot2 package, which  Chromium or Chrome to be installed and accessible. 
+  imap(~ save_kable(
+    file = paste0(out_dir_tab, "/", "pdo_kwic_", .y, "_.png"),
+    # bs_theme = 'journal',
+    self_contained = T,
+    x = kbl(.x, booktabs = T, align = c("l", "l", "c")) %>%
+      kable_styling()
+  ))
 ```
 
 # _______
@@ -2454,7 +2629,7 @@ PDOsector_list
 
 PDOsector_list$`MINING_OIL_GAS`
 # Which PDOsector
-tabyl(pdo_train_t$tok_sector_broad ) 
+tabyl(pdo_train_t$tok_sector_broad)
 
 # --- Split data long into a LIST of subset by sector
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
@@ -2463,51 +2638,51 @@ str(PDOsector_list)
 #### [FUNC] Figure split sector (`tok_sector_broad`) freq ggplot
 # --- Create a function to plot for each sector with custom colors
 f_plot_pdo_sector <- function(PDO_sec_name) {
+  # Retrieve specific sector data (sec as character)
+  PDO_data_sec <- PDOsector_list[[as.character(PDO_sec_name)]]
+  # Group by fiscal year of approval
+  PDO_data_sec <- PDO_data_sec %>%
+    group_by(FY_appr)
 
-   # Retrieve specific sector data (sec as character)
-   PDO_data_sec <- PDOsector_list[[as.character(PDO_sec_name)]]
-   # Group by fiscal year of approval
-   PDO_data_sec <-  PDO_data_sec %>% 
-      group_by(FY_appr)  
-   
-   # Create the plot
-   ggplot(data = PDO_data_sec, 
-          aes(x = FY_appr, y = n)) +
-      # By sector ... 
-      geom_line(color = sector_colors[PDO_sec_name], linetype = "dotted", alpha = 0.5, size = 1) +   
-      geom_point(color = sector_colors[PDO_sec_name], size = 3) +               
-      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-      scale_y_continuous(breaks = seq(0, max(PDO_data_sec$n), by = 25)) +
-      # custom
-      lulas_theme + 
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      labs(
-         title = paste("\"",PDO_sec_name,"\" in PDOs by fiscal years of approval"),  # Use facet-specific title
-         subtitle = "[Using a \"custom\" broad sector definition]",
-         x = "", 
-         y = ""  # Remove y-axis label
-      ) +
-      # Ensure y-axis limit includes 50
-      expand_limits(y = 50) + 
-      # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
-      geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
-
+  # Create the plot
+  ggplot(
+    data = PDO_data_sec,
+    aes(x = FY_appr, y = n)
+  ) +
+    # By sector ...
+    geom_line(color = sector_colors[PDO_sec_name], linetype = "dotted", alpha = 0.5, size = 1) +
+    geom_point(color = sector_colors[PDO_sec_name], size = 3) +
+    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+    scale_y_continuous(breaks = seq(0, max(PDO_data_sec$n), by = 25)) +
+    # custom
+    lulas_theme +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(
+      title = paste("\"", PDO_sec_name, "\" in PDOs by fiscal years of approval"), # Use facet-specific title
+      subtitle = "[Using a \"custom\" broad sector definition]",
+      x = "",
+      y = "" # Remove y-axis label
+    ) +
+    # Ensure y-axis limit includes 50
+    expand_limits(y = 50) +
+    # Add the reference line at y = 50, red, dashed, and transparent (50% opacity)
+    geom_hline(yintercept = 50, linetype = "longdash", color = "#d02e4c", alpha = 0.75)
 }
 
-# --- Plot one sector 
-# PDO_sec_name EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN 
+# --- Plot one sector
+# PDO_sec_name EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN
 # data_sec EX sector_list[["WAT_SAN"]]
-f_plot_pdo_sector( PDO_sec_name = "WAT_SAN")
-f_plot_pdo_sector( PDO_sec_name = "ENERGY")
-f_plot_pdo_sector( PDO_sec_name = "TRANSPORT")
-f_plot_pdo_sector( PDO_sec_name = "URBAN")
-f_plot_pdo_sector( PDO_sec_name = "MINING_OIL_GAS")
-f_plot_pdo_sector( PDO_sec_name = "ICT")
-f_plot_pdo_sector( PDO_sec_name = "HEALTH")
-f_plot_pdo_sector( PDO_sec_name = "EDUCATION")
+f_plot_pdo_sector(PDO_sec_name = "WAT_SAN")
+f_plot_pdo_sector(PDO_sec_name = "ENERGY")
+f_plot_pdo_sector(PDO_sec_name = "TRANSPORT")
+f_plot_pdo_sector(PDO_sec_name = "URBAN")
+f_plot_pdo_sector(PDO_sec_name = "MINING_OIL_GAS")
+f_plot_pdo_sector(PDO_sec_name = "ICT")
+f_plot_pdo_sector(PDO_sec_name = "HEALTH")
+f_plot_pdo_sector(PDO_sec_name = "EDUCATION")
 
 # Use purrr::map to apply the function over the names of sector_list
-map(names(PDOsector_list), f_plot_pdo_sector) 
+map(names(PDOsector_list), f_plot_pdo_sector)
 ```
 
 
@@ -2522,97 +2697,97 @@ Basically I want to compare the trend over time of the frequency of my custom se
  
 ```{r}
 # Data input
-tabyl(projs_train$sector1)   
+tabyl(projs_train$sector1)
 
 # let's select some clear cut sectors e.g. WATER AND SANITATION
 projs_train <- projs_train %>%
-   mutate (sector1_broad = case_when(
-      # WAT_SAN
-      sector1 == "Other Water Supply, Sanitation and Waste Management" ~ "WAT_SAN",
-      sector1 == "Public Administration - Water, Sanitation and Waste Management" ~ "WAT_SAN",
-      sector1 == "Sanitation" ~ "WAT_SAN",
-      sector1 == "Water Supply" ~ "WAT_SAN",
-      sector1 == "Waste Management" ~ "WAT_SAN",
-      # ENERGY
-      sector1 == "Energy Transmission and Distribution" ~ "ENERGY",
-      sector1 == "Non-Renewable Energy Generation" ~ "ENERGY",
-      sector1 == "Other Energy and Extractives" ~ "ENERGY",
-      sector1 == "Public Administration - Energy and Extractives" ~ "ENERGY",
-      sector1 == "Renewable Energy Biomass"  ~ "ENERGY", 
-      sector1 == "Renewable Energy Geothermal"  ~ "ENERGY", 
-      sector1 == "Renewable Energy Hydro"  ~ "ENERGY", 
-      sector1 == "Renewable Energy Solar"  ~ "ENERGY", 
-      sector1 == "Renewable Energy Wind"  ~ "ENERGY", 
-      sector1 == "Renewable energy"  ~ "ENERGY", 
-      
-      # TRANSPORT
-      sector1 == "Other Transportation" ~ "TRANSPORT",
-      sector1 == "Public Administration - Transportation" ~ "TRANSPORT",
-      sector1 == "Urban Transport" ~ "TRANSPORT",
-      sector1 == "Rural and Inter-Urban Roads" ~ "TRANSPORT",
-      sector1 == "Roads and highways" ~ "TRANSPORT",
-      sector1 == "Ports/Waterways" ~ "TRANSPORT",
-      sector1 == "Railways" ~ "TRANSPORT",
-      sector1 == "Airports" ~ "TRANSPORT",
-        # URBAN
-      #niente  
-      #  MINING_OIL_GAS
-      sector1 == "MINING_OIL_GAS" ~ "MINING_OIL_GAS",
-      sector1 == "Oil and Gas" ~ "MINING_OIL_GAS",
-      # ICT
-      sector1 == "ICT Infrastructure" ~ "ICT",
-      sector1 == "ICT Services" ~ "ICT",
-      sector1 == "Public Administration - Information and Communications Technologies" ~ "ICT",
-      sector1 == "Other Information and Communications Technologies" ~ "ICT",
-     # EDUCATION
-      sector1 == "Other Education" ~ "EDUCATION",
-      sector1 == "Primary education" ~ "EDUCATION",
-      sector1 == "Public Administration - Education" ~ "EDUCATION",
-      sector1 == "Tertiary education" ~ "EDUCATION",
-      sector1 == "Secondary education" ~ "EDUCATION",
-      sector1 == "Workforce Development and Vocational Education" ~ "EDUCATION",
-      sector1 == "Adult, Basic and Continuing Education" ~ "EDUCATION",
-      sector1 == "Early Childhood Education" ~ "EDUCATION",
-      # HEALTH
-      sector1 == "Health" ~ "HEALTH",
-      sector1 == "Public Administration - Health" ~ "HEALTH",
-      sector1 == "Health facilities and construction" ~ "HEALTH",
-       # else
-      TRUE ~ sector1
-   ))
+  mutate(sector1_broad = case_when(
+    # WAT_SAN
+    sector1 == "Other Water Supply, Sanitation and Waste Management" ~ "WAT_SAN",
+    sector1 == "Public Administration - Water, Sanitation and Waste Management" ~ "WAT_SAN",
+    sector1 == "Sanitation" ~ "WAT_SAN",
+    sector1 == "Water Supply" ~ "WAT_SAN",
+    sector1 == "Waste Management" ~ "WAT_SAN",
+    # ENERGY
+    sector1 == "Energy Transmission and Distribution" ~ "ENERGY",
+    sector1 == "Non-Renewable Energy Generation" ~ "ENERGY",
+    sector1 == "Other Energy and Extractives" ~ "ENERGY",
+    sector1 == "Public Administration - Energy and Extractives" ~ "ENERGY",
+    sector1 == "Renewable Energy Biomass" ~ "ENERGY",
+    sector1 == "Renewable Energy Geothermal" ~ "ENERGY",
+    sector1 == "Renewable Energy Hydro" ~ "ENERGY",
+    sector1 == "Renewable Energy Solar" ~ "ENERGY",
+    sector1 == "Renewable Energy Wind" ~ "ENERGY",
+    sector1 == "Renewable energy" ~ "ENERGY",
+
+    # TRANSPORT
+    sector1 == "Other Transportation" ~ "TRANSPORT",
+    sector1 == "Public Administration - Transportation" ~ "TRANSPORT",
+    sector1 == "Urban Transport" ~ "TRANSPORT",
+    sector1 == "Rural and Inter-Urban Roads" ~ "TRANSPORT",
+    sector1 == "Roads and highways" ~ "TRANSPORT",
+    sector1 == "Ports/Waterways" ~ "TRANSPORT",
+    sector1 == "Railways" ~ "TRANSPORT",
+    sector1 == "Airports" ~ "TRANSPORT",
+    # URBAN
+    # niente
+    #  MINING_OIL_GAS
+    sector1 == "MINING_OIL_GAS" ~ "MINING_OIL_GAS",
+    sector1 == "Oil and Gas" ~ "MINING_OIL_GAS",
+    # ICT
+    sector1 == "ICT Infrastructure" ~ "ICT",
+    sector1 == "ICT Services" ~ "ICT",
+    sector1 == "Public Administration - Information and Communications Technologies" ~ "ICT",
+    sector1 == "Other Information and Communications Technologies" ~ "ICT",
+    # EDUCATION
+    sector1 == "Other Education" ~ "EDUCATION",
+    sector1 == "Primary education" ~ "EDUCATION",
+    sector1 == "Public Administration - Education" ~ "EDUCATION",
+    sector1 == "Tertiary education" ~ "EDUCATION",
+    sector1 == "Secondary education" ~ "EDUCATION",
+    sector1 == "Workforce Development and Vocational Education" ~ "EDUCATION",
+    sector1 == "Adult, Basic and Continuing Education" ~ "EDUCATION",
+    sector1 == "Early Childhood Education" ~ "EDUCATION",
+    # HEALTH
+    sector1 == "Health" ~ "HEALTH",
+    sector1 == "Public Administration - Health" ~ "HEALTH",
+    sector1 == "Health facilities and construction" ~ "HEALTH",
+    # else
+    TRUE ~ sector1
+  ))
 
 # check
-pdo_train_t %>% 
-   filter(tok_sector_broad %in% 
-             c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "EDUCATION", "HEALTH")) %>%
-   tabyl(tok_sector_broad, show_missing_levels =  T) 
+pdo_train_t %>%
+  filter(tok_sector_broad %in%
+    c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "EDUCATION", "HEALTH")) %>%
+  tabyl(tok_sector_broad, show_missing_levels = T)
 
 
-projs_train %>% 
-   filter(sector1_broad %in% 
-             c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS",           "ICT", "EDUCATION", "HEALTH")) %>% 
-   tabyl(sector1_broad) 
-
+projs_train %>%
+  filter(sector1_broad %in%
+    c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "EDUCATION", "HEALTH")) %>%
+  tabyl(sector1_broad)
 ```
  
 #### ----  prep data `sector_broad_tag`
 
 ```{r}
-paint(projs_train )
+paint(projs_train)
 
 # prep data
-sector_broad_tag <- projs_train %>% 
-      mutate(FY_appr = boardapprovalFY) %>%
-   filter(!is.na(sector1_broad)) %>% 
-   filter(sector1_broad %in% 
-             c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS",           "ICT", "EDUCATION", "HEALTH")) %>% 
-   select (FY_appr,  sector1_broad )  %>% 
-   # count(FY_appr, sector1_broad) %>% 
-   # filter(n > 0) %>% 
-   mutate(sector1_broad = factor(sector1_broad, levels = c(
-      "WAT_SAN", "ENERGY", "TRANSPORT",#"URBAN",
-      "MINING_OIL_GAS","ICT", "HEALTH", "EDUCATION" ))) # reorder values by frequency
-#df$FY
+sector_broad_tag <- projs_train %>%
+#  mutate(FY_appr = boardapprovalFY) %>%
+  filter(!is.na(sector1_broad)) %>%
+  filter(sector1_broad %in%
+    c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "EDUCATION", "HEALTH")) %>%
+  select(FY_appr, sector1_broad) %>%
+  # count(FY_appr, sector1_broad) %>%
+  # filter(n > 0) %>%
+  mutate(sector1_broad = factor(sector1_broad, levels = c(
+    "WAT_SAN", "ENERGY", "TRANSPORT", # "URBAN",
+    "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION"
+  ))) # reorder values by frequency
+# df$FY
 ```
 
 ```{r}
@@ -2620,8 +2795,8 @@ sector_broad_tag <- projs_train %>%
 paint(sector_broad_tag)
 
 # which tag_sector (gia tolto NA!!!)
-#tabyl(sector_broad_tag$sector1 )
-tabyl(sector_broad_tag$sector1_broad )
+# tabyl(sector_broad_tag$sector1 )
+tabyl(sector_broad_tag$sector1_broad)
 ```
 
 <!-- MATCH PDO WORDS AND SECTOR TAGS -->
@@ -2651,53 +2826,51 @@ tabyl(sector_broad_tag$sector1_broad )
 Here I have much bigger numbers 
 ```{r}
 # --- Split data long into a LIST of subset by sector
-sector_list <- base::split(x =  sector_broad_tag, f = sector_broad_tag$sector1_broad)
-str(sector_list) 
- 
+sector_list <- base::split(x = sector_broad_tag, f = sector_broad_tag$sector1_broad)
+str(sector_list)
+
 # --- FUNCTION to plot iteratively each sector (like f_plot_sector)
-f_plot_tag_sector <- function( name_sec){
- # Ensure name_sec is treated as a character
-   data_sec <- sector_list[[as.character(name_sec)]]
- #  data_sec <- sector_list[["ENERGY"]]
+f_plot_tag_sector <- function(name_sec) {
+  # Ensure name_sec is treated as a character
+  data_sec <- sector_list[[as.character(name_sec)]]
+  #  data_sec <- sector_list[["ENERGY"]]
 
-      data_sec <- data_sec %>% 
-      group_by(FY_appr)  %>% 
-       count() %>% 
-       ungroup() #%>% 
-      # #mutate(FY_appr = as.Date(FY_appr, format = "%Y-%m-%d"))
-   
-   # plot
-   ggplot(data = data_sec, aes(x = FY_appr, y = n)) +
-      geom_line(color = sector_colors[name_sec], linetype = "dotted", alpha = 0.5, size = 1) +   
-      geom_point(color = sector_colors[name_sec], size = 3) +     
-      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-      scale_y_continuous(breaks = seq(0, max(data_sec$n), by = 5)) +
-      labs(title = name_sec, x = "Year", y = "Number of projects") +
-      # custom
-      lulas_theme + 
-      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-      labs(
-         title = paste("\"",name_sec,"\" in tag by fiscal years of approval"),  # Use facet-specific title
-         subtitle = "[Using variable \"sector1\"]",
-         x = "", 
-         y = ""  # Remove y-axis label
-      ) 
+  data_sec <- data_sec %>%
+    group_by(FY_appr) %>%
+    count() %>%
+    ungroup() # %>%
+  # #mutate(FY_appr = as.Date(FY_appr, format = "%Y-%m-%d"))
 
+  # plot
+  ggplot(data = data_sec, aes(x = FY_appr, y = n)) +
+    geom_line(color = sector_colors[name_sec], linetype = "dotted", alpha = 0.5, size = 1) +
+    geom_point(color = sector_colors[name_sec], size = 3) +
+    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+    scale_y_continuous(breaks = seq(0, max(data_sec$n), by = 5)) +
+    labs(title = name_sec, x = "Year", y = "Number of projects") +
+    # custom
+    lulas_theme +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(
+      title = paste("\"", name_sec, "\" in tag by fiscal years of approval"), # Use facet-specific title
+      subtitle = "[Using variable \"sector1\"]",
+      x = "",
+      y = "" # Remove y-axis label
+    )
 }
 
-# --- Plot one sector 
-# name_sec EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN 
+# --- Plot one sector
+# name_sec EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN
 # data_sec EX sector_list[["WAT_SAN"]]
-f_plot_tag_sector( name_sec = "WAT_SAN")
-f_plot_tag_sector( name_sec = "ENERGY")
-f_plot_tag_sector( name_sec = "TRANSPORT")
-f_plot_tag_sector( name_sec = "ICT")
-f_plot_tag_sector( name_sec = "HEALTH")
-f_plot_tag_sector( name_sec = "EDUCATION")
- 
-# Use purrr::map to apply the function over the names of sector_list
- map(names(sector_list), f_plot_tag_sector) 
+f_plot_tag_sector(name_sec = "WAT_SAN")
+f_plot_tag_sector(name_sec = "ENERGY")
+f_plot_tag_sector(name_sec = "TRANSPORT")
+f_plot_tag_sector(name_sec = "ICT")
+f_plot_tag_sector(name_sec = "HEALTH")
+f_plot_tag_sector(name_sec = "EDUCATION")
 
+# Use purrr::map to apply the function over the names of sector_list
+map(names(sector_list), f_plot_tag_sector)
 ```
 
 <!-- #### --- [FIG] WATER  -->
@@ -2713,22 +2886,21 @@ f_plot_tag_sector( name_sec = "EDUCATION")
 ## ---- Combine two sets of data `sector_broad_tag` and `sector_broad_pdo`
 
 ```{r}
-# not sure why 
-sector_broad_tag <- sector_broad_tag %>% 
-   count(FY_appr, sector1_broad)
+# not sure why
+sector_broad_tag <- sector_broad_tag %>%
+  count(FY_appr, sector1_broad)
 
 # Combine two sets of data
 str(sector_broad_pdo)
 str(sector_broad_tag)
 
-sector_broad_combo <- left_join(sector_broad_pdo, sector_broad_tag, 
-                                by = c("FY_appr", "tok_sector_broad" = "sector1_broad") ,
-                                suffix = c("_pdo", "_tag")
-                                ) %>% 
-   filter (!is.na(n_tag))
+sector_broad_combo <- left_join(sector_broad_pdo, sector_broad_tag,
+  by = c("FY_appr", "tok_sector_broad" = "sector1_broad"),
+  suffix = c("_pdo", "_tag")
+) %>%
+  filter(!is.na(n_tag))
 
 sector_broad_combo
-                                
 ```
 
 #### --- [TAB] Kolmorogov-Smirnov test test of similarity with a table 
@@ -2746,46 +2918,51 @@ The `test statistic` is the maximum difference between the two cumulative distri
 #| eval: true
 #| echo: true
 #| output: true
- 
+
 # Function to calculate KS test results and save to a table without plotting
-ks_results_k <- sector_broad_combo  %>%
-   group_by(tok_sector_broad) %>%
-   summarize(
-      # ks_alt_hyp = ks.test(
-      #   (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-      #   (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
-      # )$alternative, 
- 
-      # a) with normalization     
-      ks_statistic = ks.test(
-         (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag)))$statistic, 
-      
-      ks_p_value = ks.test(
-         (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-         (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag)))$p.value,
-      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
-      
-      # # b) without normalization
-      #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
-      #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
-       ) %>%
-   ungroup()  %>% 
-   arrange(ks_p_value)
+ks_results_k <- sector_broad_combo %>%
+  group_by(tok_sector_broad) %>%
+  summarize(
+    # ks_alt_hyp = ks.test(
+    #   (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
+    #   (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
+    # )$alternative,
+
+    # a) with normalization
+    ks_statistic = ks.test(
+      (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
+      (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
+    )$statistic,
+    ks_p_value = ks.test(
+      (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
+      (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
+    )$p.value,
+    similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
+
+    # # b) without normalization
+    #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
+    #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
+  ) %>%
+  ungroup() %>%
+  arrange(ks_p_value)
 
 # save as object
-write_rds(ks_results_k, here("analysis", "output", "tables" ,"ks_results_k.rds"))
+write_rds(ks_results_k, here("analysis", "output", "tables", "ks_results_k.rds"))
 
 # Count how often the phrase appears in the vicinity of the target bigram
-ks_results_k %>% 
-   kable(format = "html", 
-         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"#, "KS statistic R","KS p-valueR" 
-                       ),
-         # Round  to 4 digits) 
-         digits = c(0, 4, 4, 0#, 4,4
-                    )) %>% 
-   kable_styling(full_width = FALSE) %>%
-   row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
+ks_results_k %>%
+  kable(
+    format = "html",
+    col.names = c(
+      "SECTORS", "KS statistic", "KS p-value", "Distributions" # , "KS statistic R","KS p-valueR"
+    ),
+    # Round  to 4 digits)
+    digits = c(
+      0, 4, 4, 0 # , 4,4
+    )
+  ) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
 ```
 
 Additional plots 
@@ -2798,19 +2975,18 @@ Additional plots
 #| output: true
 #| fig.cap: Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector
 
-ks_results_k %>% 
-   ggplot(aes(x = reorder(tok_sector_broad, ks_p_value), y = ks_p_value)) +
-   geom_col(fill = "#0073C2FF") +
-   geom_text(aes(label = round(ks_p_value, 4)), vjust = -0.5) +
-   coord_flip() +
-   labs(
-      title = "Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector",
-      x = "Sector",
-      y = "P-Value"
-   ) +
-   theme_minimal() +
-   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
+ks_results_k %>%
+  ggplot(aes(x = reorder(tok_sector_broad, ks_p_value), y = ks_p_value)) +
+  geom_col(fill = "#0073C2FF") +
+  geom_text(aes(label = round(ks_p_value, 4)), vjust = -0.5 ) +
+  coord_flip() +
+  labs(
+    title = "Kolmogorov-Smirnov Test for Similarity of PDO and TAG Distributions by Sector",
+    x = "Sector",
+    y = "P-Value"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
@@ -2825,17 +3001,16 @@ ks_results_k %>%
 #| fig.cap: Correlation between PDO and TAG by sector
 
 sector_broad_combo %>%
-   ggplot(aes(x = n_pdo, y = n_tag)) +
-   geom_point() +
-   geom_smooth(method = "lm", se = FALSE) +
-   facet_wrap(~tok_sector_broad, scales = "free") +
-   labs(
-      title = "Correlation between PDO and TAG by Sector",
-      x = "Normalized PDO",
-      y = "Normalized TAG"
-   ) +
-   theme_minimal()
-
+  ggplot(aes(x = n_pdo, y = n_tag)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~tok_sector_broad, scales = "free") +
+  labs(
+    title = "Correlation between PDO and TAG by Sector",
+    x = "Normalized PDO",
+    y = "Normalized TAG"
+  ) +
+  theme_minimal()
 ```
 
 # 
@@ -2852,70 +3027,73 @@ However, for comparing distributions of two continuous variables like n_pdo and 
 ```{r}
 # Define the plotting function
 f_plot_sector_trends <- function(data, sector_name, title = NULL, subtitle = NULL) {
-   # Filter data for the specified sector
-   sector_data <- data %>% filter(tok_sector_broad == sector_name)
-   
-   # Normalize n_pdo and n_tag to range [0, 1] for the selected sector
-   sector_data <- sector_data %>%
-      mutate(
-         n_pdo_norm = (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
-         n_tag_norm = (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
-      )
-   
-   # ---- Calculate  KS test p-value for the selected sector
-   sector_stats <- sector_data %>%
-      summarize(
-         # spearman_cor = cor(n_pdo_norm, n_tag_norm, method = "spearman", use = "complete.obs"),
-         ks_p_value = ks.test(n_pdo_norm, n_tag_norm)$p.value,
-         similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
-      )
-   
+  # Filter data for the specified sector
+  sector_data <- data %>% filter(tok_sector_broad == sector_name)
+
+  # Normalize n_pdo and n_tag to range [0, 1] for the selected sector
+  sector_data <- sector_data %>%
+    mutate(
+      n_pdo_norm = (n_pdo - min(n_pdo)) / (max(n_pdo) - min(n_pdo)),
+      n_tag_norm = (n_tag - min(n_tag)) / (max(n_tag) - min(n_tag))
+    )
+
+  # ---- Calculate  KS test p-value for the selected sector
+  sector_stats <- sector_data %>%
+    summarize(
+      # spearman_cor = cor(n_pdo_norm, n_tag_norm, method = "spearman", use = "complete.obs"),
+      ks_p_value = ks.test(n_pdo_norm, n_tag_norm)$p.value,
+      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
+    )
+
   # --- Create custom legend title with statistical information
-   # custom_legend_title <- paste0(
-   #    "Frequency Metrics"#,
-   #    #"KS test p-value: ", round(sector_stats$ks_p_value, 4)
-   # )   
-   # Plot with both KS test annotations
-   ggplot(sector_data, aes(x = FY_appr)) +
-      # ---- (OR) Lighter line plot for normalized n_pdo
-      # geom_line(aes(y = n_pdo_norm, color = "n_pdo"), size = 1, alpha = 0.3) +
-      # # Points for normalized n_pdo
-      # geom_point(aes(y = n_pdo_norm, color = "n_pdo"), size = 4, alpha = 0.5) +
-      
-      # ---- (OR) Bar plot for normalized n_pdo with fill in aes() to include in legend
-      geom_bar(aes(y = n_pdo_norm, fill = "n_pdo"), stat = "identity", alpha = 0.5) +
-      # -----Lighter line plot for normalized n_tag
-      geom_line(aes(y = n_tag_norm, color = "n_tag"), size = 1, alpha = 0.3) +
-      # -----Points for normalized n_tag
-      geom_point(aes(y = n_tag_norm, color = "n_tag"), size = 4) +
-      
-      # --- Annotate KS test results directly on the plot
-      annotate(
-         "text", x = Inf, y = Inf, label = paste("KS test p-value:", round(sector_stats$ks_p_value, 4)),
-         hjust = 1.1, vjust = 1.1, color = "black", size = 4
-      ) +
-      
-      
-      # ---- Set titles, labels, and theme
-      labs(
-         title = paste0(title, " - ", sector_name),
-         subtitle = subtitle,
-         x = "", 
-         y = "",
-          fill =  "PDO term frequency",
-          color = "Sector label frequency"
-         ) +
-     # Customize colors for lines and bar fill
-      scale_color_manual(
-         values = c("n_tag" = "#00689D") 
-      ) +
-      scale_fill_manual(
-         values = c("n_pdo" = "#8e550a") 
-      ) +
-      scale_x_continuous(breaks = unique(sector_data$FY_appr)) + 
-      lulas_theme +
-      theme(legend.position = "right",
-            axis.text.x = element_text(angle = 45, hjust = 1) )
+  # custom_legend_title <- paste0(
+  #    "Frequency Metrics"#,
+  #    #"KS test p-value: ", round(sector_stats$ks_p_value, 4)
+  # )
+  # Plot with both KS test annotations
+  ggplot(sector_data, aes(x = FY_appr)) +
+    # ---- (OR) Lighter line plot for normalized n_pdo
+    # geom_line(aes(y = n_pdo_norm, color = "n_pdo"), size = 1, alpha = 0.3) +
+    # # Points for normalized n_pdo
+    # geom_point(aes(y = n_pdo_norm, color = "n_pdo"), size = 4, alpha = 0.5) +
+
+    # ---- (OR) Bar plot for normalized n_pdo with fill in aes() to include in legend
+    geom_bar(aes(y = n_pdo_norm, fill = "n_pdo"), stat = "identity", alpha = 0.5) +
+    # -----Lighter line plot for normalized n_tag
+    geom_line(aes(y = n_tag_norm, color = "n_tag"), size = 1, alpha = 0.3) +
+    # -----Points for normalized n_tag
+    geom_point(aes(y = n_tag_norm, color = "n_tag"), size = 4) +
+
+    # --- Annotate KS test results directly on the plot
+    annotate(
+      "text",
+      x = Inf, y = Inf, label = paste("KS test p-value:", round(sector_stats$ks_p_value, 4)),
+      hjust = 1.1, vjust = 1.1, color = "black", size = 4
+    ) +
+
+
+    # ---- Set titles, labels, and theme
+    labs(
+      title = paste0(title, " - ", sector_name),
+      subtitle = subtitle,
+      x = "",
+      y = "",
+      fill = "PDO term frequency",
+      color = "Sector label frequency"
+    ) +
+    # Customize colors for lines and bar fill
+    scale_color_manual(
+      values = c("n_tag" = "#00689D")
+    ) +
+    scale_fill_manual(
+      values = c("n_pdo" = "#8e550a")
+    ) +
+    scale_x_continuous(breaks = unique(sector_data$FY_appr)) +
+    lulas_theme +
+    theme(
+      legend.position = "right",
+      axis.text.x = element_text(angle = 45, hjust = 1)
+    )
 }
 ```
 
@@ -2931,11 +3109,13 @@ f_plot_sector_trends <- function(data, sector_name, title = NULL, subtitle = NUL
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "WAT_SAN",
-                   title = "Comparing frequency of sector trends over time" ,
-                   subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "WAT_SAN",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
 #### --- 🟢 [FIG] ENERGY (most dissimilar trend)
@@ -2948,21 +3128,25 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "WAT_SAN",
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "ENERGY",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "ENERGY",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
  save for blog 
 ```{r}
-comp_pdo_sec_ENE_plot <-  f_plot_sector_trends(data = sector_broad_combo, sector_name = "ENERGY",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
- 
-#f_save_plot("pdo_agr_plot", pdo_agr_plot)
-f_save_plot_obj (comp_pdo_sec_ENE_plot, "comp_pdo_sec_ENE_plot")
+comp_pdo_sec_ENE_plot <- f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "ENERGY",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
+
+# f_save_plot("pdo_agr_plot", pdo_agr_plot)
+f_save_plot_obj(comp_pdo_sec_ENE_plot, "comp_pdo_sec_ENE_plot")
 ```
  
 
@@ -2978,22 +3162,25 @@ f_save_plot_obj (comp_pdo_sec_ENE_plot, "comp_pdo_sec_ENE_plot")
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
-# Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "TRANSPORT",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
 
+# Usage example for a specific sector
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "TRANSPORT",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
  
  save for blog 
 ```{r}
-comp_pdo_sec_TRANSP_plot <-  f_plot_sector_trends(data = sector_broad_combo, sector_name = "TRANSPORT",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
- 
-#f_save_plot("pdo_agr_plot", pdo_agr_plot)
-f_save_plot_obj (comp_pdo_sec_TRANSP_plot, "comp_pdo_sec_TRANSP_plot")
+comp_pdo_sec_TRANSP_plot <- f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "TRANSPORT",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
+
+# f_save_plot("pdo_agr_plot", pdo_agr_plot)
+f_save_plot_obj(comp_pdo_sec_TRANSP_plot, "comp_pdo_sec_TRANSP_plot")
 ```
  
 
@@ -3009,11 +3196,13 @@ f_save_plot_obj (comp_pdo_sec_TRANSP_plot, "comp_pdo_sec_TRANSP_plot")
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "MINING_OIL_GAS",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "MINING_OIL_GAS",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
 #### --- [FIG] ICT
@@ -3026,11 +3215,13 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "MINING_OIL_GAS",
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "ICT",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "ICT",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
 #### --- [FIG] HEALTH
@@ -3043,11 +3234,13 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "ICT",
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "HEALTH",
-                   title = "Comparing frequency of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "HEALTH",
+  title = "Comparing frequency of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
 #### --- [FIG] EDUCATION
@@ -3060,22 +3253,23 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "HEALTH",
 #| fig.height: 8 #9.382  # adjust based on text width in inches
 #| out.width: "100%" # ensures the figure spans the full text width in HTML
 #| fig-align: "center"
- 
+
 # Usage example for a specific sector
-f_plot_sector_trends(data = sector_broad_combo, sector_name = "EDUCATION",
-                   title = "Comparing distrib. of sector trends over time" ,
-                subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends")
+f_plot_sector_trends(
+  data = sector_broad_combo, sector_name = "EDUCATION",
+  title = "Comparing distrib. of sector trends over time",
+  subtitle = "\`n_pdo\` = frequency in PDOs text; \`n_tag\` = frequency sector label (normalized values) \nKolmogorov-Smirnov test for similarity between the two trends"
+)
 ```
 
 #### --- [FIG] URBAN
 ```{r}
 # u_pdo <- f_plot_pdo_sector( PDO_sec_name = "URBAN")
 # # u_tag <- f_plot_tag_sector( name_sec = "URBAN")
-# 
-# u_pdo + #u_tag + 
-#    # plot_layout(guides = 'collect') + 
+#
+# u_pdo + #u_tag +
+#    # plot_layout(guides = 'collect') +
 #    plot_layout(ncol = 1)  # Use `ncol = 1` to stack vertically or `ncol = 2` for side-by-side
-
 ```
 
 
@@ -3086,8 +3280,7 @@ f_plot_sector_trends(data = sector_broad_combo, sector_name = "EDUCATION",
 This is a count of OBS per cell 
 
 ```{r}
-sector_broad_pdo   # 345
- 
+sector_broad_pdo # 330
 ```
 
 #### ----  **sum** of `sum_curr_total_commitment` corresponding to each `sector1_broad` per year 
@@ -3096,39 +3289,40 @@ sector_broad_pdo   # 345
 
 ```{r}
 # prep data
-sector_broad_commit <- projs_train %>% 
-   select(FY_appr = boardapprovalFY, sector1_broad, curr_total_commitment) %>% 
-   # group_by(FY_appr, sector1_broad) %>% 
-   # summarise(sum_curr_total_commitment = sum(curr_total_commitment)) %>% 
-   # ungroup() %>% 
-   # mutate(FY_appr = as.character(FY_appr)) %>% 
-   filter (sector1_broad %in% c("WAT_SAN", "ENERGY","TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION", "URBAN")) %>% 
-   mutate(FY_appr = as.numeric(FY_appr)) %>% 
-   arrange(sector1_broad,FY_appr) %>% 
-   group_by(sector1_broad, FY_appr ) %>% 
-   summarise(sum_commit = sum(curr_total_commitment) , .groups = "drop") %>%
-   complete(sector1_broad, FY_appr = full_seq(FY_appr, 1), fill = list(sum_commit = 0))  # Fill missing years
+sector_broad_commit <- projs_train %>%
+  select(FY_appr ,#= boardapprovalFY, 
+sector1_broad, curr_total_commitment) %>%
+  # group_by(FY_appr, sector1_broad) %>%
+  # summarise(sum_curr_total_commitment = sum(curr_total_commitment)) %>%
+  # ungroup() %>%
+  # mutate(FY_appr = as.character(FY_appr)) %>%
+  filter(sector1_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION", "URBAN")) %>%
+  mutate(FY_appr = as.numeric(FY_appr)) %>%
+  arrange(sector1_broad, FY_appr) %>%
+  group_by(sector1_broad, FY_appr) %>%
+  summarise(sum_commit = sum(curr_total_commitment), .groups = "drop") %>%
+  complete(sector1_broad, FY_appr = full_seq(FY_appr, 1), fill = list(sum_commit = 0)) # Fill missing years
 ```
 
 
 ```{r}
-sector_broad_pdo <- sector_broad_pdo %>% 
-   filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY","TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION" ))  
+sector_broad_pdo <- sector_broad_pdo %>%
+  filter(tok_sector_broad %in% c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION"))
 
 paint(sector_broad_pdo)
-nrow(sector_broad_pdo) # 161 
-tabyl(sector_broad_pdo$tok_sector_broad, show_missing_levels = F, show_na = F)  
-tabyl(sector_broad_pdo$FY_appr, show_missing_levels = F, show_na = F)  
+nrow(sector_broad_pdo) # 161
+tabyl(sector_broad_pdo$tok_sector_broad, show_missing_levels = F, show_na = F)
+tabyl(sector_broad_pdo$FY_appr, show_missing_levels = F, show_na = F)
 
 paint(sector_broad_commit)
-nrow(sector_broad_commit) # 161  
-tabyl(sector_broad_commit$sector1_broad, show_missing_levels = F, show_na = F)  
-tabyl(sector_broad_commit$FY_appr, show_missing_levels = F, show_na = F)  
+nrow(sector_broad_commit) # 161
+tabyl(sector_broad_commit$sector1_broad, show_missing_levels = F, show_na = F)
+tabyl(sector_broad_commit$FY_appr, show_missing_levels = F, show_na = F)
 ```
  
 ```{r}
 # merge the two datasets
-sector_broad_pdo_comm <-  left_join (sector_broad_pdo, sector_broad_commit, by = c("tok_sector_broad" = "sector1_broad", "FY_appr" = "FY_appr"))  
+sector_broad_pdo_comm <- left_join(sector_broad_pdo, sector_broad_commit, by = c("tok_sector_broad" = "sector1_broad", "FY_appr" = "FY_appr"))
 ```
 #### --- [TAB] Kolmorogov-Smirnov test test of similarity with a table 
 
@@ -3145,40 +3339,46 @@ The `test statistic` is the maximum difference between the two cumulative distri
 #| eval: true
 #| echo: true
 #| output: true
- 
+
 # Function to calculate KS test results and save to a table without plotting
-ks_results2_k <- sector_broad_pdo_comm  %>%
-   group_by(tok_sector_broad) %>%
-   # min -max normalization
-   mutate(n_scaled = (n - min(n, na.rm = TRUE)) / 
-             (max(n, na.rm = TRUE) - min(n, na.rm = TRUE)),
-          sum_commit_scaled = (sum_commit - min(sum_commit, na.rm = TRUE)) / 
-             (max(sum_commit, na.rm = TRUE) - min(sum_commit, na.rm = TRUE)) ) %>%
-   summarize(
-      # -- a) with normalization     
-      ks_statistic = ks.test(n_scaled, sum_commit_scaled)$statistic,
-      ks_p_value = ks.test(n_scaled, sum_commit_scaled )$p.value,
-      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
-      # -- b) without normalization
-      #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
-      #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
-       ) %>%
-   ungroup()  %>% 
-   arrange(ks_p_value)
+ks_results2_k <- sector_broad_pdo_comm %>%
+  group_by(tok_sector_broad) %>%
+  # min -max normalization
+  mutate(
+    n_scaled = (n - min(n, na.rm = TRUE)) /
+      (max(n, na.rm = TRUE) - min(n, na.rm = TRUE)),
+    sum_commit_scaled = (sum_commit - min(sum_commit, na.rm = TRUE)) /
+      (max(sum_commit, na.rm = TRUE) - min(sum_commit, na.rm = TRUE))
+  ) %>%
+  summarize(
+    # -- a) with normalization
+    ks_statistic = ks.test(n_scaled, sum_commit_scaled)$statistic,
+    ks_p_value = ks.test(n_scaled, sum_commit_scaled)$p.value,
+    similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar"),
+    # -- b) without normalization
+    #  ks_statistic_raw = ks.test(n_pdo, n_tag)$statistic,
+    #  ks_p_value_raw = ks.test(n_pdo, n_tag)$p.value,
+  ) %>%
+  ungroup() %>%
+  arrange(ks_p_value)
 
 # save as object
-write_rds(ks_results2_k, here("analysis", "output", "tables" ,"ks_results2_k.rds"))
+write_rds(ks_results2_k, here("analysis", "output", "tables", "ks_results2_k.rds"))
 
 # Count how often the phrase appears in the vicinity of the target bigram
-ks_results2_k %>% 
-   kable(format = "html", 
-         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"#, "KS statistic R","KS p-valueR" 
-                       ),
-         # Round  to 4 digits) 
-         digits = c(0, 4, 4, 0#, 4,4
-                    )) %>% 
-   kable_styling(full_width = FALSE) %>%
-   row_spec(which(ks_results2_k$similarity == "Dissimilar"), background = "#e7d8da")
+ks_results2_k %>%
+  kable(
+    format = "html",
+    col.names = c(
+      "SECTORS", "KS statistic", "KS p-value", "Distributions" # , "KS statistic R","KS p-valueR"
+    ),
+    # Round  to 4 digits)
+    digits = c(
+      0, 4, 4, 0 # , 4,4
+    )
+  ) %>%
+  kable_styling(full_width = FALSE) %>%
+  row_spec(which(ks_results2_k$similarity == "Dissimilar"), background = "#e7d8da")
 ```
 
 ### --- [FUNC] standardize and plot 
@@ -3194,86 +3394,87 @@ ks_results2_k %>%
    + SIMILAR = A high `p-value` does not necessarily mean the distributions are identical, only that there is not enough evidence to reject the null hypothesis of similarity.
    + The `KS test` is non-parametric and makes no assumptions about the underlying distributions, making it a versatile tool for comparing distributions.
 ```{r}
-# --- FUNCTION to 1) standardize 2 distributions and 2) plot iteratively each sector  
+# --- FUNCTION to 1) standardize 2 distributions and 2) plot iteratively each sector
 f_plot_sector_comm <- function(data, sector) {
+  # ---- Filter data for the specified sector
+  sector_data <- data %>%
+    dplyr::filter(tok_sector_broad == sector) %>%
+    dplyr::group_by(tok_sector_broad) %>%
+    # # ---- Standardize n and sum_commit within each sector
+    # mutate(n_standardized = (n - mean(n, na.rm = TRUE)) / sd(n, na.rm = TRUE),
+    #        sum_commit_standardized = (
+    #           sum_commit - mean(sum_commit, na.rm = TRUE)) / sd(sum_commit, na.rm = TRUE)) %>%
+    # ---- Min-Max Scaling
+    dplyr::mutate(
+      n_scaled = (n - min(n, na.rm = TRUE)) /
+        (max(n, na.rm = TRUE) - min(n, na.rm = TRUE)),
+      sum_commit_scaled = (sum_commit - min(sum_commit, na.rm = TRUE)) /
+        (max(sum_commit, na.rm = TRUE) - min(sum_commit, na.rm = TRUE))
+    ) %>%
+    dplyr::ungroup()
 
-      # ---- Filter data for the specified sector
-   sector_data <- data %>%
-      filter(tok_sector_broad == sector) %>%
-      group_by(tok_sector_broad) %>%
-      # # ---- Standardize n and sum_commit within each sector
-      # mutate(n_standardized = (n - mean(n, na.rm = TRUE)) / sd(n, na.rm = TRUE),
-      #        sum_commit_standardized = (
-      #           sum_commit - mean(sum_commit, na.rm = TRUE)) / sd(sum_commit, na.rm = TRUE)) %>%
-      # ---- Min-Max Scaling
-      mutate(n_scaled = (n - min(n, na.rm = TRUE)) / 
-                (max(n, na.rm = TRUE) - min(n, na.rm = TRUE)),
-             sum_commit_scaled = (sum_commit - min(sum_commit, na.rm = TRUE)) / 
-                (max(sum_commit, na.rm = TRUE) - min(sum_commit, na.rm = TRUE)) ) %>%
-      ungroup()
+  # ---- Calculate Spearman correlation and KS test p-value for the selected sector
+  sector_stats <- sector_data %>%
+    dplyr::summarize(
+      spearman_cor = cor(n_scaled, sum_commit_scaled, method = "spearman", use = "complete.obs"),
+      ks_p_value = ks.test(n_scaled, sum_commit_scaled)$p.value,
+      similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
+    )
 
-      # ---- Calculate Spearman correlation and KS test p-value for the selected sector
-   sector_stats <- sector_data %>%
-      summarize(
-         spearman_cor = cor(n_scaled, sum_commit_scaled, method = "spearman", use = "complete.obs"),
-         ks_p_value = ks.test(n_scaled, sum_commit_scaled)$p.value,
-         similarity = ifelse(ks_p_value > 0.05, "Similar", "Dissimilar")
-      )
 
-      
-   # Extract the color for the sector line (you can set a specific color or use ggplot's color palette)
-   pdo_color <- "#8e550a" # Get a color from ggplot's default palette
-   commit_color <-"#00689D"  # Set a color for the secondary line
-   
-   # Plot the data for the selected sector
-   ggplot(sector_data, aes(x = FY_appr)) +
-      # --- geom_bar for rel_freq_n_pdo
-      geom_line(aes(y = n_scaled), color = pdo_color, alpha = 0.75) +
-      geom_point(aes(y = n_scaled), color = pdo_color, alpha = 0.75, size = 2) +
-      # --- geom_line and geom_point for rel_freq_commitment
-      geom_line(aes(y = sum_commit_scaled ), color = commit_color, linetype = "dashed" ) +
-      geom_point(aes(y = sum_commit_scaled), color = commit_color, size = 2) +
-      # --- scale
-      scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
-      scale_y_continuous(
-         name = "N words in PDOs (mean = 0, sd = 1)",
-         sec.axis = sec_axis(~., name = "$$ Committed (mean = 0, sd = 1)")
-      ) +
-      
-            # --- Annotate KS test results directly on the plot
-      annotate(
-         "text", x = Inf, y = Inf, label = paste("KS test p-value:", round(sector_stats$ks_p_value, 4)),
-         hjust = 1.1, vjust = 1.1, color = "black", size = 4
-      ) +
-      
-       # Customize colors and set common legend title
-        labs(
-         title = paste("Word frequency in PDO v. amount committed for", sector),
-         subtitle = "n_pdo and sum_commit are rescaled with Min-Max scaling \nKolmogorov-Smirnov test for similarity between the two trends",
-         x = ""
-      ) +
-     
-      # custom
-      lulas_theme + 
-      theme(   legend.position = "none",
-               axis.text.x = element_text(angle = 45, hjust = 1),
-               axis.title.y = element_text(color = pdo_color ), 
-               axis.title.y.right = element_text(color =  commit_color ) 
-      )
+  # Extract the color for the sector line (you can set a specific color or use ggplot's color palette)
+  pdo_color <- "#8e550a" # Get a color from ggplot's default palette
+  commit_color <- "#00689D" # Set a color for the secondary line
+
+  # Plot the data for the selected sector
+  ggplot(sector_data, aes(x = FY_appr)) +
+    # --- geom_bar for rel_freq_n_pdo
+    geom_line(aes(y = n_scaled), color = pdo_color, alpha = 0.75) +
+    geom_point(aes(y = n_scaled), color = pdo_color, alpha = 0.75, size = 2) +
+    # --- geom_line and geom_point for rel_freq_commitment
+    geom_line(aes(y = sum_commit_scaled), color = commit_color, linetype = "dashed") +
+    geom_point(aes(y = sum_commit_scaled), color = commit_color, size = 2) +
+    # --- scale
+    scale_x_continuous(breaks = seq(2001, 2023, by = 1)) +
+    scale_y_continuous(
+      name = "N words in PDOs (mean = 0, sd = 1)",
+      sec.axis = sec_axis(~., name = "$$ Committed (mean = 0, sd = 1)")
+    ) +
+
+    # --- Annotate KS test results directly on the plot
+    annotate(
+      "text",
+      x = Inf, y = Inf, label = paste("KS test p-value:", round(sector_stats$ks_p_value, 4)),
+      hjust = 1.1, vjust = 1.1, color = "black", size = 4
+    ) +
+
+    # Customize colors and set common legend title
+    labs(
+      title = paste("Word frequency in PDO v. amount committed for", sector),
+      subtitle = "n_pdo and sum_commit are rescaled with Min-Max scaling \nKolmogorov-Smirnov test for similarity between the two trends",
+      x = ""
+    ) +
+
+    # custom
+    lulas_theme +
+    theme(
+      legend.position = "none",
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.title.y = element_text(color = pdo_color),
+      axis.title.y.right = element_text(color = commit_color)
+    )
 }
-# --- Plot one sector 
-# name_sec EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN 
+# --- Plot one sector
+# name_sec EDUCATION    ENERGY    HEALTH       ICT     MINING_OIL_GAS TRANSPORT    WAT_SAN
 # data_sec EX sector_list[["WAT_SAN"]]
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "TRANSPORT") # KS p-val = 0.42 similar
-f_plot_sector_comm(sector_broad_pdo_comm, sector = "WAT_SAN") # KS p-val = 0.42 similar 
+f_plot_sector_comm(sector_broad_pdo_comm, sector = "WAT_SAN") # KS p-val = 0.42 similar
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "ENERGY") # KS p-val = 0.12 similar
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "ICT") # KS p-val = 0.0001 DIFFERENT
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "HEALTH") # KS p-val = 0.001 DIFFERENT
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "EDUCATION") # KS p-val = 0.0001 DIFFERENT
-# many with non commitment 
+# many with non commitment
 f_plot_sector_comm(sector_broad_pdo_comm, sector = "MINING_OIL_GAS") # KS p-val = 0.0031 DIFFERENT
- 
-
 ```
 
 ### --- [FIG] Plot sector **WAT_SAN** 
@@ -3291,7 +3492,7 @@ very similar trends in PDO and commitment
 #| fig-align: "center"
 
 
-f_plot_sector_comm(sector_broad_pdo_comm, sector = "WAT_SAN") # KS p-val = 0.42 similar 
+f_plot_sector_comm(sector_broad_pdo_comm, sector = "WAT_SAN") # KS p-val = 0.42 similar
 
 f_save_plot_obj(f_plot_sector_comm(sector_broad_pdo_comm, sector = "WAT_SAN"), "comp_pdo_comm_WAT_SAN_plot")
 ```
@@ -3317,5 +3518,12 @@ f_save_plot_obj(f_plot_sector_comm(sector_broad_pdo_comm, sector = "ICT"), "comp
 ```
 
 
-
-
+# _______ 
+# Save clean Proj PDO train dataset `pdo_train_t`
+```{r}
+# inputs 
+projs_train2 <-  projs_train
+saveRDS(projs_train2, here("data" , "derived_data", "projs_train2.rds"))#   4403 -> 5637  obs 
+# projs_train + annotated pdo train --> 
+saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))#  249K --> 314K obs
+```

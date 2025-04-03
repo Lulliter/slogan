@@ -113,7 +113,7 @@ lulas_theme <- theme_minimal(base_size = 12) +
 # Load data
 ```{r}
 # Load Proj train dataset `projs_train_t`
-projs_train <- readRDS(here("data","derived_data", "projs_train.rds"))  
+projs_train2 <- readRDS(here("data","derived_data", "projs_train2.rds"))  
 custom_stop_words_df  <-  readRDS(here("data","derived_data", "custom_stop_words_df.rds")) 
 # Load function
 source(here("R","f_recap_values.R")) 
@@ -143,19 +143,38 @@ Some model parameters can be learned from data during fitting/training. Some CAN
 ### --- Check missing feature
 
 ```{r}
-sum(!is.na(projs_train$pdo))
-sum(!is.na(projs_train$sector1)) /4403# 99
-sum(!is.na(projs_train$regionname)) / 4403  # 100%
-sum(!is.na(projs_train$countryname)) / 4403  # 100%
-sum(!is.na(projs_train$status)) / 4403  # 100%
-sum(!is.na(projs_train$lendinginstr)) / 4403  # 99% 
-sum(!is.na(projs_train$ESrisk)) / 4403  # 96% 
-sum(!is.na(projs_train$curr_total_commitment)) / 4403  # 100% 
+names (projs_train2)
 
-sum(!is.na(projs_train$theme1)) /4403 # 71% 
-table(projs_train$theme1, useNA = "ifany") # 71 levels
-sum(!is.na(projs_train$env_cat)) / 4403  # 73% 
-table(projs_train$env_cat , useNA = "ifany") # 7 levels
+tot <- sum(!is.na(projs_train2$pdo)) # 4425
+sum(!is.na(projs_train2$sector1)) /tot# 99%
+sum(!is.na(projs_train2$regionname)) / tot  # 100%
+sum(!is.na(projs_train2$countryname)) / tot  # 100%
+sum(!is.na(projs_train2$status)) / tot  # 100%
+sum(!is.na(projs_train2$lendinginstr)) / tot  # 98% 
+
+sum(!is.na(projs_train2$env_cat)) / tot  # 72%
+table(projs_train2$env_cat , useNA = "ifany") # 7 levels --> 5 
+sum(!is.na(projs_train2$ESrisk)) / tot  # 0.092  !!!!!
+sum(!is.na(projs_train2$curr_total_commitment)) / tot  # 100% 
+
+sum(!is.na(projs_train2$theme1)) /tot # 71% 
+table(projs_train2$theme1, useNA = "ifany") # 71 levels
+```
+
+```{r}
+# sum(!is.na(projs_train_old$pdo)) # 5637
+# sum(!is.na(projs_train_old$sector1)) /5637# 99%
+# sum(!is.na(projs_train_old$regionname)) / 5637  # 100%
+# sum(!is.na(projs_train_old$countryname)) / 5637  # 100%
+# sum(!is.na(projs_train_old$status)) / 5637  # 100%
+# sum(!is.na(projs_train_old$lendinginstr)) / 5637  # 98% 
+# sum(!is.na(projs_train_old$ESrisk)) / 5637  # 78% 
+# sum(!is.na(projs_train_old$curr_total_commitment)) / 5637  # 100% 
+# 
+# sum(!is.na(projs_train_old$theme1)) /5637 # 71% 
+# table(projs_train_old$theme1, useNA = "ifany") # 71 levels
+# sum(!is.na(projs_train_old$env_cat)) / 5637  # 73%  ---- 0.0729 ?????
+# table(projs_train_old$env_cat , useNA = "ifany") # 7 levels
 ```
 
 
@@ -167,7 +186,7 @@ table(projs_train$env_cat , useNA = "ifany") # 7 levels
 source(here("R","f_recap_values.R")) 
 
 # check candidate lables for classification 
-f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" ) ) %>% kable()
+f_recap_values(projs_train2, c("sector1", "theme1","env_cat","ESrisk" ) ) %>% kable()
 ```
 
 ### --- Identify features for classification
@@ -198,16 +217,16 @@ One candidate variable that could be predicted is the `env_cat` variable (*"Envi
 #__________
 # COMMON STEPS
 
-## 1) Select and engineer the features [using `projs_train`]
+## 1) Select and engineer the features [using `projs_train2`]
 
 ### Recode `env_cat` variable 
 
 ```{r}
-projs_train <- projs_train %>% 
+projs_train2 <- projs_train2 %>% 
    # useful for later 
-   rename(., proj_id = "id") %>%
+#   rename(., proj_id = "id") %>%
    # recode as factors 
-   mutate (across (c(status, boardapprovalFY, regionname, countryname, sector1, 
+   mutate (across (c(status, FY_appr, regionname, countryname, sector1, 
                      theme1, lendinginstr), as.factor))  %>% 
    # env risk category 7 levels
    mutate(env_cat_f = fct_na_value_to_level(env_cat, level = "Missing")) %>% 
@@ -216,8 +235,8 @@ projs_train <- projs_train %>%
                               "B_med risk" = "B", 
                               "C_low risk" = "C", 
                               "F_fin expos" = "F", 
-                              "Other" = "H", 
-                              "Other" = "M", 
+                              # "Other" = "H", 
+                              # "Other" = "M", 
                               "Other" = "U", 
                               "Missing" = "Missing" )) %>% 
    relocate(env_cat_f , .after = env_cat) %>% 
@@ -228,9 +247,9 @@ projs_train <- projs_train %>%
    )) %>% 
    relocate(env_cat_f2, .after = env_cat_f)
 
-tabyl(projs_train, env_cat, show_na = TRUE) # 7 levels
-tabyl(projs_train, env_cat_f, show_na = TRUE) # 2 levels
-tabyl(projs_train, env_cat_f2, show_na = TRUE) # 7levels
+tabyl(projs_train2, env_cat, show_na = TRUE) # 7 levels
+tabyl(projs_train2, env_cat_f, show_na = TRUE) # 2 levels
+tabyl(projs_train2, env_cat_f2, show_na = TRUE) # 7levels
 ```
 
 ```{r}
@@ -239,7 +258,7 @@ tabyl(projs_train, env_cat_f2, show_na = TRUE) # 7levels
 #| tbl-cap: Recoded Environmental Assessment Category
 
 # Show as contingency table env_cat_f and env_cat_f2
-env_cat_f_f2_k <- table(projs_train$env_cat_f, projs_train$env_cat_f2) %>% 
+env_cat_f_f2_k <- table(projs_train2$env_cat_f, projs_train2$env_cat_f2) %>% 
    kable() %>% 
    kable_styling("striped", full_width = F)
 
@@ -253,7 +272,7 @@ saveRDS(env_cat_f_f2_k, here("analysis", "output", "tables", "env_cat_f_f2_k.rds
 
 ```{r}
 # !!!!! `sector_f` e' diverso da `tok_sector_broad` XCHE si basa su `sector1` !!!! 
-projs_train <- projs_train %>% # sector1 99 levels
+projs_train2 <- projs_train2 %>% # sector1 99 levels
    mutate(sector_f = case_when(
       str_detect(sector1, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", ignore_case = T)) ~ "WAT & SAN",
       str_detect(sector1, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation", ignore_case = T)) ~ "TRANSPORT",
@@ -274,9 +293,9 @@ projs_train <- projs_train %>% # sector1 99 levels
       TRUE ~ "Missing")) %>% 
    relocate(sector_f, .after = sector1)  
 
-tabyl(projs_train, sector1, show_na = TRUE) # 99 levels
-tabyl(projs_train, sector_f, show_na = TRUE) # 7 levels
-#tabyl(projs_train, tok_sector_broad, show_na = TRUE) # 7 levels
+tabyl(projs_train2, sector1, show_na = TRUE) # 99 levels
+tabyl(projs_train2, sector_f, show_na = TRUE) # 7 levels
+#tabyl(projs_train2, tok_sector_broad, show_na = TRUE) # 7 levels
 
 ```
 
@@ -293,7 +312,7 @@ tabyl(projs_train, sector_f, show_na = TRUE) # 7 levels
 #| eval: false
 
 # # Calculate proportions of missing and non-missing values in env_cat
-# proportion_missing <- projs_train %>%
+# proportion_missing <- projs_train2 %>%
 #   mutate(class_status = ifelse(is.na(env_cat), "Missing", "Not Missing")) %>%
 #   count(class_status) %>%
 #   mutate(prop = n / sum(n))
@@ -306,11 +325,11 @@ tabyl(projs_train, sector_f, show_na = TRUE) # 7 levels
 # n_samples[1] <- 500 - sum(n_samples[-1])  # Adjust to ensure total is exactly 500
 # 
 # # Split the data into missing and non-missing groups
-# missing_group <- projs_train %>%
+# missing_group <- projs_train2 %>%
 #   filter(is.na(theme1)) %>%
 #   slice_sample(n = n_samples[proportion_missing$class_status == "Missing"])
 # 
-# not_missing_group <- projs_train %>%
+# not_missing_group <- projs_train2 %>%
 #   filter(!is.na(theme1)) %>%
 #   slice_sample(n = n_samples[proportion_missing$class_status == "Not Missing"])
 # 
@@ -330,11 +349,11 @@ We will use the `strata` argument to stratify the data by the outcome variable (
 
 ```{r}
 # Create a stratified split based on missing vs non-missing env_cat
-projs_train %>% tabyl(env_cat_f) # 7 levels
+projs_train2 %>% tabyl(env_cat_f) # 7 levels
 
 # Split BUT only "Not Missing" `env_cat_f` 
 ## --- 0) THIS WILL BE 4 TRAINING & VALIDATION 
-env_cat_use <- projs_train %>% 
+env_cat_use <- projs_train2 %>% 
    filter(env_cat_f != "Missing") # 3236 proj 
 
 # SPLIT INTO TRAINING, VALIDATION 
@@ -350,7 +369,7 @@ env_cat_test <- testing(env_split)  # 971 proj
    
 # # UNLABELLED PORTION 
 ## -- 3) for actual test (UNlabelled `env_cat_f`)
-env_cat_missing <- projs_train %>% 
+env_cat_missing <- projs_train2 %>% 
   filter(env_cat_f == "Missing") # 1167 proj 
 
 # check ditribution of `env_cat_f` in training and validation
@@ -1073,7 +1092,7 @@ env_stop_lassofinal_fit_pred %>%
 
 # 2. model - log w/ text with tf-idf + stopwords + 3 factors
 
-## [👍🏻] Logistic with `pdo` + `sector_f`|`regionname`|`boardapprovalFY` as predictors
+## [👍🏻] Logistic with `pdo` + `sector_f`|`regionname`|`FY_appr` as predictors
 <!-- -   can I add non text features? [smltar 7.7](https://smltar.com/mlclassification#case-study-including-non-text-data) -->
 
 ### 3) Define preprocessing steps [`env_FEAT_recipe`] (same)
@@ -1084,7 +1103,7 @@ env_stop_lassofinal_fit_pred %>%
 ```{r}
 # ---  Create a recipe with a token filter step that excludes stopwords
 # Rebuild recipe with tokenfilter step
-env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector_f + regionname + boardapprovalFY,
+env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector_f + regionname + FY_appr,
                            data = training(env_split)) %>%
    # tokenize the text
    step_tokenize(pdo) %>%  
@@ -1097,9 +1116,9 @@ env_FEAT_recipe <- recipe (env_cat_f2 ~ pdo + sector_f + regionname + boardappro
    # add NA as special factor level
    step_unknown(sector_f ,new_level = "Unknown sect" ) %>%
    step_unknown(regionname ,new_level = "Unknown reg" ) %>%
-   step_unknown(boardapprovalFY ,new_level = "Unknown FY" ) %>%
+   step_unknown(FY_appr ,new_level = "Unknown FY" ) %>%
    # convert to dummy variables
-   step_dummy(sector_f, regionname, boardapprovalFY, one_hot = TRUE) 
+   step_dummy(sector_f, regionname, FY_appr, one_hot = TRUE) 
 ```
 check what changed... 
 ```{r}
@@ -1456,9 +1475,9 @@ env_FEAT_final_fit_pred %>%
    )
 ```
 
-<!-- EXAMPLE 9.32  ( 268 - 271)  -->
 
 ### 9) Interpret the model
+<!-- EXAMPLE 9.32  ( 268 - 271)  -->
 
 ### --- Inspecting what levels of the outcome are most difficult to estimate 
 ```{r}
@@ -1467,7 +1486,7 @@ env_FEAT_final_fit_feat <- env_FEAT_final_fit %>%
    collect_predictions() %>%
    bind_cols(env_cat_test)  %>%
    rename(env_cat_f2 = 'env_cat_f2...6') %>% 
-   select ( -'env_cat_f2...22')
+   select ( -'env_cat_f2...32')
 
 #preview the predictions
 glimpse(env_FEAT_final_fit_feat)
@@ -1602,11 +1621,9 @@ f_save_plot_obj(ML_feature_importance_p, "ML_feature_importance_p")
 
 ```
 
-
-
 # __________ 
 # 3. model - NB w/ text with tf-idf + stopwords + 3 factors
-## [🫤] Naive bayes classific with text and `sector_f` and `regionname` and `boardapprovalFY` as predictors
+## [🫤] Naive bayes classific with text and `sector_f` and `regionname` and `FY_appr` as predictors
 
 ### 3) Define preprocessing steps (same)
 
@@ -1782,11 +1799,11 @@ We will use the `strata` argument to stratify the data by the outcome variable (
 
 ```{r}
 # Create a stratified split based on missing vs non-missing env_cat
-projs_train %>% tabyl(sector_f) # 7 levels
+projs_train2 %>% tabyl(sector_f) # 7 levels
 
 # Split BUT only "Not Missing" `env_cat_f` 
 ## --- 0) THIS WILL BE 4 TRAINING & VALIDATION 
-sec_use <- projs_train %>% 
+sec_use <- projs_train2 %>% 
    filter(sector_f != "Missing") # 4316 proj 
 
 # SPLIT INTO TRAINING, VALIDATION 
@@ -1802,7 +1819,7 @@ sec_test <- testing(sec_split)  # 1297 proj
    
 # # UNLABELLED PORTION 
 ## -- 3) for actual test (UNlabelled `sector_f`)
-sec_missing <- projs_train %>% 
+sec_missing <- projs_train2 %>% 
   filter(sector_f == "Missing") # 87 proj 
 
 # check ditribution of `sector_f` in training and validation
@@ -1824,17 +1841,17 @@ we have added `step_downsample(sector_f)` to the end of the recipe specification
 ```{r}
 multi_rec <- recipe(
    #sector_f ~ pdo, data = sec_train) %>%
-   sector_f ~ pdo + regionname + boardapprovalFY + env_cat_f, data = sec_train) %>%
+   sector_f ~ pdo + regionname + FY_appr + env_cat_f, data = sec_train) %>%
    step_tokenize(pdo) %>%  
    step_stopwords(pdo, custom_stopword_source = stop_vector) %>%  
    step_tokenfilter(pdo, max_tokens = 100) %>%  
    step_tfidf(pdo, smooth_idf = FALSE) %>%
    # add NA as special factor level
    step_unknown(regionname ,new_level = "Unknown reg" ) %>%
-   step_unknown(boardapprovalFY ,new_level = "Unknown FY" ) %>%
+   step_unknown(FY_appr ,new_level = "Unknown FY" ) %>%
    step_unknown(env_cat_f ,new_level = "Unknown env cat" ) %>%
    # convert to dummy variables
-   step_dummy(regionname, boardapprovalFY,env_cat_f, one_hot = TRUE) %>% 
+   step_dummy(regionname, FY_appr,env_cat_f, one_hot = TRUE) %>% 
    # resolve imnbalance
    step_downsample(sector_f) 
 ```
@@ -2013,6 +2030,7 @@ multi_knn_rs %>%  show_best(metric ="accuracy")
 Even the very best *"accuracy"* value here is quite low (0.44), *significantly lower* than the binary classification model. This is expected because multiclass classification is more difficult than binary classification.
 
 ### --- [FIG] performance metrics
+
 ### --- i) Multin. Lasso Logistic Regress [`logistic_model`]
 ```{r}
 autoplot(multi_lasso_rs) +
@@ -2021,6 +2039,7 @@ autoplot(multi_lasso_rs) +
     title = "Multiclass Lasso Logistic Regression performance across regularization penalties and tokens"
   )
 ```
+
 ### --- ii) KNN [`knn_grid`]  
 ```{r}
 autoplot(multi_knn_rs) +
@@ -2163,7 +2182,7 @@ logistic_wf_final <- logistic_wf %>%
 
 ### --- See the results  [`multi_fit`] 
 Here we access the model coefficients to see which features are most important in the model
-+ We see here, for the penalty we chose, what terms contribute the most to a en cat NOT being high risk . 
++ We see here, for the penalty we chose, what terms contribute the most to a en cat NOT being high risk. 
 ```{r}
 # Fit the model to the training data
 multi_fit <- fit (logistic_wf_final, data = sec_train)
@@ -2276,7 +2295,7 @@ multi_final_fit_feat <- multi_final_fitted %>%
    collect_predictions() %>%
    bind_cols(sec_test)  %>%
    rename(sector_f = 'sector_f...17') %>% 
-   select ( -'sector_f...28')
+   select ( -'sector_f...46')
 
 #preview the predictions
 glimpse(multi_final_fit_feat)
@@ -2300,7 +2319,7 @@ sector_feat_imp <- extract_fit_parsnip(multi_final_fitted$.workflow[[1]]) %>%
                      Sign == "NEG" ~ "Less important for predicting a given sector",
                      TRUE ~ "Neutral"),
     Importance = abs(Importance))   %>% 
-   #filter(!str_detect(Variable, "boardapprovalFY"))  %>%
+   #filter(!str_detect(Variable, "FY_appr"))  %>%
    filter (Importance != 0.00000000)
 ```
 
@@ -2338,14 +2357,14 @@ I will then select the columns with the actual outcome (`sector_f`), and compare
 # solo sbagliate 
 compare_true_pred <- multi_final_fit_feat %>%
    filter(sector_f != .pred_class ) %>%  
-   select(.pred_class, sector_f,sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo )
+   select(.pred_class, sector_f,sector1,  proj_id , env_cat_f, FY_appr , regionname, pdo )
 ```
 
 Let's see for example cases labelled "AGR FOR FISH" but misclassified
 ```{r}
 check_AGR <- compare_true_pred %>% 
    filter(.pred_class == "AGR FOR FISH") %>%
-   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo ) %>%    slice_sample(n = 5)
+   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, FY_appr , regionname, pdo ) %>%    slice_sample(n = 5)
 
  
 ```
@@ -2355,7 +2374,7 @@ check_AGR <- compare_true_pred %>%
 ```{r}
 check_FIN <- compare_true_pred %>% 
    filter(.pred_class == "FINANCIAL") %>%
-   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, boardapprovalFY , regionname, pdo ) %>%
+   select(.pred_class, sector_f, sector1,  proj_id , env_cat_f, FY_appr , regionname, pdo ) %>%
    slice_sample(n = 5)
 
 ```
