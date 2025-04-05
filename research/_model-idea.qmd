@@ -36,8 +36,35 @@ format-links: false
 bibliography: ../bib/slogan.bib
 ---
 
+# 2 READ 
 
-# Modeling strategy 
+- See [Ibai Guillén-Pacho et al. article](https://scispace.com/pdf/dynamic-topic-modelling-for-exploring-the-scientific-6o59ybpk.pdf)
+Several `time-dependent approaches based on topic models` were compared to analyse the annual evolution of *latent* concepts in the CORD-19 corpus:
+
+1. Dynamic Topic Model, 
+2. Dynamic Embedded Topic Model, 
+3. BERTopic
+
+- See [Malvika Mishra et al. article](https://link.springer.com/article/10.1007/s41060-024-00596-9) comprehensive investigation into the thematic evolution within computational economics over the past two decades, leveraging advanced topic modeling techniques. Utilizing latent semantic analysis, latent dirichlet allocation (LDA), and BERTopic models, 
+
+- See [Wang et al. article](https://www.mdpi.com/2071-1050/16/19/8293/review_report) Dynamic topic modeling (DTM) was utilized to analyze 1872 energy policy documents, revealing shifts in core topics over time, such as the transition from infrastructure development to new energy focus, thereby assessing the evolution and impact of policy ideas.
+
+
+# Topic modeling 
+
+### 1. **Latent Semantic Analysis (LSA)**
+   - **Latent Semantic Analysis** is a method in NLP, specifically distributional semantics,that creates a collection of ideas associated with the documents and terms, to analyze relationships between a set
+of documents and the terms they contain. 
+
+### 2. **Latent Dirichlet Allocation (LDA)**
+   - **Latent Dirichlet Allocation** is a generative probabilistic model that explains a set of observations through unseen groups, with each group explaining why certain portions of the data are similar. 
+
+### 3. **BERTopic** (Bidirectional Encoder Representation Transformer)
+   - **BERTopic** is a `Python` library that applies topic modeling using BERT, a powerful and easy-to-use library for intelligent topic modeling.
+   - It allows for the extraction of topics from large corpora of text data, making it suitable for analyzing trends and patterns in textual data.
+   - it requires a large amount of computing power
+
+# Time-dependent modeling strategy 
 
 > Which model could help me detect the change over time of a certain concept in a corpora of company documents
 

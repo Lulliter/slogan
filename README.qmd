@@ -6,6 +6,9 @@ format:
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
 
+# PROJECT
+An NLP analysis of World Bank Project Development Objectives (PDOs) text data.
+
 
 # CORE files 
 
@@ -21,25 +24,22 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 # TO DO
 
++ Revise `_target.R` ...with new input files ...
 +  Access all tidy tuesday port for week 12 2025
   [bluesky](https://bsky.app/search?q=week+12+%23tidytuesday)
 - Read:
    + [R pckg to use LLm to summarize from PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
    + [Tidy tuesday on TExt analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
       + [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
++ study articles in `research/_model-idea.qmd` top (Dinamic topic modeling over time)
 
-+ creare branch con e senza la parte dei dati ?
-+ fare una pagina con `targets::tar_visnetwork()` e la tabella `data/pprovenance.md`
-
++ ✅  new tab with  `analysis/00_data.qmd`
 
 ### In `analysis/01a_WB_project_pdo_prep.qmd`
-
-+ I added fresh (2025) info on sector theme etc (attached to 2024 proj list).. see what can be done with it
 + revise the OLD plot -> NEW plot thing
 
-
 ### In `analysis/01b_WB_project_pdo_EDA.qmd`
-   - revise the OLD plot -> NEW plot thing
+- revise the OLD plot -> NEW plot thing
 
 ### In `analysis/01c_WB_project_pdo_prep.qmd`
 
@@ -64,8 +64,6 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 #    + michele MD a DC 
 -->
    
-
-
 # Abstract 
 
 ## Exploring World Bank Project Development Objectives (PDO) text data
@@ -79,3 +77,9 @@ This ongoing project serves as a proof-of-concept for applying text analytics to
 The analysis is conducted in R, integrating text mining, natural language processing, and machine learning techniques.  
 
 (This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished). 
+
+
+# References
+- [Mary Sanford - Bocconi](https://sites.google.com/view/marysanford/projects-in-development?authuser=0) - Policlim salience of "climate change" in EU political manifestos ... [preprint](https://osf.io/preprints/osf/bq356) 
+
+- [Christopher Manning](https://nlp.stanford.edu/~manning/) - NLP in general/linguistics

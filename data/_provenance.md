@@ -23,9 +23,15 @@ These files in the folder `data/derived_data/` are created in different scripts 
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | File `*.rds` name          | Source File Name                                  | Details                                                            |
 +============================+===================================================+====================================================================+
-| `traking.rds`          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements                                          |
-+----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
-| `traking_k.rds`          | analysis/01a_WB_project_pdo_prep.qmd              | recap of missing elements (kable tbl)                              |
+| `wdr.rds`                  | \[from `OLD` repo `~/Github/slogan_old/`\]        | as df (44)                                                         |
+|                            |                                                   |                                                                    |
+|                            | -   ...OLD/\_my_stuff/WDR-data-ingestion.Rmd      | -   *problem, bc API changed so now not reproducible*              |
+|                            |                                                   |                                                                    |
+|                            |     -   result as `...OLD/data/raw_data/WDR.rds`  | -   there I did text processing on WDR abstracts (\~ like on PDOs) |
+|                            |                                                   |                                                                    |
+|                            | -   ...OLD/01b_WDR_data-exploration_abstracts.Rmd |                                                                    |
+|                            |                                                   |                                                                    |
+|                            |     -   result as `...OLD/data/raw_data/wdr.rds`  |                                                                    |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | `all_proj_t.rds`           | analysis/01a_WB_project_pdo_prep.qmd              | 11,279 obs (projects)                                              |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
@@ -47,23 +53,12 @@ These files in the folder `data/derived_data/` are created in different scripts 
 +============================+===================================================+====================================================================+
 | `projs_train2.rds`          | analysis/01b_WB_project_pdo_EDA.qmd              | 4,425 obs (projects)                 changed                       |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
+| `pdo_train2_t.rds`         | analysis/01b_WB_project_pdo_EDA.qmd               | 252,705 obs (tokens)                 changed                       |
++----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | `custom_stop_words.rds`    | analysis/01b_WB_project_pdo_EDA.qmd               | as vector                                                          |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
 | `custom_stop_words_df.rds` | analysis/01b_WB_project_pdo_EDA.qmd               | as df                                                              |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
-|                            |                                                   |                                                                    |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
-| `wdr.rds`                  | \[from `OLD` repo `~/Github/slogan_old/`\]        | as df (44)                                                         |
-|                            |                                                   |                                                                    |
-|                            | -   ...OLD/\_my_stuff/WDR-data-ingestion.Rmd      | -   *problem, bc API changed so now not reproducible*              |
-|                            |                                                   |                                                                    |
-|                            |     -   result as `...OLD/data/raw_data/WDR.rds`  | -   there I did text processing on WDR abstracts (\~ like on PDOs) |
-|                            |                                                   |                                                                    |
-|                            | -   ...OLD/01b_WDR_data-exploration_abstracts.Rmd |                                                                    |
-|                            |                                                   |                                                                    |
-|                            |     -   result as `...OLD/data/raw_data/wdr.rds`  |                                                                    |
-+----------------------------+---------------------------------------------------+--------------------------------------------------------------------+
-| `wdr2.rds`                 | \[added WDR 2023/2024 manually\]                  | as df (46)                                                         |
-|                            |                                                   |                                                                    |
-|                            | analysis/01b_WB_project_pdo_EDA.qmd               |                                                                    |
+| `wdr2.rds`                 | analysis/01b_WB_project_pdo_EDA.qmd               | as df (46)               \[added WDR 2023/2024 manually\]          |
 +----------------------------+---------------------------------------------------+--------------------------------------------------------------------+

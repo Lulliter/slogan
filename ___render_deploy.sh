@@ -37,7 +37,7 @@ Rscript -e "targets::tar_visnetwork()" (dalla console)
 
          # ====== RENDER the entire site
          quarto render
-         quarto render analysis/01b_WB_project_pdo_EDA.qmd --to html
+         quarto render analysis/01a_WB_project_pdo_prep.qmd --to html
          quarto render posts/PDO_eda.qmd --to html
 
 #=========================================== (Push to Github repo) ================================================#
@@ -60,15 +60,7 @@ git add analysis/output/tables/*
 git add posts/
 git add research/
 =======
-# Create Std commit "message"....
-msg="rebuilt on `date`"
-if [ $# -eq 1 ]
-  then msg="$1"
-fi
-# ... Commit Those changes.
-git commit -m "$msg"
-=======
-git commit -m "fix analysis/01b_WB_project_pdo_EDA.qmd"
+git commit -m "analysis/00_data.qmd 📊📊"
 git commit -m "maj revision analysis/ _targets" -m "added 2025 data 🥵 and messeu up some stuff"
 git commit -m "small upd Home 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "

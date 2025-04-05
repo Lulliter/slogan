@@ -73,50 +73,6 @@ options(scipen = 999)
 
 # Set up ggplot2 theme
 ```{r}
-#| echo: FALSE
-#| eval: FALSE
-
-
-# # 0) --- See prior steps in R/fonts.R
-# library(showtext)
-# font_add_google("Roboto Condensed", "roboto_condensed")
-# showtext_auto()
-#
-# # 1) --- Set the font as the default for ggplot2
-# # Who else? https://datavizf24.classes.andrewheiss.com/example/05-example.html
-# my_pretty_theme <- theme_minimal(base_family = "roboto_condensed", base_size = 12) +
-#   theme(panel.grid.minor = element_blank(),
-#         # Bold, bigger title
-#         plot.title = element_text(face = "bold", size = rel(1.6)),
-#         # Plain, slightly bigger subtitle that is grey
-#         plot.subtitle = element_text(face = "plain", size = rel(1.4), color = "#A6A6A6"),
-#         # Italic, smaller, grey caption that is left-aligned
-#         plot.caption = element_text(face = "italic", size = rel(0.7),
-#                                     color = "#A6A6A6", hjust = 0),
-#         # Bold legend titles
-#         legend.title = element_text(face = "bold"),
-#         # Bold, slightly larger facet titles that are left-aligned for the sake of repetition
-#         strip.text = element_text(face = "bold", size = rel(1.1), hjust = 0),
-#         # Bold axis titles
-#         axis.title = element_text(face = "bold"),
-#         # Change X-axis label size
-#         axis.text.x = element_text(size = rel(1.5)),
-#         # Change Y-axis label size
-#         axis.text.y = element_text(size = 14),
-#         # Add some space above the x-axis title and make it left-aligned
-#         axis.title.x = element_text(margin = margin(t = 10), hjust = 0),
-#         # Add some space to the right of the y-axis title and make it top-aligned
-#         axis.title.y = element_text(margin = margin(r = 10), hjust = 1),
-#         # Add a light grey background to the facet titles, with no borders
-#         strip.background = element_rect(fill = "grey90", color = NA),
-#         # Add a thin grey border around all the plots to tie in the facet titles
-#         panel.border = element_rect(color = "grey90", fill = NA))
-#
-# # 2) --- use
-# # ggplot + my_pretty_theme
-```
-
-```{r}
 #| echo: TRUE
 #| eval: TRUE
 
@@ -175,10 +131,11 @@ Here I will just load the pre-processed data (training set only).
 # Load Proj train dataset `projs_train_t`
 projs_train_bef2001 <- readRDS(here::here("data", "derived_data", "projs_train.rds")) # 5637
 
-names(projs_train_bef2001)
+# names(projs_train_bef2001)
+
 projs_train <- projs_train_bef2001  |> 
       # 2001 was to be sure there are pdo  (2024 is the last year with complete data)
-   dplyr::filter(.data$boardapprovalFY > 2001) |>    # 4425
+   dplyr::filter(boardapprovalFY > 2001) |>    # 4425
    dplyr::rename(
       # new = old
       proj_id = id,
@@ -193,21 +150,23 @@ projs_train <- projs_train_bef2001  |>
 
 
 # Load clean tokenized-PDO dataset `pdo_train_t`
-pdo_train_t <- readRDS(here::here("data", "derived_data", "pdo_train_t.rds")) %>%           # 314 k 
-   # 2001 was to be shure there are pdo  (2024 is the last year with complete data)
-   dplyr::filter(FY_appr > 2001)  #|>           # 252 k  
-   # dplyr::rename(
-   #    # new = old
-   #    #proj_id = id,
-   #    #status = projectstatusdisplay ,
-   #    pr_name = project_name,
-   #    env_cat = envassesmentcategorycode ,
-   #    ESrisk = esrc_ovrl_risk_rate  ,
-   #    #FY_appr = boardapprovalFY,
-   #    FY_clos = closingdateFY
-   # )
+pdo_train_t <- readRDS(here::here("data", "derived_data", "pdo_train_t.rds"))
+#  names(pdo_train_t)
 
-#names(pdo_train_t) 
+pdo_train2_t <-  pdo_train_t |>         # 314 k 
+   # 2001 was to be shure there are pdo  (2024 is the last year with complete data)
+   dplyr::filter(boardapprovalFY > 2001 ) |>           # 252 k  
+   dplyr::rename(
+      # new = old
+      status = projectstatusdisplay ,
+      pr_name = project_name,
+      env_cat = envassesmentcategorycode ,
+      ESrisk = esrc_ovrl_risk_rate  ,
+      FY_appr = boardapprovalFY,
+      FY_clos = closingdateFY
+   )
+
+#names(pdo_train2_t) 
 ```
 
 ```{r}
@@ -224,7 +183,7 @@ Since some pre-processing steps are computationally expensive, I did that in a s
 
 1. Retrieved manually ALL WB projects (<!--**22,569**--> `r tracking[1,2]`) approved **between FY 1947 and 2026** as of *31/08/2024* using simply the `Excel button` on this page [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) -->
    + Of these, `r tracking[11,2]` (approximately `r (tracking[11,2]/tracking[1,2])*100`% ) had a "viable" **PDO** text in the dataset (i.e., not blank or labeled as "*TBD*", etc.). 
-   + There are no **Project Development Objectives** available in projects approved before FY2001
+   + There are no **Project Development Objectives** available in projects approved before the mid 1980s
    + However, other than approval year, based on some tests on available projects' features, PDO texts' missingness seems to happen at random.
 
 2. Dropped from the analysis: projects with no PDO text (including those approved before FY2001), and projects with **missing status** ( `r tracking[12,3]`) or **FY of approval** ( `r tracking[13,3]`); leaving **`r tracking[14,2]` usable projects** selected.
@@ -297,6 +256,23 @@ tibble::tribble(
 
 
 # Notes on PDO text data quality 
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
+
+# needed for dynamic variables 
+## --- a) 
+ndist_pdo <- readRDS(here("data" , "derived_data", "ndist_pdo.rds")) # duplicates
+duplicates <- readRDS(here("data" , "derived_data", "duplicates.rds"))  
+count_dp <- readRDS(here("data" , "derived_data", "count_dp.rds")) # duplicates
+## --- b) needed for dinamic variables
+tracking <- readRDS(here("data", "derived_data", "tracking.rds"))
+# projs_train2 <- readRDS(here("data", "derived_data", "projs_train2.rds")) # 
+
+first_year_pdo <- readRDS(here("data" , "derived_data", "first_year_pdo.rds"))
+pjs_before_pdo <- readRDS(here("data" , "derived_data", "pjs_before_pdo.rds"))
+```
 
 First, it is important to notice that **all projects approved before the early 1984** had no PDO text available, so I consider only projects with FY >=2001, when supposedly the PDO had become a standard feature in the WBG project documentation. 
 
@@ -318,8 +294,8 @@ Of the **remaining `r sum(tracking[11,3])` projects with a valid PDO**, some mor
    + **`r sum(tracking[13,3])` projects** without *"board approval FY"* 
    + **`r sum(tracking[14,3])` projects** approved in FY >= FY2024  (for incomplete approval stage) 
 
-Lastly (and this was quite surprising to me) the **remaining, viable `r sum(tracking[14,2])` unique projects**, were matched by **only 9,914 unique PDOs**!
-In fact, **2,461 projects share 1,097 NON-UNIQUE PDO text** in the "cleaned" dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 13 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
+Lastly (and this was quite surprising to me) the **remaining, viable `r tracking[14,2]` unique projects**, were matched by **only `r ndist_pdo` unique PDOs**! In fact, **`r sum(count_dp$dup_count)` projects share `r n_distinct(duplicates$pdo)` NON-UNIQUE PDO text** in the clean dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
+
 
 In sum, the cleaning process yielded a usable set of **`r sum(tracking[14,2])` functional projects**, which was split into a *training subset* (`r nrow(projs_train)`) to explore and test models and a *testing subset* (`r sum(tracking[14,2])-nrow(projs_train)`), held out for post-prediction evaluation. 
 
@@ -400,7 +376,7 @@ kableExtra::kable(train_pdo_desc)
 #| output: true
 #| echo: false
 
-upos_t <- tabyl(pdo_train_t, upos) %>%
+upos_t <- tabyl(pdo_train2_t, upos) %>%
   add_column(explan = c(
     "Adjective",
     "Adposition",
@@ -475,7 +451,7 @@ Often documents contain different versions of one base word, often called a `ste
 
 ```{r}
 # Using `SnowballC::wordStem` to stem the words. e.g.
-pdo_train_t <- pdo_train_t %>%
+pdo_train2_t <- pdo_train2_t %>%
   mutate(stem = SnowballC::wordStem(token_l)) %>%
   relocate(stem, .after = lemma)
 ```
@@ -502,7 +478,7 @@ pdo_train_t <- pdo_train_t %>%
   
 ```{r}
 # create document-word matrix
-DTM <- pdo_train_t %>%
+DTM <- pdo_train2_t %>%
   anti_join(custom_stop_words_df, by = c("token_l" = "word")) %>%
   count(proj_id, token_l) %>%
   tidytext::cast_dtm(proj_id, token_l, n) # HIGH!!!
@@ -532,7 +508,7 @@ $$
 ```{r}
 # reduce size
 
-pdo_train_4_tf_idf <- pdo_train_t %>% # 255964
+pdo_train_4_tf_idf <- pdo_train2_t %>% # 255964
   # Keep only content words [very restrictive for now]
   # normally c("NOUN", "VERB", "ADJ", "ADV")
   filter(upos %in% c("NOUN")) %>% #    72,668
@@ -585,23 +561,23 @@ General Preference in Real-World NLP:
 #| echo: false
 
 # Count words
-counts_pdo <- pdo_train_t %>%
+counts_pdo <- pdo_train2_t %>%
   count(pdo, sort = TRUE) # 4004
 
-counts_words <- pdo_train_t %>%
+counts_words <- pdo_train2_t %>%
   count(word, sort = TRUE) # 13006
 
-counts_token <- pdo_train_t %>%
+counts_token <- pdo_train2_t %>%
   count(token, sort = TRUE) # 12994
 
-counts_lemma <- pdo_train_t %>%
+counts_lemma <- pdo_train2_t %>%
   count(lemma, sort = TRUE) # 11340
 
-counts_stem <- pdo_train_t %>%
+counts_stem <- pdo_train2_t %>%
   count(stem, sort = TRUE) # 8743
 ```
 
-We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo_train_t)` rows and `r ncol(pdo_train_t)` columns obtained from `r nrow(projs_train)` PDOs (of which `r n_distinct(pdo_train_t$pdo)` unique) of `r n_distinct(pdo_train_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train_t$FY_appr)` to `r max(pdo_train_t$FY_appr)`. 
+We are looking at (**training data subset**) `pdo_train2_t` which has `r nrow(pdo_train2_t)` rows and `r ncol(pdo_train2_t)` columns obtained from `r nrow(projs_train)` PDOs (of which `r n_distinct(pdo_train2_t$pdo)` unique) of `r n_distinct(pdo_train2_t$proj_id)` Wold Bank projects approved in Fiscal Years ranging from `r min(pdo_train2_t$FY_appr)` to `r max(pdo_train2_t$FY_appr)`. 
 
 ### [TBL] Frequencies of documents/words/stems   
 ```{r}
@@ -613,12 +589,12 @@ We are looking at (**training data subset**) `pdo_train_t` which has `r nrow(pdo
 train_recap <- tibble(
   entity = c("N proj", "N PDOs", "N words", "N token", "N lemma", "N stem"),
   counts = c(
-    n_distinct(pdo_train_t$proj_id),
-    n_distinct(pdo_train_t$pdo),
-    n_distinct(pdo_train_t$word),
-    n_distinct(pdo_train_t$token_l),
-    n_distinct(pdo_train_t$lemma),
-    n_distinct(pdo_train_t$stem)
+    n_distinct(pdo_train2_t$proj_id),
+    n_distinct(pdo_train2_t$pdo),
+    n_distinct(pdo_train2_t$word),
+    n_distinct(pdo_train2_t$token_l),
+    n_distinct(pdo_train2_t$lemma),
+    n_distinct(pdo_train2_t$stem)
   )
 )
 
@@ -694,9 +670,9 @@ f_save_plot_obj <- function(plot_object, plot_obj_name) {
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent TOKEN in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
+title_text <- glue::glue("Most frequent TOKEN in {n_distinct(pdo_train2_t$proj_id)} PDOs from projects approved between FY {min(pdo_train2_t$FY_appr)}-{max(pdo_train2_t$FY_appr)}")
 
-pdo_wrd_freq <- pdo_train_t %>% # 123,927
+pdo_wrd_freq <- pdo_train2_t %>% # 123,927
   # include only content words
   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
   # filter (!(upos %in% c("AUX","CCONJ", "INTJ", "DET", "PART","ADP", "SCONJ", "SYM", "PART", "PUNCT"))) %>%
@@ -741,10 +717,10 @@ f_save_plot_obj(pdo_wrd_freq_p, "pdo_wrd_freq_p")
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train_t$proj_id)} PDOs from projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
+title_text <- glue::glue("Most frequent STEM in {n_distinct(pdo_train2_t$proj_id)} PDOs from projects approved between FY {min(pdo_train2_t$FY_appr)}-{max(pdo_train2_t$FY_appr)}")
 
 # Plot
-pdo_stem_freq <- pdo_train_t %>% # 256,632
+pdo_stem_freq <- pdo_train2_t %>% # 256,632
   # include only content words
   filter(upos %in% c("NOUN", "VERB", "ADJ", "ADV")) %>%
   filter(!(relation %in% c("nummod"))) %>% # 173,686
@@ -781,9 +757,9 @@ f_save_plot_obj(pdo_stem_freq_p, "pdo_stem_freq_p")
 ```{r}
 #| output: TRUE
 
-title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train_t$proj_id)} PDOs")
+title2_text <- glue::glue("Most frequent TOKEN & STEM in {n_distinct(pdo_train2_t$proj_id)} PDOs")
 
-subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
+subtitle2_text <- glue::glue("From projects approved between FY {min(pdo_train2_t$FY_appr)}-{max(pdo_train2_t$FY_appr)}")
 
 combo_freq_p <- pdo_wrd_freq_p + pdo_stem_freq_p +
   plot_annotation(
@@ -832,7 +808,7 @@ From `token_l`, I created a *"broad SECTOR" variable* to group the sectors in br
 + **"CLIMATE"** =  Climate|Environment|Sustain|Resilience|Adaptation|Mitigation|Green|Eco|Eco-|carbon|carbon cycle|carbon dioxide|climate change|ecosystem|emission|energy effic|greenhouse|greenhouse gas|temperature anomalies|zero net|green growth|low carbon|climate resilient|climate smart|climate tech|climate variab
  
 ```{r}
-pdo_train_t <- pdo_train_t %>%
+pdo_train2_t <- pdo_train2_t %>%
   # dealing with water/watershed/waterway
   mutate(tok_sector_broad = case_when(
     stringr::str_detect(token_l, regex("water|wastewater|sanitat|Sewer|sewage|Irrigat|Drainag|river basin|groundwater", ignore_case = T)) ~ "WAT_SAN",
@@ -858,7 +834,7 @@ pdo_train_t <- pdo_train_t %>%
 
 ### Data prep for sector plots
 ```{r}
-tabyl(pdo_train_t$tok_sector_broad)
+tabyl(pdo_train2_t$tok_sector_broad)
 
 # Create a custom color list for each sector
 sector_colors <- c(
@@ -892,7 +868,7 @@ sector_colors <- c(
 )
 
 # prepare data for plotting (count)
-sector_broad_pdo <- pdo_train_t %>%
+sector_broad_pdo <- pdo_train2_t %>%
   filter(!is.na(tok_sector_broad)) %>%
   filter(tok_sector_broad %in% c(
     "WAT_SAN", "ENERGY", "TRANSPORT", "URBAN", "MINING_OIL_GAS", "ICT", "HEALTH", "EDUCATION",
@@ -914,7 +890,7 @@ sector_broad_pdo <- pdo_train_t %>%
 #| output: TRUE
 
 # Evaluate the title with glue first
-title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
+title_text <- glue::glue("Sector words frequency in PDO over FY {min(pdo_train2_t$FY_appr)}-{max(pdo_train2_t$FY_appr)}")
 
 # Plot
 pdo_sect_broad_freq <- sector_broad_pdo %>%
@@ -1234,8 +1210,8 @@ wdr2_set %>%
 
 ## Add `geomvline` to sector plots v WDR title [CMPL 🟠] 
 ```{r}
-tabyl(pdo_train_t$tok_sector_broad)
-# pdo_train_t$tok_sector_broad      n  WDR
+tabyl(pdo_train2_t$tok_sector_broad)
+# pdo_train2_t$tok_sector_broad      n  WDR
 
 #                  AGR_FOR_FISH    665 WDR 2008  Agriculture for Development
 #                     EDUCATION   1180 WDR 2004 Making Services Work for Poor People
@@ -1474,7 +1450,7 @@ f_save_plot_obj(pdo_fin_WDR_plot, "pdo_fin_WDR_plot")
 
 ```{r}
 # Create bigrams by pairing consecutive tokens by sentence ID and token IDs
-bigrams <- pdo_train_t %>%
+bigrams <- pdo_train2_t %>%
   # keeping FY with tokens
   group_by(FY_appr, proj_id, pdo, sid) %>%
   arrange(tid) %>%
@@ -1541,7 +1517,7 @@ bigram_freq <- bigrams_cleaned %>%
 
 # ---- Prepare data for plotting
 # Evaluate the title with glue first
-title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train_t$FY_appr)}-{max(pdo_train_t$FY_appr)}")
+title_text <- glue::glue("Frequency of bigrams in PDOs over FY {min(pdo_train2_t$FY_appr)}-{max(pdo_train2_t$FY_appr)}")
 
 # Define the bigrams you want to highlight
 bigrams_to_highlight <- c(
@@ -1985,7 +1961,7 @@ f_save_plot_obj(pdo_pub_pri_bigr, "pdo_pub_pri_bigr")
 
 ```{r}
 # Create bigrams by pairing consecutive tokens by sentence ID and token IDs
-trigrams <- pdo_train_t %>%
+trigrams <- pdo_train2_t %>%
   # keeping FY with tokens
   group_by(FY_appr, proj_id, pdo, sid) %>%
   arrange(tid) %>%
@@ -2128,7 +2104,7 @@ A **concordance** list is a list of all contexts in which a particular token app
 
 ```{r}
 # reduce back to the original data
-pdo_t <- pdo_train_t %>%
+pdo_t <- pdo_train2_t %>%
   select(
     proj_id, pdo, pr_name, FY_appr, FY_clos, status, regionname, countryname,
     sector1, theme1, lendinginstr, env_cat, ESrisk, curr_total_commitment
@@ -2620,7 +2596,7 @@ This represents a fantastic opportunity to explore the correspondence between th
 
 #### ----  Old plot 
 
-> THIS STARTED FROM `pdo_train_t` bc I needed the tokens 
+> THIS STARTED FROM `pdo_train2_t` bc I needed the tokens 
  
 ```{r}
 # data long by PDOsector (sector_broad_pdo)
@@ -2629,7 +2605,7 @@ PDOsector_list
 
 PDOsector_list$`MINING_OIL_GAS`
 # Which PDOsector
-tabyl(pdo_train_t$tok_sector_broad)
+tabyl(pdo_train2_t$tok_sector_broad)
 
 # --- Split data long into a LIST of subset by sector
 PDOsector_list <- base::split(x = sector_broad_pdo, f = sector_broad_pdo$tok_sector_broad)
@@ -2689,7 +2665,7 @@ map(names(PDOsector_list), f_plot_pdo_sector)
 #### ----  NEW plot 
 
 ## COMPARE PDO words v sector (the tag) 
-Basically I want to compare the trend over time of the frequency of my custom sector word (`pdo_train_t$tok_sector_broad`) in the PDO text, against the frequency of the sector tag in the dataset (`sector1`). 
+Basically I want to compare the trend over time of the frequency of my custom sector word (`pdo_train2_t$tok_sector_broad`) in the PDO text, against the frequency of the sector tag in the dataset (`sector1`). 
 
 #### ----  make `sector1_broad`
 
@@ -2757,7 +2733,7 @@ projs_train <- projs_train %>%
   ))
 
 # check
-pdo_train_t %>%
+pdo_train2_t %>%
   filter(tok_sector_broad %in%
     c("WAT_SAN", "ENERGY", "TRANSPORT", "MINING_OIL_GAS", "ICT", "EDUCATION", "HEALTH")) %>%
   tabyl(tok_sector_broad, show_missing_levels = T)
@@ -2802,7 +2778,7 @@ tabyl(sector_broad_tag$sector1_broad)
 <!-- MATCH PDO WORDS AND SECTOR TAGS -->
 
 
-<!--  pdo_train_t$tok_sector_broad      n  sector_broad_tag$sector1_broad  -->
+<!--  pdo_train2_t$tok_sector_broad      n  sector_broad_tag$sector1_broad  -->
 <!--                MINING_OIL_GAS    396  MINING_OIL_GAS  3578 -->
 <!--                     EDUCATION   1186  EDUCATION  7734 -->
 <!--                        ENERGY    710  ENERGY 20479 -->
@@ -3519,11 +3495,11 @@ f_save_plot_obj(f_plot_sector_comm(sector_broad_pdo_comm, sector = "ICT"), "comp
 
 
 # _______ 
-# Save clean Proj PDO train dataset `pdo_train_t`
+# Save clean Proj PDO train dataset `pdo_train2_t`
 ```{r}
 # inputs 
 projs_train2 <-  projs_train
 saveRDS(projs_train2, here("data" , "derived_data", "projs_train2.rds"))#   4403 -> 5637  obs 
 # projs_train + annotated pdo train --> 
-saveRDS(pdo_train_t, here("data" , "derived_data", "pdo_train_t.rds"))#  249K --> 314K obs
+saveRDS(pdo_train2_t, here("data" , "derived_data", "pdo_train2_t.rds"))#  249K --> 314K obs
 ```

@@ -68,7 +68,7 @@ website:
       background: light
       contents:
         - posts/PDO_eda.qmd # uguale a sopra (il primo)
-        - posts/blog2.qmd
+        # - posts/blog2.qmd
 
 format:
   html:

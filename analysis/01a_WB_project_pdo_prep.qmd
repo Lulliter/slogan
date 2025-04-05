@@ -788,6 +788,27 @@ pdo_by_year <- all_proj_t %>%
     pdo_not_missing = sum(!is.na(pdo)),
     .groups = "drop"
   )
+
+# Step 1: Find the first year with pdo_not_missing == 0
+first_year_pdo <- pdo_by_year %>%
+  filter(pdo_not_missing != 0) %>%
+  summarise(first_year = min(boardapprovalFY, na.rm = TRUE)) %>%
+  pull(first_year)
+
+
+
+# Step 2: Sum pdo_missing for years before that
+pjs_before_pdo <- pdo_by_year %>%
+  filter(boardapprovalFY < first_year_pdo) %>%
+  summarise(total_missing = sum(pdo_missing))
+
+first_year_pdo
+pjs_before_pdo
+
+#save them  
+saveRDS(first_year_pdo, here("data" , "derived_data", "first_year_pdo.rds"))
+saveRDS(pjs_before_pdo, here("data" , "derived_data", "pjs_before_pdo.rds"))
+        
 ```
 
 
@@ -902,8 +923,9 @@ skim(projs$id) # 11,278
 skim(projs$pdo) # 9914
 
 n_distinct(projs$id) # 11,278
-n_distinct(projs$pdo) # 9914 !!!!!!!! 
+ndist_pdo <- n_distinct(projs$pdo) # 9914 !!!!!!!! 
 
+ 
 # Detect duplicated PDOs and the corresponding IDs
 duplicates <- projs %>%
   group_by(pdo) %>%
@@ -923,6 +945,15 @@ max(count_dp$dup_count)    # 13
 mean(count_dp$dup_count)   # 2.243391
 n_distinct(duplicates$id)  # 2461 projectes with duplicated PDOs
 n_distinct(duplicates$pdo) # 1097 unique PDOs are duplicated in the dataset
+```
+
+
+```{r}
+#| echo: false
+# save for later
+saveRDS(ndist_pdo, here("data" , "derived_data", "ndist_pdo.rds")) # 9914 pdo
+saveRDS(duplicates, here("data" , "derived_data", "duplicates.rds")) # 2461 obs
+saveRDS(count_dp, here("data" , "derived_data", "count_dp.rds")) # 1097 obs
 ```
 
 There are `r nrow(duplicates)` projects with NON-UNIQUE PDO text in the dataset. In some cases, evidently, the same PDO is used for multiple projects (from a minimum of 2 to a maximum of 13 time!!!), most likely when there is a *parent* project or subsequent phases of the same.
@@ -1061,20 +1092,20 @@ pdo_train_to_tag <- projs_train %>%
    )) 
 ```
 
-## [LOOONG] Annotate with `cleanNLP::cnlp_annotate()`
+## ☣️☣️⚠️ [LOOONG] Annotate with `cleanNLP::cnlp_annotate()`
 
 [Only the 1st time]
 ```{r}
-# # ---- Initialize the tagger
-# cleanNLP::cnlp_init_udpipe()
-# 
-# # ---- Use the built-in R-based tagger
-# pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag,
-#                                   text_name = "pdo_2",
-#                                   doc_name = "id")
-# 
-# # ---- save the input data as .rds
-# saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
+# ---- Initialize the tagger
+cleanNLP::cnlp_init_udpipe()
+
+# ---- Use the built-in R-based tagger
+pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag,
+                                  text_name = "pdo_2",
+                                  doc_name = "id")
+
+# ---- save the input data as .rds
+saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
 
 ```
 

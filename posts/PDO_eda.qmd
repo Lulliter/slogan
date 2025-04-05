@@ -2,19 +2,29 @@
 title: "Tracing policy signals in text"
 subtitle: "Exploring development priorities in World Bank operational documents with R"
 description: |
-  TL;DR <br>
   The idea of analyzing language as data has always intrigued me. In this deep dive, I focus on ~4,000 World Bank Projects & Operations, zooming in on the short texts that describe the *Project Development Objectives (PDOs)*—an abstract of sorts for Bank's operations.<br> This explorative analysis revealed fascinating—and surprising—insights, uncovering patterns and correlations in text but also solutions to enhance the quality of projects' data themselves.  
   
-  (This is an ongoing project, so comments, questions, and suggestions are welcome. The R source code is open, albeit not very polished).<br>
+  (This is an ongoing project, so comments, questions, and suggestions are welcome.).<br>
 #  #NLP #TextAnalytics #ML #DigitalHumanities #WorldBank #Rstats
-#author: "Luisa M. Mimmi"
 categories: [WB, NLP, TextAnalytics, ML, DigitalHumanities, Rstats]
-#date-modified: "2024-10-29"
+date-modified: today
 date: "2024-10-29"
 lang: en
 number-sections: false
 
 draft: FALSE
+
+author:
+   - given: "Luisa M."
+     family: "Mimmi"   
+     affiliation: "Independent researcher"
+     affiliation-url: "https://luisamimmi.org/"
+citation:
+   type: "report"
+   #doi: "10.13140/RG.2.2.20095.48801"
+   container-title: "NLP study of World Bank operational documents with R"
+   collection-title: "Working paper"
+   url: "https://policylexicon.com/posts/PDO_eda.html/"
 
 editor: source
 engine: knitr
@@ -42,6 +52,7 @@ format:
       right: 
         nav: "Outline"  # enables TOC (outline) in the sidebar
   # pdf:
+  #   toc: true
   #   toc-depth: 2
   #   # toc-title: Indice
   #   highlight-style: github
@@ -64,9 +75,26 @@ nocite: |
 
 # Servono x i c***o di grafici con il theme_pretty
 library(here)
+library(dplyr)
 library(showtext)
+library(tibble)
+library(kableExtra)
+#library(flextable)
+
 font_add_google("Roboto Condensed", "roboto_condensed")
 showtext_auto()
+
+#flextable::set_flextable_defaults(font.family = "Roboto Regular")
+
+# render_flex_table <- function(tbl) {
+#   if (knitr::is_html_output()) {
+#     knitr::render_flex_table(tbl) %>%
+#       kableExtra::kable_styling(full_width = FALSE)
+#   } else {
+#     knitr::kable(tbl, format = "latex", booktabs = TRUE) %>%
+#       kableExtra::kable_styling(latex_options = "hold_position")
+#   }
+# }
 ```
 
 
@@ -85,8 +113,7 @@ Normally, a few objectives are listed in paragraphs that are a couple sentences 
 #| output: true
 #| tbl-cap: Illustrative PDOs text in Projects' documents
 
-library(tibble)
-library(kableExtra)
+
 tibble::tribble(
    ~Project_ID, ~Project_Name, ~Project_Development_Objective,
    "P127665", "Second Economic Recovery Development Policy Loan", "This development policy loan supports the Government of Croatia's reform efforts with the aim to: (i) enhance fiscal sustainability through expenditure-based consolidation; and (ii) strengthen investment climate.",
@@ -95,6 +122,9 @@ tibble::tribble(
    kable() %>%
    kable_styling() %>%
    column_spec(3, background = "#f1e7d3")
+  # flextable() %>%
+  # bg(j = "Project_Development_Objective", bg = "#f1e7d3") %>%
+  # autofit()
 ```
 
 The dataset also includes some relevant **metadata** about the projects, including: *country*, *fiscal year of approval*, *project status*, *main sector*, *main theme*, *environmental risk category*, or *lending instrument*.s
@@ -105,41 +135,58 @@ I retrieved the data on this page [WBG Projects](https://projects.worldbank.org/
 :::
 
 # DATA
+```{r}
+#| eval: true
+#| echo: false
+#| output: false
 
-The original dataset included **22,569 World Bank projects** approved **from fiscal year 1947 through 2025**, as of *August 31, 2024*. Approximately half—**11,322 projects**—had a *viable* Project Development Objective (PDO) text (i.e., not blank or labeled as "*TBD*", etc.), all approved after FY2001. From this group, some projects were excluded due to missing key variables.
+# needed for dynamic variables 
+## --- a) 
+ndist_pdo <- readRDS(here("data" , "derived_data", "ndist_pdo.rds")) # duplicates
+duplicates <- readRDS(here("data" , "derived_data", "duplicates.rds"))  
+count_dp <- readRDS(here("data" , "derived_data", "count_dp.rds")) # duplicates
+## --- b) needed for dinamic variables
+tracking <- readRDS(here("data", "derived_data", "tracking.rds"))
+projs_train2 <- readRDS(here("data", "derived_data", "projs_train2.rds")) # 
 
-This left **8,811 projects** as **usable observations** for analysis.
+first_year_pdo <- readRDS(here("data" , "derived_data", "first_year_pdo.rds"))
+pjs_before_pdo <- readRDS(here("data" , "derived_data", "pjs_before_pdo.rds"))
+```
 
-Interestingly, within this refined subset, **2,235 projects share only 1,006 unique PDOs**: *recycled* PDOs often appear in follow-up projects or components of a larger parent project.
+The original dataset, retrieved on *August 31, 2024*, included **`r tracking[1,2]` World Bank projects** approved **from Fiscal Year 1947 through 2025**. Approximately `r round((tracking[11,2]/tracking[1,2])*100, 1)`%—**`r tracking[11,2]` projects**—had a *viable* Project Development Objective (PDO) text (i.e., not blank or labeled as "*TBD*", etc.), all approved after the mid 1980s. From this group, some projects were excluded due to missing key variables.
 
-Finally, from these **8,811 projects**, a representative sample of **4,403 projects with PDOs** was selected for further analysis.
+This left **`r sum(tracking[14,2])` projects** as **usable observations** for analysis.
+
+Interestingly, within this refined subset, **`r n_distinct(duplicates$id)` projects share only `r n_distinct(duplicates$pdo)` unique PDOs**: *recycled* PDOs often appear in follow-up projects or components of a larger parent project.
+
+Finally, from these **`r sum(tracking[14,2])` projects**, a representative sample of **`r nrow(projs_train2)` projects with PDOs** was selected for further analysis.
 
 
 
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
 ### PDO text data quality
-First, it is important to notice that **all 7,548 projects approved before FY2001** had no PDO text available.
+First, it is important to notice that **none of the `r pjs_before_pdo` projects approved before FY `r first_year_pdo`** had any PDO text available (evidently, it became a requirement only later on).
 
-The exploratory analysis of the **11,353 projects WITH PDO text** revealed some interesting findings:
+The exploratory analysis of the **`r sum(tracking[14,2])` projects with PDO text** revealed some interesting findings:
 
 1.  **PDO text length**: The PDO text is quite short, with a median of 2 sentences and a maximum of 9 sentences. <!-- From 22,659 Proj --> <!-- all_proj_t %>% filter(pdo %in% c(".","-","NA", "N/A")) %>% nrow() -->
-2.  **PDO text missingness**: besides **11,306** projects with missing PDOs, **31 projects** had some invalid PDO values, namely: <!-- + **11,216** have missing PDO -->
-    -   **11** have PDO as one of: *".","-","NA", "N/A"*
-    -   **7** have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
-    -   **9** have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
-    -   **4** have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "a"*
+2.  **PDO text missingness**: besides **`r tracking[2,3]`** projects with missing (i.e. `NA`) PDOs, **`r sum(tracking[3:11,3])` projects** had some invalid PDO values, namely: <!-- + **11,216** have missing PDO -->
+    + `r sum(tracking[3:6,3])` have PDO as one of: *".","-","NA", "N/A"*
+    + `r sum(tracking[7:9,3])` have PDO as one of: *"No change", "No change to PDO following restructuring.","PDO remains the same."*
+    + `r sum(tracking[10,3])` have PDO as one of: *"TBD", "TBD.", "Objective to be Determined."*
+    + `r sum(tracking[11,3])` have PDO as one of: *"XXXXXX", "XXXXX", "XXXX", "XXX, "a"*
 
 <!-- FROM 22,659 total - 11,306 MISSING PDOs = 11,353 WITH PDO - 31 = 11,322 with *VALID* PDO -->
 
-Of the **available 11,322 projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
+Of the **remaining `r sum(tracking[11,3])` projects with a valid PDO**, some more projects were **excluded** from the analysis for incompleteness:
 
--   **3 projects** without *"project status"*
--   **2,176 projects** without *"board approval FY"*
--   **332 projects** approved in FY \>= FY2024 (for incomplete approval stage)
++ **`r sum(tracking[12,3])` projects** without *"project status"* 
++ **`r sum(tracking[13,3])` projects** without *"board approval FY"* 
++ **`r sum(tracking[14,3])` projects** approved in FY \>= FY2024  (for incomplete approval stage) 
 
-Lastly (and this was quite surprising to me) the **remaining, viable 8,811 unique projects**, were matched by **only 7,582 unique PDOs**! In fact, **2,235 projects share 1,006 NON-UNIQUE PDO text** in the clean dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
+Lastly (and this was quite surprising to me) the **remaining, viable `r tracking[14,2]` unique projects**, were matched by **only `r ndist_pdo` unique PDOs**! In fact, **`r sum(count_dp$dup_count)` projects share `r n_distinct(duplicates$pdo)` NON-UNIQUE PDO text** in the clean dataset. Why? Apparently, the same PDO is re-used for multiple projects (from 2 to as many as 9 times), likely in cases of follow-up phases of a *parent* project or components of the same lending program."
 
-In sum, the cleaning process yielded a usable set of **8,811 functional projects**, which was split into a *training subset* (4,403) to explore and test models and a *testing subset* (4408), held out for post-prediction evaluation.
+In sum, the cleaning process yielded a usable set of **`r tracking[14,2]` functional projects**, which was split into a *training subset* (`r nrow(projs_train2)`) to explore and test models and a *testing/validation subset* (`r tracking[14,2]-nrow(projs_train2)`), held out for post-prediction evaluation.
 :::
 
 ## Preprocessing the PDO text data
@@ -148,7 +195,7 @@ Cleaning text data entails extra steps compared to numerical data. A key process
 
 Upon tokenization, it is very common to **remove irrelevant elements** like punctuation or `stop words` (unimportant words like "the", "ii)", "at", or repeated ones in context like "PDO") which add noise to the data.
 
-In contrast, **data enhancement techniques** like *part-of-speech tagging* add value by identifying grammatical components, allowing focus on meaningful elements like `nouns`, `verbs`, or `adjectives`.
+In contrast, **data enhancement techniques** like *part-of-speech (POS) tagging* add value by identifying grammatical components, allowing focus on meaningful elements like `nouns`, `verbs`, or `adjectives`.
 
 <!-- ::: {.callout-warning icon="false" collapse="true" style="background-color: #fffcf9;"}
 ### {{< bi terminal-fill color=#9b6723 >}} Nerdy Note
@@ -181,7 +228,7 @@ combo_freq_p
 ```
 
 ## Bigrams 
-@fig-bigr shows the most frequent `bigrams` in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"* ,*"institutional capacity"*, *"poverty reduction"* etc., at the top.
+@fig-bigr shows the most frequent `bigrams` in the PDO text data. The top-ranking bigrams align with expectations, featuring phrases like  *"increase access"*, *"service delivery"*, *"institutional capacity"*, *"poverty reduction"* at the top.
 Notably, while *"health"* appears in several bigrams (e.g., *"health services"*, *"public health"*, *"health care"*), *"education"* is absent from the top 25. Another noteworthy observation is the frequent mention (over 100 instances) of *"eligible crisis"*, which was somewhat unexpected. 
 
 ```{r}
@@ -208,8 +255,7 @@ pdo_bigr_freq
 
 ## Trigrams 
 
-@fig-trigr shows the most frequent `trigrams` in the PDO text data. Here, the recurrence of phrases involving *"health"* is reiterated, along with a few phrases revolving around *"environmental"* goals, along with terms that 
-inherently belong together: like *"water resource management"*, *"social safety net"*, etc..
+@fig-trigr shows the most frequent `trigrams` in the PDO text data. Here, the recurrence of phrases involving *"health"* is reiterated, along with a few phrases revolving around *"environmental"* goals, as well as terms that inherently belong together: like *"water resource management"*, *"social safety net"*, etc..
 
 ```{r}
 #| label: fig-trigr 
@@ -370,15 +416,34 @@ As shown in @tbl-comp_sec, the results indicate similar distributions across mos
 
 # save as object
 ks_results_k <- readRDS(file =  here("analysis", "output", "tables" ,"ks_results_k.rds"))
+# tbl data.frame
 
 # Count how often the phrase appears in the vicinity of the target bigram
 ks_results_k %>% 
-   kable(format = "html", 
-         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
-         # Round  to 4 digits) 
-         digits = c(0, 4, 4, 0)) %>% 
+   kable(format = "html",
+      col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
+      # Round  to 4 digits)
+      digits = c(0, 4, 4, 0)) %>%
    kable_styling(full_width = FALSE) %>%
    row_spec(which(ks_results_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
+
+
+```{r}
+#| echo: false
+# mutate(across(c(2, 3), ~ round(.x, 4))  # round 2nd and 3rd columns to 4 digits
+   # ) %>%
+   # rename(
+   #    `SECTORS` = 1,
+   #    `KS statistic` = 2,
+   #    `KS p-value` = 3,
+   #    `Distributions` = 4
+   # ) %>% 
+   # flextable() %>%
+   # bg(i = ~ Distributions == "Dissimilar", 
+   #    bg = "#e7d8da"
+   # ) %>%
+   # autofit()
 ```
 
 Below is a graphical representation of two illustrative sectors, showing the most similar and the most dissimilar distributions of the *sector* as deducted form text data, versus the proper metadata *sector* labeling. 
@@ -439,12 +504,31 @@ ks_results2_k <- readRDS(file =  here("analysis", "output", "tables" ,"ks_result
 
 # Count how often the phrase appears in the vicinity of the target bigram
 ks_results2_k %>% 
-   kable(format = "html", 
-         col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
-         # Round  to 4 digits) 
-         digits = c(0, 4, 4, 0)) %>% 
+   kable(format = "html",
+      col.names = c("SECTORS", "KS statistic","KS p-value",  "Distributions"),
+         # Round  to 4 digits)
+         digits = c(0, 4, 4, 0)) %>%
    kable_styling(full_width = FALSE) %>%
    row_spec(which(ks_results2_k$similarity == "Dissimilar"), background = "#e7d8da")
+```
+
+
+```{r}
+#| echo: false
+# mutate(across(c(2, 3), ~ round(.x, 4))  # Round 2nd and 3rd columns
+   # ) %>%
+   # rename(
+   #    `SECTORS` = 1,
+   #    `KS statistic` = 2,
+   #    `KS p-value` = 3,
+   #    `Distributions` = 4
+   # ) %>%
+   # flextable() %>%
+   # bg(i = ~ Distributions == "Dissimilar",
+   #    bg = "#e7d8da"
+   # ) %>%
+   # autofit()
+
 ```
 
 Let us pick a couple of examples of specific sectors to check visually. 
@@ -533,6 +617,7 @@ clch_close_k
 
 
 # READ as object
+# OKKIO: this table has HTML tags for color 
 sentences_with_climchang2_k <-  readRDS(file = here("analysis", "output", "tables" ,"sentences_with_climchang2_k.rds"))
 
 # Define more contrasting colors for alternating groups
@@ -542,19 +627,22 @@ background_colors <- c("#D6EAF8", "#EBF5FB")  # Use distinct colors for easier d
 
 # Prepare the kable table with subheaders based on 'contains_what'
 sentences_with_climchang2_k %>%
-  dplyr::ungroup() %>%
-  dplyr::arrange(contains_what) %>%
-  dplyr::select(contains_what, proj_id, closest_text) %>%
-  kable(format = "html", 
-        escape = FALSE,
-        col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
-  kable_styling(full_width = FALSE)   %>%
-  group_rows(index = table(sentences_with_climchang2_k$contains_what), 
-              label_row_css = "background-color: #D6EAF8;")  # Adjust the color as needed
-   # Add subheaders based on the unique values in `contains_what`
-  #group_rows(index = table(sentences_with_climchang2$contains_what))
+   dplyr::ungroup() %>%
+   dplyr::arrange(contains_what) %>%
+   dplyr::select(contains_what, proj_id, closest_text) %>%
+   kable(format = "html",
+         # kable(
+         escape = FALSE,
+         col.names = c("Near word (root)", "WB Project ID", "Closest Text")) %>%
+   kable_styling(full_width = FALSE)   %>%
+   group_rows(index = table(sentences_with_climchang2_k$contains_what), 
+              # Adjust the color as needed
+              label_row_css = "background-color: #D6EAF8;")
+# Add subheaders based on the unique values in `contains_what`
+#group_rows(index = table(sentences_with_climchang2$contains_what))
 
 ```
+
 
 ---
 
@@ -572,12 +660,13 @@ This section shifts focus to a new area of exploration: the possibility to enhan
  
 # source function
 source(here("R","f_recap_values.R")) 
-projs_train <- readRDS(file = here( "data", "derived_data", "projs_train.rds"))
+projs_train2 <- readRDS(file = here( "data", "derived_data", "projs_train2.rds"))
 
 # check candidate lables for classification 
-f_recap_values(projs_train, c("sector1", "theme1","env_cat","ESrisk" )) %>%
-   kable(format = "html", 
-         col.names = c("Variable", "N obs.", "N Distinct", "N Missing", "N Percent")) %>% 
+f_recap_values(projs_train2, c("sector1", "theme1","env_cat","ESrisk" )) %>%
+   kable(format = "html",
+   # kable(
+      col.names = c("Variable", "N obs.", "N Distinct", "N Missing", "N Percent")) %>% 
    kable_styling(full_width = FALSE) %>% 
    row_spec(3, background = "#d8e600") # Light yellow background kable() 
 ```
@@ -682,7 +771,7 @@ tibble::tribble(
   
   "Naïve Bayes classification"              , "Text + other predictors", "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 0.691, 0.784  
 ) %>%  
-   kable(format = "html" ) %>% 
+   kable(format = "html") |> # kable() |> 
    kable_styling(full_width = FALSE)  %>% 
    row_spec(3, background = "#d8e600")  
 
@@ -797,5 +886,4 @@ Below are some great resources---especially geared toward [{{< fa brands r-proje
 + [Guidef from Penn Libraries](https://guides.library.upenn.edu/penntdm/r)
 -->
 
- 
 
