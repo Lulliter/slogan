@@ -13,11 +13,13 @@ Rscript -e "targets::tar_make(all_proj)" # DATA dep
 Rscript -e "targets::tar_make(all_proj_25)" # DATA dep
 Rscript -e "targets::tar_make(all_proj_themes_25_l)"
 Rscript -e "targets::tar_make(all_proj_sectors_25_l)"
-Rscript -e "targets::tar_make(prep_report)"  # 01a_....qmd
+
+Rscript -e "targets::tar_make(prep_report)"  # 01a_WB_project_pdo_prep.qmd
 
 Rscript -e "targets::tar_make(projs_train)" # DATA dep
 Rscript -e "targets::tar_make(pdo_train_t)" # DATA dep
-Rscript -e "targets::tar_make(eda_report)"  # 01b_....qmd
+
+Rscript -e "targets::tar_make(eda_report)"  # 01b_WB_project_pdo_EDA.qmd
 
 Rscript -e "targets::tar_make(feat_class_report)"  # 01c_....qmd
 
@@ -61,7 +63,7 @@ git add posts/
 git add research/
 =======
 git commit -m "analysis/00_data.qmd 📊📊"
-git commit -m "maj revision analysis/ _targets" -m "added 2025 data 🥵 and messeu up some stuff"
+git commit -m "maj revision analysis/ post 2025 input 🥵" -m "added 2025 data 🥵 and messeu up some stuff"
 git commit -m "small upd Home 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "100% done blog  🍾🥂"

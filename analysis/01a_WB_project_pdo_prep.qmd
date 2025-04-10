@@ -47,10 +47,17 @@ WORK IN PROGRESS!
 ```{r}
 # Pckgs -------------------------------------
 library(fs) # Cross-Platform File System Operations Based on 'libuv'
-library(tidyverse) # Easily Install and Load the 'Tidyverse'
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(skimr) # Compact and Flexible Summaries of Data
 library(here) # A Simpler Way to Find Your Files
+#library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(dplyr) # A Grammar of Data Manipulation
+library(tidyr) # Tidy Messy Data
+library(tibble) # Tibbles: A Modern Version of Data Frames
+library(purrr) # Functional Programming Tools
+library(lubridate) # Make Dealing with Dates a Little Easier
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+
 library(paint) # paint data.frames summaries in colour
 library(readxl) # Read Excel Files
 library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools
@@ -1070,7 +1077,7 @@ Here’s the general process for tagging (or *“annotating”*) text with the `
 
    1. Make a dataset where one column is the id (line number, chapter number, book+chapter, etc.), and another column is the text itself.
    2. Initialize the NLP tagger. You can use any of these:
-      + `cnlp_init_udpipe()`: Use an R-only tagger that should work without installing anything extra (a little slower than the others, but requires no extra steps!)
+      + ️✅ `cnlp_init_udpipe()`: Use an R-only tagger that should work without installing anything extra (a little slower than the others, but requires no extra steps!)
       + `cnlp_init_spacy()`: Use spaCy (if you’ve installed it on your computer with Python)
       + `cnlp_init_corenlp()`: Use Stanford’s NLP library (if you’ve installed it on your computer with Java)
    3. Feed the data frame from step 1 into the cnlp_annotate() function and wait.

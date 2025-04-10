@@ -38,43 +38,80 @@ bibliography: ../bib/slogan.bib
 
 # 2 READ 
 
-- See [Ibai Guillén-Pacho et al. article](https://scispace.com/pdf/dynamic-topic-modelling-for-exploring-the-scientific-6o59ybpk.pdf)
+- See [Anestis Kousis et al. article](https://www.researchgate.net/publication/376801745_Investigating_the_Key_Aspects_of_a_Smart_City_through_Topic_Modeling_and_Thematic_Analysis) on `Interesting topic modeling project on smart city` = This study aims to investigate the underlying structure of the **smart city paradigm** by employing topic modeling and thematic analysis | ... by identifying significant themes as well as subthemes | ... establishment of a semi-automated novel methodology for for the thematic analysis of large corpora
+   + 3 distinct sources/ corpora 
+
+- 🟩 See [Ibai Guillén-Pacho et al. article](https://scispace.com/pdf/dynamic-topic-modelling-for-exploring-the-scientific-6o59ybpk.pdf)
 Several `time-dependent approaches based on topic models` were compared to analyse the annual evolution of *latent* concepts in the CORD-19 corpus:
 
-1. Dynamic Topic Model, 
-2. Dynamic Embedded Topic Model, 
-3. BERTopic
+      1. Dynamic Topic Model (DTM), 
+      2. Dynamic Embedded Topic Model (DETM), 
+      3. BERTopic
 
 - See [Malvika Mishra et al. article](https://link.springer.com/article/10.1007/s41060-024-00596-9) comprehensive investigation into the thematic evolution within computational economics over the past two decades, leveraging advanced topic modeling techniques. Utilizing latent semantic analysis, latent dirichlet allocation (LDA), and BERTopic models, 
 
 - See [Wang et al. article](https://www.mdpi.com/2071-1050/16/19/8293/review_report) Dynamic topic modeling (DTM) was utilized to analyze 1872 energy policy documents, revealing shifts in core topics over time, such as the transition from infrastructure development to new energy focus, thereby assessing the evolution and impact of policy ideas.
 
+# 2 Question
+
+> Before, I was using supervised ML, now I am jumping into unsupervised ML.  
+
+Next, I could go some different ways: 
+1. dimension of `time` to appreciate change (e.g. in a collection on COVID papers, the time  factor is important)
+   + bellissima idea in [@guillen-pacho_dynamic_2023] to distinguish (i.e. labeling) `topic top words` and `trend word` / `fashion word` and `cross-domain words`, `topic interpretability`, `topic specificity`, etc 
+2. dimension of `space` to appreciate spatial distribution of the concept / clustering etc
+3. internal `matching` the distribution of topics over different corpora (e.g. project PDO vs. project sector tags)
+3. external `matching` the distribution of topics over different corpora (e.g. operational vs. WDRs vs. president statements, etc)
+
+## 1. What are the key aspects of the "...." concept?
 
 # Topic modeling 
 
++ Topic modeling stands as currently the most widely used `text-mining technique`
++ Grounded in ML and NLP, topic modeling consists of `probabilistic word distributions` often resulting in a presentation of the most frequent terms associated with each identified topic  
++ The `output of topic modeling` comprises two elements: the proportions of words within topics and the proportions of topics within documents.
+
+### 0. **Latent Semantic Indexing (LSI)** 
+   - **Latent Semantic Indexing** employs singular value decomposition (SVD) on a large term–document matrix to identify a linear subspace that captures the connection between words and documents. 
+   - LSI has limitations, as it does not assign probabilities to topics
+   
 ### 1. **Latent Semantic Analysis (LSA)**
-   - **Latent Semantic Analysis** is a method in NLP, specifically distributional semantics,that creates a collection of ideas associated with the documents and terms, to analyze relationships between a set
-of documents and the terms they contain. 
+   - **Latent Semantic Analysis** is a method in NLP, specifically distributional semantics, that creates a collection of ideas associated with the documents and terms. 
+   - helps automatically uncover topics from large text corpora 
 
 ### 2. **Latent Dirichlet Allocation (LDA)**
    - **Latent Dirichlet Allocation** is a generative probabilistic model that explains a set of observations through unseen groups, with each group explaining why certain portions of the data are similar. 
+   + (the Bayesian version of LSA!!)
 
 ### 3. **BERTopic** (Bidirectional Encoder Representation Transformer)
-   - **BERTopic** is a `Python` library that applies topic modeling using BERT, a powerful and easy-to-use library for intelligent topic modeling.
+
+[See @kousis_investigating_2023]
+   - **BERTopic** is a `Python` library that applies topic modeling using BERT. Unlike conventional topic models that depend on the “Bag-of-Words” representations, which disregard the inherent semantic connections among words by employing a mere lexical bag format, `BERTopic`, functioning as a neural topic model, has the capability to depict words as multidimensional vectors. This allows it to capture contextual information, resulting in more precise and comprehensive attributes
    - It allows for the extraction of topics from large corpora of text data, making it suitable for analyzing trends and patterns in textual data.
    - it requires a large amount of computing power
+
+
+#### Transformers
+Once tokens have been converted into meaningful embeddings, the next step is to use an architecture that can effectively leverage these embeddings. **Transformers** are the dominant architecture powering modern NLP and large language models (LLMs), including GPT models. Unlike older architectures such as recurrent neural networks, transformers process text using a mechanism called self-attention (the "T" in GPT stands for "Transformer"), enabling them to:
+
++ Analyze all words simultaneously, dramatically speeding up training and inference
++ Capture complex relationships between words regardless of their distance in a sentence
++ Understand subtle context and nuance more effectively
+
+### 4. **DistilBERT**
+   -  **DistilBERT** is a smaller, faster, cheaper, and lighter version of BERT. It retains 97% of BERT's language understanding while being 60% faster and 40% smaller. DistilBERT is ideal for applications where computational resources are limited or when real-time processing is required.
+   - see [@levy_natural_2025]
 
 # Time-dependent modeling strategy 
 
 > Which model could help me detect the change over time of a certain concept in a corpora of company documents
+[see @guillen-pacho_dynamic_2023]
 
 To detect the change over time of a certain concept in a corpus of company documents, you can use a combination of **Topic Modeling**, **Word Embeddings**, and **Temporal Analysis** techniques. Here are some models and methods that can help with this task:
 
 ### 1. **Dynamic Topic Models (DTM)**
    - **Dynamic Topic Models** extend traditional topic modeling approaches like **Latent Dirichlet Allocation (LDA)** to account for changes in topics over time.
-   - DTM models the evolution of topics in a time series, allowing you to see how the prominence of certain topics or concepts shifts over different time periods.
-   - This is useful if you want to track how the discussion around a concept evolves within your document corpus.
-
+   - DTM basically applies LDA to discrete time-slices  
 
 ```{r}
 #| eval: false

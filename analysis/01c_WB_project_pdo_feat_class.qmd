@@ -50,7 +50,6 @@ WORK IN PROGRESS!
 ```{r}
 # Pckgs -------------------------------------
 library(fs) # Cross-Platform File System Operations Based on 'libuv'
-library(tidyverse) # Easily Install and Load the 'Tidyverse' 
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(skimr) # Compact and Flexible Summaries of Data
 library(here) # A Simpler Way to Find Your Files
@@ -58,6 +57,15 @@ library(paint) # paint data.frames summaries in colour
 library(readxl) # Read Excel Files
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
 library(glue) # Interpreted String Literals
+#library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(dplyr) # A Grammar of Data Manipulation
+library(tidyr) # Tidy Messy Data
+library(tibble) # Tibbles: A Modern Version of Data Frames
+library(purrr) # Functional Programming Tools
+library(lubridate) # Make Dealing with Dates a Little Easier
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(stringr) # Simple, Consistent Wrappers for Common String Operations
+library(forcats) # Tools for Working with Categorical Variables (Factors)
 # ML & Text Mining -------------------------------------
 library(tidymodels) # Easily Install and Load the 'Tidymodels' Packages 
 library(textrecipes) # Extra 'Recipes' for Text Processing  
@@ -414,7 +422,7 @@ Lasso regression or classification *learns how much of a `penalty` to put on som
 
 -   `step_tokenize()`
 -   `step_tfidf()`
-    -   `smooth_idf = FALSE` (terms that appear in many (or all) documents will not be down weighted as much as they would be if the smoothing term was not added)
+-   `smooth_idf = FALSE` (terms that appear in many (or all) documents will not be down weighted as much as they would be if the smoothing term was not added)
 
 ```{r}
 # add step to recipe
@@ -438,7 +446,7 @@ dim(env_recipe_bake)
 #[1] 2264 7516
 ```
 
-The resulting engineered features data frame has `2264` observations and `7516` variables!!! I.e. for each writing sample, only a small subset of them will actually appear, most of our cells will be filled with zeros. This is what is known as a **sparse matrix**. Furthermore, the more features we have, the more chance these features will capture the nuances of these particular writing samples increasing the likelihood we **overfit the model**.
+   The resulting engineered features data frame has `2264` observations and `7516` variables!!! I.e. for each writing sample, only a small subset of them will actually appear, most of our cells will be filled with zeros. This is what is known as a **sparse matrix**. Furthermore, the more features we have, the more chance these features will capture the nuances of these particular writing samples increasing the likelihood we **overfit the model**.
 
 ### Improve recipe [`env_recipe`]
 
@@ -641,7 +649,7 @@ env_fitted_coeff <- env_lasso_fit %>% extract_fit_parsnip() %>%
    arrange(-estimate)
 ```
 
-### --- [FIG] Assessing performanceon training set
+### --- [FIG] Assessing performance on training set
 ```{r}
 #| output: TRUE
 

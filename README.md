@@ -18,24 +18,22 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 <img src="images/tree.png" style="width:50.0%" alt="tree" />
 
+# TO READ
+
+- study articles in `research/_model-idea.qmd` top (Dinamic topic
+  modeling over time)
+
 # TO DO
 
 - Revise `_target.R` …with new input files …
-
 - Access all tidy tuesday port for week 12 2025
   [bluesky](https://bsky.app/search?q=week+12+%23tidytuesday)
-
 - Read:
-
   - [R pckg to use LLm to summarize from
     PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
   - [Tidy tuesday on TExt
     analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
     - [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
-
-- study articles in `research/_model-idea.qmd` top (Dinamic topic
-  modeling over time)
-
 - ✅ new tab with `analysis/00_data.qmd`
 
 ### In `analysis/01a_WB_project_pdo_prep.qmd`

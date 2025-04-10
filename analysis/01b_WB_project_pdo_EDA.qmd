@@ -55,11 +55,18 @@ WORK IN PROGRESS!
 library(fs) # Cross-Platform File System Operations Based on 'libuv'
 library(here) # A Simpler Way to Find Your Files
 library(paint) # paint data.frames summaries in colour
-library(tidyverse) # Easily Install and Load the 'Tidyverse'
-library(stringr) # Simple, Consistent Wrappers for Common String Operations
 library(janitor) # Simple Tools for Examining and Cleaning Dirty Data
 library(skimr) # Compact and Flexible Summaries of Data
 library(readxl) # Read Excel Files
+#library(tidyverse) # Easily Install and Load the 'Tidyverse'
+library(dplyr) # A Grammar of Data Manipulation
+library(tidyr) # Tidy Messy Data
+library(tibble) # Tibbles: A Modern Version of Data Frames
+library(purrr) # Functional Programming Tools
+library(lubridate) # Make Dealing with Dates a Little Easier
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(stringr) # Simple, Consistent Wrappers for Common String Operations
+
 library(kableExtra) # Construct Complex Table with 'kable' and Pipe Syntax)
 library(patchwork) # The Composer of Plots
 library(ragg) # Anti-Grain Geometry Graphics)
@@ -223,7 +230,6 @@ cnlp_init_corenlp(
 )
 
 # ---- 2) Initialize the spaCy backend
-library(cleanNLP) # A Tidy Data Model for Natural Language Processing
 library(spacyr) # Wrapper to the 'spaCy' 'NLP' Library
 # Initialize spaCy in cleanNLP
 cnlp_init_spacy()
@@ -304,7 +310,16 @@ Evidently, in some cases,the same PDO is used for multiple projects (from a mini
 :::
 
 
-## Previous Tokenization and PoS Tagging
+## [Previous] Tokenization and PoS Tagging
+[In `analysis/01a_WB_project_pdo_prep.qmd` I ran `cleanNLP::cnlp_init_udpipe()` and `cleanNLP::cnlp_annotate` ot obtain `pdo_train_tagged` && `projs_train`--> `pdo_train2_t` with each token ant its annexed features.
+
+[1] "proj_id""pdo""sid""tid""word"                 
+[6] "token""token_l""lemma""upos""xpos"
+[11] "feats""tid_source""relation""pr_name""regionname"           
+[16] "countryname""status""boardapprovaldate""FY_appr""closingdate"          
+[21] "FY_clos""sector1""theme1""borrower""lendinginstr"         
+[26] "env_cat""ESrisk""curr_total_commitment"] 
+
 Typically, one of the first steps in this transformation from natural language to feature, or any of kind of text analysis, is *tokenization*. 
 
 ### i) Explain Tokenization

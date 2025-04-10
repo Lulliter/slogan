@@ -21,6 +21,9 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 ```
 ![tree](images/tree.png){width=50%}
 
+# TO READ 
+
++ study articles in `research/_model-idea.qmd` top (Dinamic topic modeling over time)
 
 # TO DO
 
@@ -31,7 +34,6 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
    + [R pckg to use LLm to summarize from PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
    + [Tidy tuesday on TExt analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
       + [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
-+ study articles in `research/_model-idea.qmd` top (Dinamic topic modeling over time)
 
 + ✅  new tab with  `analysis/00_data.qmd`
 
