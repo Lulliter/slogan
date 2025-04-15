@@ -57,7 +57,7 @@ library(tibble) # Tibbles: A Modern Version of Data Frames
 library(purrr) # Functional Programming Tools
 library(lubridate) # Make Dealing with Dates a Little Easier
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
-
+library(stringr) # Simple, Consistent Wrappers for Common String and Regular Expression Operations
 library(paint) # paint data.frames summaries in colour
 library(readxl) # Read Excel Files
 library(tidytext) # Text Mining using 'dplyr', 'ggplot2', and Other Tidy Tools

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>policy_lexicon.com/analysis/01b_WB_project_pdo_EDA.html</loc>
-    <lastmod>2025-04-14T17:59:11.254Z</lastmod>
-  </url>
-  <url>
     <loc>policy_lexicon.com/research/hypotheses.html</loc>
     <lastmod>2024-11-09T23:29:42.727Z</lastmod>
   </url>
@@ -13,7 +9,23 @@
     <lastmod>2025-04-05T17:38:18.527Z</lastmod>
   </url>
   <url>
-    <loc>policy_lexicon.com/analysis/01c_WB_project_pdo_feat_class.html</loc>
-    <lastmod>2025-04-09T14:35:29.627Z</lastmod>
+    <loc>policy_lexicon.com/analysis/02a_WB_project_pdo_feat_class_envcat.html</loc>
+    <lastmod>2025-04-15T15:26:27.158Z</lastmod>
+  </url>
+  <url>
+    <loc>policy_lexicon.com/analysis/01a_WB_project_pdo_prep.html</loc>
+    <lastmod>2025-04-14T16:19:20.550Z</lastmod>
+  </url>
+  <url>
+    <loc>policy_lexicon.com/analysis/00_data.html</loc>
+    <lastmod>2025-04-05T19:02:46.570Z</lastmod>
+  </url>
+  <url>
+    <loc>policy_lexicon.com/analysis/01b_WB_project_pdo_EDA.html</loc>
+    <lastmod>2025-04-14T17:59:11.254Z</lastmod>
+  </url>
+  <url>
+    <loc>policy_lexicon.com/index.html</loc>
+    <lastmod>2025-02-14T10:32:19.328Z</lastmod>
   </url>
 </urlset>

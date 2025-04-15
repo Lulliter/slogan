@@ -62,7 +62,7 @@ git add analysis/output/tables/*
 git add posts/
 git add research/
 =======
-git commit -m "analysis/00_data.qmd 📊📊"
+git commit -m "cont split 🖇️"
 git commit -m "maj revision analysis/ post 2025 input 🥵" -m "added 2025 data 🥵 and messeu up some stuff"
 git commit -m "small upd Home 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
