@@ -2360,7 +2360,7 @@ model_metrics_recap <- tibble(
 
 
 # table with accuracy, roc_auc, sensitivity, specificity
-model_metrics_recap |>
+models_metrics_recap_k <-  model_metrics_recap |>
    kable(escape = FALSE) |> 
    kable_styling("striped", full_width = F) |> 
    # header merged column 
@@ -2371,6 +2371,12 @@ model_metrics_recap |>
       "C) Lasso Logistic \n(pdo+feat) + stopwds",
       "D) Naive Bayes \n(pdo+feat) + stopwds"), 
       bold = TRUE, color = "black", background = "#D9EAD3")   
+```
+
+
+```{r}
+saveRDS(models_metrics_recap_k, here("analysis", "output", "tables", "models_metrics_recap_k.rds"))
+
 ```
 
 <!-- # SET OF MODELS       -->

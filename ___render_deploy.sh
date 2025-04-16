@@ -64,7 +64,7 @@ git add research/
 =======
 git commit -m "cont split 🖇️"
 git commit -m "maj revision analysis/ post 2025 input 🥵" -m "added 2025 data 🥵 and messeu up some stuff"
-git commit -m "small upd Home 👇🏻"
+git commit -m "02a_WB_project_pdo_feat_class_envcat.qmd 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "100% done blog  🍾🥂"
 

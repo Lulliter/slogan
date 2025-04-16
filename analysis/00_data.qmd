@@ -1,5 +1,5 @@
 ---
-title: "Data"
+title: "Data provenance"
 #author: "Luisa M. Mimmi"
 #date: "Last run: `r format(Sys.time(), '%F')`"
 lang: en
@@ -24,7 +24,7 @@ format:
 format-links: false
 ---
 
-# Where do these files come from?
+## Source of WB operations' data
 
 The **raw** and **derived** data files are accessible from the [Github Repo {{< fa brands github >}}](https://github.com/Lulliter/slogan) for this project. 
 
@@ -48,19 +48,25 @@ The Accessibility Classification is **public** under [Creative Commons Attributi
 <!-- I had made a prior attempt to ingest the WB document data using the `rvest` package, following the work of [Stephanie Tran](https://github.com/transteph/world-bank-document-scraping) project who created the function `R/f_scrape_WB-OKR.R`. However the WB website has changed and the function is not working anymore. -->
 <!-- ::: -->
 
-## Input data files 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(knitr)
+library(kableExtra)
+```
+
+## 0) Input data files 
 These files in the folder `data/raw_data/` are downloaded from the World Bank website.
 
 
 ```{r}
-#| label: project-files-table
+#| label: tbl-input_files
 #| echo: false
 #| warning: false
 #| message: false
 #| asis-output: true
-
-library(knitr)
-library(kableExtra)
 
 data.frame(
   `Source File Name` = c(
@@ -83,14 +89,14 @@ data.frame(
   Retrieved = c(
     "29 of August 2024",
     rep("31 of March 2025", 5),
-    "from 2022, then completed manually"
+    "30 of June 2022 + manual additions in October 2024"
   ),
   check.names = FALSE
 ) |>
   kable(
     format = "html",
     escape = FALSE,
-    caption = "List of Source Files and Retrieval Dates"
+    caption = "List of source files and retrieval dates"
   ) |>
   kable_styling(
     full_width = FALSE,
@@ -101,81 +107,64 @@ data.frame(
 ```
 
 
-## Output data files
+## 1) Output data files from text preprocessing and EDA
 These files in the folder `data/derived_data/` are created in different scripts and saved here to be reused in other scripts.
 
 
 ```{r}
-#| label: rds-summary-table
+#| label: tbl-ouput_files01
 #| echo: false
 #| message: false
 #| warning: false
 #| asis-output: true
 
-library(knitr)
-library(kableExtra)
-
-library(knitr)
-library(kableExtra)
-
 data.frame(
   `File <code>*.rds</code> name` = c(
-    "<code style='font-size:85%'>wdr.rds</code>",
-    "<code style='font-size:85%'>all_proj_t.rds</code>",
-    "<code style='font-size:85%'>projs_train.rds</code>",
-    "<code style='font-size:85%'>projs_test.rds</code>",
-    "<code style='font-size:85%'>projs_val.rds</code>",
-    "<code style='font-size:85%'>pdo_train_to_tag.rds</code>",
-    "<code style='font-size:85%'>pdo_train_tagged.rds</code>",
-    "<code style='font-size:85%'>pdo_train_t.rds</code>",
-    "<code style='font-size:85%'>projs_train2.rds</code>",
-    "<code style='font-size:85%'>pdo_train2_t.rds</code>",
-    "<code style='font-size:85%'>custom_stop_words.rds</code>",
-    "<code style='font-size:85%'>custom_stop_words_df.rds</code>",
-    "<code style='font-size:85%'>wdr2.rds</code>"
+    "<code>wdr.rds</code>",
+    "<code>all_proj_t.rds</code>",
+    "<code>projs_train.rds</code>",
+    "<code>projs_test.rds</code>",
+    "<code>projs_val.rds</code>",
+    "<code>pdo_train_to_tag.rds</code>",
+    "<code>pdo_train_tagged.rds</code>",
+    "<code>pdo_train_t.rds</code>",
+    "<code>projs_train2.rds</code>",
+    "<code>pdo_train2_t.rds</code>",
+    "<code>custom_stop_words.rds</code>",
+    "<code>custom_stop_words_df.rds</code>",
+    "<code>wdr2.rds</code>"
   ),
   
   `Source File Name` = c(
-    paste(
-      "[from <code>OLD</code> repo <code>~/Github/slogan_old/</code>]", "<br>",
-      "- <code>...OLD/_my_stuff/WDR-data-ingestion.Rmd</code>", "<br>",
-      "- result as <code>...OLD/data/raw_data/WDR.rds</code>", "<br>",
-      "- text processing on WDR abstracts", "<br>",
-      "- <code>...OLD/01b_WDR_data-exploration_abstracts.Rmd</code>", "<br>",
-      "- result as <code>...OLD/data/raw_data/wdr.rds</code>"
-    ),
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
-    "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
-    "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
-    "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
-    "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
-    "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>"
+     "[from <code>OLD</code> repo <code>~/Github/slogan_old/</code>]",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01a_WB_project_pdo_prep.qmd</code>",
+     "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
+     "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
+     "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
+     "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>",
+     "<code>analysis/01b_WB_project_pdo_EDA.qmd</code>"
   ),
   
   Details = c(
-    paste(
-      "as df (44)", "<br>",
-      "<em>problem, API changed — not reproducible</em>", "<br>",
-      "~ like text processing on PDOs"
-    ),
-    "11,279 obs (projects)",
-    "5,637 obs (projects)<br>4,425 if &lt; 2001 FY",
-    "2,821 obs (projects)",
-    "2,820 obs (projects)",
-    "5,637 obs (input)<br>Post split",
-    "LARGE `cnlp` object<br>intermediate step (output)",
-    "314,821 obs (tokens)<br>248,256 if &lt; 2001 FY",
-    "4,425 obs (projects)<br><em>changed</em>",
-    "252,705 obs (tokens)<br><em>changed</em>",
-    "as vector",
-    "as df",
-    "as df (46)<br>[added WDR 2023/2024 manually]"
+     paste("as df (44)", "<br>", "<em>problem with changed API</em>"),
+     "11,279 obs (projects)",
+     "5,637 obs (projects)<br>4,425 if &lt; 2001 FY",
+     "2,821 obs (projects)",
+     "2,820 obs (projects)",
+     "5,637 obs (input)<br>Post split",
+     "LARGE `cnlp` object<br> <em>intermediate output</em>",
+     "314,821 obs (tokens)<br>(248,256 if &lt; 2001 FY)",
+     "4,425 obs (projects)<br><em>changed</em>",
+     "252,705 obs (tokens)<br><em>changed</em>",
+     "as vector",
+     "as df",
+     "as df (46)<br>[added WDR 2023/2024 manually]"
   ),
   
   check.names = FALSE
@@ -183,7 +172,7 @@ data.frame(
   kable(
     format = "html",
     escape = FALSE,
-    caption = "Key `.rds` Files, Their Sources, and Contents"
+    caption = "Clean `.rds` files with their source and contents"
   ) |>
   kable_styling(
     full_width = FALSE,
@@ -191,7 +180,50 @@ data.frame(
   ) |>
   column_spec(1, width = "14em") |>
   column_spec(2, width = "30em") |>
-  column_spec(3, width = "25em")
+  column_spec(3, width = "25em")  
 
 ```
 
+<!-- `wdr.rds` was created in old repo `/Github/slogan_old/` in `OLD/_my_stuff/WDR-data-ingestion.Rmd` with text processing on WDR abstracts in `OLD/01b_WDR_data-exploration_abstracts.Rmd` and saved as `...OLD/data/raw_data/wdr.rds`. -->
+
+
+## 2) Output data files from ML classification
+
+
+
+```{r}
+#| label: tbl-output_files02
+#| echo: false
+#| message: false
+#| warning: false
+#| asis-output: true
+
+data.frame(
+  `File <code>*.rds</code> name` = c(
+    "<code>.....rds</code>" 
+  ),
+  
+  `Source File Name` = c(
+     "<code>analysis/02a_WB_project_pdo_feat_class_envcat.qmd</code>" 
+  ),
+  
+  Details = c(
+     paste("..... ", "<br>", "<em>xxxx </em>") 
+  ),
+  
+  check.names = FALSE
+) |>
+  kable(
+    format = "html",
+    escape = FALSE,
+    caption = "Clean `.rds` files with their source and contents"
+  ) |>
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover")
+  ) |>
+  column_spec(1, width = "14em") |>
+  column_spec(2, width = "30em") |>
+  column_spec(3, width = "25em")  
+
+```

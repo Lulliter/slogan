@@ -753,7 +753,9 @@ Other supervised ML algorithms could be used in this case, such as *Random Fores
 :::
 
 
-## Models and Results
+## 🟡 Models and Results
+
+<!-- da aggiornare  con analysis/02a_WB_project_pdo_feat_class_envcat.qmd -->
 @tbl-ML_results reports the specifications of the models and their performance. 
 ```{r}
 #| label: tbl-ML_results
