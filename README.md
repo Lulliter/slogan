@@ -10,8 +10,8 @@ data.
 # CORE files
 
 ``` bash
-tree analysis -C -L 2 # then https://carbon.now.sh/
-#tree -n  --noreport analysis  -L 2 | silicon --language bash -o images/tree.png
+# tree analysis -C -L 2 # then https://carbon.now.sh/
+tree -n --noreport analysis -L 2 -I "_zz_old_files" | silicon --language bash -o images/tree.png
 ```
 
 <img src="images/tree.png" style="width:50.0%" alt="tree" />
@@ -25,20 +25,21 @@ tree analysis -C -L 2 # then https://carbon.now.sh/
 
 - Access all tidy tuesday port for week 12 2025
   [bluesky](https://bsky.app/search?q=week+12+%23tidytuesday)
+
 - Read:
+
   - [R pckg to use LLm to summarize from
     PDF](https://posit.co/blog/mall-ai-powered-text-analysis/)
   - [Tidy tuesday on TExt
     analytics](https://github.com/rfordatascience/tidytuesday/blob/main/data/2025/2025-03-25/readme.md)
     - [spiega](https://gregoryvdvinne.github.io/Text-Mining-Amazon-Budgets.html)
 
-### In `analysis/01c_WB_project_pdo_feat_class.qmd`
-
-- tutto da rivedere …. SPLIT:
+- In ~~`analysis/01c_WB_project_pdo_feat_class.qmd`~~ tutto da rivedere
+  …. SPLIT:
 
   - ☑️ `analysis/02a_WB_project_pdo_feat_class_envcat.qmd` (small things
     to clean up)
-  - `analysis/_02b_WB_project_pdo_feat_class_sector.qmd`
+  - `analysis/02b_WB_project_pdo_feat_class_sector.qmd`
 
 - Study the theory of Lasso Regr and Classification with ML on Gabor’s
   book

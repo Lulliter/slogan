@@ -228,7 +228,7 @@ list(
        custom_stop_words_df
        # Render the feature classification report and pass parameters
        quarto::quarto_render(
-          here::here("analysis", "01c_WB_project_pdo_feat_class.qmd"),
+          here::here("analysis", "02a_WB_project_pdo_feat_class_envcat.qmd"),
           execute_params = list(
              projs_train = projs_train,
              wdr = wdr,
@@ -247,6 +247,12 @@ list(
          here::here("data", "derived_data", "wdr2.rds")
       },
       format = "file"),
+
+
+ # [------------------]-------------
+ ## 3.b) ML Feature Classification (multiclass)----
+ # .....
+
 
    # Combine ALL ANALYSIS reports  ----
    tar_target(

@@ -1,5 +1,5 @@
 ---
-title: "WB Project PDO features classification"
+title: "WB Project PDO features classification: binary outcome"
 subtitle: "Supervised ML for text classification"
 author: "Luisa M. Mimmi"
 # date: "Last run: `r format(Sys.time(), '%F')`"
@@ -120,7 +120,7 @@ lulas_theme <- theme_minimal(base_size = 12) +
 ```
 
 
-# Load data
+# Load data & functions
 ```{r}
 # Load Proj train dataset `projs_train_t`
 projs_train2 <- readRDS(here("data","derived_data", "projs_train2.rds"))  
@@ -204,6 +204,7 @@ How do we use them?
 -   Do we use some type of weighting scheme? ✅
     -   yes, we use `tf-idf` (a weighting scheme, which will downweight words that are common across all documents and upweight words that are unique to a document)
 -   Do we use some type of dimensionality reduction? ✅
+
 # TEXT CLASSIFICATION for Environmental Assessment Category
 
 [Francom](chap%209.2.1%20Text%20classification,%20p.%202018-) [text Classification (in R)](https://burtmonroe.github.io/TextAsDataCourse/Tutorials/TADA-ClassificationV2.nb.html) [Stanford slide](https://web.stanford.edu/class/cs124/lec/naivebayes2021.pdf)
@@ -217,36 +218,37 @@ Lasso regression or classification *learns how much of a `penalty` to put on som
 
 ## 0) Prep for data split based on outcome [`projs_train2`]
 
-### Recode `env_cat` variable 
+### Recoded `env_cat` variable 
 
+[done in `analysis/01b_WB_project_pdo_EDA.qmd`]
 ```{r}
-projs_train2 <- projs_train2 %>% 
-   # useful for later 
-   # rename(., proj_id = "id") %>%
-   # recode as factors 
-   dplyr::mutate (across (c(status, FY_appr, regionname, countryname, sector1, 
-                            theme1, lendinginstr), as.factor))  %>% 
-   # env risk category 7 levels
-   dplyr::mutate(env_cat_f = forcats::fct_na_value_to_level(
-      env_cat, level = "Missing")) %>% 
-   dplyr::mutate(env_cat_f = forcats::fct_recode(
-      env_cat_f, 
-      "A_high risk" = "A", 
-      "B_med risk" = "B", 
-      "C_low risk" = "C", 
-      "F_fin expos" = "F", 
-      # "Other" = "H", 
-      # "Other" = "M", 
-      "Other" = "U", 
-      "Missing" = "Missing" )) %>% 
-   dplyr::relocate(env_cat_f , .after = env_cat) %>% 
-   # collaapse env_cat_f into 2 levels
-   dplyr::mutate(env_cat_f2 = forcats::fct_collapse(
-      env_cat_f, 
-      "High-Med-risk" = c("A_high risk", "B_med risk"),
-      "Low-risk_Othr" = c("C_low risk", "F_fin expos", "Other", "Missing")
-   )) %>% 
-   dplyr::relocate(env_cat_f2, .after = env_cat_f)
+# projs_train2 <- projs_train2 %>% 
+#    # useful for later 
+#    # rename(., proj_id = "id") %>%
+#    # recode as factors 
+#    dplyr::mutate (across (c(status, FY_appr, regionname, countryname, sector1, 
+#                             theme1, lendinginstr), as.factor))  %>% 
+#    # env risk category 7 levels
+#    dplyr::mutate(env_cat_f = forcats::fct_na_value_to_level(
+#       env_cat, level = "Missing")) %>% 
+#    dplyr::mutate(env_cat_f = forcats::fct_recode(
+#       env_cat_f, 
+#       "A_high risk" = "A", 
+#       "B_med risk" = "B", 
+#       "C_low risk" = "C", 
+#       "F_fin expos" = "F", 
+#       # "Other" = "H", 
+#       # "Other" = "M", 
+#       "Other" = "U", 
+#       "Missing" = "Missing" )) %>% 
+#    dplyr::relocate(env_cat_f , .after = env_cat) %>% 
+#    # collaapse env_cat_f into 2 levels
+#    dplyr::mutate(env_cat_f2 = forcats::fct_collapse(
+#       env_cat_f, 
+#       "High-Med-risk" = c("A_high risk", "B_med risk"),
+#       "Low-risk_Othr" = c("C_low risk", "F_fin expos", "Other", "Missing")
+#    )) %>% 
+#    dplyr::relocate(env_cat_f2, .after = env_cat_f)
 
 # Recap
 tabyl(projs_train2, env_cat, show_na = TRUE) # 7 levels
@@ -271,42 +273,42 @@ saveRDS(env_cat_f_f2_k, here("analysis", "output", "tables", "env_cat_f_f2_k.rds
 
 ## Recode `sector1` variable 
 (this I use later as MULTI-CLASS outcome)
-
+[done in `analysis/01b_WB_project_pdo_EDA.qmd`]
 ```{r}
-# !!!!! `sector_f` e' diverso da `tok_sector_broad` XCHE si basa su `sector1` !!!! 
-projs_train2 <- projs_train2 %>% # sector1 99 levels
-   mutate(sector_f = case_when(
-      str_detect(sector1, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", 
-                                ignore_case = T)) ~ "WAT & SAN",
-      str_detect(sector1, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation",
-                                ignore_case = T)) ~ "TRANSPORT",
-      sector1 == "port" ~ "TRANSPORT",
-      str_detect(sector1, regex("urban|housing|inter-urban|peri-urban|waste",
-                                ignore_case = T)) ~ "URBAN",
-      str_detect(sector1, regex("energ|electri|hydroele|hydropow|renewable|transmis",
-                                ignore_case = T)) ~ "ENERGY",  # Matches either "energy" or "power"
-      str_detect(sector1, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin",
-                                ignore_case = T)) ~ "HEALTH",
-      str_detect(sector1, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul",
-                                ignore_case = T)) ~ "EDUCATION",
-      
-      str_detect(sector1, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|agri-business",
-                                ignore_case = T)) ~ "AGR FOR FISH",
-      str_detect(sector1, regex("Minin|oil|gas|mineral|Extract",
-                                ignore_case = T)) ~ "MINING OIL&GAS",
-      str_detect(sector1, regex("Social Protec",
-                                ignore_case = T)) ~ "SOCIAL PROT.",
-      
-      str_detect(sector1, regex("Bank|finan|Investment",
-                                ignore_case = T)) ~ "FINANCIAL",
-      str_detect(sector1, regex("Information|Communication|ICT|Internet|Technologies",
-                                ignore_case = T)) ~ "ICT",
-      str_detect(sector1, regex("Tourism|Trade and Services|Manuf|Other Industry|Trade and Services",
-                                ignore_case = T)) ~ "IND TRADE SERV",
-      str_detect(sector1, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance",
-                                ignore_case = T)) ~ "INSTIT. SUPP.",
-      TRUE ~ "Missing")) %>% 
-   relocate(sector_f, .after = sector1)  
+# # !!!!! `sector_f` e' diverso da `tok_sector_broad` XCHE si basa su `sector1` !!!! 
+# projs_train2 <- projs_train2 %>% # sector1 99 levels
+#    mutate(sector_f = case_when(
+#       str_detect(sector1, regex("water|wastewater|sanitat|Sewer|Irrigat|Drainag", 
+#                                 ignore_case = T)) ~ "WAT & SAN",
+#       str_detect(sector1, regex("transport|railway|road|airport|waterway|bus|metropolitan|inter-urban|aviation",
+#                                 ignore_case = T)) ~ "TRANSPORT",
+#       sector1 == "port" ~ "TRANSPORT",
+#       str_detect(sector1, regex("urban|housing|inter-urban|peri-urban|waste",
+#                                 ignore_case = T)) ~ "URBAN",
+#       str_detect(sector1, regex("energ|electri|hydroele|hydropow|renewable|transmis",
+#                                 ignore_case = T)) ~ "ENERGY",  # Matches either "energy" or "power"
+#       str_detect(sector1, regex("health|hospital|medicine|drugs|epidem|pandem|covid-19|vaccin",
+#                                 ignore_case = T)) ~ "HEALTH",
+#       str_detect(sector1, regex("educat|school|vocat|teach|univers|student|literacy|training|curricul",
+#                                 ignore_case = T)) ~ "EDUCATION",
+#       
+#       str_detect(sector1, regex("Agricultural|Agro|Fish|Forest|Crop|livestock|agri-business",
+#                                 ignore_case = T)) ~ "AGR FOR FISH",
+#       str_detect(sector1, regex("Minin|oil|gas|mineral|Extract",
+#                                 ignore_case = T)) ~ "MINING OIL&GAS",
+#       str_detect(sector1, regex("Social Protec",
+#                                 ignore_case = T)) ~ "SOCIAL PROT.",
+#       
+#       str_detect(sector1, regex("Bank|finan|Investment",
+#                                 ignore_case = T)) ~ "FINANCIAL",
+#       str_detect(sector1, regex("Information|Communication|ICT|Internet|Technologies",
+#                                 ignore_case = T)) ~ "ICT",
+#       str_detect(sector1, regex("Tourism|Trade and Services|Manuf|Other Industry|Trade and Services",
+#                                 ignore_case = T)) ~ "IND TRADE SERV",
+#       str_detect(sector1, regex("Government|Public Admin|Institution|Central Agenc|Sub-national Gov|law|justice|governance",
+#                                 ignore_case = T)) ~ "INSTIT. SUPP.",
+#       TRUE ~ "Missing")) %>% 
+#    relocate(sector_f, .after = sector1)  
 
 # Recap
 projs_train2 |> count(sector1) # 76 levels
@@ -356,7 +358,7 @@ tabyl(env_cat_test, env_cat_f)|> adorn_totals("row") |> adorn_pct_formatting(dig
 ```
 
 ```{r}
-rm( env_cat_use, env_cat_missing)
+#rm( env_cat_use, env_cat_missing)
 # env_cat_train |> count(env_cat_f)
 ```
 
@@ -1876,7 +1878,6 @@ ML_feature_importance_p
 
 # save as rds
 f_save_plot_obj(ML_feature_importance_p, "ML_feature_importance_p")
-
 ```
 
 
@@ -1946,7 +1947,7 @@ env_NB_fit <- env_NB_wf %>%
    fit(data = env_cat_train)
 ```
 
-### --- (NO tuning!) RESAMPLES  
+   ### --- (NO tuning!) RESAMPLES  
 Let’s use `resampling` to estimate the performance of the naive Bayes classification model we just fit. We can do this using resampled data sets built from the training set. Let’s create 10-fold cross-validation sets, and use these resampled sets for performance estimates.
 
 ### --- K-fold cross-validation sets 

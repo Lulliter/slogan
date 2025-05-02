@@ -21,7 +21,7 @@ Rscript -e "targets::tar_make(pdo_train_t)" # DATA dep
 
 Rscript -e "targets::tar_make(eda_report)"  # 01b_WB_project_pdo_EDA.qmd
 
-Rscript -e "targets::tar_make(feat_class_report)"  # 01c_....qmd
+Rscript -e "targets::tar_make(feat_class_report)"  # 02a_WB_project_pdo_feat_class_envcat.qmd
 
 Rscript -e "targets::tar_make(analysis_reports)" #
 Rscript -e "targets::tar_make(post_page)"
@@ -67,15 +67,16 @@ git commit -m "maj revision analysis/ post 2025 input 🥵" -m "added 2025 data 
 git commit -m "02a_WB_project_pdo_feat_class_envcat.qmd 👇🏻"
 		# git commit -m "revision INSTALL + cleanup slides 2"  -m "01_... + 00_carico_tab-contesto.qmd "
 git commit -m "100% done blog  🍾🥂"
+git commit -m "fidgeting with analysis/00_data.qmd"
 
 # Push local source (master branch) to remote reference (origin)
 #cd .
 git push origin master
 
-#=========================================== ALL IN ONE  ================================================#
+#=================================== ALL IN ONE  ===================================#
 git add -u && git commit -a -m "small upd Home 👇🏻👇🏻" && git push
 
-#=========================================== FIle pubblico  ================================================#
+#=================================== FIle pubblico  ========================================#
 # https://quarto.org/docs/publishing/quarto-pub.html
 #  from ./
 cd .
@@ -86,10 +87,13 @@ quarto publish quarto-pub 10_Validazione.qmd   # Published at https://lulliter.q
 # PRIMA CHIUDO TUTTO WORD
 Rscript R/salvo_output_li.R
 
-#=========================================== (IGNORE a file accidentally committed in the past) ================================================#
+#===================== (IGNORE a file accidentally committed in the past) ===============================#
 # add .env file to .gitignore
 echo "accident.txt" >> .gitignore
 # tell Git NOT to track this file (it gets removed from the index, but stays local system)
 git rm --writings/zzzz_old/
 git rm --buzzwords.bib
 git rm --cached buzzwords.bib
+
+#===================== (RIVEDERE UN FILE DA COMMIT PASSATO (SENZA SOVRAPPORLO!!!) ===============================#
+git show 3ae2f98:analysis/01a_WB_project_pdo_prep.qmd > analysis/01a_WB_project_pdo_prep_OLD.qmd

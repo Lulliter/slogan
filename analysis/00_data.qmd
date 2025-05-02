@@ -36,7 +36,7 @@ The **raw** and **derived** data files are accessible from the [Github Repo {{< 
 
 The Accessibility Classification is **public** under [Creative Commons Attribution 4.0](https://datacatalog.worldbank.org/public-licenses?fragment=cc)
  
-## Process to ingest & preprocess raw PDO text data
+### Process to ingest & preprocess raw PDO text data
 
 1. Retrieve ALL WB projects (22,571) listed (approval obtained or requested *between FY 1947 and 2026* as of *31/08/2024*) using the `Excel button` on this page: [WBG Projects](https://projects.worldbank.org/en/projects-operations/projects-list?str_fiscalyear=1979&end_fiscalyear=1979&os=0) 
 2. Split the dataset and keep only `projs_train` (~50% of projects with PDO text, i.e. **5,637 PDOs**)
@@ -56,6 +56,27 @@ The Accessibility Classification is **public** under [Creative Commons Attributi
 library(knitr)
 library(kableExtra)
 ```
+
+## WB World Development Reports (WDRs)
+
+**World Development Reports** can be retrieved as a *sub-collection* of the `Corporate Flagship` *Collection* of World Bank's documents. 
+
+At this link:
+
+<!-- `wdr.rds` was created in old repo `/Github/slogan_old/` in `OLD/_my_stuff/WDR-data-ingestion.Rmd` with text processing on WDR abstracts in `OLD/01b_WDR_data-exploration_abstracts.Rmd` and saved as `...OLD/data/raw_data/wdr.rds`. -->
+
++ [World Development Report](https://openknowledge.worldbank.org/collections/3d9bbbf6-c007-5043-b655-04d8a1cfbfb2) - there are 44 items available as of today (`r format(Sys.time(), '%F')`).
+
+I initially managed to use an API call to retrieve the WDRs metadata and save it (in 2022) following [Stephanie Tran's](https://github.com/transteph/world-bank-document-scraping) project who created the function `R/f_scrape_WB-OKR.R`. However, due to changes in url, I could not repeat that process. 
+
+See more info here:
+
++ [World Bank APIs](https://datahelpdesk.worldbank.org/knowledgebase/articles/889386-developer-information-overview) 
+
++ [Third party APIs](https://data.worldbank.org/products/third-party-apps) 
+
+
+***
 
 ## 0) Input data files 
 These files in the folder `data/raw_data/` are downloaded from the World Bank website.
@@ -184,12 +205,9 @@ data.frame(
 
 ```
 
-<!-- `wdr.rds` was created in old repo `/Github/slogan_old/` in `OLD/_my_stuff/WDR-data-ingestion.Rmd` with text processing on WDR abstracts in `OLD/01b_WDR_data-exploration_abstracts.Rmd` and saved as `...OLD/data/raw_data/wdr.rds`. -->
 
 
 ## 2) Output data files from ML classification
-
-
 
 ```{r}
 #| label: tbl-output_files02

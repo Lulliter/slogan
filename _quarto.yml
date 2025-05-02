@@ -58,8 +58,8 @@ website:
             href: analysis/01b_WB_project_pdo_EDA.qmd
           - text: "WB projects' PDO data ML: env risk"
             href: analysis/02a_WB_project_pdo_feat_class_envcat.qmd
-          # - text: "WB projects' PDO data ML: sector"
-          #   href: analysis/02b_WB_project_pdo_feat_class_sector.qmd
+          - text: "WB projects' PDO data ML: sector"
+            href: analysis/02b_WB_project_pdo_feat_class_sector.qmd
 
       - text: "Blog"
         icon: cup-hot-fill # archive-fill # https://icons.getbootstrap.com/?q=home

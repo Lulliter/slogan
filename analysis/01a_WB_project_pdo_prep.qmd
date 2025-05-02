@@ -1101,22 +1101,23 @@ pdo_train_to_tag <- projs_train %>%
 
 ## ☣️☣️⚠️ [LOOONG] Annotate with `cleanNLP::cnlp_annotate()`
 
-[Only the 1st time]
+1. [Only the 1st time]
 ```{r}
-# ---- Initialize the tagger
-cleanNLP::cnlp_init_udpipe()
-
-# ---- Use the built-in R-based tagger
-pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag,
-                                  text_name = "pdo_2",
-                                  doc_name = "id")
-
-# ---- save the input data as .rds
-saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
-
+# # no need to repeat if you have already tagged the data
+# 
+# # ---- Initialize the tagger
+# cleanNLP::cnlp_init_udpipe()
+# 
+# # ---- Use the built-in R-based tagger
+# pdo_train_tagged <- cleanNLP::cnlp_annotate(pdo_train_to_tag,
+#                                   text_name = "pdo_2",
+#                                   doc_name = "id")
+# 
+# # ---- save the input data as .rds
+# saveRDS(pdo_train_tagged, here("data","derived_data","pdo_train_tagged.rds"))
 ```
 
-[Conditionally re-annotate]
+2.a [Conditionally re-annotate]
 ```{r}
 # save the input data as .rds
 saveRDS(pdo_train_to_tag, here("data","derived_data","pdo_train_to_tag.rds"))
@@ -1125,6 +1126,7 @@ input_path <- here("data","derived_data","pdo_train_to_tag.rds")
 output_path <- here("data","derived_data","pdo_train_tagged.rds")
 ```
 
+2.b [Conditionally re-annotate]
 ```{r}
 # ---- Initialize the tagger
 cleanNLP::cnlp_init_udpipe()

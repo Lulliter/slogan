@@ -671,7 +671,22 @@ f_recap_values(projs_train2, c("sector1", "theme1","env_cat","ESrisk" )) %>%
    row_spec(3, background = "#d8e600") # Light yellow background kable() 
 ```
 
-One candidate variable that could be predicted is `env_cat` (*"Environmental Assessment Category"*). This is a categorical variable with 7 levels (A, B, C, F, H, M, U), but, to simplify, I collapsed it into a binary outcome defined as *"High-Med-risk"* and *"Low-risk-Othr"* (as illustrated in @tbl-env_cat_f_f2). 
+One candidate variable that could be predicted is `env_cat` (*"Environmental Assessment Category"*). As per the current **Environmental and Social Framework (ESF)**, this is a categorical variable with 4 possible levels (A, B, C, F), but, to simplify, I collapsed it into a binary outcome defined as *"High-Med-risk"* and *"Low-risk-Othr"* (as illustrated in @tbl-env_cat_f_f2). 
+
+::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
+
+All the categories of Environmental Assessment shown below were part of the World Bank’s **Environmental and Social Safeguards framework**, which transitioned in 2018 to the **Environmental and Social Framework (ESF)**
+
++ **Category A**: A proposed project is classified as Category A if it is likely to have significant adverse environmental impacts that are sensitive, diverse, or unprecedented. 
++ **Category B**: A proposed project is classified as Category B if its potential adverse environmental impacts on human populations or environmentally important areas--including wetlands, forests, grasslands, and other natural habitats--are less adverse than those of Category A projects. 
++ **Category C**: A proposed project is classified as Category C if it is likely to have minimal or no adverse environmental impacts.
++ **Category FI**: A proposed project is classified as Category FI if it involves investment of Bank funds through a financial intermediary, in subprojects that may result in adverse environmental impact.
+
+The following additional categories were found in the data and are likely mistakes or legacy codes: 
++ **Category H**: Mistake of legacy coding – not in current use in most projects.
++ **Category M**: Mistake of legacy coding – not in current use in most projects.
++ **Category U**: Unclassified – not in current use in most projects.
+:::
 
 ```{r}
 #| label: tbl-env_cat_f_f2
@@ -686,21 +701,22 @@ env_cat_f_f2_k
 
 ```
 
+
 ## Using ML models to predict a missing feature
 
 The goal at hand has to do with ***text classification***, that is assigning categories to some observations. To predict a missing feature based on a mix of text data and other available predictors, several machine learning (ML) algorithms can be applied. I tested a few suitable algorithms.
 
 The sample splitting (necessary in ML to save testing dataset for model evaluation) was done based on the availability of the `env_cat` variable. The sample was actually split into three groups:  
 
-1) **Training set** (with `env_cat` available) 2,264 observations
-2) **Testing set** (with `env_cat` available) 972 observations
-3) **Validation set** (with `env_cat` missing) 1,167 observations
+1) **Training set** (with `env_cat` available) 2,260 observations
+2) **Testing set** (with `env_cat` available) 970 observations
+3) **Validation set** (with `env_cat` missing) 1,195 observations
 
 <!-- ![Sampling strategy](../images/Sample_EnvCat2.png){fig-align="center"} -->
 
 ## Choosing the ML algorithm
 
-To predict the missing binary categorical outcome `env_cat_f2`, I tried several models, including: ***Lasso logistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://lulliter.github.io/slogan/analysis/01c_WB_project_pdo_feat_class.html)). 
+To predict the missing binary categorical outcome `env_cat_f2`, I tried several models, including: ***Lasso logistic regression*** (with different specifications including only text or a mix of text and other predictors) and ***Naive Bayes classification*** (Here I only report the results, but details can be found on this  [webpage](https://policylexicon.com/analysis/02a_WB_project_pdo_feat_class_envcat.html)). 
 Since text data is sparse and high-dimensional, it is critical to perform some pre-treatment of the `features` (i.e. the *explanatory* variables) before modeling. 
 
 ::: {.callout-note collapse="true" style="background-color: #eef2fb;"}
@@ -753,9 +769,11 @@ Other supervised ML algorithms could be used in this case, such as *Random Fores
 :::
 
 
-## 🟡 Models and Results
+## Models and Results
 
 <!-- da aggiornare  con analysis/02a_WB_project_pdo_feat_class_envcat.qmd -->
+<!-- usare     models_metrics_recap_k -->
+
 @tbl-ML_results reports the specifications of the models and their performance. 
 ```{r}
 #| label: tbl-ML_results
@@ -765,13 +783,19 @@ Other supervised ML algorithms could be used in this case, such as *Random Fores
 #| tbl-cap: Comparison of models and results for binary outcome
 
 tibble::tribble(
-  ~Algorithm                , ~Features    , ~Specification  , ~Accuracy, ~ROC_auc,
-  "LASSO logistic regression", "Text only" , "env_cat_f2 ~ pdo" , 0.750, 0.777,  
-  "LASSO logistic regression \n(more preprocessing)", "Text only" , "env_cat_f2 ~ pdo" , 0.762, 0.807,   # last fit 
+  ~Algorithm,                                         ~Features    , ~Specification  , 
+  ~Accuracy, ~ROC_auc, ~Sensitivity, ~Specificity,
+  "LASSO logistic regression",                        "Text only" , "env_cat_f2 ~ pdo" , 
+  0.759, 0.774, 0.905, 0.473,
   
-  "LASSO logistic regression \n(more preprocessing)", "Text + other predictors" , "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 0.79, 0.85,  
+  "LASSO logistic regression \n(more preprocessing)", "Text only" , "env_cat_f2 ~ pdo" , 
+  0.755, 0.785, 0.907, 0.457,   # last fit 
   
-  "Naïve Bayes classification"              , "Text + other predictors", "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 0.691, 0.784  
+  "LASSO logistic regression \n(more preprocessing)", "Text + other predictors" , "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov", 
+  0.787, 0.823, 0.903, 0.558,  
+  
+  "Naïve Bayes classification",                       "Text + other predictors", "env_cat_f2 ~ pdo + sector_f + regionname + FYapprov" , 
+  0.671, 0.735, 0.988, 0.052
 ) %>%  
    kable(format = "html") |> # kable() |> 
    kable_styling(full_width = FALSE)  %>% 
@@ -803,10 +827,12 @@ tibble::tribble(
 # • Dummy variables from: sector_f, regionname, boardapprovalFY
 ```
 
-The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata information to predict the missing `env_cat_f2` in the testing set. The model achieved an accuracy of 0.79 and an ROC-AUC of 0.85, whereas:
+The best model performance was achieved by the LASSO logistic regression model that combined both PDOs' text and some available metadata information to predict the missing `env_cat_f2` in the testing set. The model performed best in most of the key metrics, whereas: 
 
 + `accuracy` is the proportion of correct predictions made by the model out of all predictions or, in other words, how often the model is correct overall.
-+ `ROC-AUC` (*Receiver Operating Characteristic - Area Under the Curve*) goes further by evaluating the model's ability to distinguish between classes across various thresholds. It summarizes how well the model can separates the classes, providing a more nuanced view of its performance, especially useful when the class distribution is uneven.
++ `ROC-AUC` (*Receiver Operating Characteristic - Area Under the Curve*) goes further by evaluating the model's ability to distinguish between classes across various thresholds. It summarizes how well the model can separates the classes, especially useful when the class distribution is uneven.
++ `sensitivity` (or *true positive rate*) measures the proportion of actual positives (here "high or medium environmental risk class") that are correctly identified by the model.
++ `specificity` (or *true negative rate*) measures the proportion of actual negatives (here, "low or other environmental risk class") that are correctly identified by the model. 
 
 ## Performance of the preferred ML model
 
